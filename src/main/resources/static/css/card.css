@@ -1,0 +1,32 @@
+/*카드*/
+.card-custom {
+    flex: 0 0 auto;
+    width: 160px;
+    border: none;
+    cursor: pointer;
+}
+.card-wide {
+    width: 300px;
+}
+.card-img-top {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+.spicy{
+    width: 15px;
+}
+.profile-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 4px;
+}
+.badge-location {
+    background-color: #f1f3f5;
+    color: #495057;
+    font-weight: normal;
+    font-size: 0.7rem;
+}
