@@ -1,0 +1,34 @@
+/*공통 레이아웃*/
+body {
+    background-color: #f8f9fa;
+    padding-bottom: 80px;
+}
+.mobile-container {
+    max-width: 920px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    min-height: 100vh;
+    box-shadow: 0 0 15px rgba(0,0,0,0.05);
+}
+
+/*메뉴바*/
+.bottom-nav {
+    max-width: 920px;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    border-top: 1px solid #dee2e6;
+}
+.bottom-nav .nav-link {
+    color: #868e96;
+    font-size: 0.75rem;
+    text-align: center;
+}
+.bottom-nav .nav-link.active {
+    color: #212529;
+}
+.bottom-nav i {
+    font-size: 1.4rem;
+    display: block;
+    margin-bottom: -2px;
+}
