@@ -1,0 +1,103 @@
+/* 1. 프로필 영역 */
+.profile-img-lg {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+#edit-box{
+    cursor: pointer;
+}
+.edit-box {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right:0;
+    width: 60px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 5px 10px;
+    z-index: 1000;
+    font-size: 0.75rem;
+    color: #495057;
+}
+.edit-box.show {
+    display: block !important;
+}
+
+/* 2. 재료 목록 테이블 스타일 */
+.ingredient-row {
+    border-bottom: 1px solid #f1f3f5;
+    padding: 8px 0;
+    font-size: 0.8rem;
+    align-items: center;
+}
+.ingredient-row:last-child {
+    border-bottom: none;
+}
+/* 공구 뱃지 스타일 */
+.badge-gonggu {
+    font-size: 0.7rem;
+    font-weight: normal;
+    padding: 3px 6px;
+    border-radius: 10px;
+}
+.badge-gonggu.active {
+    background-color: #e7f5ff;
+    color: #0099ff;
+}
+.badge-gonggu.inactive {
+    background-color: #e9ecef;
+    color: #868e96;
+}
+
+/* 3. 조리 순서 */
+.step-number {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #343a40;
+    min-width: 25px;
+}
+.step-img {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+/* 4. 매운맛 그래프 */
+.progress-wrapper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+    font-size: 0.8rem;
+}
+.progress-custom {
+    height: 10px;
+    background-color: #e9ecef;
+    border-radius: 5px;
+    flex-grow: 1;
+    margin: 0 10px;
+}
+.progress-bar-custom {
+    background-color: #3b82f6;
+    border-radius: 5px;
+}
+
+/* 5. 후기 썸네일 */
+.review-thumb {
+    width: 23%; /* 4개 배치 */
+    aspect-ratio: 1/1;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* 6. 하단 고정 버튼 (네비게이션 위) */
+.add-review-btn-area {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 10px 15px;
+    background: linear-gradient(to top, #ffffff 80%, transparent);
+}
