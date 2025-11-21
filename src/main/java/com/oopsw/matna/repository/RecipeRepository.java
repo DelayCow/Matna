@@ -1,6 +1,8 @@
 package com.oopsw.matna.repository;
 
-public interface RecipeRepository {
+import org.springframework.stereotype.Repository;
 
+@Repository
+public interface RecipeRepository {
 
 }
