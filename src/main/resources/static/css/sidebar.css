@@ -1,0 +1,47 @@
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    background-color: #2d3e50;
+    color: white;
+}
+
+.profile-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #ffffff33;
+    margin: 0 auto;
+}
+
+.menu .nav-link {
+    color: #d0d6dc;
+    padding: 10px 0;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    transition: 0.2s;
+}
+
+.menu .nav-link:hover {
+    background-color: #1b2733;
+    color: white;
+}
+
+.menu .nav-link.active {
+    background-color: #1b2733;
+    color: #fff;
+    font-weight: 600;
+}
+
+.logout {
+    background-color: #c0392b;
+    border: none;
+    padding: 10px 0;
+    color: white;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.logout:hover {
+    background-color: #e74c3c;
+}
