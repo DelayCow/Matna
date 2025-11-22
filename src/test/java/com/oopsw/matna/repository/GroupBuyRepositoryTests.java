@@ -1,9 +1,6 @@
 package com.oopsw.matna.repository;
 
-import com.oopsw.matna.repository.entity.GroupBuy;
-import com.oopsw.matna.repository.entity.Ingredient;
-import com.oopsw.matna.repository.entity.Member;
-import com.oopsw.matna.repository.entity.PeriodGroupBuy;
+import com.oopsw.matna.repository.entity.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +19,8 @@ public class GroupBuyRepositoryTests {
     GroupBuyRepository groupBuyRepository;
     @Autowired
     PeroidGroupBuyRepository peroidGroupBuyRepository;
+    @Autowired
+    GroupBuyParticipantRepository groupBuyParticipantRepository;
 
     @Test
     void searchIngredientKeyword(){
@@ -82,4 +81,45 @@ public class GroupBuyRepositoryTests {
     }
 
     @Test
+    void joinPeriodGroupBuy(){
+        Member participantMember = memberRepository.findById(12).get();
+        GroupBuy groupBuyNo = groupBuyRepository.findById(29).get();
+
+        Integer price = groupBuyNo.getPrice();
+        Integer feeRate = groupBuyNo.getFeeRate();
+        int initialPaymentPoint = (int) Math.round((price * (1.0 + (feeRate / 100.0))) / 2.0);
+
+        GroupBuyParticipant joinPeriodGroupBuy = groupBuyParticipantRepository.save(
+                GroupBuyParticipant.builder()
+                        .participantNo(participantMember)
+                        .groupBuyNo(groupBuyNo)
+                        .participatedDate(LocalDateTime.now())
+                        .initialPaymentPoint(initialPaymentPoint)
+                        .build()
+        );
+        System.out.println(joinPeriodGroupBuy.getInitialPaymentPoint());
+    }
+
+    @Test
+    void payPeroidPoint(){
+        Member participantMember = memberRepository.findById(12).get();
+        GroupBuyParticipant groupBuyParticipant = groupBuyParticipantRepository.findById(67).get();
+
+        int initialPaymentPoint = groupBuyParticipant.getInitialPaymentPoint(); // 차감할 포인트
+        int currentPoint = participantMember.getPoint();
+        int newPoint = currentPoint - initialPaymentPoint;
+        if (newPoint < 0) {
+            return; // 테스트 중단
+        }
+
+        participantMember.setPoint(newPoint);
+        Member payPeroidMember = memberRepository.save(participantMember);
+
+        System.out.println(initialPaymentPoint+" "+currentPoint+" "+newPoint);
+    }
+
+    @Test
+    void changeColsedStatus(){
+
+    }
 }
