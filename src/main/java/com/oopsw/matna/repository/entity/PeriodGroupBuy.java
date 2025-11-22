@@ -22,7 +22,7 @@ public class PeriodGroupBuy {
 
     @OneToOne(fetch = FetchType.LAZY) // GROUP_BUYS와 1:1 관계일 가능성이 높음
     @JoinColumn(name = "group_buy_no", nullable = false)
-    private GroupBuy groupBuy; // FK: GROUP_BUYS.group_buy_no
+    private GroupBuy groupBuyNo; // FK: GROUP_BUYS.group_buy_no
 
     @Column(name = "due_date", nullable = false)
     private LocalDateTime dueDate;
