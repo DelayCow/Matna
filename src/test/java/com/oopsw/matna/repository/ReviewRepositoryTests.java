@@ -5,8 +5,6 @@ import com.oopsw.matna.vo.ReviewListVO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Commit;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,12 +32,11 @@ public class ReviewRepositoryTests {
     }
 
     @Test
-    @Transactional
-    @Commit
     public void removeReview(){
         Integer reviewNo = 18;
         Reviews review = reviewRepository.findById(reviewNo)
                 .orElseThrow(() -> new IllegalArgumentException("후기 번호 " + reviewNo + "를 찾을 수 없습니다."));
         review.setDelDate(LocalDateTime.now());
+        reviewRepository.save(review);
     }
 }

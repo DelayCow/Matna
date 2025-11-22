@@ -5,8 +5,6 @@ import com.oopsw.matna.vo.RecipeListVO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Commit;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,29 +16,27 @@ public class RecipeRepositoryTests {
     private RecipeRepository recipeRepository;
 
     @Test
-    @Transactional
     public void getMyPageRecipeListTest(){
         Integer memberNo = 5;
         List<Recipe> recipes = recipeRepository.findByAuthor_MemberNoAndDelDateIsNull(memberNo);
         List<RecipeListVO> recipeList = recipes.stream()
                 .map(recipe -> RecipeListVO.builder()
-                .recipeNo(recipe.getRecipeNo())
-                .title(recipe.getTitle())
-                .averageRating(recipe.getAverageRating())
-                .reviewCount(recipe.getReviewCount())
-                .imageUrl(recipe.getImageUrl())
-                .build()).collect(Collectors.toList());
+                        .recipeNo(recipe.getRecipeNo())
+                        .title(recipe.getTitle())
+                        .averageRating(recipe.getAverageRating())
+                        .reviewCount(recipe.getReviewCount())
+                        .imageUrl(recipe.getImageUrl())
+                        .build()).collect(Collectors.toList());
         System.out.println(recipeList);
     }
 
     @Test
-    @Transactional
-    @Commit
     public void removeRecipe(){
         Integer recipeNo = 12;
         Recipe recipe = recipeRepository.findById(recipeNo)
                 .orElseThrow(() -> new IllegalArgumentException("레시피 번호 " + recipeNo + "를 찾을 수 없습니다."));
         recipe.setDelDate(LocalDateTime.now());
+        recipeRepository.save(recipe);
     }
 
 }
