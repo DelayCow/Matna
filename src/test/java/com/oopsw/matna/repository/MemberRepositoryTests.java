@@ -1,6 +1,7 @@
 package com.oopsw.matna.repository;
 
 import com.oopsw.matna.repository.entity.Member;
+import com.oopsw.matna.repository.entity.Recipe;
 import com.oopsw.matna.vo.MemberProfileVO;
 import com.oopsw.matna.vo.MemberVO;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -104,4 +106,12 @@ public class MemberRepositoryTests {
         m.setAddress(editMember.getAddress());
     }
 
+    @Test
+    public void removeMember(){
+        Integer memberNo = 20;
+        Member m = memberRepository.findById(memberNo)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+        m.setDelDate(LocalDateTime.now());
+        memberRepository.save(m);
+    }
 }
