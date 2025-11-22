@@ -107,11 +107,24 @@ public class MemberRepositoryTests {
     }
 
     @Test
-    public void removeMember(){
+    public void removeMemberTest(){
         Integer memberNo = 20;
         Member m = memberRepository.findById(memberNo)
                 .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
         m.setDelDate(LocalDateTime.now());
+        memberRepository.save(m);
+    }
+
+    @Test
+    public void editPointTest(){
+        Integer memberNo = 5;
+        Integer updatePoint = 100;
+        Member m = memberRepository.findById(memberNo)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+        if(m.getPoint() + updatePoint < 0){
+            throw new IllegalArgumentException("최대 환급금액은 " + m.getPoint() + "원입니다.");
+        }
+        m.setPoint(m.getPoint() + updatePoint);
         memberRepository.save(m);
     }
 }
