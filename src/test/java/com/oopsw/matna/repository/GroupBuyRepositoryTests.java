@@ -119,7 +119,21 @@ public class GroupBuyRepositoryTests {
     }
 
     @Test
-    void changeColsedStatus(){
+    void cancelJoinGroupBuy(){
+        Member participantMember = memberRepository.findById(12).get();
+        GroupBuyParticipant groupBuyParticipant = groupBuyParticipantRepository.findById(67).get();
 
+        groupBuyParticipant.setCancelDate(LocalDateTime.now());
+        groupBuyParticipantRepository.save(groupBuyParticipant);
+
+        int initialPaymentPoint = groupBuyParticipant.getInitialPaymentPoint(); //지불한돈
+        int currentPoint = participantMember.getPoint();
+        int newPoint = currentPoint + initialPaymentPoint; // 현재 포인트 + 지불했던 포인트
+        participantMember.setPoint(newPoint);
+        memberRepository.save(participantMember);
+
+        System.out.println(initialPaymentPoint+" "+currentPoint+" "+newPoint);
     }
+
+
 }
