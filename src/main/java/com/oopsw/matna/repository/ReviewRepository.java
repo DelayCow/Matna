@@ -1,5 +1,6 @@
-package com.oopsw.matna.repository.entity;
+package com.oopsw.matna.repository;
 
+import com.oopsw.matna.repository.entity.Reviews;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -1,12 +1,14 @@
 package com.oopsw.matna.repository;
 
-import com.oopsw.matna.repository.entity.ReviewRepository;
 import com.oopsw.matna.repository.entity.Reviews;
 import com.oopsw.matna.vo.ReviewListVO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Commit;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,5 +31,15 @@ public class ReviewRepositoryTests {
                         .inDate(review.getInDate())
                         .build()).collect(Collectors.toList());
         System.out.println(reviewList);
+    }
+
+    @Test
+    @Transactional
+    @Commit
+    public void removeReview(){
+        Integer reviewNo = 18;
+        Reviews review = reviewRepository.findById(reviewNo)
+                .orElseThrow(() -> new IllegalArgumentException("후기 번호 " + reviewNo + "를 찾을 수 없습니다."));
+        review.setDelDate(LocalDateTime.now());
     }
 }
