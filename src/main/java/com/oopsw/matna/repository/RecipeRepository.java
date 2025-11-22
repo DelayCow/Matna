@@ -11,6 +11,8 @@ import java.util.List;
 public interface RecipeRepository extends JpaRepository<Recipe, Integer> {
 
     @EntityGraph(attributePaths = {"author"})
-
     List<Recipe>findAllByDelDateIsNullOrderByRecipeNoDesc();
+
+    @EntityGraph(attributePaths = {"author"})
+    List<Recipe> findAllByDelDateIsNullOrderByReviewCountDesc();
 }
