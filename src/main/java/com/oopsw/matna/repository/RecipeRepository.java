@@ -15,4 +15,8 @@ public interface RecipeRepository extends JpaRepository<Recipe, Integer> {
 
     @EntityGraph(attributePaths = {"author"})
     List<Recipe> findAllByDelDateIsNullOrderByReviewCountDesc();
+
+    @EntityGraph(attributePaths = {"author"})
+    List<Recipe> findBySpicyLevelAndDelDateIsNullOrderByRecipeNoDesc(Integer spicyLevel);
 }
+

@@ -97,6 +97,50 @@ public class RecipeRepositoryTest {
 
     }
 
+    @Test
+    void findBySpicyLevelAndDelDateIsNullOrderByRecipeNoDesc(){
+
+        List<Recipe> entities = recipeRepository.findBySpicyLevelAndDelDateIsNullOrderByRecipeNoDesc(1);
+
+        List<RecipeListVO> voList = new ArrayList<>();
+
+        for (Recipe recipe : entities) {
+            RecipeListVO vo = new RecipeListVO();
+
+
+            vo.setRecipeNo(recipe.getRecipeNo());
+            vo.setTitle(recipe.getTitle());
+            vo.setThumbnailUrl(recipe.getImageUrl());
+
+
+            if (recipe.getAuthor() != null) {
+                vo.setWriterNickname(recipe.getAuthor().getNickname());
+                vo.setWriterProfile(recipe.getAuthor().getImageUrl());
+            }
+
+
+            vo.setRating(recipe.getAverageRating());
+            vo.setReviewCount(recipe.getReviewCount());
+            vo.setServings(recipe.getServings());
+            vo.setPrepTime(recipe.getPrepTime());
+            vo.setDifficulty(recipe.getDifficulty());
+            vo.setSpicyLevel(recipe.getSpicyLevel());
+
+
+            voList.add(vo);
+        }
+
+        System.out.println("========== 변환된 VO 목록 출력 ==========");
+        for (RecipeListVO vo : voList) {
+            System.out.println(vo);
+        }
+        System.out.println("=======================================");
+
+
+    };
+
+
+
 
 
 }
