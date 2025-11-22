@@ -30,8 +30,7 @@ public class RecipeRepositoryTest {
             vo.setTitle(recipe.getTitle());
             vo.setThumbnailUrl(recipe.getImageUrl());
 
-            // ★ 핵심: Member(작성자) 정보가 잘 로딩되는지 확인
-            // @EntityGraph가 없으면 여기서 추가 쿼리가 나갈 수 있음 (성능 체크)
+
             if (recipe.getAuthor() != null) {
                 vo.setWriterNickname(recipe.getAuthor().getNickname());
                 vo.setWriterProfile(recipe.getAuthor().getImageUrl());
@@ -42,7 +41,7 @@ public class RecipeRepositoryTest {
             vo.setServings(recipe.getServings());
             vo.setPrepTime(recipe.getPrepTime());
             vo.setDifficulty(recipe.getDifficulty());
-            vo.setSpicyLevel(recipe.getSpicyLevel()); // 맵기 (변환 필요 시)
+            vo.setSpicyLevel(recipe.getSpicyLevel());
 
             // 리스트에 추가
             voList.add(vo);
@@ -51,7 +50,7 @@ public class RecipeRepositoryTest {
         // 4. [눈으로 확인] 변환된 VO 데이터 출력
         System.out.println("========== 변환된 VO 목록 출력 ==========");
         for (RecipeListVO vo : voList) {
-            System.out.println(vo); // VO에 @Data(ToString)가 있어야 예쁘게 나옵니다.
+            System.out.println(vo);
         }
         System.out.println("=======================================");
 
