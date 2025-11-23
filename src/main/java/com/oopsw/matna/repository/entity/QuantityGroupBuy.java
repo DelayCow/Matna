@@ -20,7 +20,7 @@ public class QuantityGroupBuy {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_buy_no", nullable = false)
-    private GroupBuy groupBuy; // FK: GROUP_BUYS.group_buy_no
+    private GroupBuy groupBuyNo; // FK: GROUP_BUYS.group_buy_no
 
     @Column(name = "my_quantity", nullable = false)
     private Integer myQuantity;
