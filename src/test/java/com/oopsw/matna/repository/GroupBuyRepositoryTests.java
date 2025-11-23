@@ -2,10 +2,13 @@ package com.oopsw.matna.repository;
 
 import com.oopsw.matna.repository.entity.GroupBuy;
 import com.oopsw.matna.vo.GroupBuyListVO;
+import com.oopsw.matna.vo.GroupBuyVO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,5 +27,25 @@ public class GroupBuyRepositoryTests {
                 .imageUrl(groupBuy.getImageUrl())
                 .status(groupBuy.getStatus()).build()).collect(Collectors.toList());
         System.out.println(groupBuyList);
+    }
+
+    @Test
+    public void addPaymentDataTest(){
+        //response에서는 string으로 받고 controller에서 넘겨줄때 타입 바꿔서 넘겨주기
+        String dateStringWithTime = "2025-11-11 15:30:00";
+        DateTimeFormatter formatterWithTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime buyDate = LocalDateTime.parse(dateStringWithTime, formatterWithTime);
+        GroupBuyVO paymentData = GroupBuyVO.builder()
+                .groupBuyNo(11)
+                .receiptImageUrl("receipt.jpg")
+                .buyDate(buyDate)
+                .paymentNote("테스트2")
+                .build();
+        GroupBuy groupBuy = groupBuyRepository.findById(paymentData.getGroupBuyNo()).get();
+        groupBuy.setStatus("paid");
+        groupBuy.setReceiptImageUrl(paymentData.getReceiptImageUrl());
+        groupBuy.setBuyDate(paymentData.getBuyDate());
+        groupBuy.setPaymentNote(paymentData.getPaymentNote());
+        groupBuyRepository.save(groupBuy);
     }
 }
