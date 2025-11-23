@@ -1,6 +1,7 @@
 package com.oopsw.matna.vo;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class RecipeDetailVO {
 
@@ -21,6 +22,6 @@ public class RecipeDetailVO {
     private String writerProfile;
 
 
-//    private List<DetailIngredientVO> ingredients;
-//    private List<DetailStepVO> steps;
+    private List<DetailIngredientVO> ingredients;
+    private List<DetailStepVO> steps;
 }
