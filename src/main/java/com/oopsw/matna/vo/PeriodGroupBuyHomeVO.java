@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Data
 @ToString
-public class GroupBuyHomeVO {
+public class PeriodGroupBuyHomeVO {
     private String title;
     private String nickname;
     private String creatorImageUrl;

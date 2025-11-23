@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.oopsw.matna.dao.GroupBuyHomeDAO">
+<mapper namespace="com.oopsw.matna.dao.PeriodGroupBuyDAO">
 
-    <select id="selectGroupBuyListForHome" parameterType="map" resultType="com.oopsw.matna.vo.GroupBuyHomeVO">
+    <select id="selectGroupBuyListForHome" parameterType="map" resultType="com.oopsw.matna.vo.PeriodGroupBuyHomeVO">
         SELECT
         gb.group_buy_no AS groupBuyNo,
         gb.title,
@@ -73,4 +73,55 @@
         </choose>
     </select>
 
+    <select id="selectPeriodGroupBuyDetail" parameterType="int" resultType="com.oopsw.matna.vo.PeriodGroupBuyDetailVO">
+        SELECT
+            gb.group_buy_no AS groupBuyNo,
+            gb.title,
+            gb.content,
+            gb.image_url AS imageUrl,
+            gb.ingredient_no AS ingredientNo,
+            pgb.max_participants,
+            gb.fee_rate,
+            gb.item_sale_url AS itemSaleUrl,
+
+            -- PeriodGroupBuy의 PK 추가
+            pgb.period_group_buy_no AS periodGroupBuyNo,
+
+            -- 현재 참여 인원 계산: (creator_no가 아닌 취소되지 않은 참여자 수) + 1 (creator)
+            COUNT(CASE WHEN gbp.participant_no != gb.creator_no THEN 1 END) + 1 AS participants,
+
+            gb.in_date AS inDate,
+            gb.share_location AS shareLocation,
+            gb.share_detail_address AS shareDetailAddress,
+
+            gb.buy_end_date AS purchasePeriodDays,
+            gb.share_end_date AS shareEndDate,
+            gb.share_time AS shareTime,
+
+            -- 모집 마감일
+            pgb.due_date AS dueDate,
+
+            -- 모집 마감까지 남은 시간 (MySQL TIMESTAMPDIFF 함수 사용, 분 단위)
+            TIMESTAMPDIFF(MINUTE, NOW(), pgb.due_date) AS remainingTime,
+
+            gb.status,
+
+            -- 개설자 정보
+            m.image_url AS profileImageUrl,
+            m.nickname
+        FROM
+            period_group_buys pgb
+                INNER JOIN
+            group_buys gb ON pgb.group_buy_no = gb.group_buy_no
+                INNER JOIN
+            members m ON gb.creator_no = m.member_no
+                LEFT JOIN
+            -- 취소되지 않은 참여자만 카운트 대상으로 포함
+                group_buy_participant gbp ON gbp.group_buy_no = pgb.group_buy_no AND gbp.cancel_date IS NULL
+        WHERE
+            pgb.period_group_buy_no = #{periodGroupBuyNo}
+        GROUP BY
+            gb.group_buy_no, gb.title, gb.content, gb.image_url, gb.ingredient_no, pgb.max_participants, gb.fee_rate, gb.item_sale_url,
+            gb.in_date, gb.share_location, gb.share_detail_address, gb.buy_end_date, gb.share_end_date, gb.status, m.image_url, m.nickname, pgb.due_date, pgb.period_group_buy_no
+    </select>
 </mapper>

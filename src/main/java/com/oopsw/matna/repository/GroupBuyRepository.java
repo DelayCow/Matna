@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface GroupBuyRepository extends JpaRepository<GroupBuy, Integer> {
     GroupBuy findByGroupBuyNo(Integer groupBuyNo);
+
 }
