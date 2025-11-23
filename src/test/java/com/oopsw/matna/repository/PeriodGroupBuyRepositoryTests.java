@@ -14,7 +14,7 @@ import java.util.List;
 
 @SpringBootTest
 @Transactional
-public class GroupBuyRepositoryTests {
+public class PeriodGroupBuyRepositoryTests {
     @Autowired
     IngredientRepository ingredientRepository;
     @Autowired
