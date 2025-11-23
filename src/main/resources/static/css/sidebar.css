@@ -1,0 +1,47 @@
+.sidebar {
+    width: 240px;
+    height: 100vh;
+    background-color: #ffffff;
+    border-right: 1px solid #ddd;
+    padding: 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.profile-area {
+    margin-bottom: 40px;
+}
+
+.profile-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.menu-list {
+    list-style: none;
+    padding: 0;
+}
+
+.menu-list li {
+    margin-bottom: 18px;
+}
+
+.menu-list a {
+    text-decoration: none;
+    color: #333;
+    font-size: 17px;
+}
+
+.menu-list a:hover {
+    color: #0d6efd;
+}
+
+.logout-area {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    left: 0;
+}

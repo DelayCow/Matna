@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>재료 관리</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="../static/css/sidebar.css">
+  <link rel="stylesheet" href="../static/css/ingredientManagement.css">
+</head>
+<body>
+
+<!-- 사이드바 자리 -->
+<div class="sidebar">
+
+  <!-- 프로필 영역 -->
+  <div class="profile-area text-center">
+    <img src="../static/img/default-profile.png" class="profile-img" alt="프로필">
+    <h5 class="username mt-2">사용자 이름</h5>
+  </div>
+
+  <!-- 메뉴 -->
+  <ul class="menu-list">
+    <li><a href="/home">홈</a></li>
+    <li><a href="/recipe">레시피</a></li>
+    <li><a href="/ingredient">재료 관리</a></li>
+    <li><a href="/my">내 정보</a></li>
+    <li><a href="/settings">설정</a></li>
+  </ul>
+
+  <!-- 하단 로그아웃 -->
+  <div class="logout-area text-center">
+    <button class="btn btn-outline-danger w-75">로그아웃</button>
+  </div>
+
+</div>
+
+<!-- 실제 본문 -->
+<div class="content">
+  <div class="container my-4">
+    <!-- 검색 및 입력 영역 -->
+    <div class="row mb-4 p-3 bg-light rounded">
+      <div class="col-md-4">
+        <label for="search" class="form-label">검색명</label>
+        <input type="text" id="search" class="form-control" placeholder="식초">
+      </div>
+      <div class="col-md-5">
+        <label for="newIngredient" class="form-label">&nbsp;</label>
+        <input type="text" id="newIngredient" class="form-control" placeholder="추가할 재료명을 입력하세요">
+      </div>
+      <div class="col-md-3 d-flex align-items-end">
+        <button class="btn btn-primary w-100">재료 추가</button>
+      </div>
+    </div>
+
+    <!-- 상단 테이블 -->
+    <table class="table table-bordered mb-5">
+      <thead>
+      <tr>
+        <th>번호</th>
+        <th>재료명</th>
+        <th>등록자</th>
+        <th>생성일</th>
+        <th>액션</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>35</td>
+        <td>식초</td>
+        <td>홍길동</td>
+        <td>2025.08.10 12:34</td>
+        <td><button class="btn btn-danger">삭제</button></td>
+      </tr>
+      <tr>
+        <td>124</td>
+        <td>흑식초</td>
+        <td>홍길동</td>
+        <td>2025.08.20 12:34</td>
+        <td><button class="btn btn-danger">삭제</button></td>
+      </tr>
+      <tr>
+        <td>128</td>
+        <td>사과 식초</td>
+        <td>홍길동</td>
+        <td>2025.08.30 12:34</td>
+        <td><button class="btn btn-danger">삭제</button></td>
+      </tr>
+      <tr>
+        <td>256</td>
+        <td>애사비 식초</td>
+        <td>홍길동</td>
+        <td>2025.09.10 12:34</td>
+        <td><button class="btn btn-danger">삭제</button></td>
+      </tr>
+      </tbody>
+    </table>
+
+    <!-- 하단 테이블 -->
+    <table class="table table-bordered">
+      <thead>
+      <tr>
+        <th>번호</th>
+        <th>재료명</th>
+        <th>등록자</th>
+        <th>생성일</th>
+        <th>액션</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>456</td>
+        <td>아보카도</td>
+        <td>므찡이</td>
+        <td>2025.08.10 12:34</td>
+        <td><button class="btn btn-primary">승인</button></td>
+      </tr>
+      <tr>
+        <td>567</td>
+        <td>아보_카도</td>
+        <td>토마토</td>
+        <td>2025.08.30 12:34</td>
+        <td><button class="btn btn-primary">승인</button></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
