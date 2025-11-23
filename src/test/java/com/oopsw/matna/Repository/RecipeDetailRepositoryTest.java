@@ -1,9 +1,11 @@
 package com.oopsw.matna.Repository;
 
+import com.oopsw.matna.repository.RecipeAlternativeIngredientRepository;
 import com.oopsw.matna.repository.RecipeIngredientRepository;
 import com.oopsw.matna.repository.RecipeRepository;
 import com.oopsw.matna.repository.RecipeStepRepository;
 import com.oopsw.matna.repository.entity.Recipe;
+import com.oopsw.matna.repository.entity.RecipeAlternativeIngredient;
 import com.oopsw.matna.repository.entity.RecipeIngredient;
 import com.oopsw.matna.repository.entity.RecipeStep;
 import com.oopsw.matna.vo.RecipeDetailVO;
@@ -14,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @SpringBootTest
 public class RecipeDetailRepositoryTest {
@@ -27,6 +30,9 @@ public class RecipeDetailRepositoryTest {
     @Autowired
     RecipeStepRepository recipeStepRepository;
 
+    @Autowired
+    RecipeAlternativeIngredientRepository recipeAlternativeIngredientRepository;
+
     @Test
     @Transactional
     void getRecipeDetailTest() {
@@ -39,6 +45,9 @@ public class RecipeDetailRepositoryTest {
         List<RecipeIngredient> rIngredients = recipeIngredientRepository.findByRecipe(recipe);
 
         List<RecipeStep> rSteps = recipeStepRepository.findByRecipeOrderByStepOrderAsc(recipe);
+
+        List<RecipeAlternativeIngredient> alternatives =
+                recipeAlternativeIngredientRepository.findByReview_Recipe_RecipeNo(targetRecipeNo);
 
         RecipeDetailVO vo = new RecipeDetailVO();
 
@@ -65,11 +74,26 @@ public class RecipeDetailRepositoryTest {
         List<RecipeDetailVO.DetailIngredientVO> ingVOList = new ArrayList<>();
         for (RecipeIngredient ri : rIngredients) {
             RecipeDetailVO.DetailIngredientVO ingVO = new RecipeDetailVO.DetailIngredientVO();
+
+            String originName = ri.getIngredient().getIngredientName();
+
             ingVO.setName(ri.getIngredient().getIngredientName()); // 재료 테이블의 이름
             ingVO.setAmount(ri.getAmount());
             ingVO.setUnit(ri.getUnit());
 
+            List<RecipeDetailVO.AlternativeVO> altList = alternatives.stream()
+                    .filter(alt -> alt.getOriginalIngredientName().equals(originName)) // 이름이 같은 것만 필터링
+                    .map(alt -> new RecipeDetailVO.AlternativeVO(
+                            alt.getAlternativeIngredientName(),
+                            alt.getAmount(),
+                            alt.getUnit()
+                    ))
+                    .collect(Collectors.toList());
+
+            ingVO.setAlternatives(altList); // VO에 넣어주기
+
             ingVOList.add(ingVO);
+
         }
         vo.setIngredients(ingVOList);
 
@@ -97,6 +121,12 @@ public class RecipeDetailRepositoryTest {
         System.out.println(" [재료 목록]");
         for (RecipeDetailVO.DetailIngredientVO ing : vo.getIngredients()) {
             System.out.printf(" - %s %s%s\n", ing.getName(), ing.getAmount(), ing.getUnit());
+
+            if (ing.getAlternatives() != null && !ing.getAlternatives().isEmpty()) {
+                for (RecipeDetailVO.AlternativeVO alt : ing.getAlternatives()) {
+                    System.out.printf("   └─ [대체] %s %s%s\n", alt.getName(), alt.getAmount(), alt.getUnit());
+                }
+            }
         }
         System.out.println("-----------------------------------------");
 
