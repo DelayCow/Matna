@@ -49,7 +49,7 @@ public class IngredientRepositoryTest {
         }
 
         @Test
-        void insertIngredientTest() {
+        void insertNewIngredientTest() {
             String newIngredientName = "테스트재료";
             Integer memberId = 1;
 
