@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @SpringBootTest
-public class GroupBuyParticipantRepositoryTest {
+public class GroupBuyParticipantRepositoryTests {
     @Autowired
     private GroupBuyParticipantRepository groupBuyParticipantRepository;
 
