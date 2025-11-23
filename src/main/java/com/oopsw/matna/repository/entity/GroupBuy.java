@@ -33,10 +33,10 @@ public class GroupBuy {
     private String title;
 
     @Column(name = "buy_end_date", nullable = false)
-    private Integer buyEndDate; // D-day 형식일 수 있습니다. (예: 마감일 며칠 전)
+    private Integer buyEndDate; //모집 마감 후 buyEndDate일 후
 
     @Column(name = "share_end_date", nullable = false)
-    private Integer shareEndDate; // D-day 형식일 수 있습니다. (예: 분배 마감일 며칠 전)
+    private Integer shareEndDate; //수령일 포함 shareEndDate일 후
 
     @Column(name = "share_location", nullable = false, length = 500)
     private String shareLocation;
