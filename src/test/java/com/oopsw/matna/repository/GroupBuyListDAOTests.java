@@ -17,4 +17,10 @@ public class GroupBuyListDAOTests {
         List<GroupBuyListVO> participantList = groupBuyListDAO.getParticipantList(19);
         System.out.println(participantList);
     }
+
+    @Test
+    public void getCreateGroupBuyListTest() {
+        List<GroupBuyListVO> participantList = groupBuyListDAO.getCreateGroupBuyList(19);
+        System.out.println(participantList);
+    }
 }

@@ -13,6 +13,8 @@ public class GroupBuyListVO {
     private String status;
     private String imageUrl;
     private LocalDateTime inDate;
+    private Integer buyEndDate;
+    private Integer shareEndDate;
     private LocalDateTime buyDate;
     private LocalDateTime arriveDate;
     private LocalDateTime receiveDate;
@@ -21,4 +23,5 @@ public class GroupBuyListVO {
     private LocalDateTime participatedDate;
     private Integer finalPaymentPoint;
     private Integer participantExMe;
+    private Integer totalSettlementPoint;
 }
