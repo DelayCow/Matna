@@ -1,7 +1,6 @@
 package com.oopsw.matna.repository;
 
 import com.oopsw.matna.repository.entity.Member;
-import com.oopsw.matna.repository.entity.Recipe;
 import com.oopsw.matna.vo.MemberProfileVO;
 import com.oopsw.matna.vo.MemberVO;
 import org.junit.jupiter.api.Test;
