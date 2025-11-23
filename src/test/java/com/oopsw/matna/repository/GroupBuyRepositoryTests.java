@@ -1,5 +1,6 @@
 package com.oopsw.matna.repository;
 
+import com.oopsw.matna.repository.entity.Ingredient;
 import com.oopsw.matna.repository.entity.GroupBuy;
 import com.oopsw.matna.vo.GroupBuyListVO;
 import com.oopsw.matna.vo.GroupBuyVO;
@@ -15,7 +16,18 @@ import java.util.stream.Collectors;
 @SpringBootTest
 public class GroupBuyRepositoryTests {
     @Autowired
+    IngredientRepository ingredientRepository;
+    @Autowired
     GroupBuyRepository groupBuyRepository;
+
+    @Test
+    void searchIngredientKeyword(){
+        String keyword = "쌀";
+        List<Ingredient> results = ingredientRepository.findByIngredientNameContaining(keyword);
+        for (Ingredient ingredient : results) {
+            System.out.println(ingredient.getIngredientName());
+            }
+    };
 
     @Test
     public void getMyPageGroupBuyListTest(){
@@ -27,8 +39,7 @@ public class GroupBuyRepositoryTests {
                 .imageUrl(groupBuy.getImageUrl())
                 .status(groupBuy.getStatus()).build()).collect(Collectors.toList());
         System.out.println(groupBuyList);
-    }
-
+    };
     @Test
     public void addPaymentDataTest(){
         //response에서는 string으로 받고 controller에서 넘겨줄때 타입 바꿔서 넘겨주기
@@ -47,7 +58,7 @@ public class GroupBuyRepositoryTests {
         groupBuy.setBuyDate(paymentData.getBuyDate());
         groupBuy.setPaymentNote(paymentData.getPaymentNote());
         groupBuyRepository.save(groupBuy);
-    }
+    };
 
     @Test
     public void addDelivaryDataTest(){
@@ -65,5 +76,5 @@ public class GroupBuyRepositoryTests {
         groupBuy.setArrivalImageUrl(deliveryData.getArrivalImageUrl());
         groupBuy.setArrivalDate(deliveryData.getArrivalDate());
         groupBuyRepository.save(groupBuy);
-    }
-}
+    };
+};
