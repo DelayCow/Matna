@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oopsw.matna.repository.GroupBuyListDAO">
+    <select id="getParticipantList" parameterType="java.lang.Integer" resultType="com.oopsw.matna.vo.GroupBuyListVO">
+        SELECT
+            gb.group_buy_no groupBuyNo,
+            gb.title,
+            gb.status,
+            gb.image_url imageUrl,
+            gb.in_date inDate,
+            gb.buy_date buyDate,
+            gb.arrival_date arrivalDate,
+            gbp.receive_date receiveDate,
+            gb.quantity - COALESCE(total_participant.total_qty, 0) AS remainingQuantity,
+            gbp.my_quantity myQuantity,
+            gbp.participated_date participatedDate,
+            gbp.final_payment_point finalPaymentPoint,
+            (total_participant.total_count - 1) AS participantExMe
+
+        FROM
+            GROUP_BUY_PARTICIPANT gbp
+                JOIN
+            GROUP_BUYS gb ON gbp.group_buy_no = gb.group_buy_no
+                LEFT JOIN
+            (SELECT
+                 sub_gbp.group_buy_no,
+                 SUM(sub_gbp.my_quantity) AS total_qty,
+                 COUNT(sub_gbp.participant_no) AS total_count
+             FROM
+                 GROUP_BUY_PARTICIPANT sub_gbp
+             GROUP BY
+                 sub_gbp.group_buy_no
+            ) total_participant ON gb.group_buy_no = total_participant.group_buy_no
+
+        WHERE
+            gbp.participant_no = #{participantNo}
+        ORDER BY
+            gbp.participated_date DESC;
+    </select>
+
+</mapper>
