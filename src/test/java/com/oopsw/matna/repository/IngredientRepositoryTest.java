@@ -60,7 +60,7 @@ public class IngredientRepositoryTest {
 
 
         Member creator = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+                .get();
 
 
         Ingredient newIngredient = Ingredient.builder()

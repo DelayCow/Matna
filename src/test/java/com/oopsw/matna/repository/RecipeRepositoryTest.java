@@ -1,7 +1,7 @@
 package com.oopsw.matna.repository;
 
 import com.oopsw.matna.repository.entity.*;
-import com.oopsw.matna.vo.RecipeListVO;
+import com.oopsw.matna.vo.RecipeVO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,10 +31,10 @@ public class RecipeRepositoryTest {
         List<Recipe> entities = recipeRepository.findAllByDelDateIsNullOrderByRecipeNoDesc();
 
 
-        List<RecipeListVO> voList = new ArrayList<>();
+        List<RecipeVO> voList = new ArrayList<>();
 
         for (Recipe recipe : entities) {
-            RecipeListVO vo = new RecipeListVO();
+            RecipeVO vo = new RecipeVO();
 
 
             vo.setRecipeNo(recipe.getRecipeNo());
@@ -60,7 +60,7 @@ public class RecipeRepositoryTest {
 
 
 
-        for (RecipeListVO vo : voList) {
+        for (RecipeVO vo : voList) {
             System.out.println(vo);
         }
 
@@ -72,10 +72,10 @@ public class RecipeRepositoryTest {
 
         List<Recipe> entities = recipeRepository.findAllByDelDateIsNullOrderByReviewCountDesc();
 
-        List<RecipeListVO> voList = new ArrayList<>();
+        List<RecipeVO> voList = new ArrayList<>();
 
         for (Recipe recipe : entities) {
-            RecipeListVO vo = new RecipeListVO();
+            RecipeVO vo = new RecipeVO();
 
 
             vo.setRecipeNo(recipe.getRecipeNo());
@@ -101,7 +101,7 @@ public class RecipeRepositoryTest {
         }
 
 
-        for (RecipeListVO vo : voList) {
+        for (RecipeVO vo : voList) {
             System.out.println(vo);
         }
 
@@ -114,10 +114,10 @@ public class RecipeRepositoryTest {
         int spicyLevel = 1;
         List<Recipe> entities = recipeRepository.findBySpicyLevelAndDelDateIsNullOrderByRecipeNoDesc(spicyLevel);
 
-        List<RecipeListVO> voList = new ArrayList<>();
+        List<RecipeVO> voList = new ArrayList<>();
 
         for (Recipe recipe : entities) {
-            RecipeListVO vo = new RecipeListVO();
+            RecipeVO vo = new RecipeVO();
 
 
             vo.setRecipeNo(recipe.getRecipeNo());
@@ -143,7 +143,7 @@ public class RecipeRepositoryTest {
         }
 
 
-        for (RecipeListVO vo : voList) {
+        for (RecipeVO vo : voList) {
             System.out.println(vo);
         }
 
