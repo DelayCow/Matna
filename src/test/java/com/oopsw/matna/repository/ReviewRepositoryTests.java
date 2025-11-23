@@ -34,8 +34,7 @@ public class ReviewRepositoryTests {
     @Test
     public void removeReview(){
         Integer reviewNo = 18;
-        Reviews review = reviewRepository.findById(reviewNo)
-                .orElseThrow(() -> new IllegalArgumentException("후기 번호 " + reviewNo + "를 찾을 수 없습니다."));
+        Reviews review = reviewRepository.findById(reviewNo).get();
         review.setDelDate(LocalDateTime.now());
         reviewRepository.save(review);
     }

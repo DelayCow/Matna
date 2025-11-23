@@ -33,8 +33,7 @@ public class RecipeRepositoryTests {
     @Test
     public void removeRecipe(){
         Integer recipeNo = 12;
-        Recipe recipe = recipeRepository.findById(recipeNo)
-                .orElseThrow(() -> new IllegalArgumentException("레시피 번호 " + recipeNo + "를 찾을 수 없습니다."));
+        Recipe recipe = recipeRepository.findById(recipeNo).get();
         recipe.setDelDate(LocalDateTime.now());
         recipeRepository.save(recipe);
     }

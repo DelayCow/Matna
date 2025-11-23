@@ -26,8 +26,7 @@ public class MemberRepositoryTests {
     @Test
     public void getMemberProfileTest() {
         Integer memberNo = 5;
-        Member m = memberRepository.findById(memberNo)
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+        Member m = memberRepository.findById(memberNo).get();
         System.out.println(MemberProfileVO.builder().nickname(m.getNickname()).imageUrl(m.getImageUrl()).point(m.getPoint()).build());
     }
 
@@ -50,8 +49,7 @@ public class MemberRepositoryTests {
     public void isTruePasswordTest() {
         Integer memberNo = 5;
         String password = "member_1";
-        Member m = memberRepository.findById(memberNo)
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+        Member m = memberRepository.findById(memberNo).get();
         boolean isMatched = bCryptPasswordEncoder.matches(password, m.getPassword());
         System.out.println(isMatched);
     }
@@ -59,8 +57,7 @@ public class MemberRepositoryTests {
     @Test
     public void getMemberTest() {
         Integer memberNo = 5;
-        Member m = memberRepository.findById(memberNo)
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+        Member m = memberRepository.findById(memberNo).get();
         MemberVO member = MemberVO.builder()
                 .memberNo(m.getMemberNo())
                 .memberId(m.getMemberId())
@@ -94,8 +91,7 @@ public class MemberRepositoryTests {
                 .address("서울시 금천구 독산동 ")
                 .build();
 
-        Member m = memberRepository.findById(editMember.getMemberNo())
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+        Member m = memberRepository.findById(editMember.getMemberNo()).get();
         m.setNickname(editMember.getNickname());
         m.setPassword(bCryptPasswordEncoder.encode(editMember.getPassword()));
         m.setImageUrl(editMember.getImageUrl());
@@ -108,8 +104,7 @@ public class MemberRepositoryTests {
     @Test
     public void removeMemberTest(){
         Integer memberNo = 20;
-        Member m = memberRepository.findById(memberNo)
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+        Member m = memberRepository.findById(memberNo).get();
         m.setDelDate(LocalDateTime.now());
         memberRepository.save(m);
     }
@@ -118,8 +113,7 @@ public class MemberRepositoryTests {
     public void editPointTest(){
         Integer memberNo = 5;
         Integer updatePoint = 100;
-        Member m = memberRepository.findById(memberNo)
-                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+        Member m = memberRepository.findById(memberNo).get();
         if(m.getPoint() + updatePoint < 0){
             throw new IllegalArgumentException("최대 환급금액은 " + m.getPoint() + "원입니다.");
         }
