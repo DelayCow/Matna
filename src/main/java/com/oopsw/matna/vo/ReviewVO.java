@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ReviewRepositoryVO {
+public class ReviewVO {
 
     private Integer reviewNo;
     private String title;

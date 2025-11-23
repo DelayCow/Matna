@@ -80,4 +80,5 @@ public class IngredientRepositoryTest {
         System.out.println("작성자: " + savedItem.getCreator().getNickname());
     }
 
+
     }
