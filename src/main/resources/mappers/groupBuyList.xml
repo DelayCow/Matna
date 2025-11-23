@@ -12,7 +12,12 @@
             gb.buy_date buyDate,
             gb.arrival_date arrivalDate,
             gbp.receive_date receiveDate,
-            gb.quantity - COALESCE(total_participant.total_qty, 0) AS remainingQuantity,
+            CASE
+                WHEN qgb.my_quantity IS NOT NULL THEN
+                    gb.quantity - (COALESCE(total_participant.total_qty, 0) + qgb.my_quantity)
+                ELSE
+                    0
+                END AS remainingQuantity,
             gbp.my_quantity myQuantity,
             gbp.participated_date participatedDate,
             gbp.final_payment_point finalPaymentPoint,
@@ -32,11 +37,12 @@
              GROUP BY
                  sub_gbp.group_buy_no
             ) total_participant ON gb.group_buy_no = total_participant.group_buy_no
+                LEFT JOIN
+            QUANTITY_GROUP_BUYS qgb ON gb.group_buy_no = qgb.group_buy_no
 
         WHERE
             gbp.participant_no = #{participantNo}
         ORDER BY
             gbp.participated_date DESC;
     </select>
-
 </mapper>
