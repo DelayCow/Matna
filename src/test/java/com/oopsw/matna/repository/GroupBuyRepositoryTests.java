@@ -32,7 +32,7 @@ public class GroupBuyRepositoryTests {
     @Test
     public void addPaymentDataTest(){
         //response에서는 string으로 받고 controller에서 넘겨줄때 타입 바꿔서 넘겨주기
-        String dateStringWithTime = "2025-11-11 15:30:00";
+        String dateStringWithTime = "2025-11-11 15:30:00";//브라우저에서 넘어올때 초도 0으로 채워서 보내기
         DateTimeFormatter formatterWithTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime buyDate = LocalDateTime.parse(dateStringWithTime, formatterWithTime);
         GroupBuyVO paymentData = GroupBuyVO.builder()
@@ -46,6 +46,24 @@ public class GroupBuyRepositoryTests {
         groupBuy.setReceiptImageUrl(paymentData.getReceiptImageUrl());
         groupBuy.setBuyDate(paymentData.getBuyDate());
         groupBuy.setPaymentNote(paymentData.getPaymentNote());
+        groupBuyRepository.save(groupBuy);
+    }
+
+    @Test
+    public void addDelivaryDataTest(){
+        //response에서는 string으로 받고 controller에서 넘겨줄때 타입 바꿔서 넘겨주기
+        String dateStringWithTime = "2025-11-12 00:00:00";
+        DateTimeFormatter formatterWithTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime arrivalDate = LocalDateTime.parse(dateStringWithTime, formatterWithTime);
+        GroupBuyVO deliveryData = GroupBuyVO.builder()
+                .groupBuyNo(11)
+                .arrivalImageUrl("arrival.jpg")
+                .arrivalDate(arrivalDate)
+                .build();
+        GroupBuy groupBuy = groupBuyRepository.findById(deliveryData.getGroupBuyNo()).get();
+        groupBuy.setStatus("delivered");
+        groupBuy.setArrivalImageUrl(deliveryData.getArrivalImageUrl());
+        groupBuy.setArrivalDate(deliveryData.getArrivalDate());
         groupBuyRepository.save(groupBuy);
     }
 }
