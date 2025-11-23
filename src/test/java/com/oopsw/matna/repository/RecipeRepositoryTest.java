@@ -100,7 +100,8 @@ public class RecipeRepositoryTest {
     @Test
     void findBySpicyLevelAndDelDateIsNullOrderByRecipeNoDesc(){
 
-        List<Recipe> entities = recipeRepository.findBySpicyLevelAndDelDateIsNullOrderByRecipeNoDesc(1);
+        int spicyLevel = 1;
+        List<Recipe> entities = recipeRepository.findBySpicyLevelAndDelDateIsNullOrderByRecipeNoDesc(spicyLevel);
 
         List<RecipeListVO> voList = new ArrayList<>();
 
