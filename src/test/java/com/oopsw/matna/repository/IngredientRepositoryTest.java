@@ -1,19 +1,27 @@
 package com.oopsw.matna.repository;
 
 import com.oopsw.matna.repository.entity.Ingredient;
+import com.oopsw.matna.repository.entity.Member;
 import com.oopsw.matna.vo.IngredientVO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.fasterxml.jackson.databind.type.LogicalType.DateTime;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 public class IngredientRepositoryTest {
 
     @Autowired
     IngredientRepository ingredientRepository;
+
+    @Autowired
+    MemberRepository memberRepository;
 
     @Test
     void SearchIngredientTest() {
@@ -39,5 +47,37 @@ public class IngredientRepositoryTest {
             }
 
         }
+
+        @Test
+        void insertIngredientTest() {
+            String newIngredientName = "테스트재료";
+            Integer memberId = 1;
+
+        // 중복 검사
+        if (ingredientRepository.existsByIngredientName(newIngredientName)) {
+            System.out.println("이미 존재하는 재료입니다.");
+        }
+
+
+        Member creator = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+
+
+        Ingredient newIngredient = Ingredient.builder()
+                .ingredientName(newIngredientName)
+                .creator(creator)
+                .inDate(LocalDateTime.now())
+                .build();
+
+
+        Ingredient savedItem = ingredientRepository.save(newIngredient);
+
+
+
+        System.out.println("재료 등록 성공");
+        System.out.println("번호: " + savedItem.getIngredientNo());
+        System.out.println("재료명: " + savedItem.getIngredientName());
+        System.out.println("작성자: " + savedItem.getCreator().getNickname());
+    }
 
     }

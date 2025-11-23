@@ -12,4 +12,6 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Integer>
 
     List<Ingredient> findByIngredientNameContainingAndDelDateIsNull(String keyword);
 
+    boolean existsByIngredientName(String name); // 재료 중복 검사
+
 }
