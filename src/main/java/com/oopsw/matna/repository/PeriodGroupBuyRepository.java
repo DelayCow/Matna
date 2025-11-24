@@ -5,8 +5,6 @@ import com.oopsw.matna.repository.entity.PeriodGroupBuy;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-
-@Repository
 public interface PeriodGroupBuyRepository extends JpaRepository<PeriodGroupBuy, Integer> {
     PeriodGroupBuy findByGroupBuy(GroupBuy groupBuy);
 }
