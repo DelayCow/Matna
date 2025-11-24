@@ -1,4 +1,4 @@
-package com.oopsw.matna.repository;
+package com.oopsw.matna;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

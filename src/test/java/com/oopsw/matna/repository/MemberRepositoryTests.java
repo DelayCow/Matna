@@ -1,15 +1,12 @@
-package com.oopsw.matna;
+package com.oopsw.matna.repository;
 
 
-import com.oopsw.matna.repository.MemberRepository;
 import com.oopsw.matna.repository.entity.Member;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.ParseException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @SpringBootTest
