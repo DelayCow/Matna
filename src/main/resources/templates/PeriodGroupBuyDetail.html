@@ -1,0 +1,195 @@
+<div class="container-fluid content-area p-0">
+
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>PeriodGroupBuyDetail</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../static/css/layout.css">
+    <link rel="stylesheet" href="PeriodGroupBuyDetail.css">
+  </head>
+  <body>
+  <!--기본레이아웃-->
+
+  <div class="mobile-container position-relative">
+    <!--헤더-->
+    <header class="d-flex justify-content-between align-items-center p-3 bg-white sticky-top period-detail-header" style="z-index: 1020;">
+      <a href="#" class="text-dark"><i class="bi bi-chevron-left fs-4"></i></a>
+      <h4 class="m-0 fw-bold">공동구매</h4>
+      <a href="#" class="text-dark"><i class="bi bi-bell fs-4"></i></a>
+    </header>
+    <!--컨텐츠-->
+
+    <div class="d-flex align-items-center p-3 bg-light-subtle">
+      <img src="../../../../../Matna/src/main/resources/static/img/user.png" class="rounded-circle me-3" alt="프로필 이미지" style="width:40px; height:40px;">
+      <div>
+        <p class="mb-0 fw-bold">해피</p>
+      </div>
+    </div>
+
+    <div class="group-buy-product p-0">
+      <div class="product-image-container">
+      </div>
+      <div class="p-3">
+        <h2 class="fw-bold mb-1">고당도 제주 감귤 1kg <i class="bi bi-bookmark-fill text-danger fs-5 ms-1"></i></h2>
+        <a href="#" class="text-blue">상품판매페이지</a>
+        <p class="product-price fs-4 fw-bold mb-1">2,400원 ~ 6,000원 <span class="small text-muted">(수수료 5% 포함)</span></p>
+
+        <hr class="my-3">
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="d-flex align-items-center">
+            <span class="badge bg-danger me-2">참여 인원</span>
+            <span class="fs-5 fw-bold text-danger">2명</span> / <span class="text-muted">5명</span>
+          </div>
+          <div class="text-end">
+            <span class="d-block small text-muted">남은 시간</span>
+            <span class="fw-bold text-danger">2일 02:41:28</span>
+          </div>
+        </div>
+
+        <p class="mb-2 fw-bold small">참여 인원별 예상 금액 <span class="text-danger">1,200원 (100g 당)</span></p>
+        <div class="table-responsive small mb-3">
+          <table class="table table-bordered text-center group-buy-table">
+            <thead>
+            <tr>
+              <th scope="col">2명</th>
+              <th scope="col">3명</th>
+              <th scope="col">4명</th>
+              <th scope="col">5명</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>6,000원 <br> 500g</td>
+              <td>4,000원 <br> 333g</td>
+              <td>3,000원 <br> 250g</td>
+              <td>2,400원 <br> 200g</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <button class="btn btn-danger w-100 py-2 fw-bold mb-3">공동구매 참여하기</button>
+
+        <p class="text-center bg-light p-2 rounded small text-muted">
+          혼자 먹기에는 양이 너무 많아서요~<br>같이 나눠 드실 분 구해요~~
+        </p>
+
+        <hr class="my-3">
+
+        <div class="group-buy-location mb-3">
+          <h5 class="fw-bold mb-2">나눔 장소</h5>
+          <p class="mb-1"><i class="bi bi-geo-alt-fill me-2 text-danger"></i>서울시 금천구 가산동 319. 호서대벤처타워 1층 <i class="bi bi-info-circle small text-muted ms-1"></i></p>
+        </div>
+        <div class="group-buy-dates mb-3">
+          <p class="mb-1"><span class="fw-bold me-2">상품 나눔 일시:</span> 모집 마감 후 1일 이내</p>
+          <p class="mb-0"><span class="fw-bold me-2">상품 구매 일시:</span> 상품 수령 후 3일 후 18:30</p>
+        </div>
+      </div>
+    </div>
+
+    <hr class="my-3">
+
+    <div class="recipe-recommendation p-3">
+      <h5 class="fw-bold mb-3">이 상품으로 만들 레시피 추천</h5>
+      <div class="d-flex flex-nowrap overflow-auto recipe-cards-scroll">
+
+        <div class="card recipe-card recipe-horizontal me-3">
+          <div class="d-flex align-items-center w-100 h-100">
+            <div class="recipe-card-img-horizontal recipe-1 d-flex justify-content-center align-items-center">
+              <img src="../../../../../Matna/src/main/resources/static/img/orangemarmalade.jpg" alt="레시피 1 이미지" class="recipe-image-square">
+            </div>
+            <div class="card-body p-2 flex-grow-1 recipe-text-area">
+              <p class="card-text mb-1 text-start">달지 않은 귤 마말레이드</p>
+              <p class="card-subtitle small text-muted text-start">작성자 | 춘냥이</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card recipe-card recipe-horizontal me-3">
+          <div class="d-flex align-items-center w-100 h-100">
+            <div class="recipe-card-img-horizontal recipe-2 d-flex justify-content-center align-items-center">
+              <img src="../../../../../Matna/src/main/resources/static/img/orangemilk.jpg" alt="레시피 2 이미지" class="recipe-image-square">
+            </div>
+            <div class="card-body p-2 flex-grow-1 recipe-text-area">
+              <p class="card-text mb-1 text-start">우유에 퐁당! 귤우유 만들어보기</p>
+              <p class="card-subtitle small text-muted text-start">작성자 | 우앙잇힘</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card recipe-card recipe-horizontal me-3">
+          <div class="d-flex align-items-center w-100 h-100">
+            <div class="recipe-card-img-horizontal recipe-3 d-flex justify-content-center align-items-center">
+              <img src="../../../../../Matna/src/main/resources/static/img/orangepie.png" alt="레시피 3 이미지" class="recipe-image-square">
+            </div>
+            <div class="card-body p-2 flex-grow-1 recipe-text-area">
+              <p class="card-text mb-1 text-start">바삭한 감귤 파이. 오후의 여유를 즐겨봐요</p>
+              <p class="card-subtitle small text-muted text-start">작성자 | 상큼한오리</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="my-3">
+
+    <div class="participants-list p-3">
+      <h5 class="fw-bold mb-3">참여자 2명</h5>
+      <div class="d-flex align-items-center mb-3">
+        <img src="../../../../../Matna/src/main/resources/static/img/user1.png" class="rounded-circle me-3" alt="참여자 1 프로필 이미지" style="width:40px; height:40px;">
+        <div>
+          <p class="mb-0 fw-bold">베베는오리</p>
+          <p class="text-muted small mb-0">8시간 전</p>
+        </div>
+      </div>
+      <div class="d-flex align-items-center mb-3">
+        <img src="../../../../../Matna/src/main/resources/static/img/user.png" class="rounded-circle me-3" alt="참여자 2 프로필 이미지" style="width:40px; height:40px;">
+        <div>
+          <p class="mb-0 fw-bold">춘냥이</p>
+          <p class="text-muted small mb-0">17시간 전</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="height: 60px;"></div>
+  </div>
+
+  <!--메뉴바-->
+  <nav class="navbar fixed-bottom bg-white bottom-nav p-0">
+    <div class="container-fluid p-0">
+      <ul class="nav w-100 justify-content-between py-2 px-5">
+        <li class="nav-item">
+          <a class="nav-link active p-1" href="#">
+            <i class="bi bi-house-door-fill"></i>
+            홈
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link p-1" href="#">
+            <i class="bi bi-book"></i>
+            레시피
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link p-1" href="#">
+            <i class="bi bi-basket"></i>
+            공동 구매
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link p-1" href="#">
+            <i class="bi bi-person"></i>
+            MY
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
