@@ -22,5 +22,27 @@
             MEMBER_REPORTS mr ON rt.report_no = mr.report_no
         LEFT JOIN
             GROUP_BUY_REPORTS gbr ON rt.report_no = gbr.report_no
+        <where>
+            <if test="startDate != null and endDate != null">
+                rt.reported_date between #{startDate} and #{endDate}
+            </if>
+            <if test="reportStatus != null">
+                and rt.status = #{reportStatus}
+            </if>
+            <if test="reportCase == 'members'">
+                AND mr.report_no IS NOT NULL
+            </if>
+            <if test="reportCase == 'group_buys'">
+                AND gbr.report_no IS NOT NULL
+            </if>
+            <if test="(memberId != null and memberId != '')
+          or (nickname != null and nickname != '')">
+                AND (
+                (#{memberId} != '' AND m.member_id = #{memberId})
+                OR
+                (#{nickname} != '' AND m.nickname = #{nickname})
+                )
+            </if>
+        </where>
     </select>
 </mapper>
