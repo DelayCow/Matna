@@ -1,0 +1,11 @@
+package com.oopsw.matna.repository;
+
+import com.oopsw.matna.repository.entity.Recipe;
+import com.oopsw.matna.repository.entity.RecipeIngredient;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface RecipeIngredientRepository extends JpaRepository<RecipeIngredient, Integer> {
+    List<RecipeIngredient> findByIngredientIngredientNoOrderByRecipeInDateDesc(Integer ingredientNo);
+}
