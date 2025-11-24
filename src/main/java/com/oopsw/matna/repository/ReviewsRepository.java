@@ -16,4 +16,6 @@ public interface ReviewsRepository extends CrudRepository<Reviews, Integer> {
 
     @EntityGraph(attributePaths = {"author"})
     List<Reviews> findTop10ByDelDateIsNullOrderByInDateDesc();
+
+    List<Reviews> findByAuthor_MemberNoAndDelDateIsNull(Integer authorNo);
 }
