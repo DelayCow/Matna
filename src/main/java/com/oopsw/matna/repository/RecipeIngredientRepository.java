@@ -10,9 +10,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 public interface RecipeIngredientRepository extends JpaRepository<RecipeIngredient, Integer> {
+
     @EntityGraph(attributePaths = {"ingredient"})
     List<RecipeIngredient> findByRecipe(Recipe recipe);
-
+    List<RecipeIngredient> findByIngredient_IngredientNo(Integer ingredientNo);
     List<RecipeIngredient> findByIngredientIngredientNoOrderByRecipeInDateDesc(Integer ingredientNo);
 }
 
