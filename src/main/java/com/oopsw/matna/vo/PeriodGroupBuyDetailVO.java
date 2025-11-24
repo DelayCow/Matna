@@ -1,15 +1,11 @@
 package com.oopsw.matna.vo;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-@NoArgsConstructor
-@AllArgsConstructor
+@Builder
 @Data
 @ToString
 public class PeriodGroupBuyDetailVO {
@@ -29,7 +25,7 @@ public class PeriodGroupBuyDetailVO {
     private String shareLocation;
     private String shareDetailAddress;
 
-    private Integer purchasePeriodDays;
+    private Integer buyEndDate;
     private Integer shareEndDate;
     private LocalTime shareTime;
 
