@@ -12,13 +12,13 @@
         gb.in_date AS inDate,
         i.ingredient_name AS ingredientName,
 
-        -- 수량 공구 특정 필드
-        gb.quantity AS quantity,                     -- 총 수량
-        gb.unit AS unit,                             -- 단위 (g, kg, 개 등)
-        qgb.price_per_unit AS pricePerUnit,          -- 단위당 가격
+        gb.quantity AS quantity,
+        qgb.my_quantity AS myQuantity,
 
-        -- 남은 수량 계산: 총 수량 - (생성자 수량 + 참여자들 수량 합계)
-        gb.quantity - (qgb.my_quantity + IFNULL(SUM(gbp.my_quantity), 0)) AS remainingQty,
+        gb.quantity - (qgb.my_quantity + IFNULL(SUM(gbp.my_quantity), 0)) AS remainingQty, -- 남은 수량 (Integer)
+
+        gb.unit AS unit,
+        qgb.price_per_unit AS pricePerUnit,
 
         gb.share_location AS shareLocation
 
@@ -29,14 +29,12 @@
         JOIN
         INGREDIENTS i ON i.ingredient_no = gb.ingredient_no
         JOIN
-        QUANTITY_GROUP_BUYS qgb ON qgb.group_buy_no = gb.group_buy_no <!-- 수량 공구 테이블 조인 -->
+        QUANTITY_GROUP_BUYS qgb ON qgb.group_buy_no = gb.group_buy_no
         LEFT JOIN
-        -- 취소되지 않은 참여자의 수량만 합산
         GROUP_BUY_PARTICIPANT gbp ON gbp.group_buy_no = gb.group_buy_no AND gbp.cancel_date IS NULL
         WHERE
-        gb.status = 'OPEN' -- 현재 모집 중인 공구만 조회
+        gb.status = 'open'
 
-        <!-- 검색어 조건 처리 (keyword 파라미터가 있을 경우) -->
         <if test="keyword != null and keyword != ''">
             AND (
             gb.title LIKE CONCAT('%', #{keyword}, '%')
@@ -47,16 +45,24 @@
 
         GROUP BY
         gb.group_buy_no, gb.title, m.nickname, m.image_url, gb.image_url, gb.in_date,
-        i.ingredient_name, gb.quantity, gb.unit, qgb.price_per_unit, qgb.my_quantity,
+        i.ingredient_name, gb.quantity, qgb.my_quantity, gb.unit, qgb.price_per_unit, -- ⬅️ qgb.my_quantity 추가 및 순서 조정
         gb.share_location
 
         ORDER BY
         <choose>
-            <!-- 1. 남은 수량 적은 순: 마감 임박에 준하는 정렬 (remainingQty 기준 오름차순) -->
             <when test="orderBy != null and orderBy == 'remaining'">
-                remainingQty ASC, gb.in_date DESC
+                (
+                (gb.quantity - (qgb.my_quantity + IFNULL(SUM(gbp.my_quantity), 0)))
+                /
+                NULLIF(gb.quantity - qgb.my_quantity, 0)
+                ) IS NULL ASC,
+                (
+                (gb.quantity - (qgb.my_quantity + IFNULL(SUM(gbp.my_quantity), 0)))
+                /
+                NULLIF(gb.quantity - qgb.my_quantity, 0)
+                ) ASC,
+                gb.in_date DESC
             </when>
-            <!-- 2. 기본값: 최신 등록순 -->
             <otherwise>
                 gb.in_date DESC
             </otherwise>
