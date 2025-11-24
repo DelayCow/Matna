@@ -16,7 +16,7 @@ import java.util.Map;
 
 @SpringBootTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class PeriodGroupBuyDAOTest {
+public class PeriodGroupBuyDAOTests {
     @Autowired
     private PeriodGroupBuyDAO periodGroupBuyDAO;
 

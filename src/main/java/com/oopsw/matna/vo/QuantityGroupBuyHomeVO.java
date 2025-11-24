@@ -11,23 +11,19 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Data
 @ToString
-public class PeriodGroupBuyHomeVO {
+public class QuantityGroupBuyHomeVO {
+    private Integer groupBuyNo;
     private String title;
     private String nickname;
     private String creatorImageUrl;
     private String groupBuyImageUrl;
     private LocalDateTime inDate;
-
-    private LocalDateTime dueDate;
-    private int purchasePeriodDays;
-    private LocalDateTime finalPurchaseDeadline;
-
-    private int minPricePerPerson;
-    private int maxPricePerPerson;
-    private String shareLocation;
-    private String shareDetailAddress;
-    private int participants;
-    private int maxParticipants;
-    private Integer groupBuyNo;
     private String ingredientName;
+
+    private Integer quantity;
+    private Integer remainingQty;
+    private String unit;
+    private Integer pricePerUnit;
+
+    private String shareLocation;
 }
