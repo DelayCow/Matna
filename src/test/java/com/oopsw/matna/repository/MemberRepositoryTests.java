@@ -26,8 +26,8 @@ public class MemberRepositoryTests {
     @Test
     @Transactional
     public void updateBanDate() {
-        Member member = memberRepository.findByMemberId("member_18")
-                .orElseThrow(() -> new RuntimeException("회원이 존재하지 않습니다."));
+        Member member = memberRepository.findByMemberId("member_18").get();
+
         LocalDateTime banDate = LocalDateTime.of(2025, 11, 25, 0, 0);
         member.setBanDate(banDate);
     }
