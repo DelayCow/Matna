@@ -14,11 +14,12 @@ public class AllReportVO {
     private Integer reportNo;
     private String memberId;
     private String nickname;
-    private String status;
     private LocalDateTime reportedDate;
-//    private String imageUrl;
+    private String status;
     private String reason;
+    private String reportCase;
+//    private String imageUrl;
 //    private Integer targetMemberNo;
 //    private Integer groupBuyNo;
-    private String reportCase;
+
 }
