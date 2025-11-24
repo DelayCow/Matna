@@ -15,7 +15,7 @@
         pgb.due_date AS dueDate,
 
         -- 구매 가능 일수 (DB의 INTEGER 타입, gb.buy_end_date와 VO의 purchasePeriodDays에 매핑)
-        gb.buy_end_date AS purchasePeriodDays,
+        gb.buy_end_date AS buyEndDate,
 
         -- 최종 구매 마감일 계산 (dueDate + purchasePeriodDays)
         -- MySQL의 DATE_ADD 함수를 사용한다고 가정합니다.

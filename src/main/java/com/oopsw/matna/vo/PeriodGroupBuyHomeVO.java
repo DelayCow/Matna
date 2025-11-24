@@ -1,14 +1,10 @@
 package com.oopsw.matna.vo;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@NoArgsConstructor
-@AllArgsConstructor
+@Builder
 @Data
 @ToString
 public class PeriodGroupBuyHomeVO {
