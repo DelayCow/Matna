@@ -7,5 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface MemberReportRepository extends JpaRepository<MemberReport, Integer> {
+    List<MemberReport> findByTargetMemberNoIsNotNull();
     List<MemberReport> findAllByOrderByMemberReportNoDesc();
 }

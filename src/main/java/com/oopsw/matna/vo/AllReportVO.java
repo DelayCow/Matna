@@ -12,11 +12,13 @@ import java.time.LocalDateTime;
 @Data
 public class AllReportVO {
     private Integer reportNo;
-    private Integer reporterNo;
+    private String memberId;
+    private String nickname;
     private String status;
     private LocalDateTime reportedDate;
-    private String imageUrl;
+//    private String imageUrl;
     private String reason;
-    private Integer targetMemberNo;
-    private Integer groupBuyNo;
+//    private Integer targetMemberNo;
+//    private Integer groupBuyNo;
+    private String reportCase;
 }
