@@ -15,28 +15,6 @@ public class MemberRepositoryTests {
     MemberRepository memberRepository;
 
     @Test
-    public void findAllByRoll() {
-        System.out.println(memberRepository.findAllByRollOrderByMemberNoDesc("USER"));
-    }
-
-    @Test
-    public void findByNickname() {
-        System.out.println(memberRepository.findByNicknameContaining("감자"));
-    }
-
-    @Test
-    public void findByMemberId() {
-        System.out.println(memberRepository.findByMemberIdContaining("member_1"));
-    }
-
-    @Test
-    public void findAllByRollAndInDateBetween(){
-        LocalDateTime start = LocalDateTime.of(2025, 11, 20, 0, 0);
-        LocalDateTime end   = LocalDateTime.of(2025, 11, 24, 23, 59);
-        System.out.println(memberRepository.findAllByRollAndInDateBetween("USER", start, end));
-    }
-
-    @Test
     @Transactional
     public void updateBanDate() {
         Member member = memberRepository.findByMemberId("member_18")

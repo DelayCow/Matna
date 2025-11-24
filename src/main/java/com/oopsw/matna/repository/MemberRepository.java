@@ -11,9 +11,4 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     Optional<Member> findByMemberId(String memberId);
     //service에서 passwordEncoder.matches(rawPassword, encodedPassword) 하기
     boolean existsByNickname(String nickname);
-
-    List<Member> findAllByRollOrderByMemberNoDesc(String roll);
-    List<Member> findByNicknameContaining(String nickname);
-    List<Member> findByMemberIdContaining(String memberId);
-    List<Member> findAllByRollAndInDateBetween(String role, LocalDateTime start, LocalDateTime end);
 }
