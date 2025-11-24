@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oopsw.matna.repository.ReportDAO">
+    <select id="getReports" resultType="com.oopsw.matna.vo.AllReportVO">
+        SELECT
+            rt.report_no      AS reportNo,
+            m.member_id       AS memberId,
+            m.nickname        AS nickname,
+            rt.reported_date  AS reportedDate,
+            rt.status         AS status,
+            rt.reason         AS reason,
+            CASE
+                WHEN gbr.report_no IS NOT NULL THEN 'group_buys'
+                WHEN mr.report_no IS NOT NULL THEN 'members'
+                ELSE 'error'
+                END                AS reportCase
+        FROM
+            REPORTS rt
+        JOIN members m ON m.member_no = rt.reporter_no
+        LEFT JOIN
+            MEMBER_REPORTS mr ON rt.report_no = mr.report_no
+        LEFT JOIN
+            GROUP_BUY_REPORTS gbr ON rt.report_no = gbr.report_no
+    </select>
+</mapper>
