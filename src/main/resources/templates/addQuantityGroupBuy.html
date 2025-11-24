@@ -6,114 +6,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   <link rel="stylesheet" href="../static/css/layout.css">
-  <style>
-    .fs-7 { font-size: 0.8rem; }
-    .form-control, .input-group-text {
-      border-radius: 8px !important;
-      height: 44px;
-    }
-    .form-control:focus {
-      box-shadow: none;
-      border-color: #ced4da;
-    }
-    .select-input-group {
-      position: relative;
-    }
-    .select-input-group .form-control {
-      padding-right: 40px;
-    }
-    .select-icon {
-      position: absolute;
-      right: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 5;
-      color: #495057;
-    }
-    .dropdown-menu {
-      position: absolute !important;
-      left: 0;
-      top: 100%;
-      width: 100%;
-      z-index: 10;
-    }
-
-    .custom-radio-group .btn {
-      border-radius: 8px !important;
-      width: 50%;
-      height: 44px;
-      font-weight: bold;
-    }
-    .custom-radio-group input[type="radio"]:checked + label {
-      background-color: #3b82f6 !important;
-      border-color: #3b82f6 !important;
-      color: white !important;
-    }
-    .custom-radio-group input[type="radio"] + label {
-      background-color: #ffffff;
-      border-color: #ced4da;
-      color: #495057;
-    }
-
-    .btn-calculate {
-      background-color: #e3f2fd;
-      color: #3b82f6;
-      border: none;
-      font-weight: bold;
-      border-radius: 8px;
-      padding: 8px 15px;
-    }
-
-    .bottom-post {
-      max-width: 600px;
-      margin: 0 auto;
-      background-color: white;
-      padding: 15px 20px;
-      border-top: 1px solid #dee2e6;
-    }
-    .btn-post {
-      background-color: #dee2e6;
-      color: #868e96;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-    }
-    .preview-wrapper {
-      position: relative;
-      display: inline-block;
-      margin-bottom: 8px;
-    }
-    #previewContainer img {
-      width: 150px;
-      height: 150px;
-      object-fit: cover;
-      border-radius: 8px;
-      border: 1px solid #dee2e6;
-      margin: 0;
-    }
-    .delete-btn {
-      position: absolute;
-      top: -5px;
-      right: -5px;
-      background-color: #ff4d4f;
-      color: white;
-      border: 2px solid white;
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      font-size: 10px;
-      line-height: 16px;
-      text-align: center;
-      cursor: pointer;
-      font-weight: bold;
-      z-index: 10;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    }
-    textarea.form-control{
-      min-height: 150px;
-      resize: vertical;
-    }
-  </style>
+  <link rel="stylesheet" href="../static/css/addGroupBuy.css">
 </head>
 <body>
 <div class="mobile-container position-relative">
@@ -122,12 +15,11 @@
     <h4 class="m-0 fw-bold">공동구매 생성</h4>
     <a href="#" class="text-dark"><i class="bi bi-bell fs-4"></i></a>
   </header>
-
   <main class="p-4 pb-0">
 
     <div class="mb-4">
       <label for="title" class="form-label fw-bold">제목</label>
-      <input type="text" class="form-control" id="title" value="쌀떡 10kg 공구 합니다.">
+      <input type="text" class="form-control" id="title" placeholder="제목 입력" value="">
     </div>
 
     <div class="mb-4">
@@ -163,10 +55,7 @@
         <div class="input-group">
           <select class="form-select day-select" id="sharingTimeWeek"></select>
           <span class="input-group-text">일 뒤</span>
-          <select class="form-select time-select" id="sharingTimeHour">
-            <option value="00:00" selected>00:00</option>
-            <option value="10:00">10:00</option>
-          </select>
+          <select class="form-select time-select" id="sharingTimeHour"></select>
         </div>
       </div>
     </div>
@@ -185,7 +74,7 @@
     <div class="mb-4">
       <label for="price" class="form-label fw-bold">상품 가격</label>
       <div class="input-group">
-        <input type="text" class="form-control text-end" id="price" placeholder="0" value="" id="price">
+        <input type="text" class="form-control text-end" id="price" placeholder="0" value="">
         <span class="input-group-text">원</span>
       </div>
     </div>
@@ -224,7 +113,7 @@
         <div class="col-3">
           <label class="form-label fw-bold">나눔 단위</label>
           <div class="input-group">
-            <input type="text" class="form-control text-center" placeholder="0" value="" id="shareAmount">
+            <input type="text" class="form-control text-center" placeholder="0" value="" id="share_amount">
             <span class="input-group-text unit-label"></span>
           </div>
         </div>
@@ -233,7 +122,7 @@
       <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
         <div class="fw-bold">
           <span class="text-primary me-1">나눔 단위당 가격:</span>
-          <span class="text-danger" id="pricePerUnit">0</span> 원
+          <span class="text-danger" id="price_per_unit">0</span> 원
         </div>
         <button type="button" class="btn-calculate" id="calculateButton">계산하기</button>
       </div>
@@ -244,7 +133,9 @@
         사진 첨부하기
       </button>
       <input type="file" id="fileInput" accept="image/*" style="display: none;">
-      <div id="previewContainer" class="d-flex flex-wrap mt-2 g-2"></div>
+
+      <div id="previewContainer" class="d-flex flex-wrap mt-2 g-2">
+      </div>
     </div>
 
     <div class="mb-5">
@@ -301,23 +192,26 @@
     const daySelects = document.querySelectorAll('.day-select')
     const sharingHourSelect = document.getElementById('sharingTimeHour');
     const searchInput = document.getElementById('itemSelect');
+    const itemMenu = document.getElementById('itemDropdownMenu');
+    const calculateButton = document.getElementById('calculateButton');
 
+    // 가격 계산 요소들
     const priceInput = document.getElementById('price');
     const feeInput = document.getElementById('fee_rate');
     const totalQuantityInput = document.getElementById('quantity');
-    const sharingUnitInput = document.getElementById('shareAmount');
-    const calculatedPriceSpan = document.getElementById('pricePerUnit');
+    const sharingUnitInput = document.getElementById('share_amount');
+    const calculatedPriceSpan = document.getElementById('price_per_unit');
 
+    // 사진 첨부 요소들
     const attachPhotoButton = document.getElementById('attachPhotoButton');
     const fileInput = document.getElementById('fileInput');
     const previewContainer = document.getElementById('previewContainer');
 
     let isItemClicked = false;
 
-    updateUnits();
     createDayOptions(daySelects, 7, 1);
     createTimeOptions(sharingHourSelect);
-
+    updateUnits();
     function updateUnits() {
       let unitText = '';
 
@@ -345,6 +239,7 @@
         }
       });
     }
+
     function createTimeOptions(selectElement) {
       selectElement.innerHTML = '';
       let defaultSelected = false;
@@ -378,7 +273,7 @@
         }, delay);
       };
     }
-    //300ms 딜레이 적용
+
     searchInput.addEventListener('input', debounce(function() {
       if (isItemClicked) {
         isItemClicked = false;
@@ -388,33 +283,24 @@
       if (query.length > 0) {
         fetchSearchResults(query);
       } else {
-        document.getElementById('itemDropdownMenu').classList.remove('show');
+        itemMenu.classList.remove('show');
       }
     }, 300));
-    //fetch예시
+
     function fetchSearchResults(query) {
-      // const url = `/api/search-items?q=${encodeURIComponent(query)}`;
-      // fetch(url)
-      //         .then(response => {
-      //           if (!response.ok) {
-      //             throw new Error('Network response was not ok');
-      //           }
-      //           return response.json();
-      //         })
-      //         .then(data => {
-      //           updateDropdownMenu(data);
-      //         })
-      //         .catch(error => {
-      //           console.error('검색 중 오류 발생:', error);
-      //
-      //         });
-      mockData = [
-        { "id": 1, "name": "쌀떡" },
-        { "id": 2, "name": "쌀국수" },
-        { "id": 3, "name": "쌀엿" }
-      ]
-      updateDropdownMenu(mockData);
+      //여기서 재료목록 받아와야함
+      const mockData = [
+        { "id": 1, "name": "어간장" },
+        { "id": 2, "name": "머리고깃살" },
+        { "id": 3, "name": "어묵" },
+        { "id": 4, "name": "쌀떡" },
+        { "id": 5, "name": "라면" },
+        { "id": 6, "name": "김치" }
+      ];
+      const filteredData = mockData.filter(item => item.name.includes(query));
+      updateDropdownMenu(filteredData);
     }
+
     function updateDropdownMenu(results) {
       const menu = document.getElementById('itemDropdownMenu');
       menu.innerHTML = '';
@@ -441,11 +327,13 @@
         menu.classList.remove('show');
       }
     }
+
     document.addEventListener('click', function(e) {
       if (!searchInput.contains(e.target) && !itemMenu.contains(e.target)) {
         itemMenu.classList.remove('show');
       }
     });
+
     function calculatePrice() {
       const price = parseFloat(priceInput.value) || 0;
       const fee = parseFloat(feeInput.value) || 0;
@@ -457,7 +345,9 @@
         return;
       }
 
-      const pricePerUnit = price * (1 + fee / 100) / (totalQuantity / sharingUnit);
+      const totalCostWithFee = price * (1 + fee / 100);
+      const numberOfShares = totalQuantity / sharingUnit;
+      const pricePerUnit = totalCostWithFee / numberOfShares;
 
       const formattedPrice = Math.round(pricePerUnit).toLocaleString('ko-KR');
 
@@ -468,7 +358,6 @@
 
     function removeFileAndReset() {
       fileInput.value = '';
-
       previewContainer.innerHTML = '';
 
       attachPhotoButton.textContent = '사진 첨부하기';
@@ -479,7 +368,9 @@
     }
 
     attachPhotoButton.addEventListener('click', function() {
-      fileInput.click();
+      if (!attachPhotoButton.disabled) {
+        fileInput.click();
+      }
     });
 
     fileInput.addEventListener('change', function(e) {
@@ -488,9 +379,12 @@
 
       if (files.length > 0) {
         const file = files[0];
+
         attachPhotoButton.textContent = `사진 1개 첨부됨`;
         attachPhotoButton.classList.remove('btn-light');
         attachPhotoButton.classList.add('btn-success');
+
+        attachPhotoButton.disabled = true;
 
         if (file.type.startsWith('image/')) {
           const reader = new FileReader();
@@ -516,13 +410,13 @@
           };
 
           reader.readAsDataURL(file);
-          attachPhotoButton.disabled = true
         }
 
       } else {
         removeFileAndReset();
       }
     });
+
   });
 </script>
 </body>
