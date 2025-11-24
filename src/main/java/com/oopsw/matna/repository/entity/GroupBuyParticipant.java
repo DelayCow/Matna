@@ -22,11 +22,11 @@ public class GroupBuyParticipant {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "participant_no", nullable = false)
-    private Member participantNo; // FK: MEMBERS.member_no
+    private Member participant; // FK: MEMBERS.member_no
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "group_buy_no", nullable = false)
-    private GroupBuy groupBuyNo; // FK: GROUP_BUYS.group_buy_no
+    private GroupBuy groupBuy; // FK: GROUP_BUYS.group_buy_no
 
     @Column(name = "my_quantity")
     private Integer myQuantity;
