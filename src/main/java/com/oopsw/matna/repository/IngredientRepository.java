@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
-@ResponseBody
 public interface IngredientRepository extends JpaRepository<Ingredient, Integer> {
     List<Ingredient> findByIngredientNameContaining(String keyword);
 }

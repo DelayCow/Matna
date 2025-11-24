@@ -16,18 +16,7 @@ import java.util.stream.Collectors;
 @SpringBootTest
 public class GroupBuyRepositoryTests {
     @Autowired
-    IngredientRepository ingredientRepository;
-    @Autowired
     GroupBuyRepository groupBuyRepository;
-
-    @Test
-    void searchIngredientKeyword(){
-        String keyword = "쌀";
-        List<Ingredient> results = ingredientRepository.findByIngredientNameContaining(keyword);
-        for (Ingredient ingredient : results) {
-            System.out.println(ingredient.getIngredientName());
-            }
-    };
 
     @Test
     public void getMyPageGroupBuyListTest(){
