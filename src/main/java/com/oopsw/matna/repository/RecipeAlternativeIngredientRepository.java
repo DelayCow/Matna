@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+
 public interface RecipeAlternativeIngredientRepository extends CrudRepository<RecipeAlternativeIngredient, Integer> {
 
     List<RecipeAlternativeIngredient> findByReview_Recipe_RecipeNo(Integer recipeNo);
