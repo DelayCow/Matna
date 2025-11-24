@@ -8,8 +8,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface RecipeIngredientRepository extends JpaRepository<RecipeIngredient, Integer> {
-    List<RecipeIngredient> findByIngredientIngredientNoOrderByRecipeInDateDesc(Integer ingredientNo);
-
     @EntityGraph(attributePaths = {"ingredient"})
     List<RecipeIngredient> findByRecipe(Recipe recipe);
+
+    List<RecipeIngredient> findByIngredientIngredientNoOrderByRecipeInDateDesc(Integer ingredientNo);
+
 }
+
