@@ -15,4 +15,5 @@ public class RecipeListVO {
     private Float averageRating;
     private String imageUrl;
     private int reviewCount;
+
 }

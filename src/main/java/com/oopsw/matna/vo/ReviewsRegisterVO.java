@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 //.등록용임
-public class ReviewRegisterVO {
+public class ReviewsRegisterVO {
 
 
         private Integer recipeNo;
@@ -34,4 +34,4 @@ public class ReviewRegisterVO {
             private String unit;
         }
     }
-}
+

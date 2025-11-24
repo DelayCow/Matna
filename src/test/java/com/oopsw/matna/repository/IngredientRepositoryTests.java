@@ -1,7 +1,5 @@
-package com.oopsw.matna.Repository;
+package com.oopsw.matna.repository;
 
-import com.oopsw.matna.repository.IngredientRepository;
-import com.oopsw.matna.repository.MemberRepository;
 import com.oopsw.matna.repository.entity.Ingredient;
 import com.oopsw.matna.repository.entity.Member;
 import com.oopsw.matna.vo.IngredientVO;
@@ -13,11 +11,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.fasterxml.jackson.databind.type.LogicalType.DateTime;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-public class IngredientRepositoryTest {
+public class IngredientRepositoryTests {
 
     @Autowired
     IngredientRepository ingredientRepository;
