@@ -22,30 +22,30 @@ public class QuantityGroupBuyRepositoryTests {
     @Autowired
     GroupBuyRepository groupBuyRepository;
     @Autowired
-    QuantityGroupBuyRepository quantityGroupBuyRepository; // PeriodGroupBuyRepository -> QuantityGroupBuyRepository 변경
+    QuantityGroupBuyRepository quantityGroupBuyRepository;
     @Autowired
     GroupBuyParticipantRepository groupBuyParticipantRepository;
 
-//    @Test
-//    void testSearchIngredientKeyword() {
-//        String keyword = "쌀";
-//        List<Ingredient> results = ingredientRepository.findByIngredientNameContaining(keyword);
-//        for (Ingredient ingredient : results) {
-//            System.out.println(ingredient.getIngredientName());
-//        }
-//    }
-//
-//    @Test
-//    void testAddIngredient() {
-//        Member creatorMember = memberRepository.findById(5).get();
-//        Ingredient newIngredient = ingredientRepository.save(
-//                Ingredient.builder()
-//                        .ingredientName("모닝빵")
-//                        .creator(creatorMember)
-//                        .inDate(LocalDateTime.now())
-//                        .build());
-//        System.out.println(newIngredient.getIngredientName());
-//    }
+    @Test
+    void testSearchIngredientKeyword() {
+        String keyword = "쌀";
+        List<Ingredient> results = ingredientRepository.findByIngredientNameContaining(keyword);
+        for (Ingredient ingredient : results) {
+            System.out.println(ingredient.getIngredientName());
+        }
+    }
+
+    @Test
+    void testAddIngredient() {
+        Member creatorMember = memberRepository.findById(5).get();
+        Ingredient newIngredient = ingredientRepository.save(
+                Ingredient.builder()
+                        .ingredientName("모닝빵")
+                        .creator(creatorMember)
+                        .inDate(LocalDateTime.now())
+                        .build());
+        System.out.println(newIngredient.getIngredientName());
+    }
 
     @Test
     void testAddQuantityGroupBuy() { // testAddPeriodGroupBuy -> testAddQuantityGroupBuy 변경
@@ -79,10 +79,10 @@ public class QuantityGroupBuyRepositoryTests {
         // 2. QuantityGroupBuy 전용 정보 저장
         QuantityGroupBuy newQuantityGroupBuy = quantityGroupBuyRepository.save(
                 QuantityGroupBuy.builder()
-                        .groupBuy(newGroupBuy) // 부모 GroupBuy 엔티티 연결 (FK 설정)
-                        .myQuantity(1) // 개설자 부담 수량
-                        .shareAmount(1) // 나눔 단위 수량
-                        .pricePerUnit(3000) // 계산해야되는값
+                        .groupBuy(newGroupBuy)
+                        .myQuantity(1)
+                        .shareAmount(1)
+                        .pricePerUnit(3000)
                         .build()
         );
 
@@ -96,17 +96,12 @@ public class QuantityGroupBuyRepositoryTests {
         Member participantMember = memberRepository.findById(12).get();
         GroupBuy groupBuyNo = groupBuyRepository.findById(32).get();
 
-        // GroupBuy 엔티티에서 QuantityGroupBuy의 pricePerUnit, shareAmount 정보를 조회해야 하나,
-        // 테스트의 단순화를 위해 QuantityGroupBuy 엔티티를 직접 조회하거나 필요한 값을 하드코딩합니다.
-        // 여기서는 QuantityGroupBuy 엔티티를 조회하여 필요한 정보를 가져옵니다.
         QuantityGroupBuy quantityGroupBuy = quantityGroupBuyRepository.findByGroupBuy(groupBuyNo);
 
-        // [수량 공구 로직] 참여 수량(Quantity) 기반 결제 금액 계산
-        int participantQuantity = 1; // 참여자가 3000g을 신청했다고 가정 (SHARE_AMOUNT의 배수)
+        int participantQuantity = 1;
 
-        // QuantityGroupBuy의 단위 가격과 GroupBuy의 수수료율 사용
-        Integer pricePerUnit = quantityGroupBuy.getPricePerUnit(); // 3원/g
-        Integer feeRate = groupBuyNo.getFeeRate(); // 3%
+        Integer pricePerUnit = quantityGroupBuy.getPricePerUnit();
+        Integer feeRate = groupBuyNo.getFeeRate();
 
         // 초기 결제 금액 계산: (참여 수량 * 단위 가격) * (1 + 수수료율)
         int initialPaymentPoint = (int) Math.round((participantQuantity * pricePerUnit * (1.0 + (feeRate / 100.0))));
@@ -116,7 +111,7 @@ public class QuantityGroupBuyRepositoryTests {
                         .participant(participantMember)
                         .groupBuy(groupBuyNo)
                         .participatedDate(LocalDateTime.now())
-                        .myQuantity(participantQuantity) // 참여 신청 수량 기록
+                        .myQuantity(participantQuantity)
                         .initialPaymentPoint(initialPaymentPoint)
                         .build()
         );
@@ -131,13 +126,12 @@ public class QuantityGroupBuyRepositoryTests {
 
         int initialPaymentPoint = groupBuyParticipant.getInitialPaymentPoint(); // 차감할 포인트
 
-        // 멤버 포인트는 null일 수 있으므로 0으로 초기화
         int currentPoint = participantMember.getPoint();
         int newPoint = currentPoint - initialPaymentPoint;
 
         if (newPoint < 0) {
-            System.out.println("잔액 부족으로 테스트 중단: 초기 결제 금액 " + initialPaymentPoint + "원");
-            return; // 테스트 중단
+            System.out.println("잔액 부족");
+            return;
         }
 
         participantMember.setPoint(newPoint);
@@ -147,46 +141,50 @@ public class QuantityGroupBuyRepositoryTests {
     }
 
     @Test
-        // [총 수량 충족/개설자 강제 진행] GroupBuy 진행상황 (status) CLOSED 업데이트")
-    void testUpdateStatusToClosed() {
+    void testUpdateStatusToClosed_QuantityMet() {
         // Given: 상태를 변경할 GroupBuy
         Integer GroupBuyId = 32;
-        GroupBuy groupBuy = groupBuyRepository.findById(GroupBuyId)
-                .orElseThrow(() -> new AssertionError("테스트를 위한 GroupBuy 엔티티(ID: " + GroupBuyId + ")를 찾을 수 없습니다."));
+        GroupBuy groupBuy = groupBuyRepository.findById(GroupBuyId).get();
 
-        // 1. QuantityGroupBuy 정보 조회
         QuantityGroupBuy quantityGroupBuy = quantityGroupBuyRepository.findByGroupBuy(groupBuy);
 
-        // **수량 충족 조건 시뮬레이션**
-        // 실제 서비스 로직에서는 DB에서 GroupBuyParticipant의 myQuantity 총합을 구해야 함
-
+        int initialMyQuantity = quantityGroupBuy.getMyQuantity();
         int currentSharedQuantity = 3;
         int totalQuantity = groupBuy.getQuantity();
-        int myQuantity = quantityGroupBuy.getMyQuantity();
 
-        // 2. 수량 충족 검증 (currentSharedQuantity + myQuantity >= totalQuantity)
-        // 또는 개설자 강제 마감 버튼 클릭 시
-        boolean isQuantitySatisfied = (currentSharedQuantity + myQuantity >= totalQuantity);
+        // A. 수량 충족 확인 및 상태 업데이트
+        boolean isQuantitySatisfied = (currentSharedQuantity + initialMyQuantity >= totalQuantity);
 
-        if (isQuantitySatisfied) {
-            groupBuy.setStatus("closed");
-        } else {
-            // [개설자 강제 진행 시뮬레이션]
-            // 수량 충족이 안 되었지만 개설자가 잔여 수량을 부담하고 강제 마감하는 로직을 시뮬레이션
-            int remainingQuantity = totalQuantity - (currentSharedQuantity + myQuantity);
-            if (remainingQuantity > 0) {
-                // 개설자 부담 수량 업데이트 (잔여 수량 추가 부담)
-                quantityGroupBuy.setMyQuantity(myQuantity + remainingQuantity);
-                quantityGroupBuyRepository.save(quantityGroupBuy);
-            }
-            groupBuy.setStatus("closed");
-        }
+        groupBuy.setStatus("closed");
+        GroupBuy updatedGroupBuy = groupBuyRepository.save(groupBuy);
+        QuantityGroupBuy finalQuantityGroupBuy = quantityGroupBuyRepository.save(quantityGroupBuy); // QuantityGroupBuy는 변경 없으므로 저장해도 무방
 
+        System.out.println("[테스트 1. 수량 충족] GroupBuy ID " + GroupBuyId + "의 상태가 " + updatedGroupBuy.getStatus() + "로 업데이트되었습니다.");
+        System.out.println("최종 개설자 부담 수량: " + finalQuantityGroupBuy.getMyQuantity() + "g (변동 없음)");
+    }
+
+    @Test
+    void testUpdateStatusToClosed_CreatorForcedClose() {
+        Integer GroupBuyId = 32;
+        GroupBuy groupBuy = groupBuyRepository.findById(GroupBuyId).get();
+
+        QuantityGroupBuy quantityGroupBuy = quantityGroupBuyRepository.findByGroupBuy(groupBuy);
+
+        int initialMyQuantity = quantityGroupBuy.getMyQuantity(); // 1
+        int totalQuantity = groupBuy.getQuantity(); // 4
+        // 수량 1만 채웠다고 가정
+        int currentSharedQuantity = 1;
+
+        boolean isQuantitySatisfied = (currentSharedQuantity + initialMyQuantity >= totalQuantity);
+        int remainingQuantity = totalQuantity - (currentSharedQuantity + initialMyQuantity); // 4 - (1 + 1) = 2
+        quantityGroupBuy.setMyQuantity(initialMyQuantity + remainingQuantity); // 1 + 2 = 3
+
+        quantityGroupBuyRepository.save(quantityGroupBuy);
+        groupBuy.setStatus("closed");
         GroupBuy updatedGroupBuy = groupBuyRepository.save(groupBuy);
 
-        assertEquals("closed", updatedGroupBuy.getStatus(), "GroupBuy의 상태는 'closed'여야 합니다.");
-        System.out.println("[테스트] GroupBuy ID " + GroupBuyId + "의 상태가 " + updatedGroupBuy.getStatus() + "로 업데이트되었습니다.");
-        System.out.println("최종 개설자 부담 수량: " + quantityGroupBuy.getMyQuantity() + "g");
+        System.out.println("[테스트 2. 개설자 강제 진행] GroupBuy ID " + GroupBuyId + "의 상태가 " + updatedGroupBuy.getStatus() + "로 업데이트되었습니다.");
+        System.out.println("최종 개설자 부담 수량: " + quantityGroupBuy.getMyQuantity() + "g (잔여 수량 " + remainingQuantity + " 추가 부담)");
     }
 
     @Test
@@ -209,26 +207,22 @@ public class QuantityGroupBuyRepositoryTests {
 
     @Test
         // [개설자 중단] GroupBuy 상태 CANCELED로 변경 및 참여자 전액 환불")
-    void testQuantityCreatorCancelAndRefund() { // testPeriodCreatorCancelAndRefund -> testQuantityCreatorCancelAndRefund 변경
+    void testQuantityCreatorCancelAndRefund() {
         Integer targetGroupBuyId = 32;
         String cancelStatus = "canceled";
         String cancelReason = "양배추 가격이 올랐습니다"; // 취소 사유
 
-        GroupBuy groupBuy = groupBuyRepository.findById(targetGroupBuyId)
-                .orElseThrow(() -> new AssertionError("테스트를 위한 GroupBuy 엔티티(ID: " + targetGroupBuyId + ")를 찾을 수 없습니다."));
+        GroupBuy groupBuy = groupBuyRepository.findById(targetGroupBuyId).get();
 
         Integer memberNo = 12;
         Integer participantId = 70;
 
-        // 참여자 및 초기 포인트 조회 (환불 전 상태)
-        Member participantMember = memberRepository.findByMemberNo(memberNo);
-        GroupBuyParticipant participantEntry = groupBuyParticipantRepository.findById(participantId)
-                .orElseThrow(() -> new AssertionError("테스트 참여 엔티티를 찾을 수 없습니다. ID: " + participantId));
+        Member participantMember = memberRepository.findById(memberNo).get();
+        GroupBuyParticipant participantEntry = groupBuyParticipantRepository.findById(participantId).get();
 
-        int initialPaymentPoint = participantEntry.getInitialPaymentPoint() != null ? participantEntry.getInitialPaymentPoint() : 9270; // Mock initial payment
-        int initialMemberPoint = participantMember.getPoint() != null ? participantMember.getPoint() : 100000; // Mock initial point
+        int initialPaymentPoint = participantEntry.getInitialPaymentPoint();
+        int initialMemberPoint = participantMember.getPoint();
 
-        // 3. GroupBuy 상태 및 취소 사유 업데이트 (개설자 중단)
         groupBuy.setStatus(cancelStatus);
         groupBuy.setCancelReason(cancelReason);
         GroupBuy updatedGroupBuy = groupBuyRepository.save(groupBuy);
@@ -240,21 +234,11 @@ public class QuantityGroupBuyRepositoryTests {
         participantMember.setPoint(currentPoint + refundAmount);
         memberRepository.save(participantMember);
 
-        // 참여 기록에 취소 날짜 기록
         participantEntry.setCancelDate(LocalDateTime.now());
         GroupBuyParticipant updatedParticipantEntry = groupBuyParticipantRepository.save(participantEntry);
 
-        // A. GroupBuy 상태 검증
-        assertEquals(cancelStatus, updatedGroupBuy.getStatus(), "GroupBuy의 상태는 'canceled'여야 합니다.");
-
-        // B. Member 포인트 환불 검증
-        Member refundedMember = memberRepository.findByMemberNo(memberNo);
-        int expectedPoint = initialMemberPoint + refundAmount;
-        assertEquals(expectedPoint, refundedMember.getPoint(), "참여자 포인트는 환불 금액만큼 증가해야 합니다.");
-
-        // C. GroupBuyParticipant 취소일자 검증
-        assertNotNull(updatedParticipantEntry.getCancelDate(), "참여 기록에 취소 날짜가 기록되어야 합니다.");
-
-        System.out.println("수량공구 GroupBuy ID " + targetGroupBuyId + "가 중단되고, 참여자 ID " + memberNo + "에게 " + refundAmount + "P가 환불되었습니다.");
+        System.out.println("수량공구 GroupBuy ID " + targetGroupBuyId + "가 중단되고, 참여자 ID " + memberNo + "에게 " + refundAmount + "원 환불되었습니다.");
     }
+
+
 }

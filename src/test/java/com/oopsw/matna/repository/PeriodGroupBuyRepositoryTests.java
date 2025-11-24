@@ -126,20 +126,10 @@ public class PeriodGroupBuyRepositoryTests {
     void testUpdateStatusToClosed() {
         // Given: 상태를 변경할 GroupBuy (ID는 Long 타입으로 일관성 있게 변경)
         Integer GroupBuyId = 29;
-        GroupBuy groupBuy = groupBuyRepository.findById(GroupBuyId)
-                .orElseThrow(() -> new AssertionError("테스트를 위한 GroupBuy 엔티티(ID: " + GroupBuyId + ")를 찾을 수 없습니다."));
-
-        // **참가자 검증 조건 시뮬레이션 (Service Layer의 로직을 가정하고 필요한 정보만 조회)**
-        // 1. PeriodGroupBuy 정보 조회
+        GroupBuy groupBuy = groupBuyRepository.findById(GroupBuyId).get();
         PeriodGroupBuy periodGroupBuy = periodGroupBuyRepository.findByGroupBuy(groupBuy);
-
-        // 2. 현재 참가자 수 (DB COUNT 쿼리가 필요하나, Repository Test 범위에서는 시뮬레이션)
-        // 실제 서비스 로직에서는 groupBuyParticipantRepository.countByGroupBuyNo(...) 등을 사용
         int currentParticipantCount = 5; // 현재 5명 참가했다고 가정
         int maxParticipants = periodGroupBuy.getMaxParticipants(); // 10명이라고 가정
-
-        // 3. 마지막 참가자이거나 기간이 만료되어 closed 상태로 결정되었다고 가정하고 업데이트를 진행합니다.
-        // if (currentParticipantCount >= maxParticipants || LocalDateTime.now().isAfter(periodGroupBuy.getDueDate())) { ... }
 
         groupBuy.setStatus("closed");
         GroupBuy updatedGroupBuy = groupBuyRepository.save(groupBuy);
