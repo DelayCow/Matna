@@ -17,11 +17,13 @@ public class RecipeVO {
     private String thumbnailUrl;
     private String writerNickname;
     private String writerProfile;
-    private Float rating;
+    private Float averageRating;
+//    private Float rating;
     private Integer reviewCount;
     private Integer servings;
     private Integer prepTime;
     private String difficulty;
     private Integer spicyLevel;
+
 
 }

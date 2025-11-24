@@ -1,10 +1,7 @@
 package com.oopsw.matna.repository.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -23,6 +20,7 @@ public class Member {
     private String memberId;
     @Column(name = "account_name", length = 30)
     private String accountName;
+    @ToString.Exclude
     @Column(name = "password", nullable = false)
     private String password;
     @Column(name = "nickname", nullable = false, length = 50)

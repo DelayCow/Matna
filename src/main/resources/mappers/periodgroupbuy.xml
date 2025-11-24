@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oopsw.matna.dao.PeriodGroupBuyDAO">
+
+    <select id="selectGroupBuyListForHome" parameterType="map" resultType="com.oopsw.matna.vo.PeriodGroupBuyHomeVO">
+        SELECT
+        gb.group_buy_no AS groupBuyNo,
+        gb.title,
+        m.nickname,
+        m.image_url AS creatorImageUrl,
+        gb.image_url AS groupBuyImageUrl,
+        gb.in_date AS inDate,
+
+        -- 모집 마감일: PERIOD_GROUP_BUYS 테이블의 due_date 컬럼을 VO의 dueDate 필드에 매핑
+        pgb.due_date AS dueDate,
+
+        -- 구매 가능 일수 (DB의 INTEGER 타입, gb.buy_end_date와 VO의 purchasePeriodDays에 매핑)
+        gb.buy_end_date AS purchasePeriodDays,
+
+        -- 최종 구매 마감일 계산 (dueDate + purchasePeriodDays)
+        -- MySQL의 DATE_ADD 함수를 사용한다고 가정합니다.
+        DATE_ADD(pgb.due_date, INTERVAL gb.buy_end_date DAY) AS finalPurchaseDeadline,
+
+        i.ingredient_name AS ingredientName,
+
+        -- 1인당 최소/최대 가격 계산
+        CEIL((gb.price * (1 + gb.fee_rate / 100)) / pgb.max_participants) AS minPricePerPerson,
+        CEIL((gb.price * (1 + gb.fee_rate / 100)) / 2) AS maxPricePerPerson,
+
+        gb.share_location AS shareLocation,
+
+        -- 현재 참여 인원 계산: (참여 테이블에서 creator_no와 다른 participant_no 카운트) + 1 (creator_no)
+        COUNT(gbp.group_buy_no) + 1 AS participants,
+        pgb.max_participants AS maxParticipants
+        FROM
+        GROUP_BUYS gb
+        JOIN
+        MEMBERS m ON m.member_no = gb.creator_no
+        JOIN
+        INGREDIENTS i ON i.ingredient_no = gb.ingredient_no
+        JOIN
+        PERIOD_GROUP_BUYS pgb ON pgb.group_buy_no = gb.group_buy_no
+        LEFT JOIN
+        -- 취소되지 않은 참여자만 카운트 대상으로 포함
+        GROUP_BUY_PARTICIPANT gbp ON gbp.group_buy_no = gb.group_buy_no AND gbp.cancel_date IS NULL AND gbp.participant_no != gb.creator_no
+        WHERE
+        gb.status = 'OPEN'
+
+        <!-- 검색어 조건 처리 (keyword 파라미터가 있을 경우) -->
+        <if test="keyword != null and keyword != ''">
+            AND (
+            gb.title LIKE CONCAT('%', #{keyword}, '%')
+            OR i.ingredient_name LIKE CONCAT('%', #{keyword}, '%')
+            OR gb.share_location LIKE CONCAT('%', #{keyword}, '%')
+            )
+        </if>
+
+        GROUP BY
+        gb.group_buy_no, gb.title, m.nickname, m.image_url, gb.image_url, gb.in_date,
+        pgb.due_date, gb.buy_end_date, i.ingredient_name,
+        gb.price, gb.fee_rate, pgb.max_participants, gb.share_location
+
+        ORDER BY
+        <choose>
+            <!-- 1. 마감 임박순: 모집 마감일(pgb.due_date) 기준 오름차순 정렬 -->
+            <when test="orderBy != null and orderBy == 'deadline'">
+                pgb.due_date ASC, gb.in_date DESC
+            </when>
+            <!-- 2. 기본값: 최신 등록순 -->
+            <otherwise>
+                gb.in_date DESC
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="selectPeriodGroupBuyDetail" parameterType="int" resultType="com.oopsw.matna.vo.PeriodGroupBuyDetailVO">
+        SELECT
+            gb.group_buy_no AS groupBuyNo,
+            gb.title,
+            gb.content,
+            gb.image_url AS imageUrl,
+            gb.ingredient_no AS ingredientNo,
+            pgb.max_participants,
+            gb.fee_rate,
+            gb.item_sale_url AS itemSaleUrl,
+
+            -- PeriodGroupBuy의 PK 추가
+            pgb.period_group_buy_no AS periodGroupBuyNo,
+
+            -- 현재 참여 인원 계산: (creator_no가 아닌 취소되지 않은 참여자 수) + 1 (creator)
+            COUNT(CASE WHEN gbp.participant_no != gb.creator_no THEN 1 END) + 1 AS participants,
+
+            gb.in_date AS inDate,
+            gb.share_location AS shareLocation,
+            gb.share_detail_address AS shareDetailAddress,
+
+            gb.buy_end_date AS purchasePeriodDays,
+            gb.share_end_date AS shareEndDate,
+            gb.share_time AS shareTime,
+
+            -- 모집 마감일
+            pgb.due_date AS dueDate,
+
+            -- 모집 마감까지 남은 시간 (MySQL TIMESTAMPDIFF 함수 사용, 분 단위)
+            TIMESTAMPDIFF(MINUTE, NOW(), pgb.due_date) AS remainingTime,
+
+            gb.status,
+
+            -- 개설자 정보
+            m.image_url AS profileImageUrl,
+            m.nickname
+        FROM
+            period_group_buys pgb
+                INNER JOIN
+            group_buys gb ON pgb.group_buy_no = gb.group_buy_no
+                INNER JOIN
+            members m ON gb.creator_no = m.member_no
+                LEFT JOIN
+            -- 취소되지 않은 참여자만 카운트 대상으로 포함
+                group_buy_participant gbp ON gbp.group_buy_no = pgb.group_buy_no AND gbp.cancel_date IS NULL
+        WHERE
+            pgb.period_group_buy_no = #{periodGroupBuyNo}
+        GROUP BY
+            gb.group_buy_no, gb.title, gb.content, gb.image_url, gb.ingredient_no, pgb.max_participants, gb.fee_rate, gb.item_sale_url,
+            gb.in_date, gb.share_location, gb.share_detail_address, gb.buy_end_date, gb.share_end_date, gb.status, m.image_url, m.nickname, pgb.due_date, pgb.period_group_buy_no
+    </select>
+</mapper>

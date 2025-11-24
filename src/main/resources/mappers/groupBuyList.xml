@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oopsw.matna.repository.GroupBuyListDAO">
+    <select id="getParticipantList" parameterType="java.lang.Integer" resultType="com.oopsw.matna.vo.GroupBuyListVO">
+        SELECT
+            gb.group_buy_no groupBuyNo,
+            gb.title,
+            gb.status,
+            gb.image_url imageUrl,
+            gb.in_date inDate,
+            gb.buy_end_date buyEndDate,
+            gb.share_end_date shareEndDate,
+            gb.buy_date buyDate,
+            gb.arrival_date arrivalDate,
+            gbp.receive_date receiveDate,
+            CASE
+                WHEN qgb.my_quantity IS NOT NULL THEN
+                    gb.quantity - (COALESCE(total_participant.total_qty, 0) + qgb.my_quantity)
+                ELSE
+                    0
+                END AS remainingQuantity,
+            gbp.my_quantity myQuantity,
+            gbp.participated_date participatedDate,
+            gbp.final_payment_point finalPaymentPoint,
+            (total_participant.total_count - 1) AS participantExMe,
+            0 AS totalSettlementPoint
+
+        FROM
+            GROUP_BUY_PARTICIPANT gbp
+                JOIN
+            GROUP_BUYS gb ON gbp.group_buy_no = gb.group_buy_no
+                LEFT JOIN
+            (SELECT
+                 sub_gbp.group_buy_no,
+                 SUM(sub_gbp.my_quantity) AS total_qty,
+                 COUNT(sub_gbp.participant_no) AS total_count
+             FROM
+                 GROUP_BUY_PARTICIPANT sub_gbp
+             GROUP BY
+                 sub_gbp.group_buy_no
+            ) total_participant ON gb.group_buy_no = total_participant.group_buy_no
+                LEFT JOIN
+            QUANTITY_GROUP_BUYS qgb ON gb.group_buy_no = qgb.group_buy_no
+
+        WHERE
+            gbp.participant_no = #{participantNo}
+        ORDER BY
+            gbp.participated_date DESC;
+    </select>
+    <select id="getCreateGroupBuyList" parameterType="java.lang.Integer" resultType="com.oopsw.matna.vo.GroupBuyListVO">
+        SELECT DISTINCT
+            gb.group_buy_no groupBuyNo,
+            gb.title,
+            gb.status,
+            gb.image_url imageUrl,
+            gb.in_date inDate,
+            gb.buy_end_date buyEndDate,
+            gb.share_end_date shareEndDate,
+            gb.buy_date buyDate,
+            gb.arrival_date ArrivalDate,
+            gbp.receive_date receiveDate,
+            CASE
+                WHEN qgb.my_quantity IS NOT NULL THEN
+                    gb.quantity - (COALESCE(total_participant.total_qty, 0) + qgb.my_quantity)
+                ELSE
+                    0
+                END AS remainingQuantity,
+            qgb.my_quantity myQuantity,
+            NULL AS participatedDate,
+            NULL AS finalPaymentPoint,
+            gbp.final_payment_point finalPaymentPoint,
+            total_participant.total_count AS participantExMe,
+            CASE
+                WHEN gb.status != 'open' THEN
+                    COALESCE(total_participant.total_settlement_point, 0)
+                ELSE
+                    0
+                END AS totalSettlementPoint
+
+        FROM
+            GROUP_BUYS gb
+                LEFT JOIN
+            GROUP_BUY_PARTICIPANT gbp ON gbp.group_buy_no = gb.group_buy_no
+                LEFT JOIN
+            (SELECT
+                 sub_gbp.group_buy_no,
+                 SUM(sub_gbp.my_quantity) AS total_qty,
+                 COUNT(sub_gbp.participant_no) AS total_count,
+                 SUM(sub_gbp.final_payment_point) AS total_settlement_point
+             FROM
+                 GROUP_BUY_PARTICIPANT sub_gbp
+             GROUP BY
+                 sub_gbp.group_buy_no
+            ) total_participant ON gb.group_buy_no = total_participant.group_buy_no
+                LEFT JOIN
+            QUANTITY_GROUP_BUYS qgb ON gb.group_buy_no = qgb.group_buy_no
+
+        WHERE
+            gb.creator_no = #{creatorNo}
+        ORDER BY
+            gb.in_date DESC;
+    </select>
+</mapper>
