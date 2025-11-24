@@ -1,5 +1,6 @@
-package com.oopsw.matna.repository;
+package com.oopsw.matna.Repository;
 
+import com.oopsw.matna.repository.*;
 import com.oopsw.matna.repository.entity.*;
 import com.oopsw.matna.vo.AllReportVO;
 import org.junit.jupiter.api.Test;

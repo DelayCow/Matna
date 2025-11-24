@@ -1,5 +1,6 @@
-package com.oopsw.matna.repository;
+package com.oopsw.matna.Repository;
 
+import com.oopsw.matna.repository.GroupBuyParticipantRepository;
 import com.oopsw.matna.repository.entity.GroupBuyParticipant;
 import com.oopsw.matna.vo.GroupBuyParticipantVO;
 import org.junit.jupiter.api.Test;
