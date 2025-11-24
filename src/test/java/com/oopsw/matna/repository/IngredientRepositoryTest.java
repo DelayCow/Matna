@@ -1,5 +1,7 @@
-package com.oopsw.matna.repository;
+package com.oopsw.matna.Repository;
 
+import com.oopsw.matna.repository.IngredientRepository;
+import com.oopsw.matna.repository.MemberRepository;
 import com.oopsw.matna.repository.entity.Ingredient;
 import com.oopsw.matna.repository.entity.Member;
 import com.oopsw.matna.vo.IngredientVO;
