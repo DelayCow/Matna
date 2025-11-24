@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PeriodGroupBuyRepository extends JpaRepository<PeriodGroupBuy, Integer> {
-    PeriodGroupBuy findByGroupBuyNo(GroupBuy groupBuy);
+    PeriodGroupBuy findByGroupBuy(GroupBuy groupBuy);
 }

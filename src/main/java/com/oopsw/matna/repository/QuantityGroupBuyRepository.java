@@ -6,5 +6,5 @@ import com.oopsw.matna.repository.entity.QuantityGroupBuy;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface QuantityGroupBuyRepository extends JpaRepository<QuantityGroupBuy,Integer> {
-    QuantityGroupBuy findByGroupBuyNo(GroupBuy groupBuy);
+    QuantityGroupBuy findByGroupBuy(GroupBuy groupBuy);
 }

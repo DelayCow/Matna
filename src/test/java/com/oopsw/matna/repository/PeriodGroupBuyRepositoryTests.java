@@ -53,8 +53,8 @@ public class PeriodGroupBuyRepositoryTests {
         Member creatorMember = memberRepository.findById(16).get();
         GroupBuy newGroupBuy = groupBuyRepository.save(
                 GroupBuy.builder()
-                .ingredientNo(ingredientNo) //밤고구마
-                .creatorNo(creatorMember)
+                .ingredient(ingredientNo) //밤고구마
+                .creator(creatorMember)
                 .title("김치/동치미랑 먹으면 딱좋은 밤고구마 20kg 같이 사요")
                 .buyEndDate(3)
                 .shareEndDate(4)
@@ -75,7 +75,7 @@ public class PeriodGroupBuyRepositoryTests {
         );
         PeriodGroupBuy newPeriodGroupBuy = periodGroupBuyRepository.save(
                 PeriodGroupBuy.builder()
-                .groupBuyNo(newGroupBuy) // 부모 GroupBuy 엔티티 연결 (FK 설정)
+                .groupBuy(newGroupBuy) // 부모 GroupBuy 엔티티 연결 (FK 설정)
                 .dueDate(LocalDateTime.of(2025,11,30,17,30))
                 .maxParticipants(10)
                 .build()
@@ -95,8 +95,8 @@ public class PeriodGroupBuyRepositoryTests {
 
         GroupBuyParticipant joinPeriodGroupBuy = groupBuyParticipantRepository.save(
                 GroupBuyParticipant.builder()
-                        .participantNo(participantMember)
-                        .groupBuyNo(groupBuyNo)
+                        .participant(participantMember)
+                        .groupBuy(groupBuyNo)
                         .participatedDate(LocalDateTime.now())
                         .initialPaymentPoint(initialPaymentPoint)
                         .build()
@@ -131,7 +131,7 @@ public class PeriodGroupBuyRepositoryTests {
 
         // **참가자 검증 조건 시뮬레이션 (Service Layer의 로직을 가정하고 필요한 정보만 조회)**
         // 1. PeriodGroupBuy 정보 조회
-        PeriodGroupBuy periodGroupBuy = periodGroupBuyRepository.findByGroupBuyNo(groupBuy);
+        PeriodGroupBuy periodGroupBuy = periodGroupBuyRepository.findByGroupBuy(groupBuy);
 
         // 2. 현재 참가자 수 (DB COUNT 쿼리가 필요하나, Repository Test 범위에서는 시뮬레이션)
         // 실제 서비스 로직에서는 groupBuyParticipantRepository.countByGroupBuyNo(...) 등을 사용
@@ -183,7 +183,7 @@ public class PeriodGroupBuyRepositoryTests {
         int refundAmount = initialPaymentPoint - finalPaymentPoint;
         participant.setFinalPaymentPoint(finalPaymentPoint);
 
-        Member member = participant.getParticipantNo();
+        Member member = participant.getParticipant();
         int currentPoint = member.getPoint();
 
         int newPoint = currentPoint + refundAmount;

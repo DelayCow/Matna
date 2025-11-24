@@ -55,8 +55,8 @@ public class QuantityGroupBuyRepositoryTests {
         // 1. GroupBuy 기본 정보 저장 (수량 관련 필드 포함)
         GroupBuy newGroupBuy = groupBuyRepository.save(
                 GroupBuy.builder()
-                        .ingredientNo(ingredientNo) //양배추
-                        .creatorNo(creatorMember)
+                        .ingredient(ingredientNo) //양배추
+                        .creator(creatorMember)
                         .title("양배추 4통 같이 나눌분")
                         .buyEndDate(3)
                         .shareEndDate(2)
@@ -79,7 +79,7 @@ public class QuantityGroupBuyRepositoryTests {
         // 2. QuantityGroupBuy 전용 정보 저장
         QuantityGroupBuy newQuantityGroupBuy = quantityGroupBuyRepository.save(
                 QuantityGroupBuy.builder()
-                        .groupBuyNo(newGroupBuy) // 부모 GroupBuy 엔티티 연결 (FK 설정)
+                        .groupBuy(newGroupBuy) // 부모 GroupBuy 엔티티 연결 (FK 설정)
                         .myQuantity(1) // 개설자 부담 수량
                         .shareAmount(1) // 나눔 단위 수량
                         .pricePerUnit(3000) // 계산해야되는값
@@ -99,7 +99,7 @@ public class QuantityGroupBuyRepositoryTests {
         // GroupBuy 엔티티에서 QuantityGroupBuy의 pricePerUnit, shareAmount 정보를 조회해야 하나,
         // 테스트의 단순화를 위해 QuantityGroupBuy 엔티티를 직접 조회하거나 필요한 값을 하드코딩합니다.
         // 여기서는 QuantityGroupBuy 엔티티를 조회하여 필요한 정보를 가져옵니다.
-        QuantityGroupBuy quantityGroupBuy = quantityGroupBuyRepository.findByGroupBuyNo(groupBuyNo);
+        QuantityGroupBuy quantityGroupBuy = quantityGroupBuyRepository.findByGroupBuy(groupBuyNo);
 
         // [수량 공구 로직] 참여 수량(Quantity) 기반 결제 금액 계산
         int participantQuantity = 1; // 참여자가 3000g을 신청했다고 가정 (SHARE_AMOUNT의 배수)
@@ -113,8 +113,8 @@ public class QuantityGroupBuyRepositoryTests {
 
         GroupBuyParticipant joinQuantityGroupBuy = groupBuyParticipantRepository.save(
                 GroupBuyParticipant.builder()
-                        .participantNo(participantMember)
-                        .groupBuyNo(groupBuyNo)
+                        .participant(participantMember)
+                        .groupBuy(groupBuyNo)
                         .participatedDate(LocalDateTime.now())
                         .myQuantity(participantQuantity) // 참여 신청 수량 기록
                         .initialPaymentPoint(initialPaymentPoint)
@@ -155,7 +155,7 @@ public class QuantityGroupBuyRepositoryTests {
                 .orElseThrow(() -> new AssertionError("테스트를 위한 GroupBuy 엔티티(ID: " + GroupBuyId + ")를 찾을 수 없습니다."));
 
         // 1. QuantityGroupBuy 정보 조회
-        QuantityGroupBuy quantityGroupBuy = quantityGroupBuyRepository.findByGroupBuyNo(groupBuy);
+        QuantityGroupBuy quantityGroupBuy = quantityGroupBuyRepository.findByGroupBuy(groupBuy);
 
         // **수량 충족 조건 시뮬레이션**
         // 실제 서비스 로직에서는 DB에서 GroupBuyParticipant의 myQuantity 총합을 구해야 함
