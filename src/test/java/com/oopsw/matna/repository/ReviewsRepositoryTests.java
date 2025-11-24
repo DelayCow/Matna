@@ -146,12 +146,12 @@ public class ReviewsRepositoryTests {
 
     }
 
+    //홈에서 레시피 후기 10개 조회
     @Test
     void getRecentReviewsTest() {
 
+
         List<Reviews> entities = reviewsRepository.findTop10ByDelDateIsNullOrderByInDateDesc();
-
-
 
 
         List<ReviewsVO> voList = new ArrayList<>();
@@ -192,6 +192,57 @@ public class ReviewsRepositoryTests {
             System.out.println("작성자 프로필: " + vo.getWriterProfileImage());
             System.out.println("------------------------------");
         }
+
+    }
+
+    // 특정 레시피 후기 찾기
+    @Test
+    void getRecipeReviewsTest() {
+
+
+        Recipe recipe = recipeRepository.findById(1).get();
+
+         List<Reviews> ent = reviewsRepository.findTop10ByRecipeAndDelDateIsNullOrderByInDateDesc(recipe);
+
+        List<ReviewsVO> voList = new ArrayList<>();
+
+        for (Reviews r : ent) {
+            ReviewsVO vo = new ReviewsVO();
+
+
+            vo.setReviewNo(r.getReviewNo());
+            vo.setTitle(r.getTitle());
+            vo.setContent(r.getContent());
+            vo.setReviewImage(r.getImageUrl());
+            vo.setRating(r.getRating());
+            vo.setSpicyLevel(r.getSpicyLevel());
+            vo.setInDate(r.getInDate());
+
+
+            if (r.getAuthor() != null) {
+                vo.setWriterNickname(r.getAuthor().getNickname());
+                vo.setWriterProfileImage(r.getAuthor().getImageUrl());
+            }
+
+            voList.add(vo);
+        }
+
+
+
+        for (ReviewsVO vo : voList) {
+            System.out.println("후기 번호: " + vo.getReviewNo());
+            System.out.println("제목: " + vo.getTitle());
+            System.out.println("내용: " + vo.getContent());
+            System.out.println("사진 URL: " + vo.getReviewImage());
+            System.out.println("별점: " + vo.getRating());
+            System.out.println("맵기: " + vo.getSpicyLevel());
+            System.out.println("작성일: " + vo.getInDate());
+
+            System.out.println("작성자 닉네임: " + vo.getWriterNickname());
+            System.out.println("작성자 프로필: " + vo.getWriterProfileImage());
+            System.out.println("------------------------------");
+        }
+
 
     }
 }
