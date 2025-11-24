@@ -1,0 +1,51 @@
+body {
+    background-color: #f8f9fa;
+}
+.mobile-container {
+    max-width: 920px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    min-height: 100vh;
+    box-shadow: 0 0 15px rgba(0,0,0,0.05);
+}
+.form-control{
+    width: 300px;
+}
+.btn{
+    width: 100px;
+}
+.divider {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 0.9rem;
+    color: #888;
+    position: relative;
+    width: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center
+}
+.divider::before, .divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    height: 1px;
+    background: #ccc;
+    z-index: 1;
+}
+.divider::before {
+    left: 0;
+    right: 50%;
+    margin-right: 40px;
+}
+.divider::after {
+    right: 0;
+    left: 50%;
+    margin-left: 40px;
+}
+.divider span {
+    background-color: #ffffff;
+    padding: 0 15px;
+    position: relative;
+    z-index: 2;
+}
