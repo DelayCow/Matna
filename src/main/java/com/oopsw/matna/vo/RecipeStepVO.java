@@ -9,10 +9,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class RecipeListVO {
-    private int recipeNo;
-    private String title;
-    private Float averageRating;
+public class RecipeStepVO {
+
+    private Integer recipeStepNo;
+    private Integer recipeNo;    //? 필요 한가?
     private String imageUrl;
-    private int reviewCount;
+    private String content;
+    private Integer stepOrder;
+
 }
