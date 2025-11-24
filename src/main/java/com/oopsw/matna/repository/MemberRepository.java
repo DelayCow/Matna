@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 public interface MemberRepository extends JpaRepository<Member, Integer> {
-    Member findByMemberNo(int memberNo);
+    Member findByMemberNo(Integer memberNo);
     List<Member> memberNo(Integer memberNo);
 }

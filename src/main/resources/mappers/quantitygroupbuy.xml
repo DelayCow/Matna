@@ -62,4 +62,59 @@
             </otherwise>
         </choose>
     </select>
+
+    <select id="selectQuantityGroupBuyDetail" parameterType="int" resultType="com.oopsw.matna.vo.QuantityGroupBuyDetailVO">
+        SELECT
+            -- VO 필드 1~7번: 주요 그룹 구매 정보
+            gb.group_buy_no AS groupBuyNo,
+            gb.title AS title,
+            gb.content AS content,
+            gb.image_url AS imageUrl,
+            gb.ingredient_no AS ingredientNo,
+            gb.fee_rate AS feeRate,
+            gb.item_sale_url AS itemSaleUrl,
+
+            qgb.quantity_group_buy_no AS quantityGroupBuyNo,
+
+            -- VO 필드 9~14번: 날짜/공유 정보
+            gb.in_date AS inDate,
+            gb.share_location AS shareLocation,
+            gb.share_detail_address AS shareDetailAddress,
+            gb.buy_end_date AS buyEndDate,
+            gb.share_end_date AS shareEndDate,
+            gb.status AS status,
+
+            -- VO 필드 15~16번: 가격/수량 정보
+            qgb.price_per_unit AS pricePerUnit,
+            -- 잔여 수량 계산
+            gb.quantity - (qgb.my_quantity + COALESCE(SUM(gbp.my_quantity), 0)) AS remainingQty,
+
+            -- VO 필드 17~18번: 생성자 정보
+            m.image_url AS creatorProfileUrl,
+            m.nickname AS creatorNickname,
+
+            NULL AS participantProfileUrl,
+            NULL AS participantNickname,
+            NULL AS participatedDate,
+            0 AS myQuantity,
+            NULL AS recipeImageUrl,
+            NULL AS recipeTitle,
+            NULL AS authorNickname
+
+        FROM
+            quantity_group_buys qgb
+                INNER JOIN
+            group_buys gb ON qgb.group_buy_no = gb.group_buy_no
+                INNER JOIN
+            members m ON gb.creator_no = m.member_no
+                LEFT JOIN
+            group_buy_participant gbp ON gbp.group_buy_no = gb.group_buy_no AND gbp.cancel_date IS NULL
+        WHERE
+            qgb.quantity_group_buy_no = #{quantityGroupBuyNo}
+        GROUP BY
+            -- SELECT 목록에 있는 모든 컬럼을 포함하여 Group By 절을 완성합니다.
+            gb.group_buy_no, gb.title, gb.content, gb.image_url, gb.ingredient_no, gb.fee_rate, gb.item_sale_url,
+            qgb.quantity_group_buy_no, gb.in_date, gb.share_location, gb.share_detail_address, gb.buy_end_date, gb.share_end_date,
+            gb.status, qgb.price_per_unit, gb.quantity, qgb.my_quantity, m.image_url, m.nickname
+    </select>
 </mapper>
