@@ -31,9 +31,13 @@
 }
 
 .btn-group-buy-status {
+    display:none;
     line-height: 1.1;
     font-size: 0.85rem;
     height: 48px;
+}
+.btn-group-buy-status.show {
+    display:block;
 }
 
 .recipe-cards-scroll {
