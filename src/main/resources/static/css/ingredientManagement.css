@@ -1,0 +1,4 @@
+/* 사이드바 오른쪽으로 본문 밀기 */
+.content {
+    margin-left: 240px;
+}
