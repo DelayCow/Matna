@@ -9,42 +9,66 @@ document.addEventListener('DOMContentLoaded', function() {
             title: "안주로 딱~ 폭신하고 촉촉한 간단 폭탄계란찜",
             image: "../static/img/steamedeggs.jpg",
             rating: 5,
-            reviewCount: 8
+            reviewCount: 8,
+            serving: 1,        // 1인분
+            time: "10분이내",   // 시간
+            difficulty: "쉬움", // 난이도
+            spicy: "약간매워요" // 맵기
         },
         {
             id: 2,
             title: "속을 뜨끈하게! 한국인 입맛저격 라비올리",
             image: "../static/img/ravioli.jpg",
             rating: 4.5,
-            reviewCount: 14
+            reviewCount: 14,
+            serving: 1,        // 1인분
+            time: "10분이내",   // 시간
+            difficulty: "쉬움", // 난이도
+            spicy: "약간매워요" // 맵기
         },
         {
             id: 3,
             title: "촉촉한 패티! 황금비율 수제버거",
             image: "../static/img/hambugi.jpg", // 임시 이미지 경로
             rating: 5.0,
-            reviewCount: 19
+            reviewCount: 19,
+            serving: 1,        // 1인분
+            time: "10분이내",   // 시간
+            difficulty: "쉬움", // 난이도
+            spicy: "약간매워요" // 맵기
         },
         {
             id: 4,
             title: "한국에서 영국맛내기~ 바삭바삭 피쉬앤칩스",
             image: "../static/img/fishAndChips.jpg",
             rating: 4.0,
-            reviewCount: 6
+            reviewCount: 6,
+            serving: 1,        // 1인분
+            time: "10분이내",   // 시간
+            difficulty: "쉬움", // 난이도
+            spicy: "약간매워요" // 맵기
         },
         {
             id: 5,
             title: "소고기로 깊은 맛내기! 시원한 미역국",
             image: "../static/img/miyuckguck.jpg",
             rating: 3.5,
-            reviewCount: 21
+            reviewCount: 21,
+            serving: 1,        // 1인분
+            time: "10분이내",   // 시간
+            difficulty: "쉬움", // 난이도
+            spicy: "약간매워요" // 맵기
         },
         {
             id: 6,
             title: "오~래 끓여서 부드러운 꼬꼬뱅",
             image: "../static/img/cokkioo.jpg",
             rating: 4.5,
-            reviewCount: 41
+            reviewCount: 41,
+            serving: 1,        // 1인분
+            time: "10분이내",   // 시간
+            difficulty: "쉬움", // 난이도
+            spicy: "약간매워요" // 맵기
         }
     ];
 
@@ -81,6 +105,9 @@ document.addEventListener('DOMContentLoaded', function() {
         // 이미지가 없을 경우를 대비한 대체 이미지 처리 (옵션)
         const imgSrc = recipe.image ? recipe.image : 'https://via.placeholder.com/300x200';
 
+        // 수정 페이지 URL 나중에 만들어서 넣을것
+        const editUrl = `/recipe/edit?id=${recipe.id}`;
+
         return `
             <div class="recipe-card" data-id="${recipe.id}">
                 <div class="card-img-wrap">
@@ -89,8 +116,45 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="card-info">
                     <h5 class="card-title">${recipe.title}</h5>
                     <div class="d-flex align-items-center">
-                        <span class="star-rating me-1">${createStarHtml(recipe.rating)}</span>
+                        <span class="star-rating me-1" >${createStarHtml(recipe.rating)}</span>
                         <span class="review-count">(${recipe.reviewCount})</span>
+                        <div class="dropdown ms-auto"> <button class="btn btn-link text-secondary p-0 border-0 text-decoration-none dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-three-dots-vertical"></i>
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+        <li>
+            <a class="dropdown-item small" href="${editUrl}">
+                <i class="bi bi-pencil-square text-primary me-2"></i>수정
+            </a>
+        </li>
+        <li><hr class="dropdown-divider my-1"></li>
+        <li>
+            <button class="dropdown-item small text-danger btn-delete" data-id="${recipe.id}">
+                <i class="bi bi-trash me-2"></i>삭제
+            </button>
+        </li>
+    </ul>
+</div>
+                    </div>
+                    
+                    <div class="d-flex align-items-center text-muted small gap-3">
+                    <span class="d-flex align-items-center font-size-recipe-list">
+                        <i class="bi bi-people me-1"></i> ${recipe.serving}인분
+                    </span>
+                    
+                    <span class="d-flex align-items-center font-size-recipe-list">
+                        <i class="bi bi-clock me-1"></i> ${recipe.time}
+                    </span>
+
+                    <span class="d-flex align-items-center font-size-recipe-list">
+                        <i class="bi bi-star me-1"></i> ${recipe.difficulty}
+                    </span>
+
+                    ${ recipe.spicy ? `
+                    <span class="d-flex align-items-center text-danger font-size-recipe-list">
+                        <i class="bi bi-fire me-1"></i> 
+                        ${recipe.spicy}
+                    </span>` : '' }
                     </div>
                 </div>
             </div>

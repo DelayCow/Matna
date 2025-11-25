@@ -66,6 +66,10 @@
     transform: scale(0.98); /* 클릭 시 살짝 눌리는 효과 */
 }
 
+.font-size-recipe-list{
+    /*font-size: 0.6rem;*/
+}
+
 .card-img-wrap {
     position: relative;
     width: 100%;
