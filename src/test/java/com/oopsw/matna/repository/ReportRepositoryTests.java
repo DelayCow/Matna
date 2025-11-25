@@ -34,7 +34,7 @@ public class ReportRepositoryTests {
 
     @Test
     public void findByReportNo() {
-        System.out.println(reportRepository.findByReportNo(1));
+        System.out.println(reportRepository.findById(1));
     }
 
     @Test
