@@ -92,7 +92,11 @@
             <span class="step-date"></span>
           </div>
         </div>
-          <button class="side-action-btn btn btn-primary ms-3">정보 등록 버튼</button>
+<!--          <button class="side-action-btn btn btn-primary ms-3"-->
+<!--                  data-modal-type=""-->
+<!--                  data-product-name="표고버섯 500g">-->
+<!--            상품정보 등록-->
+<!--          </button>-->
         </div>
 
         <h3 class="product-name">표고버섯 500g</h3>
@@ -131,7 +135,10 @@
             <span class="step-date"></span>
           </div>
         </div>
-          <button class="side-action-btn btn btn-primary ms-3">정보 등록 버튼</button>
+          <button class="side-action-btn btn btn-primary ms-3"
+                  onclick="openPaymentModal('2', '스테비아 방울토마토 1,000g', '400g', '15원/g')">
+            결제 정보 등록
+          </button>
         </div>
         <h3 class="product-name">스테비아 방울토마토 1,000g</h3>
         <p class="product-price">내가 받을 400g</p>
@@ -170,7 +177,10 @@
             <span class="step-date"></span>
           </div>
         </div>
-          <button class="side-action-btn btn btn-primary ms-3">정보 등록 버튼</button>
+          <button class="side-action-btn btn btn-primary ms-3"
+                  onclick="openArriveModal('3', '햇 통마늘 1,000g')">
+            상품도착 등록
+          </button>
         </div>
         <h3 class="product-name">햇 통마늘 1,000g</h3>
         <p class="product-price">내가 받을 500g</p>
@@ -207,7 +217,11 @@
             <span class="step-date">09.16</span>
           </div>
         </div>
-          <button class="side-action-btn btn btn-primary ms-3">정보 등록 버튼</button>
+<!--          <button class="side-action-btn btn btn-primary ms-3"-->
+<!--                  data-modal-type="paymentModal"-->
+<!--                  data-product-name="표고버섯 500g">-->
+<!--            상품도착 등록-->
+<!--          </button>-->
         </div>
         <h3 class="product-name">수미감자 1,200g</h3>
         <p class="product-price">내가 받을 600g</p>
@@ -250,7 +264,23 @@
   </nav>
 </div>
 
+<!-- 1. 결제정보 등록 모달 -->
+<div th:replace="~{modals/payment-modal :: paymentModal}"></div>
+
+<!-- 2. 도착확인 등록 모달 -->
+<div th:replace="~{modals/arrive-modal :: arriveModal}"></div>
+
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- ========================================
+     모달 JavaScript Fragment Import
+     ======================================== -->
+<script th:replace="~{modals/payment-modal :: paymentScript}"></script>
+<script th:replace="~{modals/arrive-modal :: arriveScript}"></script>
+
+
+
 <script>
   // 프로필 이미지 클릭 이벤트
   document.querySelector('.profile-img.clickable').addEventListener('click', function() {
@@ -313,6 +343,12 @@
     btn.addEventListener('click', function(e) {
       e.stopPropagation();
       alert('페이지로 이동합니다.');
+    });
+  });
+
+  document.querySelectorAll('.side-action-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation(); // 카드 클릭 이벤트 방지
     });
   });
 </script>
