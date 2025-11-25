@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oopsw.matna.repository.ManagerDAO">
+    <select id="getAllGroupBuyList" resultType="com.oopsw.matna.vo.AllGroupBuyListVO">
+        SELECT
+            gb.group_buy_no groupBuyNo,
+            gb.status,
+            gb.in_date inDate,
+            m.nickname,
+            gb.creator_no createorNo,
+            gb.title,
+            CASE
+                WHEN qgb.group_buy_no IS NOT NULL THEN 'quantity'
+                WHEN pgb.group_buy_no IS NOT NULL THEN 'period'
+                ELSE 'error'
+                END AS groupBuyCase
+        FROM
+            GROUP_BUYS gb
+                JOIN
+            MEMBERS m ON m.member_no = gb.creator_no
+                LEFT JOIN
+            PERIOD_GROUP_BUYS pgb ON gb.group_buy_no = pgb.group_buy_no
+                LEFT JOIN
+            QUANTITY_GROUP_BUYS qgb ON gb.group_buy_no = qgb.group_buy_no
+        <where>
+            <if test="status != null and status != ''">
+                gb.status = #{status}
+            </if>
+
+            <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+                AND gb.in_date BETWEEN #{startDate} AND #{endDate}
+            </if>
+
+            <if test="title != null and title != ''">
+                AND gb.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+        </where>
+        ORDER BY gb.in_date DESC
+    </select>
+    <select id="getAllMemberList" resultType="com.oopsw.matna.vo.AllMemberListVO">
+        SELECT
+            member_no memberNo,
+            nickname,
+            member_id memberId,
+            in_date inDate,
+            ban_date banDate,
+            CASE
+            WHEN ban_date IS NULL OR ban_date &lt;= NOW() THEN 'normal'
+            ELSE 'ban'
+            END AS accountStatus
+        FROM
+            members
+        <where>
+            <if test="keyword != null and keyword != ''">
+                (nickname LIKE CONCAT('%', #{keyword}, '%')
+                OR member_id LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+
+            <if test="startDate != null and startDate != '' and endDate != null and endDate != ''">
+                AND in_date BETWEEN #{startDate} AND #{endDate}
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -1,5 +1,6 @@
-package com.oopsw.matna.repository;
+package com.oopsw.matna.Repository;
 
+import com.oopsw.matna.repository.MemberRepository;
 import com.oopsw.matna.repository.entity.Member;
 import com.oopsw.matna.vo.MemberProfileVO;
 import com.oopsw.matna.vo.MemberVO;
@@ -22,6 +23,15 @@ public class MemberRepositoryTests {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    @Test
+    @Transactional
+    public void updateBanDate() {
+        Member member = memberRepository.findByMemberId("member_18").get();
+
+        LocalDateTime banDate = LocalDateTime.of(2025, 11, 25, 0, 0);
+        member.setBanDate(banDate);
+    }
 
     @Test
     public void getMemberProfileTest() {
