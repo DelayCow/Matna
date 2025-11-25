@@ -1,4 +1,4 @@
-package com.oopsw.matna.Repository;
+package com.oopsw.matna.repository;
 
 import com.oopsw.matna.repository.entity.Report;
 import com.oopsw.matna.repository.*;
