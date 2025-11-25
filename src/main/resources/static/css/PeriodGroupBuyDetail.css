@@ -31,6 +31,8 @@
 }
 
 .btn-group-buy-status {
+    width: 150px;
+    flex-shrink: 0;
     display:none;
     line-height: 1.1;
     font-size: 0.85rem;
