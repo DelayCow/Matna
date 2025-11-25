@@ -30,7 +30,6 @@ public class ReportRepositoryTests {
 
     @Autowired
     private GroupBuyRepository groupBuyRepository;
-    ReportRepository reportRepository;
 
     @Test
     public void findByReportNo() {
