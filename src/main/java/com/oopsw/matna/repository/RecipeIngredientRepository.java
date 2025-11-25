@@ -13,4 +13,6 @@ public interface RecipeIngredientRepository extends JpaRepository<RecipeIngredie
     List<RecipeIngredient> findByRecipe(Recipe recipe);
     List<RecipeIngredient> findByIngredient_IngredientNo(Integer ingredientNo);
     List<RecipeIngredient> findByIngredientIngredientNoOrderByRecipeInDateDesc(Integer ingredientNo);
+
 }
+

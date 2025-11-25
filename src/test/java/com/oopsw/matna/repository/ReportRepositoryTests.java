@@ -1,6 +1,7 @@
-package com.oopsw.matna.repository;
+package com.oopsw.matna.Repository;
 
 import com.oopsw.matna.repository.entity.Report;
+import com.oopsw.matna.repository.*;
 import com.oopsw.matna.repository.entity.*;
 import com.oopsw.matna.vo.AllReportVO;
 import org.junit.jupiter.api.Test;
@@ -84,5 +85,4 @@ public class ReportRepositoryTests {
                 .build());
         groupBuyReportRepository.save(GroupBuyReport.builder().report(savedReport).groupBuy(target).build());
     }
-
 }

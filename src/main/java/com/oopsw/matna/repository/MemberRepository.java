@@ -7,10 +7,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+
+
 public interface MemberRepository extends JpaRepository<Member, Integer> {
-    Optional<Member> findByMemberId(String memberId);
-    //service에서 passwordEncoder.matches(rawPassword, encodedPassword) 하기
     boolean existsByNickname(String nickname);
-    Member findByMemberNo(Integer memberNo);
     List<Member> memberNo(Integer memberNo);
+    Optional<Member> findByMemberId(String memberId);
 }
