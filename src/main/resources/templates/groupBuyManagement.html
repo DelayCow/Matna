@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공구 관리</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../static/css/sidebar.css">
+    <link rel="stylesheet" href="../static/css/groupBuyManagement.css">
+
+</head>
+<body>
+<!-- 사이드바 자리 -->
+<div class="sidebar">
+
+    <!-- 프로필 -->
+    <div class="text-center mb-4 profile-area">
+        <img src="../static/img/default-profile.png" class="rounded-circle mb-2 profile-img" alt="프로필">
+        <h5 class="fw-semibold">홍길동</h5>
+    </div>
+
+    <!-- 메뉴 -->
+    <ul class="nav flex-column mb-auto">
+        <li class="nav-item mb-2">
+            <a class="nav-link sidebar-link" href="/home">유저 관리</a>
+        </li>
+        <li class="nav-item mb-2">
+            <a class="nav-link sidebar-link" href="/recipe">공구 관리</a>
+        </li>
+        <li class="nav-item mb-2">
+            <a class="nav-link sidebar-link" href="/ingredient">신고 관리</a>
+        </li>
+        <li class="nav-item mb-2">
+            <a class="nav-link sidebar-link" href="/my">재료 관리</a>
+        </li>
+    </ul>
+
+    <!-- 로그아웃 -->
+    <div class="mt-auto text-center">
+        <button class="btn btn-outline-danger w-75">로그아웃</button>
+    </div>
+
+</div>
+<div class="content">
+<div class="container my-4">
+
+    <!-- 검색 섹션 -->
+    <div class="search-box mb-4">
+
+        <!-- 검색옵션 -->
+        <div class="row mb-3 align-items-end">
+            <div class="col-md-2">
+                <label class="form-label">검색옵션</label>
+                <input type="date" class="form-control">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
+                <input type="date" class="form-control">
+            </div>
+            <div class="col-md-8">
+                <label class="form-label">&nbsp;</label>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button class="btn btn-outline-secondary">모집중</button>
+                    <button class="btn btn-outline-secondary">모집완료</button>
+                    <button class="btn btn-outline-secondary">결제대기</button>
+                    <button class="btn btn-outline-secondary">도착확인</button>
+                    <button class="btn btn-outline-secondary">나눔확정</button>
+                    <button class="btn btn-outline-danger">중단</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 검색명 -->
+        <div class="row align-items-end">
+            <div class="col-md-8">
+                <label class="form-label">검색명</label>
+                <input type="text" class="form-control" placeholder="제목">
+            </div>
+            <div class="col-auto">
+                <label class="form-label">&nbsp;</label>
+                <button class="btn btn-primary w-100">검색</button>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- 테이블 -->
+    <div class="table-responsive">
+        <table class="table table-bordered text-center align-middle">
+            <thead>
+            <tr>
+                <th>번호</th>
+                <th>상태</th>
+                <th>개설일</th>
+                <th>개설자</th>
+                <th>제목</th>
+                <th>상태</th>
+                <th>상세보기</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            <tr>
+                <td>1</td>
+                <td><span class="badge bg-danger badge-status">중단</span></td>
+                <td>2025.10.15.23.16</td>
+                <td>신혜림(moahd1211)</td>
+                <td>밀키트에서 제공 고추가루 5kg</td>
+                <td>기간</td>
+                <td class="d-flex justify-content-center gap-2">
+                    <button class="btn btn-primary btn-sm">상세보기</button>
+                    <button class="btn btn-danger btn-sm">중단하기</button>
+                </td>
+            </tr>
+
+            <tr>
+                <td>2</td>
+                <td><span class="badge bg-secondary badge-status">나눔확정</span></td>
+                <td>2025.10.20.10.16</td>
+                <td>양현기(ddududtns1010)</td>
+                <td>간편한 휴대 액상커피 리필보틀 500ml 5개</td>
+                <td>수령</td>
+                <td class="d-flex justify-content-center gap-2">
+                    <button class="btn btn-primary btn-sm">상세보기</button>
+                    <button class="btn btn-danger btn-sm">중단하기</button>
+                </td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+
+</div>
+</div>
+</body>
+</html>

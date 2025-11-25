@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>마이페이지 공동구매 목록</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="../static/css/layout.css">
+  <link rel="stylesheet" href="../static/css/mypageGroupBuyParticipate.css">
+</head>
+<body>
+<!--기본레이아웃-->
+<div class="mobile-container position-relative">
+  <!--헤더-->
+  <header class="d-flex justify-content-between align-items-center p-3 bg-white sticky-top" style="z-index: 1020;">
+    <a href="#" class="text-dark back-btn"><i class="bi bi-chevron-left fs-4"></i></a>
+    <h4 class="m-0 fw-bold">마이페이지</h4>
+    <a href="#" class="text-dark menu-btn"><i class="bi bi-three-dots-vertical fs-4"></i></a>
+  </header>
+
+  <!--컨텐츠-->
+  <!-- 프로필 섹션 -->
+  <section class="profile-section">
+    <div class="profile-container">
+      <img src="profile.jpg" alt="프로필" class="profile-img clickable">
+      <div class="profile-info">
+        <h2 class="username">베베는오리</h2>
+        <p class="manner-temp">내 맛나포인트 : 5,600 원</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 탭 네비게이션 -->
+  <nav class="tab-nav">
+    <button class="tab-btn">
+      <span class="tab-count">6</span>
+      <span class="tab-label">레시피</span>
+    </button>
+    <button class="tab-btn active">
+      <span class="tab-count">14</span>
+      <span class="tab-label">공동구매</span>
+    </button>
+    <button class="tab-btn">
+      <span class="tab-count">50</span>
+      <span class="tab-label">스크랩</span>
+    </button>
+  </nav>
+
+  <!-- 필터 섹션 -->
+  <section class="filter-section">
+    <div class="filter-buttons">
+      <button class="filter-btn">참여</button>
+      <button class="filter-btn active">개설</button>
+    </div>
+    <div class="sort-dropdown">
+      <select class="sort-select">
+        <option>전체</option>
+        <option>진행중</option>
+        <option>완료</option>
+      </select>
+    </div>
+  </section>
+
+  <!-- 상품 목록 -->
+  <main class="product-list">
+    <!-- 상품 1: 표고버섯 -->
+    <article class="product-card">
+      <img src="mushroom.jpg" alt="표고버섯" class="product-img">
+      <div class="product-info">
+
+        <div th:replace="common/progress-bar :: progressBar(${steps}, ${current})"></div>
+
+      </div>
+        <h3 class="product-name">표고버섯 500g</h3>
+        <p class="product-price">내가 받을 100g</p>
+        <p class="product-detail">공당 참여금 : 100g / 50g / 200g )</p>
+        <p class="product-detail">총 구성 : 50g</p>
+        <p class="status-text red">공동구매 모집</p>
+        <p class="deadline">남은 시간 13:31:15</p>
+      </div>
+    </article>
+
+    <!-- 상품 2: 스테비아 방울토마토 -->
+    <article class="product-card">
+      <img src="tomato.jpg" alt="방울토마토" class="product-img">
+      <div class="product-info">
+        <div class="progress-bar">
+          <div class="progress-step completed">
+            <div class="step-circle"></div>
+            <span class="step-label">모집</span>
+            <span class="step-date">~ 11.08</span>
+          </div>
+          <div class="progress-step completed">
+            <div class="step-circle"></div>
+            <span class="step-label">상품준비</span>
+            <span class="step-date">11.08</span>
+          </div>
+          <div class="progress-step current">
+            <div class="step-circle"></div>
+            <span class="step-label">상품도착</span>
+            <span class="step-date"></span>
+          </div>
+          <div class="progress-step">
+            <div class="step-circle"></div>
+            <span class="step-label">나눔완료</span>
+            <span class="step-date"></span>
+          </div>
+        </div>
+        <h3 class="product-name">스테비아 방울토마토 1,000g</h3>
+        <p class="product-price">내가 받을 400g</p>
+        <p class="product-detail">4명 참여( 100g / 100g / 300g / 100g )</p>
+        <button class="action-btn">참배완료 토론</button>
+        <p class="status-text red">정보 토론</p>
+        <p class="deadline">남은 시간 13:29:32</p>
+        <p class="price-info">6,900원 정산예정</p>
+      </div>
+    </article>
+
+    <!-- 상품 3: 햇 통마늘 -->
+    <article class="product-card">
+      <img src="garlic.jpg" alt="통마늘" class="product-img">
+      <div class="product-info">
+        <div class="progress-bar">
+          <div class="progress-step completed">
+            <div class="step-circle"></div>
+            <span class="step-label">모집</span>
+            <span class="step-date">~ 09.30</span>
+          </div>
+          <div class="progress-step completed">
+            <div class="step-circle"></div>
+            <span class="step-label">상품준비</span>
+            <span class="step-date">09.30</span>
+          </div>
+          <div class="progress-step completed">
+            <div class="step-circle"></div>
+            <span class="step-label">상품도착</span>
+            <span class="step-date">10.01</span>
+          </div>
+          <div class="progress-step current">
+            <div class="step-circle"></div>
+            <span class="step-label">나눔완료</span>
+            <span class="step-date"></span>
+          </div>
+        </div>
+        <h3 class="product-name">햇 통마늘 1,000g</h3>
+        <p class="product-price">내가 받을 500g</p>
+        <p class="product-detail">2명 참여( 500g / 500g )</p>
+        <button class="action-btn">참배완료 토론</button>
+        <p class="price-info">7,700원 정산예정</p>
+      </div>
+    </article>
+
+    <!-- 상품 4: 수미감자 -->
+    <article class="product-card">
+      <img src="potato.jpg" alt="수미감자" class="product-img">
+      <div class="product-info">
+        <div class="progress-bar">
+          <div class="progress-step completed">
+            <div class="step-circle"></div>
+            <span class="step-label">모집</span>
+            <span class="step-date">~ 09.11</span>
+          </div>
+          <div class="progress-step completed">
+            <div class="step-circle"></div>
+            <span class="step-label">상품준비</span>
+            <span class="step-date">09.12</span>
+          </div>
+          <div class="progress-step completed">
+            <div class="step-circle"></div>
+            <span class="step-label">상품도착</span>
+            <span class="step-date">09.14</span>
+          </div>
+          <div class="progress-step completed">
+            <div class="step-circle"></div>
+            <span class="step-label">나눔완료</span>
+            <span class="step-date">09.16</span>
+          </div>
+        </div>
+        <h3 class="product-name">수미감자 1,200g</h3>
+        <p class="product-price">내가 받을 600g</p>
+        <p class="product-detail">1명 참여( 600g )</p>
+        <p class="price-info">2,600원 정산완료</p>
+      </div>
+    </article>
+  </main>
+
+  <!--메뉴바-->
+  <nav class="navbar fixed-bottom bg-white bottom-nav p-0">
+    <div class="container-fluid p-0">
+      <ul class="nav w-100 justify-content-between py-2 px-5">
+        <li class="nav-item">
+          <a class="nav-link p-1" href="#">
+            <i class="bi bi-house-door-fill"></i>
+            홈
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link p-1" href="#">
+            <i class="bi bi-book"></i>
+            레시피
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link active p-1" href="#">
+            <i class="bi bi-basket"></i>
+            공동 구매
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link p-1" href="#">
+            <i class="bi bi-person"></i>
+            MY
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // 프로필 이미지 클릭 이벤트
+  document.querySelector('.profile-img.clickable').addEventListener('click', function() {
+    alert('프로필 페이지로 이동합니다.');
+    // window.location.href = '/profile-detail';
+  });
+
+  // 뒤로가기 버튼
+  document.querySelector('.back-btn').addEventListener('click', function(e) {
+    e.preventDefault();
+    window.history.back();
+  });
+
+  // 메뉴 버튼
+  document.querySelector('.menu-btn').addEventListener('click', function(e) {
+    e.preventDefault();
+    alert('메뉴를 열었습니다.');
+  });
+
+  // 탭 버튼들
+  document.querySelectorAll('.tab-btn').forEach(function(btn, index) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+
+      const tabs = ['레시피', '공동구매', '스크랩'];
+      alert(tabs[index] + ' 탭으로 이동합니다.');
+    });
+  });
+
+  // 필터 버튼들
+  document.querySelectorAll('.filter-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // 하단 네비게이션
+  document.querySelectorAll('.bottom-nav .nav-link').forEach(function(link, index) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelectorAll('.bottom-nav .nav-link').forEach(l => l.classList.remove('active'));
+      this.classList.add('active');
+
+      const navs = ['홈', '레시피', '공동 구매', 'MY'];
+      alert(navs[index] + ' 페이지로 이동합니다.');
+    });
+  });
+
+  // 상품 카드 클릭
+  document.querySelectorAll('.product-card').forEach(function(card) {
+    card.addEventListener('click', function() {
+      alert('상품 상세 페이지로 이동합니다.');
+    });
+  });
+
+  // 액션 버튼 클릭 (이벤트 전파 방지)
+  document.querySelectorAll('.action-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      alert('참배완료 토론 페이지로 이동합니다.');
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-package com.oopsw.matna.Repository;
+package com.oopsw.matna.repository;
 
 import com.oopsw.matna.repository.entity.Report;
 import com.oopsw.matna.repository.*;
@@ -31,11 +31,10 @@ public class ReportRepositoryTests {
 
     @Autowired
     private GroupBuyRepository groupBuyRepository;
-    ReportRepository reportRepository;
 
     @Test
     public void findByReportNo() {
-        System.out.println(reportRepository.findByReportNo(1));
+        System.out.println(reportRepository.findById(1));
     }
 
     @Test
@@ -86,5 +85,4 @@ public class ReportRepositoryTests {
                 .build());
         groupBuyReportRepository.save(GroupBuyReport.builder().report(savedReport).groupBuy(target).build());
     }
-
 }
