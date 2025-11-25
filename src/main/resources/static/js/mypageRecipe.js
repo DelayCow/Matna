@@ -187,6 +187,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+
+
     // 2. 헤더 메뉴 토글
     const menuBtn = document.getElementById('headerMenuBtn');
     const dropdown = document.getElementById('headerDropdown');
