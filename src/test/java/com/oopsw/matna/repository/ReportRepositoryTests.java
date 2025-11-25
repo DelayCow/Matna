@@ -86,5 +86,4 @@ public class ReportRepositoryTests {
                 .build());
         groupBuyReportRepository.save(GroupBuyReport.builder().report(savedReport).groupBuy(target).build());
     }
-
 }

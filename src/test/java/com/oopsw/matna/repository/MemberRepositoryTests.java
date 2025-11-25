@@ -1,6 +1,5 @@
-package com.oopsw.matna.Repository;
+package com.oopsw.matna.repository;
 
-import com.oopsw.matna.repository.MemberRepository;
 import com.oopsw.matna.repository.entity.Member;
 import com.oopsw.matna.vo.MemberProfileVO;
 import com.oopsw.matna.vo.MemberVO;
@@ -12,7 +11,6 @@ import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 
 @SpringBootTest
