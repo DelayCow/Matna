@@ -1,9 +1,5 @@
-package com.oopsw.matna.Repository;
+package com.oopsw.matna.repository;
 
-import com.oopsw.matna.repository.RecipeAlternativeIngredientRepository;
-import com.oopsw.matna.repository.RecipeIngredientRepository;
-import com.oopsw.matna.repository.RecipeRepository;
-import com.oopsw.matna.repository.RecipeStepRepository;
 import com.oopsw.matna.repository.entity.Recipe;
 import com.oopsw.matna.repository.entity.RecipeAlternativeIngredient;
 import com.oopsw.matna.repository.entity.RecipeIngredient;
@@ -19,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @SpringBootTest
-public class RecipeDetailRepositoryTest {
+public class RecipeDetailRepositoryTests {
 
     @Autowired
     RecipeRepository recipeRepository;

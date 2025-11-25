@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+
 public interface RecipeStepRepository extends CrudRepository<RecipeStep, Integer> {
 
     List<RecipeStep> findByRecipeOrderByStepOrderAsc(Recipe recipe);

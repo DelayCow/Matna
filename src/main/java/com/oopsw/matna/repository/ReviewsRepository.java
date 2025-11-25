@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
+
 public interface ReviewsRepository extends CrudRepository<Reviews, Integer> {
 
     @EntityGraph(attributePaths = {"author"})

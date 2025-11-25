@@ -1,15 +1,10 @@
 package com.oopsw.matna.repository;
 
-import com.oopsw.matna.repository.entity.Member;
-import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDateTime;
-
 @SpringBootTest
-public class RecipeStepRepositoryTest {
+public class RecipeStepRepositoryTests {
 
     @Autowired
     RecipeStepRepository recipeStepRepository;
