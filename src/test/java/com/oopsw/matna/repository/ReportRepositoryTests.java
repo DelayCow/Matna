@@ -1,5 +1,7 @@
-package com.oopsw.matna.repository;
+package com.oopsw.matna.Repository;
 
+import com.oopsw.matna.repository.entity.Report;
+import com.oopsw.matna.repository.*;
 import com.oopsw.matna.repository.entity.*;
 import com.oopsw.matna.vo.AllReportVO;
 import org.junit.jupiter.api.Test;
@@ -8,8 +10,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Optional;
 import java.time.LocalDateTime;
 
+@Transactional
 @SpringBootTest
 public class ReportRepositoryTests {
     @Autowired
@@ -26,6 +31,12 @@ public class ReportRepositoryTests {
 
     @Autowired
     private GroupBuyRepository groupBuyRepository;
+    ReportRepository reportRepository;
+
+    @Test
+    public void findByReportNo() {
+        System.out.println(reportRepository.findByReportNo(1));
+    }
 
     @Test
     @Transactional
@@ -46,6 +57,13 @@ public class ReportRepositoryTests {
                 .reportedDate(LocalDateTime.now())
                 .build());
         memberReportRepository.save(MemberReport.builder().report(savedReport).targetMember(target).build());
+    }
+
+    @Test
+    public void ReportStatus() {
+        Report r = reportRepository.findById(6)  // findById는 Optional 반환
+                .orElseThrow(() -> new RuntimeException("Report가 없습니다."));
+        r.setStatus("complete");
     }
 
     @Test

@@ -33,13 +33,25 @@
 .btn-group-buy-status {
     width: 150px;
     flex-shrink: 0;
-    display:none;
+    display: none;
     line-height: 1.1;
     font-size: 0.85rem;
     height: 48px;
+    margin-left: 10px;
 }
+
+.d-flex .btn-group-buy-status:first-child {
+    margin-left: 0;
+}
+
 .btn-group-buy-status.show {
-    display:block;
+    display: inline-block;
+}
+
+.creator-stopped-btn {
+    background-color: #198754 !important;
+    border-color: #198754 !important;
+    color: #ffffff !important;
 }
 
 .recipe-cards-scroll {

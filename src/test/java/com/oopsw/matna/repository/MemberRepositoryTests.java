@@ -23,6 +23,15 @@ public class MemberRepositoryTests {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Test
+    @Transactional
+    public void updateBanDate() {
+        Member member = memberRepository.findByMemberId("member_18").get();
+
+        LocalDateTime banDate = LocalDateTime.of(2025, 11, 25, 0, 0);
+        member.setBanDate(banDate);
+    }
+
+    @Test
     public void getMemberProfileTest() {
         Integer memberNo = 5;
         Member m = memberRepository.findById(memberNo).get();
