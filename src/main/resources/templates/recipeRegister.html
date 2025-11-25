@@ -39,66 +39,45 @@
             <div class="col-6">
                 <label for="category" class="form-label fw-bold">카테고리</label>
                 <select class="form-select w-75" id="category" aria-label="카테고리 선택">
-                    <option selected>전체</option>
-                    <option value="1">한식</option>
-                    <option value="2">양식</option>
-                    <option value="3">중식</option>
+                    <option disabled selected>전체</option>
+                    <option value="korean">한식</option>
+                    <option value="japanese">일식</option>
+                    <option value="chinese">중식</option>
+                    <option value="western">양식</option>
+                    <option value="other">기타</option>
                 </select>
             </div>
             <div class="col-6">
                 <div class="d-flex align-items-center">
-                    <input type="text" class="form-control text-end w-25 me-1" placeholder="30">
+                    <input type="text" class="form-control text-end w-25 me-1" placeholder="0">
                     <span class="me-2">분</span>
-                    <input type="text" class="form-control text-end w-25 ms-auto" placeholder="2">
+                    <input type="text" class="form-control text-end w-25 ms-auto" placeholder="0">
                     <span>인분</span>
                 </div>
             </div>
         </div>
 
-        <div class="mb-4">
+        <div class="mb-4" id="ingredientContainer">
             <h5 class="fw-bold mb-3">재료 추가</h5>
             <div class="mb-4">
-                <label for="itemSelect" class="form-label fw-bold">품목 선택</label>
+                <label for="itemSelect" class="form-label fw-bold">재료 선택</label>
                 <div class="select-input-group">
-                    <input type="text" class="form-control" id="itemSelect" placeholder="품목선택" value="">
+                    <input type="text" class="form-control" id="itemSelect" placeholder="재료선택" value="">
                     <i class="bi bi-search select-icon"></i>
                     <div class="dropdown-menu" id="itemDropdownMenu"></div>
                 </div>
             </div>
 
             <div class="mb-4">
-                <label for="otherItem" class="form-label fw-bold">기타 품목 선택</label>
+                <label for="otherItem" class="form-label fw-bold">기타 재료 선택</label>
                 <div class="d-flex align-items-center">
-                    <input type="text" class="form-control me-2" id="otherItem" placeholder="선택지에 없는 품목을 추가하세요!">
+                    <input type="text" class="form-control me-2" id="otherItem" placeholder="선택지에 없는 재료를 추가하세요!">
                     <button class="btn btn-outline-secondary" type="button" id="addOtherItemBtn" style="height: 44px; width: 44px; border-radius: 8px;">
                         <i class="bi bi-plus fs-5"></i>
                     </button>
                 </div>
             </div>
 
-            <div class="d-flex align-items-center mt-3 p-2 bg-light rounded" id="new-ingredient-form" style="display: none !important;">
-                <input type="text" class="form-control form-control-sm me-2" style="width: 30%; flex-shrink: 0;" placeholder="재료명" id="current-ingredient-name-input" readonly>
-
-                <input type="text" class="form-control form-control-sm text-end" style="width: 20%; flex-shrink: 0;" placeholder="수량" id="current-quantity-input">
-
-                <div class="d-flex unit-radio-group" style="width: 40%; flex-shrink: 0;">
-                    <input type="radio" class="btn-check" name="unit" id="unit-ml" value="ml" autocomplete="off" checked>
-                    <label class="btn btn-outline-secondary btn-sm me-1" for="unit-ml">ml</label>
-
-                    <input type="radio" class="btn-check" name="unit" id="unit-ea" value="개" autocomplete="off">
-                    <label class="btn btn-outline-secondary btn-sm me-1" for="unit-ea">개</label>
-
-                    <input type="radio" class="btn-check" name="unit" id="unit-sp" value="스푼(T)" autocomplete="off">
-                    <label class="btn btn-outline-secondary btn-sm me-1" for="unit-sp">스푼(T)</label>
-
-                    <input type="radio" class="btn-check" name="unit" id="unit-g" value="g" autocomplete="off">
-                    <label class="btn btn-outline-secondary btn-sm" for="unit-g">그램(g)</label>
-                </div>
-
-                <button class="btn btn-danger ms-4 flex-shrink-0" type="button" id="delete-ingredient-form-btn" style="height: 32px; width: 50px; padding: 0;">
-                    삭제
-                </button>
-            </div>
         </div>
 
         <div class="mb-4">
@@ -136,16 +115,9 @@
 
             <div class="recipe-step d-flex mb-3">
                 <div class="step-image me-3 flex-shrink-0">
-                    <img src="path/to/image1.jpg" alt="1단계 이미지" class="img-fluid rounded">
+                    <i class="bi bi-plus fs-1 text-secondary"></i>
                 </div>
-                <textarea class="form-control" rows="3" placeholder="레시피 설명 (예: 떡을 물에 불립니다.)"></textarea>
-            </div>
-
-            <div class="recipe-step d-flex mb-3">
-                <div class="step-image me-3 flex-shrink-0">
-                    <img src="path/to/image2.jpg" alt="2단계 이미지" class="img-fluid rounded">
-                </div>
-                <textarea class="form-control" rows="3" placeholder="레시피 설명 (예: 양념 재료를 섞어줍니다.)"></textarea>
+                <textarea class="form-control" rows="3" placeholder="레시피 설명"></textarea>
             </div>
 
             <div class="text-center">
@@ -214,12 +186,6 @@
     const searchInput = document.getElementById('itemSelect');
     const itemMenu = document.getElementById('itemDropdownMenu');
 
-    const currentNameInput = document.getElementById('current-ingredient-name-input');
-    const currentQtyInput = document.getElementById('current-quantity-input');
-
-    const newIngredientForm = document.getElementById('new-ingredient-form');
-    const deleteIngredientFormBtn = document.getElementById('delete-ingredient-form-btn');
-
     let isItemClicked = false;
 
     function debounce(func, delay) {
@@ -231,13 +197,6 @@
             }, delay);
         };
     }
-
-    deleteIngredientFormBtn.addEventListener('click', function() {
-        const parent = newIngredientForm.parentElement;
-        if (parent) {
-            parent.removeChild(newIngredientForm);
-        }
-    });
 
     // --- 품목 선택 검색 및 드롭다운 로직 (이전과 동일) ---
     searchInput.addEventListener('input', debounce(function() {
@@ -266,10 +225,12 @@
         const filteredData = mockData.filter(item => item.name.includes(query));
         updateDropdownMenu(filteredData);
     }
-
+    const ingredientContainer = document.getElementById('ingredientContainer');
+    const other = document.getElementById('otherItem');
+    document.getElementById('addOtherItemBtn').addEventListener('click', (e) => addIngredient(e, other.value))
+    let addedIngredients = [];
     function updateDropdownMenu(results) {
-        const menu = document.getElementById('itemDropdownMenu');
-        menu.innerHTML = '';
+        itemMenu.innerHTML = '';
 
         if (results && results.length > 0) {
             results.forEach(item => {
@@ -278,27 +239,74 @@
                 a.href = '#';
                 a.textContent = item.name;
 
-                a.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    isItemClicked = true;
-                    searchInput.value = item.name;
-                    menu.classList.remove('show');
-                    searchInput.blur();
+                a.addEventListener('click', (e) => addIngredient(e, item.name));
 
-                    currentNameInput.value = item.name;
-
-                    newIngredientForm.style.display = 'flex';
-                    currentQtyInput.focus();
-                });
-
-                menu.appendChild(a);
+                itemMenu.appendChild(a);
             });
-            menu.classList.add('show');
+            itemMenu.classList.add('show');
         } else {
-            menu.classList.remove('show');
+            itemMenu.classList.remove('show');
         }
     }
+    const deleteIngredient = function (id){
+        const elementToRemove = document.getElementById(id);
+        if (elementToRemove) {
+            elementToRemove.remove();
 
+            // ID (예: "밀떡_div")에서 재료 이름 (예: "밀떡") 추출
+            const ingredientName = id.replace('_div', '');
+
+            // addedIngredients 배열에서 해당 재료 이름 제거
+            const index = addedIngredients.indexOf(ingredientName);
+            if (index > -1) {
+                addedIngredients.splice(index, 1);
+            }
+        }
+    }
+    const addIngredientHtml = function (name){
+        //나중에 ingredientNo받아서 이거 기준으로 구분할 수 있게 하기
+        return `<div class="d-flex align-items-center mt-3 p-2 bg-light rounded" id="${name}_div">
+                <input type="text" class="form-control form-control-sm me-2" style="width: 30%; flex-shrink: 0;" placeholder="재료명" value="${name}" readonly>
+
+                <input type="number" class="form-control form-control-sm text-end me-2" style="width: 20%; flex-shrink: 0;" placeholder="수량">
+
+                <div class="d-flex unit-radio-group" style="width: 40%; flex-shrink: 0;">
+                    <input type="radio" class="btn-check" name="${name}_unit" id="${name}_unit_ml" value="ml" autocomplete="off" checked>
+                    <label class="btn btn-outline-secondary btn-sm me-1" for="${name}_unit_ml">ml</label>
+
+                    <input type="radio" class="btn-check" name="${name}_unit" id="${name}_unit_ea" value="개" autocomplete="off">
+                    <label class="btn btn-outline-secondary btn-sm me-1" for="${name}_unit_ea">개</label>
+
+                    <input type="radio" class="btn-check" name="${name}_unit" id="${name}_unit_sp" value="스푼(T)" autocomplete="off">
+                    <label class="btn btn-outline-secondary btn-sm me-1" for="${name}_unit_sp">스푼(T)</label>
+
+                    <input type="radio" class="btn-check" name="${name}_unit" id="${name}_unit_g" value="g" autocomplete="off">
+                    <label class="btn btn-outline-secondary btn-sm" for="${name}_unit_g">그램(g)</label>
+                </div>
+
+                <button class="btn btn-danger ms-4 flex-shrink-0" type="button" style="height: 32px; width: 50px; padding: 0;" onclick="deleteIngredient('${name}_div')">
+                    삭제
+                </button>
+            </div>`
+    }
+    const addIngredient = function(e, name){
+        e.preventDefault();
+        if (name.length === 0) {
+            alert('재료 이름을 입력해야 추가할 수 있습니다.'); //임시로 넣음
+            return;
+        }
+        isItemClicked = true;
+        if (addedIngredients.includes(name)) {
+            alert(`${name}은(는) 이미 추가된 재료입니다.`); //임시로 넣음
+        }else{
+            ingredientContainer.insertAdjacentHTML('beforeend', addIngredientHtml(name));
+            addedIngredients.push(name);
+        }
+        searchInput.value = '';
+        other.value = '';
+        itemMenu.classList.remove('show');
+        searchInput.blur();
+    }
 
 </script>
 </body>
