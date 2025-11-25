@@ -113,10 +113,7 @@ public class IngredientRepositoryTests {
         ingredient.setApproveDate(LocalDateTime.now());
     }
 
-        System.out.println("재료 등록 성공");
-        System.out.println("번호: " + savedItem.getIngredientNo());
-        System.out.println("재료명: " + savedItem.getIngredientName());
-        System.out.println("작성자: " + savedItem.getCreator().getNickname());
+
     @Test
     @Transactional
     @Commit
