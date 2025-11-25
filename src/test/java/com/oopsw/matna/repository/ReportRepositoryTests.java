@@ -31,11 +31,10 @@ public class ReportRepositoryTests {
 
     @Autowired
     private GroupBuyRepository groupBuyRepository;
-    ReportRepository reportRepository;
 
     @Test
     public void findByReportNo() {
-        System.out.println(reportRepository.findByReportNo(1));
+        System.out.println(reportRepository.findById(1));
     }
 
     @Test
