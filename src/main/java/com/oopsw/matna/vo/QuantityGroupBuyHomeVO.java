@@ -1,14 +1,10 @@
 package com.oopsw.matna.vo;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@NoArgsConstructor
-@AllArgsConstructor
+@Builder
 @Data
 @ToString
 public class QuantityGroupBuyHomeVO {
@@ -21,6 +17,7 @@ public class QuantityGroupBuyHomeVO {
     private String ingredientName;
 
     private Integer quantity;
+    private Integer myQuantity;
     private Integer remainingQty;
     private String unit;
     private Integer pricePerUnit;

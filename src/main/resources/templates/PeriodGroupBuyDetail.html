@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PeriodGroupBuyDetail</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="../static/css/layout.css">
+  <link rel="stylesheet" href="../static/css/PeriodGroupBuyDetail.css">
+</head>
+<body>
+<div class="mobile-container position-relative">
+  <header class="d-flex justify-content-between align-items-center p-3 bg-white sticky-top period-detail-header" style="z-index: 1020;">
+    <a href="#" class="text-dark"><i class="bi bi-chevron-left fs-4"></i></a>
+    <h4 class="m-0 fw-bold">공동구매</h4>
+    <a href="#" class="text-dark"><i class="bi bi-bell fs-4"></i></a>
+  </header>
+
+  <div class="container-fluid content-area p-0">
+
+    <div class="top-product-image-full">
+      <img src="../../../../../Matna/src/main/resources/static/img/orange.jpg" alt="고당도 제주 감귤 이미지" class="img-fluid">
+    </div>
+
+    <div class="group-buy-product p-3">
+      <div class="d-flex align-items-center mb-3">
+        <img src="../../../../../Matna/src/main/resources/static/img/user.png" class="rounded-circle me-2" alt="작성자 프로필" style="width:36px; height:36px;">
+        <div class="d-flex flex-column lh-sm">
+          <span class="fw-bold">해피</span>
+        </div>
+      </div>
+
+      <h2 class="fw-bold mb-1 product-title">고당도 제주 감귤 1kg</h2>
+      <a href="#" class="text-primary small d-inline-block text-decoration-none mb-3">상품판매페이지</a>
+      <p class="product-price fs-4 fw-bold mb-1">2,400원 ~ 6,000원 <span class="text-muted fee-text">(수수료 5% 포함)</span></p>
+
+      <hr class="my-3">
+
+      <div class="product-status-block">
+        <div class="d-flex align-items-center mb-1">
+          <span class="text-dark me-2 fw-bold">참여 인원</span>
+          <span class="fs-5 fw-bold text-danger me-1">2명</span> / <span class="text-muted">5명</span>
+        </div>
+        <div class="text-start mb-2">
+          <span class="text-dark me-2 fw-bold">남은 시간</span>
+          <span class="fw-bold text-danger">2일 02:41:28</span>
+        </div>
+      </div>
+      <p class="mb-2 fw-bold small">참여 인원별 예상 금액 <span class="text-danger">1,200원 (100g 당)</span></p>
+
+      <div class="d-flex align-items-end justify-content-between mb-3 table-button-group">
+        <div class="table-responsive small flex-grow-1 me-2" style="max-width: 300px;">
+          <table class="table table-bordered text-center group-buy-table mb-0">
+            <thead>
+            <tr>
+              <th scope="col">2명</th>
+              <th scope="col">3명</th>
+              <th scope="col">4명</th>
+              <th scope="col">5명</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+              <td>6,000원 <br> 500g</td>
+              <td>4,000원 <br> 333g</td>
+              <td>3,000원 <br> 250g</td>
+              <td>2,400원 <br> 200g</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="d-flex flex-shrink-0">
+          <button class="btn btn-danger py-2 px-3 fw-bold btn-group-buy-status normal-btn"
+                  data-bs-toggle="modal" data-bs-target="#dynamicMainModal" data-bs-status="normal">공동구매 참여하기</button>
+          <button class="btn btn-danger py-2 px-3 fw-bold btn-group-buy-status participant-btn"
+                  data-bs-toggle="modal" data-bs-target="#dynamicMainModal" data-bs-status="participant">공동구매 취소하기</button>
+          <button class="btn btn-danger py-2 px-3 fw-bold btn-group-buy-status creator-running-btn"
+                  data-bs-toggle="modal" data-bs-target="#dynamicMainModal" data-bs-status="creator">공동구매 중단하기</button></div>
+      </div>
+
+      <p class="text-center bg-light p-2 rounded small text-muted">
+        혼자 먹기에는 양이 너무 많아서요~<br>같이 나눠 드실 분 구해요~~
+      </p>
+
+      <hr class="my-3">
+
+      <div class="group-buy-location mb-3">
+        <h5 class="fw-bold mb-2">나눔 장소</h5>
+        <p class="mb-1"><i class="bi bi-geo-alt-fill me-2 text-danger"></i>서울시 금천구 가산동 319. 호서대벤처타워 1층 <i class="bi bi-info-circle small text-muted ms-1"></i></p>
+      </div>
+      <div class="group-buy-dates mb-3 small">
+        <p class="mb-1"><span class="fw-bold me-2">상품 나눔 일시:</span> 모집 마감 후 1일 이내</p>
+        <p class="mb-0"><span class="fw-bold me-2">상품 구매 일시:</span> 상품 수령 후 3일 후 18:30</p>
+      </div>
+    </div>
+
+    <hr class="m-0" style="height: 8px; background-color: #f8f9fa;">
+
+    <div class="recipe-suggestion p-3">
+      <h5 class="fw-bold mb-3">이 상품으로 만들 레시피 추천</h5>
+
+      <div class="recipe-cards-scroll d-flex">
+        <div class="card card-custom card-wide me-3 flex-shrink-0">
+          <img src="../../../../../Matna/src/main/resources/static/img/orangemarmalade.jpg" class="card-img-top" alt="레시피 이미지">
+          <div class="card-body px-2 py-2">
+            <p class="card-text fw-bold text-truncate mb-1">
+              달지않은 귤 마말레이드
+            </p>
+            <small class="text-muted d-block">작성자 | 춘냥이</small>
+          </div>
+        </div>
+
+        <div class="card card-custom card-wide me-3 flex-shrink-0">
+          <img src="../../../../../Matna/src/main/resources/static/img/orangemilk.jpg" class="card-img-top" alt="레시피 이미지">
+          <div class="card-body px-2 py-2">
+            <p class="card-text fw-bold text-truncate mb-1">
+              우유에 퐁당! 귤우유 만들어보기
+            </p>
+            <small class="text-muted d-block">작성자 | 우유맛집</small>
+          </div>
+        </div>
+
+        <div class="card card-custom card-wide me-3 flex-shrink-0">
+          <img src="../../../../../Matna/src/main/resources/static/img/orangepie.jpg" class="card-img-top" alt="레시피 이미지">
+          <div class="card-body px-2 py-2">
+            <p class="card-text fw-bold text-truncate mb-1">
+              바삭한 감귤 파이. 오후의 달콤한 시간을 즐겨보세요
+            </p>
+            <small class="text-muted d-block">작성자 | 삼점일사</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="m-0" style="height: 8px; background-color: #f8f9fa;">
+
+    <div class="participants-list p-3">
+      <h5 class="fw-bold mb-3">참여자 2명</h5>
+
+      <div class="d-flex align-items-center mb-3">
+        <img src="../../../../../Matna/src/main/resources/static/img/user1.png" class="rounded-circle me-3" alt="참여자 프로필" style="width:50px; height:50px;">
+        <div class="d-flex flex-column">
+          <span class="fw-bold fs-6">베베는오리</span>
+          <span class="small text-muted">8시간 전</span>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center mb-3">
+        <img src="../../../../../Matna/src/main/resources/static/img/user.png" class="rounded-circle me-3" alt="참여자 프로필" style="width:50px; height:50px;">
+        <div class="d-flex flex-column">
+          <span class="fw-bold fs-6">춘냥이</span>
+          <span class="small text-muted">17시간 전</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <nav class="navbar fixed-bottom bg-white bottom-nav p-0">
+    <div class="container-fluid p-0">
+      <ul class="nav w-100 justify-content-between py-2 px-5">
+        <li class="nav-item">
+          <a class="nav-link active p-1" href="#">
+            <i class="bi bi-house-door-fill"></i>
+            홈
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link p-1" href="#">
+            <i class="bi bi-book"></i>
+            레시피
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link p-1" href="#">
+            <i class="bi bi-basket"></i>
+            공동 구매
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link p-1" href="#">
+            <i class="bi bi-person"></i>
+            MY
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+
+<div class="modal fade" id="dynamicMainModal" tabindex="-1" aria-labelledby="dynamicMainModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;">
+    <div class="modal-content">
+      <div class="modal-body p-4 text-center">
+
+        <button type="button" class="btn-close position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+
+        <h5 class="fw-bold mb-3" id="dynamicTitle"></h5>
+        <p class="small text-muted mb-4" id="dynamicMessage"></p>
+
+        <div id="personArea" class="d-none">
+          <div class="mb-4">
+            <span class="fs-4 fw-bold" id="personHeader"></span>
+            <span class="fs-2 fw-bold text-danger ms-2" id="personCount"></span>
+          </div>
+
+          <div class="table-responsive small mx-auto" style="max-width: 250px;">
+            <table class="table table-bordered text-center group-buy-table mb-4">
+              <thead>
+              <tr>
+                <th scope="col">2명</th>
+                <th scope="col">3명</th>
+                <th scope="col">4명</th>
+                <th scope="col">5명</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+                <td>6,000원 <br> 500g</td>
+                <td>4,000원 <br> 333g</td>
+                <td>3,000원 <br> 250g</td>
+                <td>2,400원 <br> 200g</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="text-center mb-2">
+            <span class="fs-5 fw-bold me-2" id="amountLabel"></span>
+            <span class="fs-3 fw-bold text-danger" id="amountValue">6,000원</span>
+          </div>
+          <p class="small text-danger mb-4" id="refundNotice"></p>
+        </div>
+
+        <div class="mb-4 text-start d-none" id="reasonInputContainer">
+          <span class="d-block small fw-bold mb-1">사유</span>
+          <textarea class="form-control" rows="4" placeholder="중단 사유를 입력해주세요."></textarea>
+        </div>
+
+        <div class="d-grid">
+          <button type="button" class="btn btn-danger py-2 fw-bold" id="mainActionButton" style="background-color: #dc3545; border-color: #dc3545;"></button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // normal, participant, creator
+  const status = 'normal'
+  const normalBtn = document.querySelector('.normal-btn');
+  const participantBtn = document.querySelector('.participant-btn');
+  const creatorRunningBtn = document.querySelector('.creator-running-btn');
+
+  function showBtnByStatus(status){
+    const allBtns = [normalBtn, participantBtn, creatorRunningBtn];
+    allBtns.forEach(btn => btn.classList.remove('show'));
+
+    switch (status){
+      case 'normal':
+        normalBtn.classList.add('show');
+        break;
+      case 'participant':
+        participantBtn.classList.add('show');
+        break;
+      case 'creator':
+        creatorRunningBtn.classList.add('show');
+        break;
+    }
+  }
+  showBtnByStatus(status);
+
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const dynamicMainModal = document.getElementById('dynamicMainModal');
+    if (dynamicMainModal) {
+      dynamicMainModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const modalStatus = button.getAttribute('data-bs-status'); // normal, participant, creator
+
+        const titleElement = document.getElementById('dynamicTitle');
+        const messageElement = document.getElementById('dynamicMessage');
+        const personArea = document.getElementById('personArea');
+        const personHeader = document.getElementById('personHeader');
+        const personCount = document.getElementById('personCount');
+        const reasonContainer = document.getElementById('reasonInputContainer');
+        const mainActionButton = document.getElementById('mainActionButton');
+        const amountLabel = document.getElementById('amountLabel');
+        const amountValue = document.getElementById('amountValue');
+        const refundNotice = document.getElementById('refundNotice');
+
+        // 초기화: 모든 동적 컨텐츠 숨김 및 기본 스타일 설정
+        titleElement.textContent = '';
+        messageElement.textContent = '';
+        personArea.classList.add('d-none');
+        reasonContainer.classList.add('d-none');
+        mainActionButton.classList.remove('btn-success');
+        mainActionButton.style.backgroundColor = '#dc3545';
+        mainActionButton.style.borderColor = '#dc3545';
+
+
+        if (modalStatus === 'normal') {
+          personArea.classList.remove('d-none');
+
+          personHeader.textContent = '현재 참여인원';
+          personCount.textContent = '2명';
+          amountLabel.textContent = '결제 예정 금액';
+          amountValue.textContent = '6,000원';
+          refundNotice.textContent = '최종 참여인원에 따른 차액은 공동구매 마감기간 이후 3일 이내 환불됩니다.';
+          refundNotice.classList.remove('d-none');
+
+          mainActionButton.textContent = '참여하기';
+
+        } else if (modalStatus === 'participant') {
+          personArea.classList.remove('d-none');
+
+          personHeader.textContent = '본인 포함 현재 참여인원';
+          personCount.textContent = '3명';
+          amountLabel.textContent = '환불 예정 금액';
+          amountValue.textContent = '6,000원';
+          refundNotice.textContent = '공동구매 참여를 취소하시겠습니까?';
+          refundNotice.classList.remove('d-none');
+
+          mainActionButton.textContent = '참여 취소하기';
+
+        } else if (modalStatus === 'creator') {
+          reasonContainer.classList.remove('d-none');
+          titleElement.innerHTML = `공동구매를 정말 <span class="text-danger">중단</span>하시겠습니까?`;
+
+          mainActionButton.textContent = '중단하기';
+        }
+      });
+    }
+  });
+</script>
+</body>
+</html>

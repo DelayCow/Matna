@@ -1,0 +1,103 @@
+.top-product-image-full {
+    width: 100%;
+    padding-top: 50%;
+    overflow: hidden;
+    position: relative;
+}
+.top-product-image-full img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.product-title {
+    font-size: 1.5rem;
+}
+.product-price {
+    font-size: 1.5rem;
+}
+.product-price .fee-text {
+    font-size: 0.7rem;
+}
+
+.group-buy-table th, .group-buy-table td {
+    padding: 0.5rem;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.btn-group-buy-status {
+    width: 150px;
+    flex-shrink: 0;
+    display:none;
+    line-height: 1.1;
+    font-size: 0.85rem;
+    height: 48px;
+}
+.btn-group-buy-status.show {
+    display:block;
+}
+
+.recipe-cards-scroll {
+    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
+    padding-bottom: 10px;
+    white-space: nowrap;
+    align-items: stretch;
+}
+.recipe-cards-scroll::-webkit-scrollbar {
+    display: none;
+}
+.recipe-cards-scroll {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.card-custom {
+    border: 1px solid #dee2e6;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: none;
+    background-color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.card-custom.card-wide {
+    width: 250px !important;
+    flex-shrink: 0;
+}
+
+.card-custom .card-img-top {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.card-custom .card-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card-custom .card-body p.card-text {
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0;
+}
+
+.card-custom .card-body small {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+}
