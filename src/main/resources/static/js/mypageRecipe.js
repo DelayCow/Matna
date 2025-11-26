@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ==================================================================
 
     // 1. 헤더 메뉴 (점 3개) 렌더링
-    const RenderHeader = () => {
+    const renderHeader = () => {
         const headerArea = document.getElementById('header-right-area');
         if (!headerArea) return;
 
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // 2. 프로필 메인 정보 (닉네임, 돈 vs 신고) 렌더링
-    const RenderProfileMain = () => {
+    const renderProfileMain = () => {
         const profileArea = document.getElementById('profile-main-area');
         if (!profileArea) return;
 
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // 3. 하단 버튼 (채팅/팔로우) 렌더링
-    const RenderActionBtns = () => {
+    const renderActionBtns = () => {
         const btnsArea = document.getElementById('profile-action-btns');
         if (!btnsArea) return;
 
@@ -101,9 +101,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // ==================================================================
     // [STEP 4] 렌더링 실행 (함수 호출)
     // ==================================================================
-    RenderHeader();
-    RenderProfileMain();
-    RenderActionBtns();
+    renderHeader();
+    renderProfileMain();
+    renderActionBtns();
 
 
     // ==================================================================
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function() {
         { id: 6, title: "코코뱅", image: "../../static/img/cokkioo.jpg", rating: 3.5, reviewCount: 11, serving: 2, time: "40분", difficulty: "중급", spicy: "매워요" }
     ];
 
-    const  CreateRecipeCard = (recipe) => {
+    const  createRecipeCard = (recipe) => {
         const imgSrc = recipe.image;
         const editUrl = `/recipe/edit?id=${recipe.id}`;
 
@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (recipeContainer) {
         recipeContainer.innerHTML = ''; // 초기화
         recipeData.forEach(recipe => {
-            recipeContainer.insertAdjacentHTML('beforeend',  CreateRecipeCard(recipe));
+            recipeContainer.insertAdjacentHTML('beforeend',  createRecipeCard(recipe));
         });
 
         // 카드 클릭 이벤트 (dropdown 제외하고 클릭 처리)
