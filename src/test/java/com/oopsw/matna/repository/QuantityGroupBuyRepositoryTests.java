@@ -60,11 +60,11 @@ public class QuantityGroupBuyRepositoryTests {
                         .title("양배추 4통 같이 나눌분")
                         .buyEndDate(3)
                         .shareEndDate(2)
-                        .shareTime(LocalTime.parse("18:00")) //시간 데이터만
+                        .shareTime(LocalTime.parse("18:00"))
                         .shareLocation("서울 금천구 가산디지털1로 70")
                         .shareDetailAddress("호서대벤처 1층입구")
-                        .price(12000) // 총 가격
-                        .quantity(4) // 총 수량 (개)
+                        .price(12000)
+                        .quantity(4)
                         .unit("개")
                         .feeRate(0)
                         .imageUrl("http://example.com/image_path/cabbage.jpg")
@@ -76,7 +76,6 @@ public class QuantityGroupBuyRepositoryTests {
                         .build()
         );
 
-        // 2. QuantityGroupBuy 전용 정보 저장
         QuantityGroupBuy newQuantityGroupBuy = quantityGroupBuyRepository.save(
                 QuantityGroupBuy.builder()
                         .groupBuy(newGroupBuy)
@@ -92,18 +91,15 @@ public class QuantityGroupBuyRepositoryTests {
     }
 
     @Test
-    void testJoinQuantityGroupBuy() { // testJoinPeriodGroupBuy -> testJoinQuantityGroupBuy 변경
+    void testJoinQuantityGroupBuy() {
         Member participantMember = memberRepository.findById(12).get();
         GroupBuy groupBuyNo = groupBuyRepository.findById(32).get();
-
         QuantityGroupBuy quantityGroupBuy = quantityGroupBuyRepository.findByGroupBuy(groupBuyNo);
 
+        // 초기 결제 금액 계산: (참여 수량 * 단위 가격) * (1 + 수수료율)
         int participantQuantity = 1;
-
         Integer pricePerUnit = quantityGroupBuy.getPricePerUnit();
         Integer feeRate = groupBuyNo.getFeeRate();
-
-        // 초기 결제 금액 계산: (참여 수량 * 단위 가격) * (1 + 수수료율)
         int initialPaymentPoint = (int) Math.round((participantQuantity * pricePerUnit * (1.0 + (feeRate / 100.0))));
 
         GroupBuyParticipant joinQuantityGroupBuy = groupBuyParticipantRepository.save(
@@ -115,17 +111,17 @@ public class QuantityGroupBuyRepositoryTests {
                         .initialPaymentPoint(initialPaymentPoint)
                         .build()
         );
+
         System.out.println("참여 신청 수량: " + joinQuantityGroupBuy.getMyQuantity() + "개/g");
         System.out.println("계산된 초기 결제 금액: " + joinQuantityGroupBuy.getInitialPaymentPoint() + "원");
     }
 
     @Test
-    void testPayQuantityPoint() { // testInitialPayPeroidPoint -> testInitialPayQuantityPoint 변경
+    void testPayQuantityPoint() {
         Member participantMember = memberRepository.findById(12).get();
         GroupBuyParticipant groupBuyParticipant = groupBuyParticipantRepository.findById(70).get();
 
-        int initialPaymentPoint = groupBuyParticipant.getInitialPaymentPoint(); // 차감할 포인트
-
+        int initialPaymentPoint = groupBuyParticipant.getInitialPaymentPoint();
         int currentPoint = participantMember.getPoint();
         int newPoint = currentPoint - initialPaymentPoint;
 
@@ -216,7 +212,6 @@ public class QuantityGroupBuyRepositoryTests {
 
         Integer memberNo = 12;
         Integer participantId = 70;
-
         Member participantMember = memberRepository.findById(memberNo).get();
         GroupBuyParticipant participantEntry = groupBuyParticipantRepository.findById(participantId).get();
 

@@ -12,8 +12,8 @@ public class PeriodGroupBuyHomeVO {
     private String nickname;
     private String creatorImageUrl;
     private String groupBuyImageUrl;
-    private LocalDateTime inDate;
 
+    private LocalDateTime inDate;
     private LocalDateTime dueDate;
     private int purchasePeriodDays;
     private LocalDateTime finalPurchaseDeadline;
@@ -21,9 +21,10 @@ public class PeriodGroupBuyHomeVO {
     private int minPricePerPerson;
     private int maxPricePerPerson;
     private String shareLocation;
-    private String shareDetailAddress;
+
     private int participants;
     private int maxParticipants;
-    private Integer groupBuyNo;
+
+    private Long groupBuyNo;
     private String ingredientName;
 }
