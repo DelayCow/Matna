@@ -1,5 +1,5 @@
 // normal, participant, creator
-const status = 'normal';
+const status = 'participant';
 
 const normalBtn = document.querySelector('.normal-btn');
 const participantBtn = document.querySelector('.participant-btn');
