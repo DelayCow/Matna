@@ -20,8 +20,9 @@
 
         <div class="mb-4">
             <h5 class="fw-bold mb-2">썸네일</h5>
-            <div class="thumbnail-upload flex-shrink-0">
+            <div class="img-upload-area thumbnail flex-shrink-0">
                 <i class="bi bi-plus fs-1 text-secondary"></i>
+                <input type="file" class="img-file-upload" accept="image/*" style="display: none;">
             </div>
         </div>
 
@@ -86,15 +87,15 @@
                 <input type="radio" class="btn-check" name="spiciness" id="spicy0" autocomplete="off" checked>
                 <label class="btn btn-outline-secondary btn-sm" for="spicy0">맵지 않아요</label>
                 <input type="radio" class="btn-check" name="spiciness" id="spicy1" autocomplete="off">
-                <label class="btn btn-outline-danger btn-sm" for="spicy1">약간 매콤해요</label>
+                <label class="btn btn-outline-danger btn-sm" for="spicy1">약간 매워요</label>
                 <input type="radio" class="btn-check" name="spiciness" id="spicy2" autocomplete="off">
-                <label class="btn btn-outline-danger btn-sm" for="spicy2">신라면 정도 맵기</label>
+                <label class="btn btn-outline-danger btn-sm" for="spicy2">신라면 맵기에요</label>
                 <input type="radio" class="btn-check" name="spiciness" id="spicy3" autocomplete="off">
-                <label class="btn btn-outline-danger btn-sm" for="spicy3">열라면 정도 맵기</label>
+                <label class="btn btn-outline-danger btn-sm" for="spicy3">열라면 맵기에요</label>
                 <input type="radio" class="btn-check" name="spiciness" id="spicy4" autocomplete="off">
-                <label class="btn btn-outline-danger btn-sm" for="spicy4">불닭 정도 맵기</label>
+                <label class="btn btn-outline-danger btn-sm" for="spicy4">불닭 맵기에요</label>
                 <input type="radio" class="btn-check" name="spiciness" id="spicy5" autocomplete="off">
-                <label class="btn btn-outline-danger btn-sm" for="spicy5">불닭보다 매움</label>
+                <label class="btn btn-outline-danger btn-sm" for="spicy5">불닭보다 매워요</label>
             </div>
 
             <h5 class="fw-bold mb-3">난이도</h5>
@@ -114,8 +115,9 @@
             <h5 class="fw-bold mb-3">레시피 순서</h5>
 
             <div class="recipe-step d-flex mb-3">
-                <div class="step-image me-3 flex-shrink-0">
+                <div class="img-upload-area me-3 flex-shrink-0">
                     <i class="bi bi-plus fs-1 text-secondary"></i>
+                    <input type="file" class="img-file-upload" accept="image/*" style="display: none;">
                 </div>
                 <textarea class="form-control" rows="3" placeholder="레시피 설명"></textarea>
             </div>
@@ -167,147 +169,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../static/js/recipeRegister.js"></script>
 
-<script>
-    document.getElementById('addStepBtn').addEventListener('click', function() {
-        const parentDiv = this.parentElement;
-
-        const newStep = document.createElement('div');
-        newStep.className = 'recipe-step d-flex mb-3';
-        newStep.innerHTML = `
-            <div class="step-image me-3 flex-shrink-0">
-                <i class="bi bi-plus fs-1 text-secondary"></i>
-            </div>
-            <textarea class="form-control" rows="3" placeholder="레시피 설명"></textarea>
-        `;
-        parentDiv.before(newStep);
-    });
-
-    const searchInput = document.getElementById('itemSelect');
-    const itemMenu = document.getElementById('itemDropdownMenu');
-
-    let isItemClicked = false;
-
-    function debounce(func, delay) {
-        let timeoutId;
-        return function(...args) {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(() => {
-                func.apply(this, args);
-            }, delay);
-        };
-    }
-
-    // --- 품목 선택 검색 및 드롭다운 로직 (이전과 동일) ---
-    searchInput.addEventListener('input', debounce(function() {
-        if (isItemClicked) {
-            isItemClicked = false;
-            return;
-        }
-        const query = this.value.trim();
-        if (query.length > 0) {
-            fetchSearchResults(query);
-        } else {
-            itemMenu.classList.remove('show');
-        }
-    }, 300));
-
-    function fetchSearchResults(query) {
-        const mockData = [
-            { "id": 1, "name": "밀떡" },
-            { "id": 2, "name": "고추장" },
-            { "id": 3, "name": "설탕" },
-            { "id": 4, "name": "어묵" },
-            { "id": 5, "name": "어간장" },
-            { "id": 6, "name": "양파" },
-            { "id": 7, "name": "쌀떡" }
-        ];
-        const filteredData = mockData.filter(item => item.name.includes(query));
-        updateDropdownMenu(filteredData);
-    }
-    const ingredientContainer = document.getElementById('ingredientContainer');
-    const other = document.getElementById('otherItem');
-    document.getElementById('addOtherItemBtn').addEventListener('click', (e) => addIngredient(e, other.value))
-    let addedIngredients = [];
-    function updateDropdownMenu(results) {
-        itemMenu.innerHTML = '';
-
-        if (results && results.length > 0) {
-            results.forEach(item => {
-                const a = document.createElement('a');
-                a.classList.add('dropdown-item');
-                a.href = '#';
-                a.textContent = item.name;
-
-                a.addEventListener('click', (e) => addIngredient(e, item.name));
-
-                itemMenu.appendChild(a);
-            });
-            itemMenu.classList.add('show');
-        } else {
-            itemMenu.classList.remove('show');
-        }
-    }
-    const deleteIngredient = function (id){
-        const elementToRemove = document.getElementById(id);
-        if (elementToRemove) {
-            elementToRemove.remove();
-
-            // ID (예: "밀떡_div")에서 재료 이름 (예: "밀떡") 추출
-            const ingredientName = id.replace('_div', '');
-
-            // addedIngredients 배열에서 해당 재료 이름 제거
-            const index = addedIngredients.indexOf(ingredientName);
-            if (index > -1) {
-                addedIngredients.splice(index, 1);
-            }
-        }
-    }
-    const addIngredientHtml = function (name){
-        //나중에 ingredientNo받아서 이거 기준으로 구분할 수 있게 하기
-        return `<div class="d-flex align-items-center mt-3 p-2 bg-light rounded" id="${name}_div">
-                <input type="text" class="form-control form-control-sm me-2" style="width: 30%; flex-shrink: 0;" placeholder="재료명" value="${name}" readonly>
-
-                <input type="number" class="form-control form-control-sm text-end me-2" style="width: 20%; flex-shrink: 0;" placeholder="수량">
-
-                <div class="d-flex unit-radio-group" style="width: 40%; flex-shrink: 0;">
-                    <input type="radio" class="btn-check" name="${name}_unit" id="${name}_unit_ml" value="ml" autocomplete="off" checked>
-                    <label class="btn btn-outline-secondary btn-sm me-1" for="${name}_unit_ml">ml</label>
-
-                    <input type="radio" class="btn-check" name="${name}_unit" id="${name}_unit_ea" value="개" autocomplete="off">
-                    <label class="btn btn-outline-secondary btn-sm me-1" for="${name}_unit_ea">개</label>
-
-                    <input type="radio" class="btn-check" name="${name}_unit" id="${name}_unit_sp" value="스푼(T)" autocomplete="off">
-                    <label class="btn btn-outline-secondary btn-sm me-1" for="${name}_unit_sp">스푼(T)</label>
-
-                    <input type="radio" class="btn-check" name="${name}_unit" id="${name}_unit_g" value="g" autocomplete="off">
-                    <label class="btn btn-outline-secondary btn-sm" for="${name}_unit_g">그램(g)</label>
-                </div>
-
-                <button class="btn btn-danger ms-4 flex-shrink-0" type="button" style="height: 32px; width: 50px; padding: 0;" onclick="deleteIngredient('${name}_div')">
-                    삭제
-                </button>
-            </div>`
-    }
-    const addIngredient = function(e, name){
-        e.preventDefault();
-        if (name.length === 0) {
-            alert('재료 이름을 입력해야 추가할 수 있습니다.'); //임시로 넣음
-            return;
-        }
-        isItemClicked = true;
-        if (addedIngredients.includes(name)) {
-            alert(`${name}은(는) 이미 추가된 재료입니다.`); //임시로 넣음
-        }else{
-            ingredientContainer.insertAdjacentHTML('beforeend', addIngredientHtml(name));
-            addedIngredients.push(name);
-        }
-        searchInput.value = '';
-        other.value = '';
-        itemMenu.classList.remove('show');
-        searchInput.blur();
-    }
-
-</script>
 </body>
 </html>
