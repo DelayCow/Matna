@@ -7,10 +7,12 @@
 }
 .sort-dropdown .btn:focus, .sort-dropdown .btn:active {
     box-shadow: none !important;
+
 }
 .sort-dropdown .dropdown-menu {
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 1000;
 }
 .sort-dropdown .dropdown-item.active {
     background-color: #e9ecef;
