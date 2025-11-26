@@ -68,6 +68,7 @@
     <article class="product-card">
       <img src="mushroom.jpg" alt="표고버섯" class="product-img">
       <div class="product-info">
+        <div class="progress-bar-wrapper" style="display: flex; align-items: center; justify-content: space-between;">
         <!-- Progress Bar -->
         <div class="progress-bar">
           <div class="progress-step completed">
@@ -91,12 +92,14 @@
             <span class="step-date"></span>
           </div>
         </div>
+          <button class="side-action-btn btn btn-primary ms-3">정보 등록 버튼</button>
+        </div>
 
         <h3 class="product-name">표고버섯 500g</h3>
         <p class="product-price">내가 받을 100g</p>
         <p class="product-detail">공당 참여금 : 100g / 50g / 200g )</p>
         <p class="product-detail">총 구성 : 50g</p>
-        <p class="status-text red">공동구매 모집</p>
+        <p class="status-text red">공동구매 모집 중</p>
         <p class="deadline">남은 시간 13:31:15</p>
       </div>
     </article>
@@ -105,6 +108,7 @@
     <article class="product-card">
       <img src="tomato.jpg" alt="방울토마토" class="product-img">
       <div class="product-info">
+        <div class="progress-bar-wrapper" style="display: flex; align-items: center; justify-content: space-between;">
         <div class="progress-bar">
           <div class="progress-step completed">
             <div class="step-circle"></div>
@@ -127,11 +131,13 @@
             <span class="step-date"></span>
           </div>
         </div>
+          <button class="side-action-btn btn btn-primary ms-3">정보 등록 버튼</button>
+        </div>
         <h3 class="product-name">스테비아 방울토마토 1,000g</h3>
         <p class="product-price">내가 받을 400g</p>
         <p class="product-detail">4명 참여( 100g / 100g / 300g / 100g )</p>
-        <button class="action-btn">참배완료 토론</button>
-        <p class="status-text red">정보 토론</p>
+
+
         <p class="deadline">남은 시간 13:29:32</p>
         <p class="price-info">6,900원 정산예정</p>
       </div>
@@ -141,6 +147,7 @@
     <article class="product-card">
       <img src="garlic.jpg" alt="통마늘" class="product-img">
       <div class="product-info">
+        <div class="progress-bar-wrapper" style="display: flex; align-items: center; justify-content: space-between;">
         <div class="progress-bar">
           <div class="progress-step completed">
             <div class="step-circle"></div>
@@ -163,10 +170,12 @@
             <span class="step-date"></span>
           </div>
         </div>
+          <button class="side-action-btn btn btn-primary ms-3">정보 등록 버튼</button>
+        </div>
         <h3 class="product-name">햇 통마늘 1,000g</h3>
         <p class="product-price">내가 받을 500g</p>
         <p class="product-detail">2명 참여( 500g / 500g )</p>
-        <button class="action-btn">참배완료 토론</button>
+
         <p class="price-info">7,700원 정산예정</p>
       </div>
     </article>
@@ -175,6 +184,7 @@
     <article class="product-card">
       <img src="potato.jpg" alt="수미감자" class="product-img">
       <div class="product-info">
+        <div class="progress-bar-wrapper" style="display: flex; align-items: center; justify-content: space-between;">
         <div class="progress-bar">
           <div class="progress-step completed">
             <div class="step-circle"></div>
@@ -196,6 +206,8 @@
             <span class="step-label">나눔완료</span>
             <span class="step-date">09.16</span>
           </div>
+        </div>
+          <button class="side-action-btn btn btn-primary ms-3">정보 등록 버튼</button>
         </div>
         <h3 class="product-name">수미감자 1,200g</h3>
         <p class="product-price">내가 받을 600g</p>
@@ -300,7 +312,7 @@
   document.querySelectorAll('.action-btn').forEach(function(btn) {
     btn.addEventListener('click', function(e) {
       e.stopPropagation();
-      alert('참배완료 토론 페이지로 이동합니다.');
+      alert('페이지로 이동합니다.');
     });
   });
 </script>
