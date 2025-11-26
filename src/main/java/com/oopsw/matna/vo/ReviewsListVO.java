@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Builder
 @Data
-public class ReviewListVO {
+public class ReviewsListVO {
     private Integer reviewNo;
     private String title;
     private String imageUrl;

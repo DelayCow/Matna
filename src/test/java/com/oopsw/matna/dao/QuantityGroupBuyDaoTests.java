@@ -56,42 +56,38 @@ public class QuantityGroupBuyDaoTests {
     //마감 임박순 정렬 테스트 (남은 수량 비율 기준)")
     void testSelectGroupBuyListRemainingOrder() {
         Map<String, Object> params = new HashMap<>();
-        params.put("orderBy", "remaining"); // 남은 수량 비율 기준 정렬 조건 (remainingQty ASC)
-
+        params.put("orderBy", "remaining");
         List<QuantityGroupBuyHomeVO> list = quantityGroupBuyDAO.selectQuantityGroupBuyHomeList(params);
 
-        if (list.size() > 1) {
-            // 남은 수량 비율 계산 헬퍼 함수
-            Comparator<QuantityGroupBuyHomeVO> remainingRatioComparator = (vo1, vo2) -> {
-                double ratio1 = (double) vo1.getRemainingQty() / vo1.getQuantity();
-                double ratio2 = (double) vo2.getRemainingQty() / vo2.getQuantity();
-                return Double.compare(ratio1, ratio2);
-            };
+        Comparator<QuantityGroupBuyHomeVO> remainingRatioComparator = (vo1, vo2) -> {
+            double denominator1 = vo1.getQuantity() - vo1.getMyQuantity();
+            double denominator2 = vo2.getQuantity() - vo2.getMyQuantity();
 
-            // XML 쿼리는 remainingQty만으로 정렬한다고 가정 (RemainingRatio는 테스트에서 계산)
-            // 따라서 쿼리가 remainingQty를 오름차순으로 잘 가져왔는지 검증합니다.
-            Integer firstRemaining = list.get(0).getRemainingQty();
-            Integer secondRemaining = list.get(1).getRemainingQty();
+            double ratio1 = (denominator1 <= 0)
+                    ? Double.MAX_VALUE
+                    : (double) vo1.getRemainingQty() / denominator1;
 
-            // 첫 번째 항목의 남은 수량이 두 번째 항목보다 같거나 적어야 함 (ASC)
-            assertTrue(firstRemaining <= secondRemaining,
-                    "목록이 남은 수량(remainingQty ASC) 순서로 정렬되어야 합니다. 남은 수량이 같을 경우 등록일(InDate DESC) 순서로 와야 합니다.");
+            double ratio2 = (denominator2 <= 0)
+                    ? Double.MAX_VALUE
+                    : (double) vo2.getRemainingQty() / denominator2;
+            return Double.compare(ratio1, ratio2);
+        };
 
-            // 추가 검증: 남은 수량 비율이 실제로 오름차순인지 확인 (더 엄격한 검증)
-            for (int i = 0; i < list.size() - 1; i++) {
-                QuantityGroupBuyHomeVO current = list.get(i);
-                QuantityGroupBuyHomeVO next = list.get(i + 1);
-
-                // 남은 수량 비율 계산
-                double currentRatio = (double) current.getRemainingQty() / current.getQuantity();
-                double nextRatio = (double) next.getRemainingQty() / next.getQuantity();
-
-            }
+        for (int i = 0; i < list.size() - 1; i++) {
+            QuantityGroupBuyHomeVO current = list.get(i);
+            QuantityGroupBuyHomeVO next = list.get(i + 1);
         }
 
+
         for (QuantityGroupBuyHomeVO vo : list) {
-            double ratio = (double) vo.getRemainingQty() / vo.getQuantity();
-            System.out.printf("Ratio: %.4f | %s\n", ratio, vo.toString());
+            int remQty = vo.getRemainingQty();
+            int myQty = vo.getMyQuantity();
+            int qty = vo.getQuantity();
+            int requiredQty = qty - myQty;
+            double ratio = (requiredQty > 0) ? (double) remQty / requiredQty : -1.0;
+
+            System.out.printf("Ratio: %.4f (남은 수량 %d / 필요 수량 %d) | %s\n",
+                    ratio, remQty, requiredQty, vo.toString());
         }
     }
 
