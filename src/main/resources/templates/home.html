@@ -389,7 +389,7 @@
       }
       return translatedRecipe
     }
-    const createRecipeCard = function (r){
+    const  createRecipeCard = function (r){
       return `<div class="card card-custom card-wide" data-type="recipe" data-no="${r.recipeNo}">
             <img src="${r.imageUrl}" class="card-img-top" alt="${r.title}">
             <div class="card-body px-0 py-2">
@@ -447,7 +447,7 @@
     ]
     recipeData.forEach(recipe => {
       const translatedFormatRecipe = translateRecipeData(recipe);
-      const cardHtml = createRecipeCard(translatedFormatRecipe);
+      const cardHtml =  createRecipeCard(translatedFormatRecipe);
       recipeContainer.insertAdjacentHTML('beforeend', cardHtml)
     })
 
