@@ -33,60 +33,62 @@
 
           <div id="recipeScroll" class="horizontal-scroll">
 
-            <div class="card card-custom card-wide" data-type="recipe" data-no="45">
-            <img src="../../../../../Matna/src/main/resources/static/img/steamedeggs.jpg" class="card-img-top" alt="안주로 딱~ 폭신하고 부드러운 계란찜">
-            <div class="card-body px-0 py-2">
-              <div class="d-flex align-items-center mb-1">
-                <img src="../../../../../Matna/src/main/resources/static/img/user.png" class="profile-img" alt="User">
-                <div class="overflow-hidden w-100">
-                  <div class="d-flex overflow-hidden w-100">
-                    <small class="fw-bold text-nowrap">침대견</small>
-                    <p class="card-text text-truncate mb-0 ms-2">안주로 딱~ 폭신하고 부드러운 계란찜</p>
-                  </div>
-                  <div class="small text-muted">
-                    <span class="text-warning"><i class="bi bi-star-fill"></i> 4.5</span>
-                    <span>| 후기 8</span>
-                  </div>
-                </div>
-              </div>
-              <div class="small text-muted text-center">
-                <span class="text-secondary"><i class="bi bi-person"></i> 1인분</span>
-                <span class="text-secondary"><i class="bi bi-clock"></i> 10분</span>
-                <span class="text-secondary"><i class="bi bi-star"></i> 쉬움</span>
-                <span><img src="../../../../../Matna/src/main/resources/static/img/spicy.png" class="spicy">  안매워요</span>
-              </div>
-            </div>
-          </div>
-            <div class="card card-custom card-wide" data-type="recipe" data-no="5">
-              <img src="../../../../../Matna/src/main/resources/static/img/ravioli.jpg" class="card-img-top" alt="속을 뜨끈하게 한국인 입맛에 맞춘 라비올리">
-              <div class="card-body px-0 py-2">
-                <div class="d-flex align-items-center mb-1">
-                  <img src="../../../../../Matna/src/main/resources/static/img/user.png" class="profile-img" alt="User">
-                  <div class="overflow-hidden w-100">
-                    <div class="d-flex overflow-hidden w-100">
-                      <small class="fw-bold text-nowrap">눕오리</small>
-                      <p class="card-text text-truncate mb-0 ms-2">속을 뜨끈하게 한국인 입맛에 맞춘 라비올리</p>
-                    </div>
-                    <div class="small text-muted">
-                      <span class="text-warning"><i class="bi bi-star-fill"></i> 4.0</span>
-                      <span>| 후기 14</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="small text-muted text-center">
-                  <span class="text-secondary"><i class="bi bi-person"></i> 2인분</span>
-                  <span class="text-secondary"><i class="bi bi-clock"></i> 20분</span>
-                  <span class="text-secondary"><i class="bi bi-star"></i> 보통</span>
-                  <span><img src="../../../../../Matna/src/main/resources/static/img/spicy.png" class="spicy">  열라면맵기</span>
-                </div>
-              </div>
-            </div>
+<!--            <div class="card card-custom card-wide" data-type="recipe" data-no="45">-->
+<!--            <img src="../static/img/steamedeggs.jpg" class="card-img-top" alt="안주로 딱~ 폭신하고 부드러운 계란찜">-->
+<!--            <div class="card-body px-0 py-2">-->
+<!--              <div class="d-flex align-items-center mb-1">-->
+<!--                <img src="../static/img/user.png" class="profile-img" alt="User">-->
+<!--                <div class="overflow-hidden w-100">-->
+<!--                  <div class="d-flex overflow-hidden w-100">-->
+<!--                    <small class="fw-bold text-nowrap">침대견</small>-->
+<!--                    <p class="card-text text-truncate mb-0 ms-2">안주로 딱~ 폭신하고 부드러운 계란찜</p>-->
+<!--                  </div>-->
+<!--                  <div class="small text-muted">-->
+<!--                    <span class="text-warning"><i class="bi bi-star-fill"></i> 4.5</span>-->
+<!--                    <span>| 후기 8</span>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--              <div class="small text-muted text-center">-->
+<!--                <span class="text-secondary"><i class="bi bi-person"></i> 1인분</span>-->
+<!--                <span class="text-secondary"><i class="bi bi-clock"></i> 10분</span>-->
+<!--                <span class="text-secondary"><i class="bi bi-star"></i> 쉬움</span>-->
+<!--                <span><img src="../static/img/spicy.png" class="spicy">  안매워요</span>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+                <!--타임리프방식-->
+<!--            <div th:each="r : ${recipes}" class="card card-custom card-wide" data-type="recipe" th:data-no="${r.recipeNo}">-->
+<!--              <img th:src="${r.imageUrl}" class="card-img-top" th:alt="${r.title}">-->
+<!--              <div class="card-body px-0 py-2">-->
+<!--                <div class="d-flex align-items-center mb-1">-->
+<!--                  <img th:src="${r.profileUrl}" class="profile-img" alt="User">-->
+<!--                  <div class="overflow-hidden w-100">-->
+<!--                    <div class="d-flex overflow-hidden w-100">-->
+<!--                      <small class="fw-bold text-nowrap" th:text="${r.nickname}"></small>-->
+<!--                      <p class="card-text text-truncate mb-0 ms-2" th:text="${r.title}"></p>-->
+<!--                    </div>-->
+<!--                    <div class="small text-muted">-->
+<!--                      <span class="text-warning">-->
+<!--                        <i class="bi bi-star-fill"></i> <span th:text="${r.averageRecipe}"></span>-->
+<!--                      </span>-->
+<!--                      <span>| 후기 <span th:text="${r.reviewCount}"></span></span>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--                <div class="small text-muted text-center">-->
+<!--                  <span class="text-secondary"><i class="bi bi-person"></i> <span th:text="${r.servings}"></span>인분</span>-->
+<!--                  <span class="text-secondary"><i class="bi bi-clock"></i> <span th:text="${r.prep_time}"></span>분</span>-->
+<!--                  <span class="text-secondary"><i class="bi bi-star"></i> <span th:text="#{difficulty.__${r.difficulty}__}"></span></span>-->
+<!--                  <span><img src="../static/img/spicy.png" class="spicy">  <span th:text="#{spicy.__${r.spicyLevel}__}"></span></span>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
 
-            <button class="btn btn-sm btn-light scroll-btn right-arrow position-absolute top-50 end-0 translate-middle-y rounded-circle shadow-sm" data-target="#recipeScroll">
-              <i class="bi bi-chevron-right"></i>
-            </button>
-
           </div>
+          <button class="btn btn-sm btn-light scroll-btn right-arrow position-absolute top-50 end-0 translate-middle-y rounded-circle shadow-sm" data-target="#recipeScroll">
+            <i class="bi bi-chevron-right"></i>
+          </button>
         </div>
       </section>
 
@@ -103,10 +105,10 @@
           <div id="quantityBuyScroll" class="horizontal-scroll">
 
             <div class="card card-custom card-wide" data-type="quantity" data-no="45">
-            <img src="../../../../../Matna/src/main/resources/static/img/orange.jpg" class="card-img-top" alt="고당도 제주 감귤 1kg">
+            <img src="../static/img/orange.jpg" class="card-img-top" alt="고당도 제주 감귤 1kg">
             <div class="card-body px-0 py-2">
               <div class="d-flex align-items-center mb-1">
-                <img src="../../../../../Matna/src/main/resources/static/img/user.png" class="profile-img" alt="User">
+                <img src="../static/img/user.png" class="profile-img" alt="User">
                 <div class="overflow-hidden w-100">
                   <div class="d-flex overflow-hidden w-100">
                     <small class="fw-bold text-nowrap">해피</small>
@@ -125,10 +127,10 @@
             </div>
           </div>
             <div class="card card-custom card-wide" data-type="quantity" data-no="12">
-              <img src="../../../../../Matna/src/main/resources/static/img/mushroom.jpg" class="card-img-top" alt="표고버섯 살 사람">
+              <img src="../static/img/mushroom.jpg" class="card-img-top" alt="표고버섯 살 사람">
               <div class="card-body px-0 py-2">
                 <div class="d-flex align-items-center mb-1">
-                  <img src="../../../../../Matna/src/main/resources/static/img/user.png" class="profile-img" alt="User">
+                  <img src="../static/img/user.png" class="profile-img" alt="User">
                   <div class="overflow-hidden w-100">
                     <div class="d-flex overflow-hidden w-100">
                       <small class="fw-bold text-nowrap">말이오</small>
@@ -147,10 +149,10 @@
               </div>
             </div>
             <div class="card card-custom card-wide" data-type="quantity" data-no="35">
-              <img src="../../../../../Matna/src/main/resources/static/img/tomato.jpg" class="card-img-top" alt="방울토마토 공구해요">
+              <img src="../static/img/tomato.jpg" class="card-img-top" alt="방울토마토 공구해요">
               <div class="card-body px-0 py-2">
                 <div class="d-flex align-items-center mb-1">
-                  <img src="../../../../../Matna/src/main/resources/static/img/user.png" class="profile-img" alt="User">
+                  <img src="../static/img/user.png" class="profile-img" alt="User">
                   <div class="overflow-hidden w-100">
                     <div class="d-flex overflow-hidden w-100">
                       <small class="fw-bold text-nowrap">도맛도</small>
@@ -169,11 +171,10 @@
               </div>
             </div>
 
-            <button class="btn btn-sm btn-light scroll-btn right-arrow position-absolute top-50 end-0 translate-middle-y rounded-circle shadow-sm" data-target="#quantityBuyScroll">
-              <i class="bi bi-chevron-right"></i>
-            </button>
-
           </div>
+          <button class="btn btn-sm btn-light scroll-btn right-arrow position-absolute top-50 end-0 translate-middle-y rounded-circle shadow-sm" data-target="#quantityBuyScroll">
+            <i class="bi bi-chevron-right"></i>
+          </button>
         </div>
       </section>
 
@@ -189,10 +190,10 @@
           <div id="periodBuyScroll" class="horizontal-scroll">
 
             <div class="card card-custom card-wide" data-type="period" data-no="4">
-            <img src="../../../../../Matna/src/main/resources/static/img/basil.jpg" class="card-img-top" alt="바질 같이사기">
+            <img src="../static/img/basil.jpg" class="card-img-top" alt="바질 같이사기">
             <div class="card-body px-0 py-2">
               <div class="d-flex align-items-center mb-1">
-                <img src="../../../../../Matna/src/main/resources/static/img/user.png" class="profile-img" alt="User">
+                <img src="../static/img/user.png" class="profile-img" alt="User">
                 <div class="overflow-hidden w-100">
                   <div class="d-flex overflow-hidden w-100">
                     <small class="fw-bold text-nowrap">밥도둑</small>
@@ -208,10 +209,10 @@
             </div>
           </div>
             <div class="card card-custom card-wide" data-type="period" data-no="24">
-              <img src="../../../../../Matna/src/main/resources/static/img/potato.jpg" class="card-img-top" alt="수미감자 왔어요">
+              <img src="../static/img/potato.jpg" class="card-img-top" alt="수미감자 왔어요">
               <div class="card-body px-0 py-2">
                 <div class="d-flex align-items-center mb-1">
-                  <img src="../../../../../Matna/src/main/resources/static/img/user.png" class="profile-img" alt="User">
+                  <img src="../static/img/user.png" class="profile-img" alt="User">
                   <div class="overflow-hidden w-100">
                     <div class="d-flex overflow-hidden w-100">
                       <small class="fw-bold text-nowrap">흙감자</small>
@@ -238,7 +239,7 @@
 
       <section class="mb-0">
         <div class="d-flex align-items-center mb-3">
-          <img src="../../../../../Matna/src/main/resources/static/img/plate.png">
+          <img src="../static/img/plate.png">
           <h5 class="section-title m-0">최근 올라온 후기</h5>
         </div>
 
@@ -251,10 +252,10 @@
         <div id="reviewScroll" class="horizontal-scroll">
 
           <div class="card card-custom card-wide" data-type="review" data-no="46">
-            <img src="../../../../../Matna/src/main/resources/static/img/tteokbokki.jpg" class="card-img-top" alt="다이어트 떡볶이 만들어봤어요">
+            <img src="../static/img/tteokbokki.jpg" class="card-img-top" alt="다이어트 떡볶이 만들어봤어요">
             <div class="card-body px-0 py-2">
               <div class="d-flex align-items-center mb-1">
-                <img src="../../../../../Matna/src/main/resources/static/img/user.png" class="profile-img" alt="User">
+                <img src="../static/img/user.png" class="profile-img" alt="User">
                 <div class="overflow-hidden w-100">
                   <div class="d-flex overflow-hidden w-100">
                     <small class="fw-bold text-nowrap">베베는오리</small>
@@ -269,10 +270,10 @@
             </div>
           </div>
           <div class="card card-custom card-wide" data-type="review" data-no="4">
-            <img src="../../../../../Matna/src/main/resources/static/img/salad.jpg" class="card-img-top" alt="유자드레싱 따라해봤어요">
+            <img src="../static/img/salad.jpg" class="card-img-top" alt="유자드레싱 따라해봤어요">
             <div class="card-body px-0 py-2">
               <div class="d-flex align-items-center mb-1">
-                <img src="../../../../../Matna/src/main/resources/static/img/user.png" class="profile-img" alt="User">
+                <img src="../static/img/user.png" class="profile-img" alt="User">
                 <div class="overflow-hidden w-100">
                   <div class="d-flex overflow-hidden w-100">
                     <small class="fw-bold text-nowrap">춘냥이</small>
@@ -353,6 +354,102 @@
         });
       });
     });
+
+    const translateRecipeData = function(recipe){
+      const translatedRecipe = { ...recipe };
+      switch(translatedRecipe.difficulty){
+        case 'easy':
+          translatedRecipe.difficulty = '쉬움';
+          break;
+        case 'normal':
+          translatedRecipe.difficulty = '보통';
+          break;
+        case 'hard':
+          translatedRecipe.difficulty = '어려움';
+      }
+      switch(translatedRecipe.spicyLevel){
+        case 0:
+          translatedRecipe.spicyLevel = '안매워요';
+          break;
+        case 1:
+          translatedRecipe.spicyLevel = '약간매워요';
+          break;
+        case 2:
+          translatedRecipe.spicyLevel = '신라면맵기';
+          break;
+        case 3:
+          translatedRecipe.spicyLevel = '열라면맵기';
+          break;
+        case 4:
+          translatedRecipe.spicyLevel = '불닭맵기';
+          break;
+        case 5:
+          translatedRecipe.spicyLevel = '불닭보다매워요';
+          break;
+      }
+      return translatedRecipe
+    }
+    const  createRecipeCard = function (r){
+      return `<div class="card card-custom card-wide" data-type="recipe" data-no="${r.recipeNo}">
+            <img src="${r.imageUrl}" class="card-img-top" alt="${r.title}">
+            <div class="card-body px-0 py-2">
+              <div class="d-flex align-items-center mb-1">
+                <img src=${r.profileUrl} class="profile-img" alt="User">
+                <div class="overflow-hidden w-100">
+                  <div class="d-flex overflow-hidden w-100">
+                    <small class="fw-bold text-nowrap">${r.nickname}</small>
+                    <p class="card-text text-truncate mb-0 ms-2">${r.title}</p>
+                  </div>
+                  <div class="small text-muted">
+                    <span class="text-warning"><i class="bi bi-star-fill"></i> ${r.averageRating}</span>
+                    <span>| 후기 ${r.reviewCount}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="small text-muted text-center">
+                <span class="text-secondary"><i class="bi bi-person"></i> ${r.servings}인분</span>
+                <span class="text-secondary"><i class="bi bi-clock"></i> ${r.prepTime}분</span>
+                <span class="text-secondary"><i class="bi bi-star"></i> ${r.difficulty}</span>
+                <span><img src="../static/img/spicy.png" class="spicy"> ${r.spicyLevel}</span>
+              </div>
+            </div>
+          </div>`;
+    }
+
+    const recipeContainer = document.getElementById('recipeScroll');
+    const recipeData = [
+      {
+        "recipeNo": 45,
+        "imageUrl": "../static/img/steamedeggs.jpg",
+        "profileUrl": "../static/img/user.png",
+        "nickname": "침대견",
+        "title": "안주로 딱~ 폭신하고 부드러운 계란찜",
+        "averageRating": 4.5,
+        "reviewCount": 8,
+        "servings": 1,
+        "prepTime": 10,
+        "difficulty": "easy",
+        "spicyLevel": 0
+      },
+      {
+        "recipeNo": 5,
+        "imageUrl": "../static/img/ravioli.jpg",
+        "profileUrl": "../static/img/user.png",
+        "nickname": "눕오리",
+        "title": "속을 뜨끈하게 한국인 입맛에 맞춘 라비올리",
+        "averageRating": 4.0,
+        "reviewCount": 14,
+        "servings": 2,
+        "prepTime": 20,
+        "difficulty": "normal",
+        "spicyLevel": 0
+      },
+    ]
+    recipeData.forEach(recipe => {
+      const translatedFormatRecipe = translateRecipeData(recipe);
+      const cardHtml =  createRecipeCard(translatedFormatRecipe);
+      recipeContainer.insertAdjacentHTML('beforeend', cardHtml)
+    })
 
     document.querySelectorAll('.card-custom').forEach(card => {
       card.addEventListener('click', function() {

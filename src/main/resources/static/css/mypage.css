@@ -1,0 +1,239 @@
+/* mypage.css */
+
+/* 1. 메인 탭 스타일 (숫자 크게 나오는 부분) */
+.stats-tabs .tab-item {
+    cursor: pointer;
+    border-bottom: 3px solid transparent; /* 기본 밑줄 투명 */
+}
+
+.stats-tabs .tab-item.active {
+    border-bottom-color: #ff4d4d; /* 활성화 시 빨간 밑줄 */
+}
+
+.stats-tabs .tab-item.active strong,
+.stats-tabs .tab-item.active span {
+    color: #000;
+}
+
+/* 2. 드롭다운 메뉴 (헤더 점 3개 클릭 시) */
+.custom-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 150px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    list-style: none;
+    padding: 0;
+    margin: 5px 0 0 0;
+    z-index: 1030;
+}
+
+.custom-dropdown.show {
+    display: block;
+}
+
+.custom-dropdown li a {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #333;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.custom-dropdown li:last-child a {
+    border-bottom: none;
+}
+
+/* 3. 그리드 레이아웃 (핵심!) */
+.recipe-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 정확히 2열로 나눔 */
+    gap: 20px 15px; /* 세로간격 20px, 가로간격 15px */
+}
+
+/* 4. 레시피 카드 스타일 */
+.recipe-card {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.recipe-card:active {
+    transform: scale(0.98); /* 클릭 시 살짝 눌리는 효과 */
+}
+
+.font-size-recipe-list{
+    /*font-size: 0.6rem;*/
+}
+
+.card-img-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3; /* 이미지 비율 4:3 고정 */
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 10px;
+    background-color: #eee;
+}
+
+.card-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.card-title {
+    font-size: 0.95rem;
+    font-weight: bold;
+    margin-bottom: 4px;
+    line-height: 1.3;
+    /* 2줄 말줄임 처리 */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.star-rating {
+    color: #ffc107; /* 별 색상 */
+}
+
+.review-count {
+    color: #888;
+    font-size: 0.85rem;
+}
+
+
+/* 2. 헤더 케밥 메뉴 드롭다운 스타일 */
+.custom-dropdown {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    list-style: none;    /* 점 없애기 */
+    padding: 10px 0;
+    width: 150px;
+    z-index: 2000;
+}
+
+/* JS가 'show' 클래스를 붙이면 보이게 함 */
+.custom-dropdown.show {
+    display: block;
+}
+
+.custom-dropdown li a {
+    display: block;
+    padding: 8px 16px;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+}
+
+.custom-dropdown li a:hover {
+    background-color: #f1f1f1;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 중요: 가로를 2등분 함 */
+    gap: 15px; /* 카드 사이 간격 */
+    padding-bottom: 80px; /* 하단 네비게이션 가리지 않게 여백 */
+}
+
+#group-list.grid-container {
+    display: flex;
+    flex-direction: column; /* 위에서 아래로 쌓임 */
+    gap: 10px;
+}
+
+/* 공동구매 카드는 마우스 올렸을 때 배경색 살짝 변경 */
+.group-card:hover {
+    background-color: #f8f9fa !important;
+}
+
+.timeline-steps {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start; /* 위쪽(동그라미) 기준으로 정렬 */
+    position: relative;
+    margin-bottom: 10px;
+    padding: 0 10px; /* 양옆 여백 살짝 줌 */
+}
+
+/* 2. 회색 연결 선 (배경) */
+.timeline-steps::before {
+    content: "";
+    position: absolute;
+    top: 6px;  /* 동그라미(14px)의 절반 높이 - 선두께(2px)의 절반 = 정중앙 */
+    left: 20px; /* 첫 번째 동그라미 위치 고려 */
+    right: 20px; /* 마지막 동그라미 위치 고려 */
+    height: 2px;
+    background-color: #e9ecef;
+    z-index: 0; /* 제일 뒤로 보냄 */
+}
+
+/* 3. 개별 단계 아이템 (핵심 수정!) */
+.step-item {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    background: transparent; /* ★수정: 배경을 투명하게 해서 박스 느낌 제거 */
+    width: 60px; /* 텍스트 줄바꿈 방지용 최소 너비 확보 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 4. 동그라미 (선을 가려주는 역할) */
+.step-circle {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid #adb5bd;
+    background: #fff; /* ★중요: 선이 동그라미 뒤로 지나가도 안 비치게 흰색 유지 */
+    display: block;   /* inline-block 대신 block */
+    margin-bottom: 4px; /* 텍스트와 간격 */
+    z-index: 2;
+    /* 동그라미 주변에 하얀 테두리를 줘서 선과 간격을 띄우는 효과 (선택사항) */
+    box-shadow: 0 0 0 3px #fff;
+}
+
+/* 활성화 상태 (초록색) */
+.step-item.active .step-circle {
+    border-color: #198754;
+    background-color: #198754;
+    box-shadow: 0 0 0 3px #fff; /* 활성화돼도 주변 여백 유지 */
+}
+
+/* 현재 단계 (검정색 테두리 + 초록색 채움) */
+.step-item.current .step-circle {
+    border-color: #000;
+    background-color: #000; /* 혹은 초록색 */
+    box-shadow: 0 0 0 3px #fff;
+}
+
+/* 텍스트 스타일 */
+.step-text {
+    font-size: 0.7rem; /* 글자 크기 살짝 키움 */
+    color: #999;
+    line-height: 1.2;
+    word-break: keep-all; /* 단어 중간에 줄바꿈 방지 */
+}
+
+.step-item.active .step-text,
+.step-item.current .step-text {
+    color: #000;
+    font-weight: bold;
+}
+
+/* 카드 내부 폰트 조정 */
+.group-details { font-size: 0.85rem; color: #555; }
+.price-highlight { color: #dc3545; font-weight: bold; } /* 빨간색 강조 */
