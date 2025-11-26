@@ -1,0 +1,63 @@
+/* reviewRegister.css */
+
+/* 기본 레이아웃과 충돌하지 않도록 범위 지정 */
+.content-area {
+    padding-bottom: 80px !important; /* 등록 버튼 공간 확보 */
+}
+
+/* 4. 사진 첨부 영역 스타일 */
+.photo-upload-area {
+    width: 100px;
+    height: 100px;
+}
+
+.photo-placeholder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    height: 100px;
+    background-color: #f0f0f0;
+    border-radius: 8px;
+    cursor: pointer;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid #dee2e6;
+    transition: background-color 0.2s;
+}
+
+.photo-placeholder:hover {
+    background-color: #e2e6ea;
+}
+
+.photo-placeholder.has-image {
+    border: none;
+}
+
+/* 3. 별점 스타일 */
+.star-rating i {
+    cursor: pointer;
+    font-size: 1.5rem;
+    margin-right: 5px;
+    color: #ffc107; /* 노란색 */
+}
+
+.star-rating .bi-star {
+    color: #ced4da !important; /* 비어있는 별 색상 */
+}
+
+
+/* 5. 맵기 정도 버튼 스타일 (bootstrap 기본 스타일 활용) */
+/* bootstrap의 btn-check를 사용하므로 추가적인 CSS는 주로 색상 조정 */
+.spicy-btn {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+}
+
+/* 기타 재료 추가 폼 스타일 */
+.added-ingredient-item .unit-radio-group label {
+    font-size: 0.7rem; /* 더 작게 */
+    padding: 0.2rem 0.3rem;
+    margin-right: 3px !important;
+}
