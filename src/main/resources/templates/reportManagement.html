@@ -11,7 +11,7 @@
 </head>
 <body>
 <!-- 사이드바 자리 -->
-<div class="sidebar">
+<div class="sidebar d-flex flex-column border-end p-4">
 
     <!-- 프로필 -->
     <div class="text-center mb-4 profile-area">
@@ -22,22 +22,24 @@
     <!-- 메뉴 -->
     <ul class="nav flex-column mb-auto">
         <li class="nav-item mb-2">
-            <a class="nav-link sidebar-link" href="/home">유저 관리</a>
+            <a class="nav-link sidebar-link" href="/userManagement.html">유저 관리</a>
         </li>
         <li class="nav-item mb-2">
-            <a class="nav-link sidebar-link" href="/recipe">공구 관리</a>
+            <a class="nav-link sidebar-link" href="/groupBuyManagement.html">공구 관리</a>
         </li>
         <li class="nav-item mb-2">
-            <a class="nav-link sidebar-link" href="/ingredient">신고 관리</a>
+            <a class="nav-link sidebar-link" href="/reportManagement.html">신고 관리</a>
         </li>
         <li class="nav-item mb-2">
-            <a class="nav-link sidebar-link" href="/my">재료 관리</a>
+            <a class="nav-link sidebar-link" href="/ingredientManagement.html">재료 관리</a>
         </li>
     </ul>
 
     <!-- 로그아웃 -->
-    <div class="mt-auto text-center">
-        <button class="btn btn-outline-danger w-75">로그아웃</button>
+    <div class="logout-area">
+        <div class="mt-auto text-center">
+            <button class="btn btn-outline-danger w-75">로그아웃</button>
+        </div>
     </div>
 
 </div>
@@ -114,5 +116,6 @@
     </div>
     </div>
 </div>
+<script src="../static/js/sidebar.js"></script>
 </body>
 </html>
