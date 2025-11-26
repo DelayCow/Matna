@@ -39,14 +39,8 @@ public class QuantityGroupBuyDaoTests {
     //최신 등록순 정렬 테스트 및 기본 필드 매핑 검증")
     void testSelectGroupBuyListRecentOrder() {
         Map<String, Object> params = new HashMap<>();
-
         List<QuantityGroupBuyHomeVO> list = quantityGroupBuyDAO.selectQuantityGroupBuyHomeList(params);
 
-        if (list.size() > 1) {
-            LocalDateTime firstInDate = list.get(0).getInDate();
-            LocalDateTime secondInDate = list.get(1).getInDate();
-
-        }
         for (QuantityGroupBuyHomeVO vo : list) {
             System.out.println(vo.toString());
         }
@@ -97,18 +91,7 @@ public class QuantityGroupBuyDaoTests {
         String testKeyword = "양배추";
         Map<String, Object> params = new HashMap<>();
         params.put("keyword", testKeyword);
-
         List<QuantityGroupBuyHomeVO> list = quantityGroupBuyDAO.selectQuantityGroupBuyHomeList(params);
-
-        for (QuantityGroupBuyHomeVO item : list) {
-            String title = item.getTitle();
-            String location = item.getShareLocation();
-            String ingredientName = item.getIngredientName();
-
-            boolean matches = (title != null && title.contains(testKeyword)) ||
-                    (location != null && location.contains(testKeyword)) ||
-                    (ingredientName != null && ingredientName.contains(testKeyword));
-        }
 
         for (QuantityGroupBuyHomeVO vo : list) {
             System.out.println(vo.toString());
