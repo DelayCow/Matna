@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
 
 
-    const isMyPage = false;
+    const isMyPage = true;
 
     const userData = {
         name: "베베는오리",
