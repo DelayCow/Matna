@@ -1,0 +1,39 @@
+.nav-tabs .nav-link {
+    color: #6c757d;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-weight: 600;
+    background: transparent;
+    width: 100%;
+}
+.nav-tabs .nav-link.active {
+    color: #000;
+    border-bottom: 3px solid #000;
+    background: transparent;
+
+}
+.nav-item {
+    flex: 1;
+    text-align: center;
+    cursor: pointer;
+}
+.edit-box {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left:0;
+    width: 100px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 5px 10px;
+    z-index: 1000;
+    font-size: 0.75rem;
+    color: #495057;
+}
+.edit-box.show {
+    display: block !important;
+}
+#addPeriodBuy, #addQuantityBuy{
+    cursor: pointer;
+}
