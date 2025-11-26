@@ -1,213 +1,207 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-    // ========================================================
-    // [STEP 1] 사용자 정보 설정 (하드코딩 동적 데이터)
-    // ========================================================
-    const currentUserId = "user1";    // 현재 로그인한 사람
-    // const profileOwnerId = "user1"; // [상황 A] 내 프로필 볼 때 (이 줄 주석 해제)
-    const profileOwnerId = "user2";   // [상황 B] 남의 프로필 볼 때 (현재 설정)
+    // ==================================================================
+    // [STEP 1] 화면 모드 설정 (테스트할 때 여기만 바꾸세요!)
+    // ==================================================================
 
-    // 내 프로필인지 판단하는 핵심 변수 (true / false)
-    const isMyProfile = currentUserId === profileOwnerId;
+    // true  => [내 페이지 모드]: 메뉴 보임, 돈 보임, 수정/삭제 가능
+    // false => [남 페이지 모드]: 메뉴 숨김, 신고/채팅 보임
+    const isMyPage = true;
 
 
-    // ========================================================
-    // [STEP 2] 화면 렌더링 (헤더 & 프로필 영역)
-    // ========================================================
-
-    // 1. 헤더 메뉴 (우측 상단 점 3개) 처리
-    const headerMenuBtn = document.getElementById('headerMenuBtn');
-    if (headerMenuBtn) {
-        if (isMyProfile) {
-            headerMenuBtn.style.display = 'block'; // 내꺼면 보임
-        } else {
-            headerMenuBtn.style.display = 'none';  // 남꺼면 숨김 (공통 UI지만 숨겨버림)
-        }
-    }
-
-    // 2. 프로필 정보 & 버튼 영역 처리
-    const subText = document.getElementById('profile-sub-text');
-    const actionBtns = document.getElementById('profile-action-btns');
-
-    if (isMyProfile) {
-        // [내 프로필일 때]
-        // 닉네임 아래: 맛나머니 표시
-        if(subText) subText.innerHTML = `<small class="text-muted">내 맛나머니 : 5,600 원</small>`;
-        // 하단 버튼: 없음
-        if(actionBtns) actionBtns.innerHTML = '';
-
-    } else {
-        // [남의 프로필일 때]
-        // 닉네임 아래: 신고하기 버튼
-        if(subText) subText.innerHTML = `
-            <button class="btn btn-outline-secondary btn-sm rounded-pill px-2 py-0 mt-1" style="font-size: 0.75rem;">
-                <i class="bi bi-exclamation-circle me-1"></i>신고하기
-            </button>
-        `;
-        // 하단 버튼: 채팅/팔로우 버튼 생성
-        if(actionBtns) actionBtns.innerHTML = `
-            <div class="d-flex gap-2">
-                <button class="btn btn-success flex-grow-1 fw-bold text-white shadow-sm py-2" style="background-color: #6CC537; border: none;">
-                    채팅 보내기
-                </button>
-                <button class="btn btn-success flex-grow-1 fw-bold text-white shadow-sm py-2" style="background-color: #6CC537; border: none;">
-                    팔로우하기
-                </button>
-            </div>
-        `;
-    }
-
-
-    // ========================================================
-    // [STEP 3] 레시피 데이터 및 헬퍼 함수
-    // ========================================================
-    const recipeData = [
-        {
-            id: 1,
-            title: "안주로 딱~ 폭신하고 촉촉한 간단 폭탄계란찜",
-            image: "../static/img/steamedeggs.jpg",
-            rating: 5,
-            reviewCount: 8,
-            serving: 1, time: "10분이내", difficulty: "쉬움", spicy: "약간매워요"
-        },
-        {
-            id: 2,
-            title: "속을 뜨끈하게! 한국인 입맛저격 라비올리",
-            image: "../static/img/ravioli.jpg",
-            rating: 4.5,
-            reviewCount: 14,
-            serving: 1, time: "10분이내", difficulty: "쉬움", spicy: "약간매워요"
-        },
-        // ... 나머지 데이터들 (필요하면 추가) ...
-        {
-            id: 3,
-            title: "촉촉한 패티! 황금비율 수제버거",
-            image: "../static/img/hambugi.jpg",
-            rating: 5.0,
-            reviewCount: 19,
-            serving: 1, time: "10분이내", difficulty: "쉬움", spicy: "약간매워요"
-        },
-        {
-            id: 4,
-            title: "한국에서 영국맛내기~ 바삭바삭 피쉬앤칩스",
-            image: "../static/img/fishAndChips.jpg",
-            rating: 4.0,
-            reviewCount: 6,
-            serving: 1, time: "10분이내", difficulty: "쉬움", spicy: "약간매워요"
-        },
-    ];
-
-    // 별점 HTML 생성 함수
-    const createStarHtml = (rating) => {
-        let stars = '';
-        const fullStars = Math.floor(rating);
-        const hasHalfStar = rating % 1 >= 0.5;
-
-        for (let i = 0; i < fullStars; i++) stars += '<i class="bi bi-star-fill"></i>';
-        if (hasHalfStar) stars += '<i class="bi bi-star-half"></i>';
-        const emptyStars = 5 - Math.ceil(rating);
-        for (let i = 0; i < emptyStars; i++) stars += '<i class="bi bi-star"></i>';
-
-        return stars;
+    // ==================================================================
+    // [STEP 2] 사용자 데이터 정의 (상황에 따라 바뀌는 데이터)
+    // ==================================================================
+    const userData = {
+        name: "베베는오리",
+        image: "../../static/img/user1.png",
+        money: 5600,
+        isOwner: isMyPage // 위에서 설정한 모드를 따름
     };
 
 
-    // ========================================================
-    // [STEP 4] 카드 HTML 생성 (여기가 핵심 변경 포인트!)
-    // ========================================================
-    const createRecipeCard = (recipe) => {
-        const imgSrc = recipe.image ? recipe.image : 'https://via.placeholder.com/300x200';
+    // ==================================================================
+    // [STEP 3] 화면 그리기 함수들
+    // ==================================================================
+
+    // 1. 헤더 메뉴 (점 3개) 렌더링
+    const RenderHeader = () => {
+        const headerArea = document.getElementById('header-right-area');
+        if (!headerArea) return;
+
+        // 내 페이지일 때만 메뉴 버튼을 HTML에 집어넣음
+        if (userData.isOwner) {
+            headerArea.innerHTML = `
+                <button class="btn p-0 border-0" id="headerMenuBtn">
+                    <i class="bi bi-three-dots-vertical fs-4 text-dark"></i>
+                </button>
+                <ul class="custom-dropdown" id="headerDropdown">
+                    <li><a href="#">내 정보 수정</a></li>
+                    <li><a href="#">로그아웃</a></li>
+                    <li><a href="#" class="text-danger">회원 탈퇴</a></li>
+                </ul>
+            `;
+        } else {
+            // 남의 페이지면 깨끗하게 비움
+            headerArea.innerHTML = '';
+        }
+    };
+
+    // 2. 프로필 메인 정보 (닉네임, 돈 vs 신고) 렌더링
+    const RenderProfileMain = () => {
+        const profileArea = document.getElementById('profile-main-area');
+        if (!profileArea) return;
+
+        // 내꺼면 돈, 남꺼면 신고버튼
+        let subInfoHtml = '';
+        if (userData.isOwner) {
+            subInfoHtml = `<small class="text-muted">내 맛나머니 : ${userData.money.toLocaleString()} 원</small>`;
+        } else {
+            subInfoHtml = `
+                <button class="btn btn-outline-secondary btn-sm rounded-pill px-2 py-0 mt-1" style="font-size: 0.75rem;">
+                    <i class="bi bi-exclamation-circle me-1"></i>신고하기
+                </button>
+            `;
+        }
+
+        // HTML 조립
+        profileArea.innerHTML = `
+            <img src="${userData.image}" alt="프로필" class="rounded-circle border me-3" width="60" height="60">
+            <div>
+                <h5 class="fw-bold mb-1">${userData.name}</h5>
+                <div id="profile-sub-text">
+                    ${subInfoHtml}
+                </div>
+            </div>
+        `;
+    };
+
+    // 3. 하단 버튼 (채팅/팔로우) 렌더링
+    const RenderActionBtns = () => {
+        const btnsArea = document.getElementById('profile-action-btns');
+        if (!btnsArea) return;
+
+        if (userData.isOwner) {
+            btnsArea.innerHTML = ''; // 내꺼면 버튼 없음
+        } else {
+            btnsArea.innerHTML = `
+                <div class="d-flex gap-2">
+                    <button class="btn btn-success flex-grow-1 fw-bold text-white shadow-sm py-2" style="background-color: #6CC537; border: none;">
+                        채팅 보내기
+                    </button>
+                    <button class="btn btn-success flex-grow-1 fw-bold text-white shadow-sm py-2" style="background-color: #6CC537; border: none;">
+                        팔로우하기
+                    </button>
+                </div>
+            `;
+        }
+    };
+
+
+    // ==================================================================
+    // [STEP 4] 렌더링 실행 (함수 호출)
+    // ==================================================================
+    RenderHeader();
+    RenderProfileMain();
+    RenderActionBtns();
+
+
+    // ==================================================================
+    // [STEP 5] 이벤트 리스너 (헤더 드롭다운 기능)
+    // ==================================================================
+    // 동적으로 생성된 요소이므로 document에 이벤트를 걸어 위임합니다.
+    document.addEventListener('click', function(e) {
+        // 클릭된 요소가 헤더 메뉴 버튼인지 확인
+        const menuBtn = e.target.closest('#headerMenuBtn');
+        const dropdown = document.getElementById('headerDropdown');
+
+        // 1. 메뉴 버튼 클릭 시 드롭다운 열기/닫기
+        if (menuBtn && dropdown) {
+            e.stopPropagation(); // 이벤트가 퍼지는 것을 막음
+            dropdown.classList.toggle('show');
+            return;
+        }
+
+        // 2. 그 외 다른 곳 클릭 시 드롭다운 닫기
+        if (dropdown && dropdown.classList.contains('show')) {
+            dropdown.classList.remove('show');
+        }
+    });
+
+
+
+    // db 값이랑 하드 코딩 값이랑 타입이 다름 나중에 맞춰 줘
+    const recipeData = [
+        { id: 1, title: "폭탄계란찜", image: "../../static/img/steamedeggs.jpg", rating: 5, reviewCount: 8, serving: 1, time: "10분", difficulty: "쉬움", spicy: "안 매워요" },
+        { id: 2, title: "라비올리", image: "../../static/img/ravioli.jpg", rating: 4.5, reviewCount: 14, serving: 1, time: "15분", difficulty: "중급", spicy: "약간매워요" },
+        { id: 3, title: "수제버거", image: "../../static/img/hambugi.jpg", rating: 5.0, reviewCount: 19, serving: 1, time: "30분", difficulty: "상급", spicy: "안 매워요" },
+        { id: 4, title: "피쉬앤칩스", image: "../../static/img/fishAndChips.jpg", rating: 4.0, reviewCount: 6, serving: 2, time: "20분", difficulty: "중급", spicy: "안 매워요" },
+        { id: 5, title: "미역국", image: "../../static/img/miyuckguck.jpg", rating: 3.0, reviewCount: 10, serving: 1, time: "10분", difficulty: "중급", spicy: "완젼 매워요" },
+        { id: 6, title: "코코뱅", image: "../../static/img/cokkioo.jpg", rating: 3.5, reviewCount: 11, serving: 2, time: "40분", difficulty: "중급", spicy: "매워요" }
+    ];
+
+    const  CreateRecipeCard = (recipe) => {
+        const imgSrc = recipe.image;
         const editUrl = `/recipe/edit?id=${recipe.id}`;
 
-        // ★ 핵심: 내 프로필일 때만 드롭다운 메뉴 HTML 문자열을 생성함 ★
-        const kebabMenuHtml = isMyProfile ? `
+        // ★ 레시피 카드 위 케밥 메뉴도 'isOwner'가 true일 때만 생성
+        const kebabMenuHtml = userData.isOwner ? `
             <div class="dropdown ms-auto">
-                <button class="btn btn-link text-secondary p-0 border-0 text-decoration-none dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="btn btn-link text-secondary p-0 border-0 text-decoration-none dropdown-toggle" type="button" data-bs-toggle="dropdown">
                     <i class="bi bi-three-dots-vertical"></i>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                    <li>
-                        <a class="dropdown-item small" href="${editUrl}">
-                            <i class="bi bi-pencil-square text-primary me-2"></i>수정
-                        </a>
-                    </li>
+                    <li><a class="dropdown-item small" href="${editUrl}">수정</a></li>
                     <li><hr class="dropdown-divider my-1"></li>
-                    <li>
-                        <button class="dropdown-item small text-danger btn-delete" data-id="${recipe.id}">
-                            <i class="bi bi-trash me-2"></i>삭제
-                        </button>
-                    </li>
+                    <li><button class="dropdown-item small text-danger btn-delete" data-id="${recipe.id}">삭제</button></li>
                 </ul>
             </div>
-        ` : ''; // 내 프로필 아니면 빈 문자열(아무것도 안 보임)
+        ` : '';
 
         return `
-            <div class="recipe-card mb-4" data-id="${recipe.id}">
+            <div class="recipe-card mb-4 col-12" data-id="${recipe.id}">
                 <div class="card-img-wrap overflow-hidden rounded shadow-sm">
-                    <img src="${imgSrc}" alt="${recipe.title}" class="w-100 object-fit-cover" style="height: 200px;">
+                    <img src="${imgSrc}" alt="${recipe.title}" class="w-100 object-fit-cover" style="height: 100%;">
                 </div>
                 <div class="card-info mt-2 p-2">
                     <h5 class="card-title fw-bold text-truncate mb-2">${recipe.title}</h5>
-                    
                     <div class="d-flex align-items-center mb-2">
                         <span class="text-warning me-1"><i class="bi bi-star-fill"></i></span>
                         <span class="fw-bold me-1">${recipe.rating}</span>
                         <span class="text-muted small me-2">(${recipe.reviewCount})</span>
-                        
                         ${kebabMenuHtml}
                     </div>
-                    
-                    <div class="d-flex flex-wrap align-items-center text-muted small gap-2">
+                     <div class="d-flex flex-wrap align-items-center text-muted small gap-2">
                         <span class="d-flex align-items-center text-nowrap bg-light px-2 py-1 rounded">
                             <i class="bi bi-people me-1"></i> ${recipe.serving}인분
                         </span>
                         <span class="d-flex align-items-center text-nowrap bg-light px-2 py-1 rounded">
                             <i class="bi bi-clock me-1"></i> ${recipe.time}
                         </span>
-                        </div>
+                        <span class="d-flex align-items-center text-nowrap bg-light px-2 py-1 rounded">
+                            <i class="bi bi-difficulty me-1"></i> ${recipe.difficulty}
+                        </span>
+                        <span class="d-flex align-items-center text-nowrap bg-light px-2 py-1 rounded">
+                            <i class="bi bi-spicy me-1"></i> ${recipe.spicy}
+                        </span>
+                    </div>
                 </div>
             </div>
         `;
     };
 
-    // ========================================================
-    // [STEP 5] 실행 및 이벤트 리스너
-    // ========================================================
     const recipeContainer = document.getElementById('recipe-list');
-
     if (recipeContainer) {
+        recipeContainer.innerHTML = ''; // 초기화
         recipeData.forEach(recipe => {
-            const cardHtml = createRecipeCard(recipe);
-            recipeContainer.insertAdjacentHTML('beforeend', cardHtml);
+            recipeContainer.insertAdjacentHTML('beforeend',  CreateRecipeCard(recipe));
         });
 
-        // 클릭 이벤트 (카드 클릭 시 이동 등)
+        // 카드 클릭 이벤트 (dropdown 제외하고 클릭 처리)
         recipeContainer.addEventListener('click', function(e) {
-            // 케밥 메뉴(드롭다운) 클릭 시에는 카드 이동 막기
-            if (e.target.closest('.dropdown') || e.target.closest('.dropdown-menu')) {
-                return;
-            }
-
-            const card = e.target.closest('.recipe-card');
-            if (card) {
-                const id = card.getAttribute('data-id');
-                console.log(`레시피 상세(${id}) 이동`);
-                // window.location.href = ...;
-            }
-        });
-    }
-
-    // 헤더 드롭다운 토글 기능 (공통 UI용)
-    const menuBtn = document.getElementById('headerMenuBtn');
-    const dropdown = document.getElementById('headerDropdown');
-
-    if(menuBtn && dropdown) {
-        menuBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            dropdown.classList.toggle('show');
-        });
-        document.addEventListener('click', () => {
-            dropdown.classList.remove('show');
+            if (e.target.closest('.dropdown') || e.target.closest('.dropdown-menu')) return;
+            // 카드 클릭 시 상세 페이지 이동 로직은 여기에...
+            console.log("카드 클릭됨");
         });
     }
 });
