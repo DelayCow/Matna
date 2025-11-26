@@ -217,7 +217,7 @@ public class PeriodGroupBuyRepositoryTests {
         Integer participantId = 68;
 
         // 참여자 및 초기 포인트 조회 (환불 전 상태)
-        Member participantMember = memberRepository.findByMemberNo(memberNo);
+        Member participantMember = memberRepository.findById(memberNo).get();
         GroupBuyParticipant participantEntry = groupBuyParticipantRepository.findById(participantId).get();
 
         int initialPaymentPoint = participantEntry.getInitialPaymentPoint();
@@ -234,7 +234,7 @@ public class PeriodGroupBuyRepositoryTests {
         participantEntry.setCancelDate(LocalDateTime.now());
         GroupBuyParticipant updatedParticipantEntry = groupBuyParticipantRepository.save(participantEntry);
 
-        Member refundedMember = memberRepository.findByMemberNo(memberNo);
+        Member refundedMember = memberRepository.findById(memberNo).get();
         int expectedPoint = initialMemberPoint + initialPaymentPoint;
 
         System.out.println("기간공구 GroupBuy ID " + targetGroupBuyId + "가 중단되고, 참여자 ID " + memberNo + "에게 " + initialPaymentPoint + "원 환불되었습니다.");
