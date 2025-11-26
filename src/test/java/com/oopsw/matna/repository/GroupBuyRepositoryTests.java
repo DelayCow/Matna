@@ -1,6 +1,5 @@
 package com.oopsw.matna.repository;
 
-import com.oopsw.matna.repository.entity.Ingredient;
 import com.oopsw.matna.repository.entity.GroupBuy;
 import com.oopsw.matna.vo.GroupBuyListVO;
 import com.oopsw.matna.vo.GroupBuyVO;
