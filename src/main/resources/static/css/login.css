@@ -63,3 +63,8 @@ form small.unavailable{
 small.notshow{
     display:none;
 }
+.form-control[readonly] {
+    background-color: #e9ecef;
+    /* border-color: #ced4da; /* 필요하다면 경계선 색상도 지정 가능 */
+    opacity: 1;
+}
