@@ -39,12 +39,6 @@ public class PeriodGroupBuyDAOTests {
         Map<String, Object> params = new HashMap<>();
         List<PeriodGroupBuyHomeVO> list = periodGroupBuyDAO.selectGroupBuyListForHome(params);
 
-        if (list.size() > 1) {
-            LocalDateTime firstInDate = list.get(0).getInDate();
-            LocalDateTime secondInDate = list.get(1).getInDate();
-        }
-
-        PeriodGroupBuyHomeVO firstItem = list.get(0);
         for (PeriodGroupBuyHomeVO vo : list) {
             System.out.println(vo.toString());
         }
@@ -55,13 +49,7 @@ public class PeriodGroupBuyDAOTests {
     void testSelectGroupBuyListDeadlineOrder() {
         Map<String, Object> params = new HashMap<>();
         params.put("orderBy", "deadline"); // 마감 임박순 정렬 조건 (dueDate ASC)
-
         List<PeriodGroupBuyHomeVO> list = periodGroupBuyDAO.selectGroupBuyListForHome(params);
-
-        if (list.size() > 1) {
-            LocalDateTime firstDeadline = list.get(0).getDueDate();
-            LocalDateTime secondDeadline = list.get(1).getDueDate();
-        }
 
         for (PeriodGroupBuyHomeVO vo : list) {
             System.out.println(vo.toString());
@@ -74,18 +62,7 @@ public class PeriodGroupBuyDAOTests {
         String testKeyword = "고구마";
         Map<String, Object> params = new HashMap<>();
         params.put("keyword", testKeyword);
-
         List<PeriodGroupBuyHomeVO> list = periodGroupBuyDAO.selectGroupBuyListForHome(params);
-
-        for (PeriodGroupBuyHomeVO item : list) {
-            String title = item.getTitle();
-            String location = item.getShareLocation();
-            String ingredientName = item.getIngredientName();
-
-            boolean matches = (title != null && title.contains(testKeyword)) ||
-                    (location != null && location.contains(testKeyword)) ||
-                    (ingredientName != null && ingredientName.contains(testKeyword));
-        }
 
         for (PeriodGroupBuyHomeVO vo : list) {
             System.out.println(vo.toString());
