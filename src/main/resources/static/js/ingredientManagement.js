@@ -119,12 +119,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// --------------------------------------------------------------------
+
 // 승인 / 업데이트 버튼 기능
-// --------------------------------------------------------------------
-// 이유: 페이지 버튼들이 아무 동작도 하지 않으면 UI 테스트가 불가.
-// 장점: 나중에 fetch로 서버 연동할 때 쉽게 교체할 수 있음.
-// 변경 사항: alert만 띄움 (실제 서버 작업 시 fetch로 변경)
+// 나중에 api 연결 해줘야함
 newIngredientTable.querySelectorAll("tr").forEach(row => {
     const approveBtn = row.querySelectorAll(".btn-primary")[0];
     const updateBtn = row.querySelectorAll(".btn-primary")[1];
