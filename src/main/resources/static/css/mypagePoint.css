@@ -1,0 +1,33 @@
+/* 2. 드롭다운 메뉴 (헤더 점 3개 클릭 시) */
+.custom-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 150px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    list-style: none;
+    padding: 0;
+    margin: 5px 0 0 0;
+    z-index: 1030;
+}
+
+.custom-dropdown.show {
+    display: block;
+}
+
+.custom-dropdown li a {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #333;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.custom-dropdown li:last-child a {
+    border-bottom: none;
+}

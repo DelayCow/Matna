@@ -2,7 +2,6 @@ package com.oopsw.matna.repository;
 
 
 import com.oopsw.matna.repository.entity.*;
-import com.oopsw.matna.vo.RecipeListVO;
 import com.oopsw.matna.vo.RecipeVO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -222,13 +221,17 @@ public class RecipeRepositoryTests {
     public void getMyPageRecipeListTest(){
         Integer memberNo = 5;
         List<Recipe> recipes = recipeRepository.findByAuthor_MemberNoAndDelDateIsNull(memberNo);
-        List<RecipeListVO> recipeList = recipes.stream()
-                .map(recipe -> RecipeListVO.builder()
+        List<RecipeVO> recipeList = recipes.stream()
+                .map(recipe -> RecipeVO.builder()
                         .recipeNo(recipe.getRecipeNo())
                         .title(recipe.getTitle())
                         .averageRating(recipe.getAverageRating())
                         .reviewCount(recipe.getReviewCount())
-                        .imageUrl(recipe.getImageUrl())
+                        .thumbnailUrl(recipe.getImageUrl())
+                        .difficulty(recipe.getDifficulty())
+                        .prepTime(recipe.getPrepTime())
+                        .servings(recipe.getServings())
+                        .spicyLevel(recipe.getSpicyLevel())
                         .build()).collect(Collectors.toList());
         System.out.println(recipeList);
     }
