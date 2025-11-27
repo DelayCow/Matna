@@ -1,25 +1,35 @@
 package com.oopsw.matna.controller.mypage;
 
+import com.oopsw.matna.dto.RecipeListResponse;
 import com.oopsw.matna.service.MypageService;
-
 import com.oopsw.matna.vo.RecipeVO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/mypage")
 public class MypageRestController {
-
     private final MypageService mypageService;
 
-    @GetMapping("/mypage/{memberNo}")
-    public List<RecipeVO> mypageList(@PathVariable("memberNo") int memberNo) {
-
-        return mypageService.getMyPageRecipeList(memberNo);
-    }
-
+    @GetMapping("/{memberNo}/recipe")
+    public List<RecipeListResponse> getMypageRecipeList(@PathVariable("memberNo") int memberNo) {
+        List<RecipeVO> recipelist = mypageService.getMypageRecipeList(memberNo);
+        List<RecipeListResponse> result = recipelist.stream()
+                .map(recipe -> RecipeListResponse.builder()
+                        .id(recipe.getRecipeNo())
+                        .title(recipe.getTitle())
+                        .rating(recipe.getAverageRating())
+                        .image(recipe.getThumbnailUrl())
+                        .reviewCount(recipe.getReviewCount())
+                        .difficulty(recipe.getDifficulty())
+                        .time(recipe.getPrepTime())
+                        .serving(recipe.getServings())
+                        .spicy(recipe.getSpicyLevel())
+                        .build()).collect(Collectors.toList());
+        return result;
+    };
 }

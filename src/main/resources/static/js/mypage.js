@@ -1,50 +1,35 @@
 document.addEventListener('DOMContentLoaded', function() {
-
-
-    const memberNo = 1;
-
     const isMyPage = true;
 
     const userData = {
         name: "베베는오리",
-        image: "../static/img/user1.png",
+        image: "/img/user1.png",
         money: 5600,
         isOwner: isMyPage
     };
 
-    // // 1. 레시피 데이터
+    // 1. 레시피 데이터
     // const recipeData = [
-    //     { id: 1, title: "폭탄계란찜", image: "../static/img/steamedeggs.jpg", rating: 5, reviewCount: 8, serving: 1, time: "10분", difficulty: "쉬움", spicy: "안 매워요" },
-    //     { id: 2, title: "라비올리", image: "../static/img/ravioli.jpg", rating: 4.5, reviewCount: 14, serving: 1, time: "15분", difficulty: "중급", spicy: "약간매워요" },
-    //     { id: 3, title: "수제버거", image: "../static/img/hambugi.jpg", rating: 5.0, reviewCount: 19, serving: 1, time: "30분", difficulty: "상급", spicy: "안 매워요" },
-    //     { id: 4, title: "피쉬앤칩스", image: "../static/img/fishAndChips.jpg", rating: 4.0, reviewCount: 6, serving: 2, time: "20분", difficulty: "중급", spicy: "안 매워요" },
-    //     { id: 5, title: "미역국", image: "../static/img/miyuckguck.jpg", rating: 3.0, reviewCount: 10, serving: 1, time: "10분", difficulty: "중급", spicy: "완젼 매워요" },
-    //     { id: 6, title: "코코뱅", image: "../static/img/cokkioo.jpg", rating: 3.5, reviewCount: 11, serving: 2, time: "40분", difficulty: "중급", spicy: "매워요" }
+    //     { id: 1, title: "폭탄계란찜", image: "/img/steamedeggs.jpg", rating: 5, reviewCount: 8, serving: 1, time: "10분", difficulty: "쉬움", spicy: "안 매워요" },
+    //     { id: 2, title: "라비올리", image: "/img/ravioli.jpg", rating: 4.5, reviewCount: 14, serving: 1, time: "15분", difficulty: "중급", spicy: "약간매워요" },
+    //     { id: 3, title: "수제버거", image: "/img/hambugi.jpg", rating: 5.0, reviewCount: 19, serving: 1, time: "30분", difficulty: "상급", spicy: "안 매워요" },
+    //     { id: 4, title: "피쉬앤칩스", image: "/img/fishAndChips.jpg", rating: 4.0, reviewCount: 6, serving: 2, time: "20분", difficulty: "중급", spicy: "안 매워요" },
+    //     { id: 5, title: "미역국", image: "/img/miyuckguck.jpg", rating: 3.0, reviewCount: 10, serving: 1, time: "10분", difficulty: "중급", spicy: "완젼 매워요" },
+    //     { id: 6, title: "코코뱅", image: "/img/cokkioo.jpg", rating: 3.5, reviewCount: 11, serving: 2, time: "40분", difficulty: "중급", spicy: "매워요" }
     // ];
 
-    function fetchRecipeData() {
-        // 아까 만든 RestController 주소 호출
-        fetch(`/mypage/${memberNo}`)
-            .then(response => {
-                if (!response.ok) throw new Error("데이터 로딩 실패");
-                return response.json();
-            })
-            .then(realRecipeData => {
-                // 1. 데이터가 오면 화면에 그리기
-                renderRecipeList(realRecipeData);
-                // 2. 통계 숫자 업데이트
-                updateStats(realRecipeData.length);
-            })
-            .catch(error => {
-                console.error("에러:", error);
-                document.getElementById('recipe-list').innerHTML = '<div class="p-5 text-center">데이터를 불러오지 못했습니다.</div>';
-            });
-    }
+    const fetchRecipeData = function(memberNo){
+        return fetch(`/api/mypage/${memberNo}/recipe`,{
+            method: 'GET'
+        }).then(response => {
+            return response.json();
+        });
+    };
 
     // 2. 후기 데이터
     const reviewData = [
-        { id: 101, title: "인생 버거 등극!", image: "../static/img/hambugiReview.jpg", rating: 4.0, spicy: "안 매워요" },
-        { id: 201, title: "와인 풍미 예술", image: "../static/img/cokkioo.jpg", rating: 3.5, spicy: "매워요" }
+        { id: 101, title: "인생 버거 등극!", image: "/img/hambugiReview.jpg", rating: 4.0, spicy: "안 매워요" },
+        { id: 201, title: "와인 풍미 예술", image: "/img/cokkioo.jpg", rating: 3.5, spicy: "매워요" }
     ];
 
     // 3. 공동구매 데이터 (상세 필드 추가됨!)
@@ -52,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {
             id: 501,
             title: "표고버섯 500g",
-            image: "../static/img/mushroom.jpg",
+            image: "/img/mushroom.jpg",
             statusStep: 1, // 1:모집
             myAmount: "50g",
             price: 650,
@@ -66,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {
             id: 502,
             title: "스테비아 방울토마토 1,000g",
-            image: "../static/img/tomato.jpg",
+            image: "/img/tomato.jpg",
             statusStep: 2, // 2:결제
             myAmount: "200g",
             price: 2100,
@@ -80,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {
             id: 503,
             title: "햇 통마늘 1,000g",
-            image: "../static/img/garlic.jpg",
+            image: "/img/garlic.jpg",
             statusStep: 3, // 3:도착
             myAmount: "300g",
             price: 2400,
@@ -92,7 +77,6 @@ document.addEventListener('DOMContentLoaded', function() {
             join_users: ["철수"]
         }
     ];
-
 
     // 1. 헤더 & 프로필
     const renderCommonArea = () => {
@@ -119,29 +103,44 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // 2. 통계 업데이트
-    const updateStats = (recipeCount) => {
-        document.getElementById('statRecipeCount').innerText = recipeCount;
+    const updateStats = () => {
+        // document.getElementById('statRecipeCount').innerText = recipeData.length;
         document.getElementById('statGroupCount').innerText = groupData.length;
-    };
-
-    // --- 렌더링: 레시피 리스트 ---
-    const renderRecipeList = (data) => {
-        const listContainer = document.getElementById('recipe-list');
-        if (!data || data.length === 0) {
-            listContainer.innerHTML = '<div class="col-12 text-center py-5">작성한 레시피가 없습니다.</div>';
-            return;
-        }
-        listContainer.innerHTML = data.map(createRecipeCard).join('');
     };
 
     // 3. 레시피 카드 생성
     const createRecipeCard = (item) => {
-        const imgUrl = item.thumbnailUrl ? item.thumbnailUrl : '../static/img/logo.png';
-        const rating = item.averageRating ? item.averageRating : 0.0;
-        const time = item.prepTime ? item.prepTime : '-';
-
-        const editUrl = `/recipe/edit?id=${item.recipeNo}`; // id -> recipeNo
-
+        const editUrl = `/recipe/edit?id=${item.id}`;
+        switch(item.difficulty){
+            case 'easy':
+                item.difficulty = '쉬움';
+                break;
+            case 'normal':
+                item.difficulty = '보통';
+                break;
+            case 'hard':
+                item.difficulty = '어려움';
+        }
+        switch(item.spicyLevel){
+            case 0:
+                item.spicyLevel = '안매워요';
+                break;
+            case 1:
+                item.spicyLevel = '약간매워요';
+                break;
+            case 2:
+                item.spicyLevel = '신라면맵기';
+                break;
+            case 3:
+                item.spicyLevel = '열라면맵기';
+                break;
+            case 4:
+                item.spicyLevel = '불닭맵기';
+                break;
+            case 5:
+                item.spicyLevel = '불닭보다매워요';
+                break;
+        }
         const kebabMenuHtml = userData.isOwner ? `
             <div class="dropdown ms-auto">
                 <button class="btn btn-link text-secondary p-0 border-0" type="button" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
@@ -241,8 +240,6 @@ document.addEventListener('DOMContentLoaded', function() {
         else listEl.innerHTML = filtered.map(createGroupCard).join('');
     };
 
-
-
     const statTabRecipe = document.getElementById('statTabRecipe');
     const statTabGroup = document.getElementById('statTabGroup');
     const wrapRecipe = document.getElementById('recipe-section-wrapper');
@@ -274,12 +271,13 @@ document.addEventListener('DOMContentLoaded', function() {
     if(btnParticipate) btnParticipate.addEventListener('change', () => { if(btnParticipate.checked) renderGroupList('participate'); });
     if(btnOpen) btnOpen.addEventListener('change', () => { if(btnOpen.checked) renderGroupList('owner'); });
 
-
-
     renderCommonArea();
     updateStats();
-
-    document.getElementById('recipe-list').innerHTML = recipeData.map(createRecipeCard).join('');
+    fetchRecipeData(15).then(recipeData => {
+        document.getElementById('statRecipeCount').innerText = recipeData.length;
+        document.getElementById('recipe-list').innerHTML = recipeData.map(createRecipeCard).join('');
+    })
+    // document.getElementById('recipe-list').innerHTML = recipeData.map(createRecipeCard).join('');
     document.getElementById('review-list').innerHTML = reviewData.map(createReviewCard).join('');
 
     // 공동구매는 '참여' 탭을 기본으로 보여줌
@@ -292,16 +290,4 @@ document.addEventListener('DOMContentLoaded', function() {
         if(btn && menu) { e.stopPropagation(); menu.classList.toggle('show'); }
         else if(menu) { menu.classList.remove('show'); }
     });
-
-    renderCommonArea();
-
-    // 2. [중요] 서버에 레시피 데이터 요청하기 (비동기)
-    fetchRecipeData();
-
-    // 3. 후기 리스트는 더미데이터로 즉시 그리기
-    document.getElementById('review-list').innerHTML = reviewData.map(createReviewCard).join('');
-
-    // 4. 공동구매 리스트도 더미데이터로 즉시 그리기
-    renderGroupList('participate');
-
 });
