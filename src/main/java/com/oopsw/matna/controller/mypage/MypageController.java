@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class MypageController {
-    @GetMapping("mypage")
+    @GetMapping("/api/{memberNo}/recipes")
     public String mypage(@RequestParam Integer memberNo, Model model){
         model.addAttribute("memberNo",memberNo);
         return "mypage";

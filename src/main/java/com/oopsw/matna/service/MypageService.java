@@ -18,10 +18,14 @@ public class MypageService {
 
     public List<RecipeListVO> getMypageRecipeList(int memberNo){
         List<Recipe> recipes = recipeRepository.findByAuthor_MemberNoAndDelDateIsNull(memberNo);
-        List<RecipeListVO> resultRecipeList = new ArrayList<>();
-        for (Recipe r : recipes) {
-            resultRecipeList.add(new RecipeListVO(r.getRecipeNo(),r.getTitle(),r.getAverageRating(), r.getImageUrl(), r.getReviewCount()));
-        }
-        return resultRecipeList;
+        List<RecipeListVO> recipeList = recipes.stream()
+                .map(recipe -> RecipeListVO.builder()
+                        .recipeNo(recipe.getRecipeNo())
+                        .title(recipe.getTitle())
+                        .averageRating(recipe.getAverageRating())
+                        .reviewCount(recipe.getReviewCount())
+                        .imageUrl(recipe.getImageUrl())
+                        .build()).collect(Collectors.toList());
+        return recipeList;
     }
 }
