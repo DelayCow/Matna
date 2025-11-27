@@ -1,11 +1,10 @@
-package com.oopsw.matna.repository;
+package com.oopsw.matna.dao;
 
 import com.oopsw.matna.vo.AllReportVO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
