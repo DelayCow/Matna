@@ -1,4 +1,4 @@
-package com.oopsw.matna.repository;
+package com.oopsw.matna.dao;
 
 import com.oopsw.matna.vo.GroupBuyListVO;
 import org.junit.jupiter.api.Test;

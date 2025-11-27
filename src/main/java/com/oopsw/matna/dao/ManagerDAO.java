@@ -1,4 +1,4 @@
-package com.oopsw.matna.repository;
+package com.oopsw.matna.dao;
 
 import com.oopsw.matna.vo.AllGroupBuyListVO;
 import com.oopsw.matna.vo.AllMemberListVO;

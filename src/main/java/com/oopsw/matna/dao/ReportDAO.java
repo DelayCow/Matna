@@ -1,10 +1,9 @@
-package com.oopsw.matna.repository;
+package com.oopsw.matna.dao;
 
 import com.oopsw.matna.vo.AllReportVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 

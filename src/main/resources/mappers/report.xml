@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.oopsw.matna.repository.ReportDAO">
+<mapper namespace="com.oopsw.matna.dao.ReportDAO">
     <select id="getReports" resultType="com.oopsw.matna.vo.AllReportVO">
         SELECT
             rt.report_no      AS reportNo,
