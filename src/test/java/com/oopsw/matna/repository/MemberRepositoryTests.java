@@ -6,7 +6,7 @@ import com.oopsw.matna.vo.MemberVO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +19,8 @@ public class MemberRepositoryTests {
     @Autowired
     private MemberRepository memberRepository;
 
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+//    @Autowired
+//    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Test
     @Transactional
@@ -58,7 +58,8 @@ public class MemberRepositoryTests {
         Integer memberNo = 5;
         String password = "member_1";
         Member m = memberRepository.findById(memberNo).get();
-        boolean isMatched = bCryptPasswordEncoder.matches(password, m.getPassword());
+        boolean isMatched = m.getPassword().equals(password);
+//        boolean isMatched = bCryptPasswordEncoder.matches(password, m.getPassword());
         System.out.println(isMatched);
     }
 
@@ -101,7 +102,8 @@ public class MemberRepositoryTests {
 
         Member m = memberRepository.findById(editMember.getMemberNo()).get();
         m.setNickname(editMember.getNickname());
-        m.setPassword(bCryptPasswordEncoder.encode(editMember.getPassword()));
+//        m.setPassword(bCryptPasswordEncoder.encode(editMember.getPassword()));
+        m.setPassword(editMember.getPassword());
         m.setImageUrl(editMember.getImageUrl());
         m.setBank(editMember.getBank());
         m.setAccountNumber(editMember.getAccountNumber());
