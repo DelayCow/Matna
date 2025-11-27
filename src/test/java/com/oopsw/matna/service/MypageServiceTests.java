@@ -1,8 +1,11 @@
 package com.oopsw.matna.service;
 
+import com.oopsw.matna.vo.RecipeVO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
 
 @SpringBootTest
 public class MypageServiceTests {
@@ -10,8 +13,8 @@ public class MypageServiceTests {
     private MypageService mypageService;
 
     @Test
-    void getMyPageRecipeListTest(){
-        int memberNo = 15;
-        System.out.println(mypageService.getMypageRecipeList(memberNo));
+    public void getMypageRecipeList() {
+        List<RecipeVO> recipeList = mypageService.getMypageRecipeList(15);
+        System.out.println(recipeList);
     }
 }

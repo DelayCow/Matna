@@ -1,16 +1,16 @@
 package com.oopsw.matna.controller.mypage;
 
-import com.oopsw.matna.vo.RecipeListVO;
+import com.oopsw.matna.service.MypageService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Controller
 public class MypageController {
-    @GetMapping("/api/{memberNo}/recipes")
-    public String mypage(@RequestParam Integer memberNo, Model model){
-        model.addAttribute("memberNo",memberNo);
-        return "mypage";
+    @GetMapping("/mypage")
+    public String mypage() {
+        return "/mypage";
     }
 }

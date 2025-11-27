@@ -1,13 +1,11 @@
 package com.oopsw.matna.service;
 
-import com.oopsw.matna.repository.MemberRepository;
 import com.oopsw.matna.repository.RecipeRepository;
 import com.oopsw.matna.repository.entity.Recipe;
-import com.oopsw.matna.vo.RecipeListVO;
+import com.oopsw.matna.vo.RecipeVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,16 +14,19 @@ import java.util.stream.Collectors;
 public class MypageService {
     private final RecipeRepository recipeRepository;
 
-    public List<RecipeListVO> getMypageRecipeList(int memberNo){
+    public List<RecipeVO> getMypageRecipeList(Integer memberNo) {
         List<Recipe> recipes = recipeRepository.findByAuthor_MemberNoAndDelDateIsNull(memberNo);
-        List<RecipeListVO> recipeList = recipes.stream()
-                .map(recipe -> RecipeListVO.builder()
+        return recipes.stream()
+                .map(recipe -> RecipeVO.builder()
                         .recipeNo(recipe.getRecipeNo())
                         .title(recipe.getTitle())
                         .averageRating(recipe.getAverageRating())
                         .reviewCount(recipe.getReviewCount())
-                        .imageUrl(recipe.getImageUrl())
+                        .thumbnailUrl(recipe.getImageUrl())
+                        .difficulty(recipe.getDifficulty())
+                        .prepTime(recipe.getPrepTime())
+                        .servings(recipe.getServings())
+                        .spicyLevel(recipe.getSpicyLevel())
                         .build()).collect(Collectors.toList());
-        return recipeList;
     }
 }
