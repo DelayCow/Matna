@@ -16,4 +16,5 @@ public class RecipeListVO {
     private String imageUrl;
     private int reviewCount;
 
+
 }
