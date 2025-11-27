@@ -1,0 +1,52 @@
+.spicy-filter-container {
+    padding: 10px 15px;
+    border-bottom: 1px solid #e9ecef;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+.spicy-filter-container::-webkit-scrollbar {
+    display: none;
+}
+.spicy-level-icon {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    margin-right: 8px;
+    border: 1px solid #dee2e6;
+    border-radius: 20px;
+    background-color: #fff;
+    color: #6c757d;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.icon-container img {
+    width: 18px;
+    height: 18px;
+    margin: 0 1px;
+    display: inline-block;
+}
+.spicy-level-icon.active {
+    background-color: #FFB0B0;
+    border-color: red;
+    color: red;
+}
+.spicy-level-icon img {
+    width: 18px;
+    height: 18px;
+}
+.spicy-text {
+    max-width: 0;
+    overflow: hidden;
+    opacity: 0;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    margin-left: 0;
+}
+.spicy-level-icon.active .spicy-text {
+    max-width: 100px;
+    opacity: 1;
+    margin-left: 5px;
+}

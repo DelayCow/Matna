@@ -1,0 +1,26 @@
+.search-header {
+    padding: 15px;
+    background-color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+.search-input-group {
+    border-radius: 25px;
+    background-color: #f1f3f5;
+    padding: 5px 15px;
+}
+.search-input {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    flex-grow: 1;
+    padding: 0;
+}
+.search-input::placeholder {
+    color: #adb5bd;
+}
+.header-icon {
+    font-size: 1.5rem;
+    color: #495057;
+}
