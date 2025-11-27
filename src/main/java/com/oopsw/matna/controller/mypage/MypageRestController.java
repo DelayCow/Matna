@@ -1,7 +1,10 @@
 package com.oopsw.matna.controller.mypage;
 
+import com.oopsw.matna.dto.MemberProfileListResponse;
 import com.oopsw.matna.dto.RecipeListResponse;
 import com.oopsw.matna.service.MypageService;
+import com.oopsw.matna.vo.MemberProfileVO;
+import com.oopsw.matna.vo.MemberVO;
 import com.oopsw.matna.vo.RecipeVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -31,5 +34,17 @@ public class MypageRestController {
                         .spicy(recipe.getSpicyLevel())
                         .build()).collect(Collectors.toList());
         return result;
-    };
+    }
+
+    @GetMapping("/{memberNo}/profile")
+    public MemberProfileListResponse getMypageProfileList(@PathVariable("memberNo") int memberNo) {
+
+        MemberProfileListResponse memberProfile = mypageService.getMypageMember(memberNo);
+
+        return MemberProfileListResponse.builder()
+                .nickname(memberProfile.getNickname())
+                .imageUrl(memberProfile.getImageUrl())
+                .points(memberProfile.getPoints())
+                .build();
+    }
 }

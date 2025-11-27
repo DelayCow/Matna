@@ -1,7 +1,12 @@
 package com.oopsw.matna.service;
 
+import com.oopsw.matna.dto.MemberProfileListResponse;
+import com.oopsw.matna.repository.MemberRepository;
 import com.oopsw.matna.repository.RecipeRepository;
+import com.oopsw.matna.repository.entity.Member;
 import com.oopsw.matna.repository.entity.Recipe;
+import com.oopsw.matna.vo.MemberProfileVO;
+import com.oopsw.matna.vo.MemberVO;
 import com.oopsw.matna.vo.RecipeVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,7 +19,11 @@ import java.util.stream.Collectors;
 public class MypageService {
     private final RecipeRepository recipeRepository;
 
+    private final MemberRepository memberRepository;
+
     public List<RecipeVO> getMypageRecipeList(Integer memberNo) {
+
+
         List<Recipe> recipes = recipeRepository.findByAuthor_MemberNoAndDelDateIsNull(memberNo);
         return recipes.stream()
                 .map(recipe -> RecipeVO.builder()
@@ -28,5 +37,17 @@ public class MypageService {
                         .servings(recipe.getServings())
                         .spicyLevel(recipe.getSpicyLevel())
                         .build()).collect(Collectors.toList());
+    }
+
+    public MemberProfileListResponse getMypageMember(Integer memberNo) {
+
+        Member m = memberRepository.findById(memberNo).get();
+
+        return MemberProfileListResponse.builder()
+                .nickname(m.getNickname())
+                .imageUrl(m.getImageUrl())
+                .points(m.getPoint())
+                .build();
+
     }
 }
