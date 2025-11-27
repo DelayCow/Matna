@@ -5,6 +5,8 @@ spring:
     user:
       name: admin
       password: 1234
+  messages:
+    encoding: utf-8
 
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver

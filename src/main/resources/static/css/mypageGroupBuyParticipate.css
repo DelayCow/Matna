@@ -215,6 +215,32 @@ body {
     margin: 8px;
 }
 
+.progress-bar-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.side-action-btn {
+    background-color: #0099ff;
+    color: white;
+    min-width: 80px;
+    border: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+/* 마우스 오버 시 */
+.side-action-btn:hover {
+    background-color: #3367d6;
+    color: #fff;
+}
+
+/* 클릭(눌렀을 때) */
+.side-action-btn:active {
+    background-color: #0d6efd;
+    color: #e0ffe0;
+}
+
+
 .product-info {
     padding: 16px 12px;
     flex: 1;
@@ -352,7 +378,6 @@ body {
 }
 
 .status-text.red {
-    background-color: #fff5f5;
     color: #ff4444;
 }
 
@@ -364,6 +389,11 @@ body {
 }
 
 .price-info {
+
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+
     font-size: 13px;
     color: #ff6b35;
     font-weight: 600;
