@@ -9,7 +9,10 @@ body {
     box-shadow: 0 0 15px rgba(0,0,0,0.05);
 }
 .form-control{
-    width: 300px;
+    width: 400px;
+}
+.form-control.min{
+    width: 290px;
 }
 .btn{
     width: 100px;
@@ -48,4 +51,20 @@ body {
     padding: 0 15px;
     position: relative;
     z-index: 2;
+}
+form small.available{
+    font-size: 0.7rem;
+    color: dodgerblue;
+}
+form small.unavailable{
+    font-size: 0.7rem;
+    color: red;
+}
+small.notshow{
+    display:none;
+}
+.form-control[readonly] {
+    background-color: #e9ecef;
+    /* border-color: #ced4da; /* 필요하다면 경계선 색상도 지정 가능 */
+    opacity: 1;
 }
