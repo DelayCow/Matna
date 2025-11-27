@@ -5,25 +5,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const userData = {
         name: "베베는오리",
-        image: "../../static/img/user1.png",
+        image: "../static/img/user1.png",
         money: 5600,
         isOwner: isMyPage
     };
 
     // 1. 레시피 데이터
     const recipeData = [
-        { id: 1, title: "폭탄계란찜", image: "../../static/img/steamedeggs.jpg", rating: 5, reviewCount: 8, serving: 1, time: "10분", difficulty: "쉬움", spicy: "안 매워요" },
-        { id: 2, title: "라비올리", image: "../../static/img/ravioli.jpg", rating: 4.5, reviewCount: 14, serving: 1, time: "15분", difficulty: "중급", spicy: "약간매워요" },
-        { id: 3, title: "수제버거", image: "../../static/img/hambugi.jpg", rating: 5.0, reviewCount: 19, serving: 1, time: "30분", difficulty: "상급", spicy: "안 매워요" },
-        { id: 4, title: "피쉬앤칩스", image: "../../static/img/fishAndChips.jpg", rating: 4.0, reviewCount: 6, serving: 2, time: "20분", difficulty: "중급", spicy: "안 매워요" },
-        { id: 5, title: "미역국", image: "../../static/img/miyuckguck.jpg", rating: 3.0, reviewCount: 10, serving: 1, time: "10분", difficulty: "중급", spicy: "완젼 매워요" },
-        { id: 6, title: "코코뱅", image: "../../static/img/cokkioo.jpg", rating: 3.5, reviewCount: 11, serving: 2, time: "40분", difficulty: "중급", spicy: "매워요" }
+        { id: 1, title: "폭탄계란찜", image: "../static/img/steamedeggs.jpg", rating: 5, reviewCount: 8, serving: 1, time: "10분", difficulty: "쉬움", spicy: "안 매워요" },
+        { id: 2, title: "라비올리", image: "../static/img/ravioli.jpg", rating: 4.5, reviewCount: 14, serving: 1, time: "15분", difficulty: "중급", spicy: "약간매워요" },
+        { id: 3, title: "수제버거", image: "../static/img/hambugi.jpg", rating: 5.0, reviewCount: 19, serving: 1, time: "30분", difficulty: "상급", spicy: "안 매워요" },
+        { id: 4, title: "피쉬앤칩스", image: "../static/img/fishAndChips.jpg", rating: 4.0, reviewCount: 6, serving: 2, time: "20분", difficulty: "중급", spicy: "안 매워요" },
+        { id: 5, title: "미역국", image: "../static/img/miyuckguck.jpg", rating: 3.0, reviewCount: 10, serving: 1, time: "10분", difficulty: "중급", spicy: "완젼 매워요" },
+        { id: 6, title: "코코뱅", image: "../static/img/cokkioo.jpg", rating: 3.5, reviewCount: 11, serving: 2, time: "40분", difficulty: "중급", spicy: "매워요" }
     ];
 
     // 2. 후기 데이터
     const reviewData = [
-        { id: 101, title: "인생 버거 등극!", image: "../../static/img/hambugiReview.jpg", rating: 4.0, spicy: "안 매워요" },
-        { id: 201, title: "와인 풍미 예술", image: "../../static/img/cokkioo.jpg", rating: 3.5, spicy: "매워요" }
+        { id: 101, title: "인생 버거 등극!", image: "../static/img/hambugiReview.jpg", rating: 4.0, spicy: "안 매워요" },
+        { id: 201, title: "와인 풍미 예술", image: "../static/img/cokkioo.jpg", rating: 3.5, spicy: "매워요" }
     ];
 
     // 3. 공동구매 데이터 (상세 필드 추가됨!)
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {
             id: 501,
             title: "표고버섯 500g",
-            image: "../../static/img/mushroom.jpg",
+            image: "../static/img/mushroom.jpg",
             statusStep: 1, // 1:모집
             myAmount: "50g",
             price: 650,
@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {
             id: 502,
             title: "스테비아 방울토마토 1,000g",
-            image: "../../static/img/tomato.jpg",
+            image: "../static/img/tomato.jpg",
             statusStep: 2, // 2:결제
             myAmount: "200g",
             price: 2100,
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {
             id: 503,
             title: "햇 통마늘 1,000g",
-            image: "../../static/img/garlic.jpg",
+            image: "../static/img/garlic.jpg",
             statusStep: 3, // 3:도착
             myAmount: "300g",
             price: 2400,
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const editUrl = `/recipe/edit?id=${item.id}`;
         const kebabMenuHtml = userData.isOwner ? `
             <div class="dropdown ms-auto">
-                <button class="btn btn-link text-secondary p-0 border-0 dropdown-toggle" type="button" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
+                <button class="btn btn-link text-secondary p-0 border-0" type="button" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
                 <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                     <li><a class="dropdown-item small" href="${editUrl}">수정</a></li>
                     <li><hr class="dropdown-divider my-1"></li>
