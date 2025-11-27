@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
 
 
+    const memberNo = 1;
+
     const isMyPage = true;
 
     const userData = {
@@ -10,15 +12,34 @@ document.addEventListener('DOMContentLoaded', function() {
         isOwner: isMyPage
     };
 
-    // 1. 레시피 데이터
-    const recipeData = [
-        { id: 1, title: "폭탄계란찜", image: "../static/img/steamedeggs.jpg", rating: 5, reviewCount: 8, serving: 1, time: "10분", difficulty: "쉬움", spicy: "안 매워요" },
-        { id: 2, title: "라비올리", image: "../static/img/ravioli.jpg", rating: 4.5, reviewCount: 14, serving: 1, time: "15분", difficulty: "중급", spicy: "약간매워요" },
-        { id: 3, title: "수제버거", image: "../static/img/hambugi.jpg", rating: 5.0, reviewCount: 19, serving: 1, time: "30분", difficulty: "상급", spicy: "안 매워요" },
-        { id: 4, title: "피쉬앤칩스", image: "../static/img/fishAndChips.jpg", rating: 4.0, reviewCount: 6, serving: 2, time: "20분", difficulty: "중급", spicy: "안 매워요" },
-        { id: 5, title: "미역국", image: "../static/img/miyuckguck.jpg", rating: 3.0, reviewCount: 10, serving: 1, time: "10분", difficulty: "중급", spicy: "완젼 매워요" },
-        { id: 6, title: "코코뱅", image: "../static/img/cokkioo.jpg", rating: 3.5, reviewCount: 11, serving: 2, time: "40분", difficulty: "중급", spicy: "매워요" }
-    ];
+    // // 1. 레시피 데이터
+    // const recipeData = [
+    //     { id: 1, title: "폭탄계란찜", image: "../static/img/steamedeggs.jpg", rating: 5, reviewCount: 8, serving: 1, time: "10분", difficulty: "쉬움", spicy: "안 매워요" },
+    //     { id: 2, title: "라비올리", image: "../static/img/ravioli.jpg", rating: 4.5, reviewCount: 14, serving: 1, time: "15분", difficulty: "중급", spicy: "약간매워요" },
+    //     { id: 3, title: "수제버거", image: "../static/img/hambugi.jpg", rating: 5.0, reviewCount: 19, serving: 1, time: "30분", difficulty: "상급", spicy: "안 매워요" },
+    //     { id: 4, title: "피쉬앤칩스", image: "../static/img/fishAndChips.jpg", rating: 4.0, reviewCount: 6, serving: 2, time: "20분", difficulty: "중급", spicy: "안 매워요" },
+    //     { id: 5, title: "미역국", image: "../static/img/miyuckguck.jpg", rating: 3.0, reviewCount: 10, serving: 1, time: "10분", difficulty: "중급", spicy: "완젼 매워요" },
+    //     { id: 6, title: "코코뱅", image: "../static/img/cokkioo.jpg", rating: 3.5, reviewCount: 11, serving: 2, time: "40분", difficulty: "중급", spicy: "매워요" }
+    // ];
+
+    function fetchRecipeData() {
+        // 아까 만든 RestController 주소 호출
+        fetch(`/mypage/${memberNo}`)
+            .then(response => {
+                if (!response.ok) throw new Error("데이터 로딩 실패");
+                return response.json();
+            })
+            .then(realRecipeData => {
+                // 1. 데이터가 오면 화면에 그리기
+                renderRecipeList(realRecipeData);
+                // 2. 통계 숫자 업데이트
+                updateStats(realRecipeData.length);
+            })
+            .catch(error => {
+                console.error("에러:", error);
+                document.getElementById('recipe-list').innerHTML = '<div class="p-5 text-center">데이터를 불러오지 못했습니다.</div>';
+            });
+    }
 
     // 2. 후기 데이터
     const reviewData = [
@@ -98,14 +119,29 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // 2. 통계 업데이트
-    const updateStats = () => {
-        document.getElementById('statRecipeCount').innerText = recipeData.length;
+    const updateStats = (recipeCount) => {
+        document.getElementById('statRecipeCount').innerText = recipeCount;
         document.getElementById('statGroupCount').innerText = groupData.length;
+    };
+
+    // --- 렌더링: 레시피 리스트 ---
+    const renderRecipeList = (data) => {
+        const listContainer = document.getElementById('recipe-list');
+        if (!data || data.length === 0) {
+            listContainer.innerHTML = '<div class="col-12 text-center py-5">작성한 레시피가 없습니다.</div>';
+            return;
+        }
+        listContainer.innerHTML = data.map(createRecipeCard).join('');
     };
 
     // 3. 레시피 카드 생성
     const createRecipeCard = (item) => {
-        const editUrl = `/recipe/edit?id=${item.id}`;
+        const imgUrl = item.thumbnailUrl ? item.thumbnailUrl : '../static/img/logo.png';
+        const rating = item.averageRating ? item.averageRating : 0.0;
+        const time = item.prepTime ? item.prepTime : '-';
+
+        const editUrl = `/recipe/edit?id=${item.recipeNo}`; // id -> recipeNo
+
         const kebabMenuHtml = userData.isOwner ? `
             <div class="dropdown ms-auto">
                 <button class="btn btn-link text-secondary p-0 border-0" type="button" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
@@ -256,4 +292,16 @@ document.addEventListener('DOMContentLoaded', function() {
         if(btn && menu) { e.stopPropagation(); menu.classList.toggle('show'); }
         else if(menu) { menu.classList.remove('show'); }
     });
+
+    renderCommonArea();
+
+    // 2. [중요] 서버에 레시피 데이터 요청하기 (비동기)
+    fetchRecipeData();
+
+    // 3. 후기 리스트는 더미데이터로 즉시 그리기
+    document.getElementById('review-list').innerHTML = reviewData.map(createReviewCard).join('');
+
+    // 4. 공동구매 리스트도 더미데이터로 즉시 그리기
+    renderGroupList('participate');
+
 });
