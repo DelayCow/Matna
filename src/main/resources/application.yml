@@ -1,10 +1,10 @@
 spring:
   application:
     name: Matna
-  security:
-    user:
-      name: admin
-      password: 1234
+#  security:
+#    user:
+#      name: admin
+#      password: 1234
   messages:
     encoding: utf-8
 
