@@ -65,23 +65,26 @@ public class MypageService {
 
     public List<ReviewsListVO> getMypageReviewsList(Integer memberNo) {
 
-        List<ReviewsListVO> entities = reviewsRepository.findReviewsListVOByRecipe_RecipeNoAndDelDateIsNullOrderByInDateDesc(memberNo);
+        List<Reviews> entities = reviewsRepository.findReviewsByAuthor_MemberNoAndDelDateIsNullOrderByInDateDesc(memberNo);
 
         List<ReviewsListVO> reviewsListVOList = new ArrayList<>();
 
-        List<ReviewsListVO> voList = reviewsListVOList.stream()
+        return entities.stream()
                 .map(r -> ReviewsListVO.builder()
                         .reviewNo(r.getReviewNo())
                         .title(r.getTitle())
-                        // .content(r.getContent()) // 주석된 부분은 필요시 해제
                         .imageUrl(r.getImageUrl())
                         .rating(r.getRating())
                         .inDate(r.getInDate())
                         .build())
                 .collect(Collectors.toList());
+    }
 
-            reviewsListVOList.add((ReviewsListVO) voList);
+    public void removeReviews(Integer reviewsNo){
 
-            return reviewsListVOList;
+
+
+
+
     }
 }

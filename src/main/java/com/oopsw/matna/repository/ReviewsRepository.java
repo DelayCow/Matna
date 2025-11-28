@@ -26,7 +26,7 @@ public interface ReviewsRepository extends CrudRepository<Reviews, Integer> {
 
     // 추가 마이페이지 리뷰 목록
     @EntityGraph(attributePaths = {"author"})
-    List<ReviewsListVO> findReviewsListVOByRecipe_RecipeNoAndDelDateIsNullOrderByInDateDesc(Integer recipeNo);
+    List<Reviews> findReviewsByAuthor_MemberNoAndDelDateIsNullOrderByInDateDesc(Integer memberNo);
 
 
     List<Reviews> findByAuthor_MemberNoAndDelDateIsNull(Integer authorNo);
