@@ -31,8 +31,8 @@ public class PeriodGroupBuyDetailVO {
 
     private LocalDateTime dueDate;
     private Integer remainingTime;
-
     private String status;
+
     private String profileImageUrl;
     private String nickname;
 }

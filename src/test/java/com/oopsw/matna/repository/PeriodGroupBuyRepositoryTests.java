@@ -27,7 +27,7 @@ public class PeriodGroupBuyRepositoryTests {
     GroupBuyParticipantRepository groupBuyParticipantRepository;
 
     @Test
-    void testSearchIngredientKeyword(){
+    void searchIngredientKeywordTest(){
         String keyword = "쌀";
         List<Ingredient> results = ingredientRepository.findByIngredientNameContaining(keyword);
         for (Ingredient ingredient : results) {
@@ -36,7 +36,7 @@ public class PeriodGroupBuyRepositoryTests {
     }
 
     @Test
-    void testAddIngredient(){
+    void addIngredientTest(){
         Member creatorMember = memberRepository.findById(5).get();
         Ingredient newIngredient = ingredientRepository.save(
                 Ingredient.builder()
@@ -48,7 +48,7 @@ public class PeriodGroupBuyRepositoryTests {
     }
 
     @Test
-    void testAddPeriodGroupBuy(){
+    void createPeriodGroupBuyTest(){
         Ingredient ingredientNo = ingredientRepository.findById(23).get();
         Member creatorMember = memberRepository.findById(16).get();
         GroupBuy newGroupBuy = groupBuyRepository.save(
@@ -240,5 +240,17 @@ public class PeriodGroupBuyRepositoryTests {
         System.out.println("기간공구 GroupBuy ID " + targetGroupBuyId + "가 중단되고, 참여자 ID " + memberNo + "에게 " + initialPaymentPoint + "원 환불되었습니다.");
         System.out.println("GroupBuy Status: " + updatedGroupBuy.getStatus() + ", Cancel Reason: " + updatedGroupBuy.getCancelReason());
         System.out.println("Member New Point: " + refundedMember.getPoint());
+    }
+
+    @Test
+    public void editPointTest(){
+        Integer memberNo = 5;
+        Integer updatePoint = 100;
+        Member m = memberRepository.findById(memberNo).get();
+        if(m.getPoint() + updatePoint < 0){
+            throw new IllegalArgumentException("최대 환급금액은 " + m.getPoint() + "원입니다.");
+        }
+        m.setPoint(m.getPoint() + updatePoint);
+        memberRepository.save(m);
     }
 }
