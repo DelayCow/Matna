@@ -11,6 +11,7 @@ import com.oopsw.matna.vo.RecipeVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,6 +49,14 @@ public class MypageService {
                 .imageUrl(m.getImageUrl())
                 .points(m.getPoint())
                 .build();
+
+    }
+
+    public void removeMypageRecipe(Integer recipeNo) {
+        Recipe recipe = recipeRepository.findById(recipeNo).get();
+
+        recipe.setDelDate(LocalDateTime.now());
+        recipeRepository.save(recipe);
 
     }
 }

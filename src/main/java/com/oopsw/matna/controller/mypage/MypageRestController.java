@@ -47,4 +47,13 @@ public class MypageRestController {
                 .points(memberProfile.getPoints())
                 .build();
     }
+
+    @PostMapping("/{recipeNo}/recipe")
+    public void removeRecipe(@PathVariable("recipeNo") int recipeNo) {
+
+        List<RecipeVO> recipe = mypageService.getMypageRecipeList(recipeNo);
+
+        mypageService.removeMypageRecipe(recipeNo);
+    }
+
 }

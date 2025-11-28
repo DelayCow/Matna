@@ -16,15 +16,23 @@ public class MypageServiceTests {
     private MypageService mypageService;
 
     @Test
-    public void getMypageRecipeList() {
+    public void getMypageRecipeListTest() {
         List<RecipeVO> recipeList = mypageService.getMypageRecipeList(15);
         System.out.println(recipeList);
     }
 
     @Test
-    public void getMemberProfile() {
+    public void getMemberProfileTest() {
 
         MemberProfileListResponse profile = mypageService.getMypageMember(15);
         System.out.println(profile);
     }
+
+//    @Test
+//    public void removeMypageRecipeTest() {
+//
+//        mypageService.removeMypageRecipe(13);
+//
+//
+//    }
 }
