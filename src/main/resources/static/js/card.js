@@ -53,7 +53,7 @@ const createRecipeCard = function (r){
                 <span class="text-secondary"><i class="bi bi-person"></i> ${r.servings}인분</span>
                 <span class="text-secondary"><i class="bi bi-clock"></i> ${r.prepTime}분</span>
                 <span class="text-secondary"><i class="bi bi-star"></i> ${r.difficulty}</span>
-                <span><img src="../static/img/spicy.png" class="spicy"> ${r.spicyLevel}</span>
+                <span><img src="/img/spicy.png" class="spicy"> ${r.spicyLevel}</span>
               </div>
             </div>
           </div>`;

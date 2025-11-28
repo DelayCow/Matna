@@ -6,8 +6,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const recipeData = [
 {
     "recipeNo": 45,
-    "thumbnailUrl": "../static/img/steamedeggs.jpg",
-    "writerProfile": "../static/img/user.png",
+    "thumbnailUrl": "/img/steamedeggs.jpg",
+    "writerProfile": "/img/user.png",
     "writerNickname": "침대견",
     "title": "안주로 딱~ 폭신하고 부드러운 계란찜",
     "averageRating": 4.5,
@@ -19,8 +19,8 @@ document.addEventListener('DOMContentLoaded', function() {
 },
 {
     "recipeNo": 5,
-    "thumbnailUrl": "../static/img/ravioli.jpg",
-    "writerProfile": "../static/img/user.png",
+    "thumbnailUrl": "/img/ravioli.jpg",
+    "writerProfile": "/img/user.png",
     "writerNickname": "눕오리",
     "title": "속을 뜨끈하게 한국인 입맛에 맞춘 라비올리",
     "averageRating": 4.0,
@@ -32,8 +32,8 @@ document.addEventListener('DOMContentLoaded', function() {
 },
 {
     "recipeNo": 45,
-    "thumbnailUrl": "../static/img/steamedeggs.jpg",
-    "writerProfile": "../static/img/user.png",
+    "thumbnailUrl": "/img/steamedeggs.jpg",
+    "writerProfile": "/img/user.png",
     "writerNickname": "침대견",
     "title": "안주로 딱~ 폭신하고 부드러운 계란찜",
     "averageRating": 4.5,
@@ -45,8 +45,8 @@ document.addEventListener('DOMContentLoaded', function() {
 },
 {
     "recipeNo": 5,
-    "thumbnailUrl": "../static/img/ravioli.jpg",
-    "writerProfile": "../static/img/user.png",
+    "thumbnailUrl": "/img/ravioli.jpg",
+    "writerProfile": "/img/user.png",
     "writerNickname": "눕오리",
     "title": "속을 뜨끈하게 한국인 입맛에 맞춘 라비올리",
     "averageRating": 4.0,
@@ -58,8 +58,8 @@ document.addEventListener('DOMContentLoaded', function() {
 },
 {
     "recipeNo": 45,
-    "thumbnailUrl": "../static/img/steamedeggs.jpg",
-    "writerProfile": "../static/img/user.png",
+    "thumbnailUrl": "/img/steamedeggs.jpg",
+    "writerProfile": "/img/user.png",
     "writerNickname": "침대견",
     "title": "안주로 딱~ 폭신하고 부드러운 계란찜",
     "averageRating": 4.5,
@@ -71,8 +71,8 @@ document.addEventListener('DOMContentLoaded', function() {
 },
 {
     "recipeNo": 5,
-    "thumbnailUrl": "../static/img/ravioli.jpg",
-    "writerProfile": "../static/img/user.png",
+    "thumbnailUrl": "/img/ravioli.jpg",
+    "writerProfile": "/img/user.png",
     "writerNickname": "눕오리",
     "title": "속을 뜨끈하게 한국인 입맛에 맞춘 라비올리",
     "averageRating": 4.0,
@@ -84,8 +84,8 @@ document.addEventListener('DOMContentLoaded', function() {
 },
 {
     "recipeNo": 45,
-    "thumbnailUrl": "../static/img/steamedeggs.jpg",
-    "writerProfile": "../static/img/user.png",
+    "thumbnailUrl": "/img/steamedeggs.jpg",
+    "writerProfile": "/img/user.png",
     "writerNickname": "침대견",
     "title": "안주로 딱~ 폭신하고 부드러운 계란찜",
     "averageRating": 4.5,
@@ -97,8 +97,8 @@ document.addEventListener('DOMContentLoaded', function() {
 },
 {
     "recipeNo": 5,
-    "thumbnailUrl": "../static/img/ravioli.jpg",
-    "writerProfile": "../static/img/user.png",
+    "thumbnailUrl": "/img/ravioli.jpg",
+    "writerProfile": "/img/user.png",
     "writerNickname": "눕오리",
     "title": "속을 뜨끈하게 한국인 입맛에 맞춘 라비올리",
     "averageRating": 4.0,

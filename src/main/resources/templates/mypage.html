@@ -90,36 +90,7 @@
             </div>
         </div>
 
-    <nav class="navbar fixed-bottom bg-white bottom-nav p-0 border-top">
-        <div class="container-fluid p-0">
-            <ul class="nav w-100 justify-content-between py-2 px-5">
-                <li class="nav-item">
-                    <a class="nav-link p-1" href="#">
-                        <i class="bi bi-house-door"></i>
-                        홈
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link p-1" href="#">
-                        <i class="bi bi-book"></i>
-                        레시피
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link p-1" href="#">
-                        <i class="bi bi-basket"></i>
-                        공동 구매
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active p-1" href="#">
-                        <i class="bi bi-person-fill"></i>
-                        MY
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+        <div th:insert="layout :: menuBar"></div>
 </div>
 </div>
 
