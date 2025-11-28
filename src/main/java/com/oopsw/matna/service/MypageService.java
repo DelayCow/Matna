@@ -3,15 +3,16 @@ package com.oopsw.matna.service;
 import com.oopsw.matna.dto.MemberProfileListResponse;
 import com.oopsw.matna.repository.MemberRepository;
 import com.oopsw.matna.repository.RecipeRepository;
+import com.oopsw.matna.repository.ReviewsRepository;
 import com.oopsw.matna.repository.entity.Member;
 import com.oopsw.matna.repository.entity.Recipe;
-import com.oopsw.matna.vo.MemberProfileVO;
-import com.oopsw.matna.vo.MemberVO;
-import com.oopsw.matna.vo.RecipeVO;
+import com.oopsw.matna.repository.entity.Reviews;
+import com.oopsw.matna.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,8 @@ public class MypageService {
     private final RecipeRepository recipeRepository;
 
     private final MemberRepository memberRepository;
+
+    private final ReviewsRepository reviewsRepository;
 
     public List<RecipeVO> getMypageRecipeList(Integer memberNo) {
 
@@ -58,5 +61,27 @@ public class MypageService {
         recipe.setDelDate(LocalDateTime.now());
         recipeRepository.save(recipe);
 
+    }
+
+    public List<ReviewsListVO> getMypageReviewsList(Integer memberNo) {
+
+        List<ReviewsListVO> entities = reviewsRepository.findReviewsListVOByRecipe_RecipeNoAndDelDateIsNullOrderByInDateDesc(memberNo);
+
+        List<ReviewsListVO> reviewsListVOList = new ArrayList<>();
+
+        List<ReviewsListVO> voList = reviewsListVOList.stream()
+                .map(r -> ReviewsListVO.builder()
+                        .reviewNo(r.getReviewNo())
+                        .title(r.getTitle())
+                        // .content(r.getContent()) // 주석된 부분은 필요시 해제
+                        .imageUrl(r.getImageUrl())
+                        .rating(r.getRating())
+                        .inDate(r.getInDate())
+                        .build())
+                .collect(Collectors.toList());
+
+            reviewsListVOList.add((ReviewsListVO) voList);
+
+            return reviewsListVOList;
     }
 }
