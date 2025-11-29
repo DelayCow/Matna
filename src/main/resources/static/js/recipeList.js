@@ -84,7 +84,7 @@ function initializeSearch() {
 }
 
 document.addEventListener('recipeFilterChange', function(e) {
-    console.log(`[recipeList.js] 필터/정렬 변경 이벤트 감지: ${e.detail.type}`);
+    //여기서만 필터, 검색, 정렬 감지해서 반영
     fetchRecipeData(true);
 });
 
