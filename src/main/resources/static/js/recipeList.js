@@ -1,5 +1,5 @@
-let currentPage = 0; // 현재 페이지 번호 (무한 스크롤용)
-let hasNext = true; // 다음 페이지 존재 여부
+let currentPage = 0; // 현재 페이지 번호
+let hasNext = true; // 다음 페이지 존재 여부(무한스크롤용, 나중에 구현)
 let currentSpicyLevel = null;
 let currentKeyword = null;
 let currentSort = 'inDate'; // 초기 정렬 기준 (최신순)
@@ -13,7 +13,7 @@ const addRecipeCard = function(recipeData) {
     }
 
     const recipes = recipeData.content;
-    hasNext = recipeData.hasNext;
+    hasNext = !recipeData.last;
 
     recipes.forEach(recipe => {
         const translatedFormatRecipe = translateRecipeData(recipe);
@@ -45,7 +45,7 @@ const fetchRecipeData = function(resetPage = true) {
         return;
     }
 
-    let url = `api/recipe/scroll?page=${currentPage}&size=8&sort=${currentSort},desc`;
+    let url = `api/recipe/scroll?page=${currentPage}&size=8&sort=${currentSort},desc`; //임시로 8개로
 
     if (currentSpicyLevel !== null) {
         url += `&spicyLevel=${currentSpicyLevel}`;
@@ -53,8 +53,6 @@ const fetchRecipeData = function(resetPage = true) {
     if (currentKeyword !== null && currentKeyword.trim() !== "") {
         url += `&keyword=${encodeURIComponent(currentKeyword.trim())}`;
     }
-
-    console.log("Fetching URL:", url);
 
     fetch(url)
         .then(response => {
