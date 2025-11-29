@@ -19,10 +19,10 @@ import java.util.stream.Collectors;
 public class RecipeService {
     private final RecipeRepository recipeRepository;
 
-    public List<RecipeVO> getRecipeList(Integer spiceLevel, String keyword, Pageable pageable) {
+    public Slice<RecipeVO> getRecipeList(Integer spiceLevel, String keyword, Pageable pageable) {
         Slice<Recipe> recipes = recipeRepository.findWithFilters(spiceLevel, keyword, pageable);
 
-        List<RecipeVO> recipeList = recipes.stream().map(recipe -> RecipeVO.builder()
+        Slice<RecipeVO> recipeList = recipes.map(recipe -> RecipeVO.builder()
                 .recipeNo(recipe.getRecipeNo())
                 .title(recipe.getTitle())
                 .thumbnailUrl(recipe.getImageUrl())
@@ -34,7 +34,7 @@ public class RecipeService {
                 .prepTime(recipe.getPrepTime())
                 .difficulty(recipe.getDifficulty())
                 .spicyLevel(recipe.getSpicyLevel())
-                .build()).collect(Collectors.toList());
+                .build());
 
         return recipeList;
     }

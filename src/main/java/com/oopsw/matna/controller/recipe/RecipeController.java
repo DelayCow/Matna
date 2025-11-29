@@ -9,8 +9,5 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 @RequestMapping("/recipe")
 public class RecipeController {
-    @GetMapping("/")
-    public String recipe(){
-        return "recipeList";
-    }
+
 }

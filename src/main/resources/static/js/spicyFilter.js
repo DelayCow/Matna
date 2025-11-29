@@ -22,10 +22,13 @@ function initializeSpicyIcons() {
         icon.addEventListener('click', function(e) {
             if(this.classList.contains('active')){
                 this.classList.remove('active');
-                return;
+                currentSpicyLevel = null;
+            }else{
+                spicyIcons.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                currentSpicyLevel = level;
             }
-            spicyIcons.forEach(i => i.classList.remove('active'));
-            this.classList.add('active');
+            fetchRecipeData(true);
         });
     });
 }
