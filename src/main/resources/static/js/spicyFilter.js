@@ -4,7 +4,7 @@ function initializeSpicyIcons() {
     spicyIcons.forEach(icon => {
         const level = parseInt(icon.getAttribute('data-level'));
         const iconContainer = icon.querySelector('.icon-container');
-        const spicyImagePath = '../static/img/spicy.png';
+        const spicyImagePath = '/img/spicy.png';
 
         if (iconContainer) {
             iconContainer.innerHTML = '';
