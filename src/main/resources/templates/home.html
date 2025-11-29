@@ -13,7 +13,7 @@
 <body>
 <div class="mobile-container position-relative">
 
-  <div th:insert="layout :: mainHeader"></div>
+  <div th:replace="layout :: mainHeader"></div>
   <div class="px-3" id="main">
 
       <section class="mb-3">
@@ -152,10 +152,11 @@
       </section>
     </div>
 
-  <div th:insert="layout :: menuBar"></div>
+  <div th:replace="layout :: menuBar"></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/layout.js"></script>
 <script src="/js/card.js"></script>
 <script src="/js/home.js"></script>
 </body>
