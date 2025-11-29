@@ -15,11 +15,11 @@ public class HomeController {
     public String recipe() {
         return "recipeList";
     }
-//
-//    @GetMapping("/groupBuy")
-//    public String groupBuy() {
-//        return "groupBuyList";
-//    }
+
+    @GetMapping("/groupBuy")
+    public String groupBuy() {
+        return "groupBuyList";
+    }
 //
 //    @GetMapping("/mypage")
 //    public String mypage() {

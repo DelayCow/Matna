@@ -5,19 +5,15 @@
     <title>recipeRegister</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../static/css/layout.css">
-    <link rel="stylesheet" href="../static/css/recipeRegister.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/recipeRegister.css">
+    <link rel="stylesheet" href="/css/spicyFilter.css">
 </head>
 <body>
 <div class="mobile-container position-relative">
-    <header class="d-flex justify-content-between align-items-center p-3 bg-white sticky-top" style="z-index: 1020;">
-        <a href="#" class="text-dark"><i class="bi bi-chevron-left fs-4"></i></a>
-        <h4 class="m-0 fw-bold">레시피 등록</h4>
-        <a href="#" class="text-dark"><i class="bi bi-bell fs-4"></i></a>
-    </header>
+    <div th:replace="layout :: pageHeader('레시피 등록', 'javascript:history.back()')"></div>
 
-    <div class="container-fluid content-area p-3">
-
+    <form class="container-fluid content-area p-3">
         <div class="mb-4">
             <h5 class="fw-bold mb-2">썸네일</h5>
             <div class="img-upload-area thumbnail flex-shrink-0">
@@ -28,18 +24,18 @@
 
         <div class="mb-4">
             <h5 class="fw-bold mb-2">제목</h5>
-            <input type="text" class="form-control" id="recipeTitle" placeholder="제목">
+            <input type="text" class="form-control" id="recipeTitle" name="title" placeholder="제목">
         </div>
 
         <div class="mb-4">
             <h5 class="fw-bold mb-2">레시피 요약</h5>
-            <textarea class="form-control" id="recipeSummary" rows="3" placeholder="레시피 요약을 입력해주세요"></textarea>
+            <textarea class="form-control" id="recipeSummary" rows="3" name="summary" placeholder="레시피 요약을 입력해주세요"></textarea>
         </div>
 
         <div class="row g-2 mb-4 align-items-end">
             <div class="col-6">
                 <label for="category" class="form-label fw-bold">카테고리</label>
-                <select class="form-select w-75" id="category" aria-label="카테고리 선택">
+                <select class="form-select w-75" id="category" name="category" aria-label="카테고리 선택">
                     <option disabled selected>전체</option>
                     <option value="korean">한식</option>
                     <option value="japanese">일식</option>
@@ -50,9 +46,9 @@
             </div>
             <div class="col-6">
                 <div class="d-flex align-items-center">
-                    <input type="text" class="form-control text-end w-25 me-1" placeholder="0">
+                    <input type="text" class="form-control text-end w-25 me-1" placeholder="0" name="prepTime">
                     <span class="me-2">분</span>
-                    <input type="text" class="form-control text-end w-25 ms-auto" placeholder="0">
+                    <input type="text" class="form-control text-end w-25 ms-auto" placeholder="0" name="servings">
                     <span>인분</span>
                 </div>
             </div>
@@ -83,28 +79,34 @@
 
         <div class="mb-4">
             <h5 class="fw-bold mb-3">맵기 정도</h5>
-            <div class="d-flex flex-wrap gap-2 mb-4">
-                <input type="radio" class="btn-check" name="spiciness" id="spicy0" autocomplete="off" checked>
-                <label class="btn btn-outline-secondary btn-sm" for="spicy0">맵지 않아요</label>
-                <input type="radio" class="btn-check" name="spiciness" id="spicy1" autocomplete="off">
-                <label class="btn btn-outline-danger btn-sm" for="spicy1">약간 매워요</label>
-                <input type="radio" class="btn-check" name="spiciness" id="spicy2" autocomplete="off">
-                <label class="btn btn-outline-danger btn-sm" for="spicy2">신라면 맵기에요</label>
-                <input type="radio" class="btn-check" name="spiciness" id="spicy3" autocomplete="off">
-                <label class="btn btn-outline-danger btn-sm" for="spicy3">열라면 맵기에요</label>
-                <input type="radio" class="btn-check" name="spiciness" id="spicy4" autocomplete="off">
-                <label class="btn btn-outline-danger btn-sm" for="spicy4">불닭 맵기에요</label>
-                <input type="radio" class="btn-check" name="spiciness" id="spicy5" autocomplete="off">
-                <label class="btn btn-outline-danger btn-sm" for="spicy5">불닭보다 매워요</label>
+            <div class="spicy-filter-container d-flex flex-row mb-3" >
+                <div class="spicy-level-icon" data-level="0">
+                    안매워요
+                </div>
+                <div class="spicy-level-icon" data-level="1">
+                    <div class="icon-container"></div> <span class="spicy-text">약간매워요</span>
+                </div>
+                <div class="spicy-level-icon" data-level="2">
+                    <div class="icon-container"></div> <span class="spicy-text">신라면맵기</span>
+                </div>
+                <div class="spicy-level-icon" data-level="3">
+                    <div class="icon-container"></div> <span class="spicy-text">열라면맵기</span>
+                </div>
+                <div class="spicy-level-icon" data-level="4">
+                    <div class="icon-container"></div> <span class="spicy-text">불닭맵기</span>
+                </div>
+                <div class="spicy-level-icon" data-level="5">
+                    <div class="icon-container"></div> <span class="spicy-text">불닭보다매워요</span>
+                </div>
             </div>
 
             <h5 class="fw-bold mb-3">난이도</h5>
             <div class="d-flex flex-wrap gap-2">
-                <input type="radio" class="btn-check" name="difficulty" id="diff1" autocomplete="off" checked>
+                <input type="radio" class="btn-check" name="difficulty" id="diff1" value="easy" autocomplete="off" checked>
                 <label class="btn btn-outline-success btn-sm" for="diff1">쉬움</label>
-                <input type="radio" class="btn-check" name="difficulty" id="diff2" autocomplete="off">
+                <input type="radio" class="btn-check" name="difficulty" id="diff2" value="normal" autocomplete="off">
                 <label class="btn btn-outline-success btn-sm" for="diff2">보통</label>
-                <input type="radio" class="btn-check" name="difficulty" id="diff3" autocomplete="off">
+                <input type="radio" class="btn-check" name="difficulty" id="diff3" value="hard" autocomplete="off">
                 <label class="btn btn-outline-success btn-sm" for="diff3">어려움</label>
             </div>
         </div>
@@ -132,44 +134,14 @@
 
         </div>
 
-    </div>
-    <!--메뉴바-->
-    <nav class="navbar fixed-bottom bg-white bottom-nav p-0">
-        <div class="container-fluid p-0">
-            <ul class="nav w-100 justify-content-between py-2 px-5">
-                <li class="nav-item">
-                    <a class="nav-link active p-1" href="#">
-                        <i class="bi bi-house-door-fill"></i>
-                        홈
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link p-1" href="#">
-                        <i class="bi bi-book"></i>
-                        레시피
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link p-1" href="#">
-                        <i class="bi bi-basket"></i>
-                        공동 구매
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link p-1" href="#">
-                        <i class="bi bi-person"></i>
-                        MY
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+    </form>
+
+    <div th:replace="layout :: menuBar"></div>
 
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../static/js/recipeRegister.js"></script>
-
+<script type="module" src="/js/recipeRegister.js"></script>
 </body>
 </html>

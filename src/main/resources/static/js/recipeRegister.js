@@ -1,3 +1,4 @@
+import {initializeSpicyIcons} from "./spicyFilter.js";
 
 // 이미지 업로드
 function handleImageUpload(input, target) {
@@ -207,5 +208,7 @@ const addIngredient = function (e, name) {
     searchInput.blur();
 }
 
-
+document.addEventListener('DOMContentLoaded',function (){
+    initializeSpicyIcons();
+})
 

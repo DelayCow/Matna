@@ -9,5 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 @RequestMapping("/recipe")
 public class RecipeController {
-
+    @GetMapping("/add")
+    public String addRecipe(){
+        return "recipeRegister";
+    }
 }
