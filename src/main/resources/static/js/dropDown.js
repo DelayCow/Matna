@@ -1,4 +1,6 @@
-function initializeDropdown() {
+import { currentSort, dispatchFilterChange, setCurrentSort } from './searchRecipe.js';
+
+export function initializeDropdown() {
     const sortDropdownItems = document.querySelectorAll('.sort-dropdown .dropdown-item');
     const sortButton = document.querySelector('.sort-dropdown .btn');
 
@@ -11,9 +13,8 @@ function initializeDropdown() {
             sortButton.textContent = this.textContent;
 
             const newSort = this.getAttribute('data-sort');
-            currentSort = newSort;
-
-            fetchRecipeData(true);
+            setCurrentSort(newSort)
+            dispatchFilterChange('sort', newSort);
         });
     });
 }

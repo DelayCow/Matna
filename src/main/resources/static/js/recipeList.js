@@ -1,8 +1,13 @@
-let currentPage = 0; // 현재 페이지 번호
-let hasNext = true; // 다음 페이지 존재 여부(무한스크롤용, 나중에 구현)
-let currentSpicyLevel = null;
-let currentKeyword = null;
-let currentSort = 'inDate'; // 초기 정렬 기준 (최신순)
+import {
+    currentPage,
+    currentSpicyLevel,
+    currentKeyword,
+    currentSort,
+    setCurrentPage, setCurrentKeyword
+} from './searchRecipe.js';
+
+import { initializeSpicyIcons } from './spicyFilter.js';
+import { initializeDropdown } from './dropDown.js';
 
 const recipeContainer = document.getElementById('recipeContainer');
 
@@ -13,7 +18,7 @@ const addRecipeCard = function(recipeData) {
     }
 
     const recipes = recipeData.content;
-    hasNext = !recipeData.last;
+    // hasNext = !recipeData.last; //나중에 무한스크롤 구현시 사용
 
     recipes.forEach(recipe => {
         const translatedFormatRecipe = translateRecipeData(recipe);
@@ -34,18 +39,18 @@ const addRecipeCard = function(recipeData) {
 
 const fetchRecipeData = function(resetPage = true) {
     if (resetPage) {
-        currentPage = 0;
-        hasNext = true;
+        setCurrentPage(0);
+        // hasNext = true;
         if (recipeContainer) {
             recipeContainer.innerHTML = '';
         }
     }
 
-    if (!hasNext) {
-        return;
-    }
+    // if (!hasNext) {
+    //     return;
+    // }
 
-    let url = `api/recipe/scroll?page=${currentPage}&size=8&sort=${currentSort},desc`; //임시로 8개로
+    let url = `api/recipes/scroll?page=${currentPage}&size=8&sort=${currentSort},desc`; //임시로 8개로
 
     if (currentSpicyLevel !== null) {
         url += `&spicyLevel=${currentSpicyLevel}`;
@@ -60,7 +65,7 @@ const fetchRecipeData = function(resetPage = true) {
         })
         .then(recipeData => {
             addRecipeCard(recipeData);
-            currentPage++;
+            setCurrentPage(currentPage + 1);
         })
         .catch(error => {
             console.error("데이터를 불러오는 중 오류 발생:", error);
@@ -72,11 +77,16 @@ function initializeSearch() {
 
     searchInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
-            currentKeyword = this.value;
+            setCurrentKeyword(this.value);
             fetchRecipeData(true);
         }
     });
 }
+
+document.addEventListener('recipeFilterChange', function(e) {
+    console.log(`[recipeList.js] 필터/정렬 변경 이벤트 감지: ${e.detail.type}`);
+    fetchRecipeData(true);
+});
 
 document.addEventListener('DOMContentLoaded', function() {
     initializeSpicyIcons();
@@ -85,8 +95,3 @@ document.addEventListener('DOMContentLoaded', function() {
 
     fetchRecipeData();
 });
-
-window.fetchRecipeData = fetchRecipeData;
-window.currentSpicyLevel = currentSpicyLevel;
-window.currentKeyword = currentKeyword;
-window.currentSort = currentSort;
