@@ -2,6 +2,8 @@ package com.oopsw.matna.repository;
 
 import com.oopsw.matna.repository.entity.Recipe;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.EntityGraph;
 
@@ -22,17 +24,28 @@ public interface RecipeRepository extends JpaRepository<Recipe, Integer> {
     @EntityGraph(attributePaths = {"author"})
     List<Recipe> findBySpicyLevelAndDelDateIsNullOrderByRecipeNoDesc(Integer spicyLevel);
 
+//    @EntityGraph(attributePaths = {"author"})
+//    @Query("SELECT r FROM Recipe r " +
+//            "WHERE r.delDate IS NULL " +
+//            "AND (:spicyLevel IS NULL OR r.spicyLevel = :spicyLevel) " +
+//            "AND (:keyword IS NULL OR r.title LIKE %:keyword%)")
+//    List<Recipe> findWithFilters(
+//            @Param("spicyLevel") Integer spicyLevel,
+//            @Param("keyword") String keyword,
+//            Sort sort
+//    );
+
+    List<Recipe> findByAuthor_MemberNoAndDelDateIsNull(Integer authorNo);
+
     @EntityGraph(attributePaths = {"author"})
     @Query("SELECT r FROM Recipe r " +
             "WHERE r.delDate IS NULL " +
             "AND (:spicyLevel IS NULL OR r.spicyLevel = :spicyLevel) " +
             "AND (:keyword IS NULL OR r.title LIKE %:keyword%)")
-    List<Recipe> findWithFilters(
+    Slice<Recipe> findWithFilters(
             @Param("spicyLevel") Integer spicyLevel,
             @Param("keyword") String keyword,
-            Sort sort
+            Pageable pageable
     );
-
-    List<Recipe> findByAuthor_MemberNoAndDelDateIsNull(Integer authorNo);
 
 }
