@@ -9,5 +9,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Controller
 public class MypageController {
-
+    @GetMapping("/mypage")
+    public String mypage() {
+        return "mypage";
+    }
 }
