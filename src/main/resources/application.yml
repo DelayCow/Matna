@@ -5,9 +5,6 @@ spring:
 #    user:
 #      name: admin
 #      password: 1234
-  messages:
-    encoding: utf-8
-
   datasource:
     driver-class-name: org.mariadb.jdbc.Driver
     url: jdbc:mariadb://127.0.0.1:3306/mydb
@@ -35,3 +32,7 @@ mybatis:
 
 server:
   port: 5432
+
+file:
+  upload:
+    path: uploads
