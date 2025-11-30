@@ -52,7 +52,7 @@ public class ManagerService {
                 .toList();
     }
 
-    public ManagerIngredientResponse addingredient(Integer creatorId, String ingredientName) {
+    public ManagerIngredientResponse addIngredient(Integer creatorId, String ingredientName) {
         // creator 정보 조회
         Member creator = memberRepository.findByMemberNo(creatorId);
 

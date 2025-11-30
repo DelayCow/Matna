@@ -33,7 +33,7 @@ public class ManagerRestController {
 
     @PostMapping("/ingredientManagement")
     public ManagerIngredientResponse addIngredient(@RequestParam Integer creatorId, @RequestParam String ingredientName) {
-        return managerService.addingredient(creatorId, ingredientName);
+        return managerService.addIngredient(creatorId, ingredientName);
     }
 
     @DeleteMapping("/ingredientManagement")
