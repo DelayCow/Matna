@@ -14,4 +14,9 @@ public class ManagerController {
     public String ingredientManagement() {
         return "ingredientManagement";
     }
+
+    @GetMapping("/groupBuyManagement")
+    public String groupBuyManagement() {
+        return "groupBuyManagement";
+    }
 }
