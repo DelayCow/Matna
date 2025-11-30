@@ -31,7 +31,7 @@ const addRecipeCard = function(recipeData) {
             const noValue = this.getAttribute('data-no');
             const type = this.getAttribute('data-type');
             if (noValue) {
-                alert(type + noValue)
+                location.href = `recipe/detail/${noValue}`;
             }
         });
     });

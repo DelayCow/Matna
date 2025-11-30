@@ -3,10 +3,7 @@ package com.oopsw.matna.service;
 import com.oopsw.matna.controller.recipe.RecipeRequest;
 import com.oopsw.matna.repository.*;
 import com.oopsw.matna.repository.entity.*;
-import com.oopsw.matna.vo.IngredientVO;
-import com.oopsw.matna.vo.RecipeDetailVO;
-import com.oopsw.matna.vo.RecipeStepVO;
-import com.oopsw.matna.vo.RecipeVO;
+import com.oopsw.matna.vo.*;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Pageable;
@@ -174,7 +171,7 @@ public class RecipeService {
 
             String originName = ri.getIngredient().getIngredientName();
 
-            ingVO.setName(ri.getIngredient().getIngredientName());
+            ingVO.setIngredientName(ri.getIngredient().getIngredientName());
             ingVO.setAmount(ri.getAmount());
             ingVO.setUnit(ri.getUnit());
 
@@ -223,6 +220,15 @@ public class RecipeService {
         vo.setSteps(stepVOList);
 
         List<Reviews> allReviews = reviewsRepository.findByRecipeAndDelDateIsNullOrderByInDateDesc(recipe);
+        List<ReviewsListVO> reviewsVOList = new ArrayList<>();
+        for (Reviews rs : allReviews) {
+            ReviewsListVO reviewVO = ReviewsListVO.builder()
+                    .reviewNo(rs.getReviewNo())
+                    .imageUrl(rs.getImageUrl())
+                    .build();
+            reviewsVOList.add(reviewVO);
+        }
+        vo.setReviews(reviewsVOList);
         long totalReviewCount = allReviews.size();
 
         Map<Integer, Long> spicyLevelCounts = allReviews.stream()

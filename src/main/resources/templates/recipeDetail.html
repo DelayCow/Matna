@@ -5,20 +5,16 @@
   <title>recipeDetail</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="../static/css/layout.css">
-  <link rel="stylesheet" href="../static/css/recipeDetail.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/recipeDetail.css">
 </head>
 <body>
 
 <div class="mobile-container position-relative">
-  <header class="d-flex justify-content-between align-items-center p-3 bg-white sticky-top" style="z-index: 1020;">
-    <a href="#" class="text-dark"><i class="bi bi-chevron-left fs-4"></i></a>
-    <h4 class="m-0 fw-bold">레시피 조회</h4>
-    <a href="#" class="text-dark"><i class="bi bi-bell fs-4"></i></a>
-  </header>
+    <div th:replace="layout :: pageHeader('레시피 조회', 'javascript:history.back()')"></div>
 
   <div class="w-100">
-    <img src="../static/img/burger.png" class="img-fluid w-100" style="max-height: 250px; object-fit: cover;">
+    <img th:src="${recipeDetail.thumbnailUrl}" class="img-fluid w-100" style="max-height: 250px; object-fit: cover;">
   </div>
 
   <main class="px-3 py-4">
@@ -26,19 +22,19 @@
       <div class="d-flex justify-content-between align-items-start mb-2">
         <div class="d-flex align-items-center">
           <div class="d-flex flex-column align-items-center me-2">
-            <img src="../static/img/user1.png" class="profile-img-lg me-2" alt="Profile">
-            <small class="mt-1">베베는오리</small>
+            <img th:src="${recipeDetail.writerProfile}" src="/img/user1.png" class="profile-img-lg me-2" alt="Profile">
+            <small class="mt-1" th:text="${recipeDetail.writerNickname}">베베는오리</small>
           </div>
           <div>
             <div class="d-flex align-items-center gap-2">
-              <h4 class="fw-bold mb-2">수제 치즈버거 황금레시피</h4>
+              <h4 class="fw-bold mb-2" th:text="${recipeDetail.title}">수제 치즈버거 황금레시피</h4>
               <div class="d-flex align-items-center text-muted mb-3">
-                <span class="me-2 text-black"><i class="bi bi-star-fill text-warning"></i> 4.8</span>
-                <span class="me-2"><i class="bi bi-chat-square-text"></i> 96</span>
+                <span class="me-2 text-black"><i class="bi bi-star-fill text-warning"></i> <span th:text="${recipeDetail.rating}">4.8</span></span>
+                <span class="me-2"><i class="bi bi-chat-square-text"></i> <span th:text="${recipeDetail.reviewCount}">96</span></span>
               </div>
             </div>
-            <p class="mb-2">수제버거집 갈 필요 없어요! 육즙 가득 패티와 녹진한 치즈의 조화. 주말 점심 메뉴로 강력 추천합니다🍔</p>
-            <small class="text-muted">작성일자: 2025.10.30</small>
+            <p class="mb-2" th:text="${recipeDetail.summary}">수제버거집 갈 필요 없어요! 육즙 가득 패티와 녹진한 치즈의 조화. 주말 점심 메뉴로 강력 추천합니다🍔</p>
+            <small class="text-muted">작성일자: <span th:text="${#temporals.format(recipeDetail.inDate, 'yyyy.MM.dd')}">2025.10.30</span></small>
           </div>
         </div>
 
@@ -54,17 +50,21 @@
       </div>
 
       <div class="d-flex justify-content-between border-top border-bottom py-3 text-center text-secondary">
-        <div class="flex-fill border-end"><i class="bi bi-person fs-5 d-block mb-1"></i> 1인분</div>
-        <div class="flex-fill border-end"><i class="bi bi-clock fs-5 d-block mb-1"></i> 20분이내</div>
-        <div class="flex-fill border-end"><i class="bi bi-star fs-5 d-block mb-1"></i> 보통</div>
-        <div class="flex-fill"><img src="../static/img/spicy.png" class="mx-auto d-block mt-1 mb-2"><span>안매워요</span></div>
+        <div class="flex-fill border-end"><i class="bi bi-person fs-5 d-block mb-1"></i> <span th:text="${recipeDetail.servings}">1</span>인분</div>
+        <div class="flex-fill border-end"><i class="bi bi-clock fs-5 d-block mb-1"></i> <span th:text="${recipeDetail.prepTime}">20</span>분이내</div>
+        <div class="flex-fill border-end"><i class="bi bi-star fs-5 d-block mb-1"></i> <span th:text="${recipeDetail.difficulty == 'easy' ? '쉬움' : (recipeDetail.difficulty == 'normal' ? '보통' : '어려움')}">보통</span></div>
+        <div class="flex-fill"><img src="/img/spicy.png" class="mx-auto d-block mt-1 mb-2"><span th:text="${recipeDetail.spicyLevel == 0 ? '안매워요' :
+                          (recipeDetail.spicyLevel == 1 ? '약간매워요' :
+                          (recipeDetail.spicyLevel == 2 ? '신라면맵기' :
+                          (recipeDetail.spicyLevel == 3 ? '열라면맵기' :
+                          (recipeDetail.spicyLevel == 4 ? '불닭맵기' : '불닭보다매워요'))))}">안매워요</span></div>
       </div>
     </section>
 
     <section class="mb-5">
       <div class="d-flex justify-content-between align-items-end mb-2 border-bottom pb-1">
         <h5 class="fw-bold m-0">재료</h5>
-        <small class="text-muted">대체재료는 23건의 통계입니다.</small>
+          <small class="text-muted">후기 <span th:text="${recipeDetail.reviewCount}">96</span>건 통계입니다.</small>
       </div>
 
       <div class="d-flex text-muted mb-2">
@@ -72,91 +72,33 @@
         <div class="col-6 ps-2">대체재료</div>
       </div>
 
-      <div class="d-flex ingredient-row">
+      <div th:each="ing : ${recipeDetail.ingredients}" class="d-flex ingredient-row">
         <div class="col-6 pe-2">
           <div class="d-flex justify-content-between align-items-center">
             <div>
-              <span class="fw-600">햄버거 번</span>
-              <span class="text-muted">2개</span>
+              <span class="fw-600" th:text="${ing.ingredientName}">햄버거 번</span>
+              <span class="text-muted" th:text="|${ing.amount}${ing.unit}|">2개</span>
             </div>
-            <span class="badge badge-gonggu active">진행 중인 공구가 있어요!</span>
+              <span class="badge badge-gonggu"
+                th:classappend="${ing.isGroupBuying} ? 'active' : 'inactive'">
+                <th:block th:if="${ing.isGroupBuying}">진행 중인 공구가 있어요!</th:block>
+                <th:block th:unless="${ing.isGroupBuying}">진행 중인 공구가 없어요</th:block>
+              </span>
           </div>
-
         </div>
-        <div class="col-6 ps-2 d-flex align-items-center">
+        <div th:if="${ing.alternatives != null and not ing.alternatives.isEmpty()}" class="col-6 ps-2 d-flex align-items-center">
           <i class="bi bi-arrow-right me-2 text-muted"></i>
           <div class="w-100">
-            <div class="d-flex justify-content-between">
+            <div th:each="alt : ${ing.alternatives}" class="d-flex justify-content-between">
               <div>
-                <span>모닝빵</span>
-                <span class="text-muted">약 2개</span>
+                <span th:text="${alt.ingredientName}">모닝빵</span>
+                <span class="text-muted" th:text="|${alt.amount}${alt.unit}|">약 2개</span>
               </div>
-              <span class="badge badge-gonggu inactive">진행 중인 공구가 없어요</span>
-            </div>
-
-          </div>
-        </div>
-      </div>
-
-      <div class="d-flex ingredient-row">
-        <div class="col-6 pe-2">
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <span class="fw-600">다진 소고기</span>
-              <span class="text-muted">200g</span>
-            </div>
-            <span class="badge badge-gonggu active">진행 중인 공구가 있어요!</span>
-          </div>
-
-        </div>
-        <div class="col-6 ps-2 d-flex align-items-center">
-          <i class="bi bi-arrow-right me-2 text-muted"></i>
-          <div class="w-100">
-            <div class="d-flex justify-content-between">
-              <div>
-                <span>다진 돼지고기</span>
-                <span class="text-muted">약 200g</span>
-              </div>
-              <span class="badge badge-gonggu active">진행 중인 공구가 있어요!</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="d-flex ingredient-row">
-        <div class="col-6 pe-2">
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <span class="fw-600">체다 치즈</span>
-              <span class="text-muted">2장</span>
-            </div>
-            <span class="badge badge-gonggu inactive">진행 중인 공구가 없어요</span>
-          </div>
-
-        </div>
-
-      </div>
-
-      <div class="d-flex ingredient-row">
-        <div class="col-6 pe-2">
-          <div class="d-flex justify-content-between align-items-center">
-            <div>
-              <span class="fw-600">적양파</span>
-              <span class="text-muted">1/2개</span>
-            </div>
-            <span class="badge badge-gonggu active">진행 중인 공구가 있어요!</span>
-          </div>
-
-        </div>
-        <div class="col-6 ps-2 d-flex align-items-center">
-          <i class="bi bi-arrow-right me-2 text-muted"></i>
-          <div class="w-100">
-            <div class="d-flex justify-content-between">
-              <div>
-                <span>양파</span>
-                <span class="text-muted">약 1/2개</span>
-              </div>
-              <span class="badge badge-gonggu inactive">진행 중인 공구가 없어요</span>
+                <span class="badge badge-gonggu"
+                      th:classappend="${alt.isGroupBuying} ? 'active' : 'inactive'">
+                    <th:block th:if="${alt.isGroupBuying}">진행 중인 공구가 있어요!</th:block>
+                    <th:block th:unless="${alt.isGroupBuying}">진행 중인 공구가 없어요</th:block>
+                </span>
             </div>
           </div>
         </div>
@@ -164,90 +106,96 @@
     </section>
 
     <section class="mb-5">
-      <h5 class="fw-bold border-bottom pb-2 mb-3">조리 순서</h5>
+        <h5 class="fw-bold border-bottom pb-2 mb-3">조리 순서</h5>
 
-      <div class="d-flex mb-4">
-        <div class="step-number">1.</div>
-        <div class="d-flex flex-column flex-sm-row w-100">
-          <img src="../static/img/order1.png" class="step-img me-3 mb-2 mb-sm-0" alt="패티 만들기">
-          <p class="text-secondary m-0 lh-base">
-            다진 소고기에 소금, 후추로 밑간을 한 뒤 둥글게 빚어주세요.<br>
-            팬에 기름을 두르고 센 불에서 패티를 앞뒤로 바삭하게 구워 '마이야르 반응'을 일으켜주는 게 핵심입니다! 치즈는 굽는 도중 위에 올려 녹여주세요.
-          </p>
+        <div th:each="step : ${recipeDetail.steps}" class="d-flex mb-4">
+            <div class="step-number" th:text="|${step.stepOrder}.|">1.</div>
+            <div class="d-flex flex-column flex-sm-row w-100">
+                <img th:src="${step.imageUrl}" src="/img/order1.png" class="step-img me-3 mb-2 mb-sm-0" th:alt="|Step ${step.stepOrder}|">
+                <p class="text-secondary m-0 lh-base" th:text="${step.content}">
+                    다진 소고기에 소금, 후추로 밑간을 한 뒤 둥글게 빚어주세요.<br>
+                    팬에 기름을 두르고 센 불에서 패티를 앞뒤로 바삭하게 구워 '마이야르 반응'을 일으켜주는 게 핵심입니다! 치즈는 굽는 도중 위에 올려 녹여주세요.
+                </p>
+            </div>
         </div>
-      </div>
-
-      <div class="d-flex mb-4">
-        <div class="step-number">2.</div>
-        <div class="d-flex flex-column flex-sm-row w-100">
-          <img src="../static/img/order2.png" class="step-img me-3 mb-2 mb-sm-0" alt="번 굽기">
-          <p class="text-secondary m-0 lh-base">
-            햄버거 번 안쪽 면에 버터를 바르고 노릇하게 구워줍니다. 이렇게 해야 소스가 빵에 눅눅하게 스며드는 걸 막을 수 있어요.<br>
-            준비한 빵 위에 소스 > 양상추 > 토마토 > 패티 > 양파 순으로 쌓아주면 완성!
-          </p>
-        </div>
-      </div>
     </section>
 
     <section class="bg-light p-3 rounded-3 mb-4">
-      <h6 class="fw-bold mb-3">다른 회원의 매운맛 평가(96)</h6>
+        <h6 class="fw-bold mb-3">다른 회원의 매운맛 평가(<span th:text="${recipeDetail.reviewCount}">96</span>)</h6>
 
-      <div class="progress-wrapper">
-        <span class="fw-bold" style="width: 50px;">0단계</span>
-        <div class="progress progress-custom">
-          <div class="progress-bar progress-bar-custom" role="progressbar" style="width:58%"></div>
+        <div class="progress-wrapper">
+            <span class="fw-bold" style="width: 50px;">0단계</span>
+            <div class="progress progress-custom">
+                <div class="progress-bar progress-bar-custom" role="progressbar"
+                     th:style="|width:${recipeDetail.spicyLevelPercentages[0]}%|"></div>
+            </div>
+            <span class="text-muted" style="width: 30px; text-align: right;"
+                  th:text="|${recipeDetail.spicyLevelPercentages[0]}%|">58%</span>
         </div>
-        <span class="text-muted" style="width: 30px; text-align: right;">58%</span>
-      </div>
-      <div class="progress-wrapper">
-        <span class="fw-bold" style="width: 50px;">1단계</span>
-        <div class="progress progress-custom">
-          <div class="progress-bar progress-bar-custom" role="progressbar" style="width: 28%"></div>
+        <div class="progress-wrapper">
+            <span class="fw-bold" style="width: 50px;">1단계</span>
+            <div class="progress progress-custom">
+                <div class="progress-bar progress-bar-custom" role="progressbar"
+                     th:style="|width:${recipeDetail.spicyLevelPercentages[1]}%|"></div>
+            </div>
+            <span class="text-muted" style="width: 30px; text-align: right;"
+                  th:text="|${recipeDetail.spicyLevelPercentages[1]}%|">28%</span>
         </div>
-        <span class="text-muted" style="width: 30px; text-align: right;">28%</span>
-      </div>
-      <div class="progress-wrapper">
-        <span class="fw-bold" style="width: 50px;">2단계</span>
-        <div class="progress progress-custom">
-          <div class="progress-bar progress-bar-custom" role="progressbar" style="width: 14%"></div>
+        <div class="progress-wrapper">
+            <span class="fw-bold" style="width: 50px;">2단계</span>
+            <div class="progress progress-custom">
+                <div class="progress-bar progress-bar-custom" role="progressbar"
+                     th:style="|width:${recipeDetail.spicyLevelPercentages[2]}%|"></div>
+            </div>
+            <span class="text-muted" style="width: 30px; text-align: right;"
+                  th:text="|${recipeDetail.spicyLevelPercentages[2]}%|">14%</span>
         </div>
-        <span class="text-muted" style="width: 30px; text-align: right;">14%</span>
-      </div>
-      <div class="progress-wrapper">
-        <span class="fw-bold" style="width: 50px;">3단계</span>
-        <div class="progress progress-custom">
-          <div class="progress-bar progress-bar-custom" role="progressbar" style="width: 0%"></div>
+        <div class="progress-wrapper">
+            <span class="fw-bold" style="width: 50px;">3단계</span>
+            <div class="progress progress-custom">
+                <div class="progress-bar progress-bar-custom" role="progressbar"
+                     th:style="|width:${recipeDetail.spicyLevelPercentages[3]}%|"></div>
+            </div>
+            <span class="text-muted" style="width: 30px; text-align: right;"
+                  th:text="|${recipeDetail.spicyLevelPercentages[3]}%|">0%</span>
         </div>
-        <span class="text-muted" style="width: 30px; text-align: right;">0%</span>
-      </div>
-      <div class="progress-wrapper">
-        <span class="fw-bold" style="width: 50px;">4단계</span>
-        <div class="progress progress-custom">
-          <div class="progress-bar progress-bar-custom" role="progressbar" style="width: 0%"></div>
+        <div class="progress-wrapper">
+            <span class="fw-bold" style="width: 50px;">4단계</span>
+            <div class="progress progress-custom">
+                <div class="progress-bar progress-bar-custom" role="progressbar"
+                     th:style="|width:${recipeDetail.spicyLevelPercentages[4]}%|"></div>
+            </div>
+            <span class="text-muted" style="width: 30px; text-align: right;"
+                  th:text="|${recipeDetail.spicyLevelPercentages[4]}%|">0%</span>
         </div>
-        <span class="text-muted" style="width: 30px; text-align: right;">0%</span>
-      </div>
-      <div class="progress-wrapper">
-        <span class="fw-bold" style="width: 50px;">5단계</span>
-        <div class="progress progress-custom">
-          <div class="progress-bar progress-bar-custom" role="progressbar" style="width: 0%"></div>
+        <div class="progress-wrapper">
+            <span class="fw-bold" style="width: 50px;">5단계</span>
+            <div class="progress progress-custom">
+                <div class="progress-bar progress-bar-custom" role="progressbar"
+                     th:style="|width:${recipeDetail.spicyLevelPercentages[5]}%|"></div>
+            </div>
+            <span class="text-muted" style="width: 30px; text-align: right;"
+                  th:text="|${recipeDetail.spicyLevelPercentages[5]}%|">0%</span>
         </div>
-        <span class="text-muted" style="width: 30px; text-align: right;">0%</span>
-      </div>
     </section>
 
-    <section class="bg-light p-3 rounded-3">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h6 class="fw-bold m-0">다른 회원의 후기 <span class="text-warning ms-1"><i class="bi bi-star-fill"></i> 4.8</span> (124)</h6>
-        <a href="#" class="text-dark text-decoration-none fw-bold">전체 보기 <i class="bi bi-chevron-right"></i></a>
-      </div>
-      <div class="d-flex gap-2">
-        <img src="../static/img/burger.png" class="review-thumb" alt="Review 1">
-        <img src="../static/img/burger.png" class="review-thumb" alt="Review 2">
-        <img src="../static/img/burger.png" class="review-thumb" alt="Review 3">
-        <img src="../static/img/burger.png" class="review-thumb" alt="Review 4">
-      </div>
-    </section>
+      <section class="bg-light p-3 rounded-3">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+              <h6 class="fw-bold m-0">다른 회원의 후기 <span class="text-warning ms-1"><i class="bi bi-star-fill"></i> <span th:text="${recipeDetail.rating}">4.8</span></span> (<span th:text="${recipeDetail.reviewCount}">124</span>)</h6>
+              <a th:if="${recipeDetail.reviews != null and not recipeDetail.reviews.isEmpty()}"
+                 th:href="@{'/recipe/reviews/' + ${recipeDetail.recipeNo}}" class="text-dark text-decoration-none fw-bold">전체 보기 <i class="bi bi-chevron-right"></i></a>
+          </div>
+          <div th:if="${recipeDetail.reviews != null and not recipeDetail.reviews.isEmpty()}" class="d-flex gap-2">
+              <img th:each="review : ${recipeDetail.reviews}"
+                   th:src="${review.imageUrl}"
+                   th:alt="|review${review.reviewNo}|"
+                   class="review-thumb">
+          </div>
+          <div th:if="${recipeDetail.reviews == null or recipeDetail.reviews.isEmpty()}" class="text-center text-muted py-4">
+              <i class="bi bi-chat-square-text fs-1 d-block mb-2"></i>
+              <p class="mb-0">아직 작성된 후기가 없습니다</p>
+          </div>
+      </section>
   </main>
 
   <div class="add-review-btn-area">
@@ -256,38 +204,9 @@
     </button>
   </div>
 
-  <nav class="navbar fixed-bottom bg-white bottom-nav p-0">
-    <div class="container-fluid p-0">
-      <ul class="nav w-100 justify-content-between py-2 px-3">
-        <li class="nav-item">
-          <a class="nav-link p-1" href="#">
-            <i class="bi bi-house-door-fill"></i>
-            홈
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active p-1" href="#">
-            <i class="bi bi-book"></i>
-            레시피
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link p-1" href="#">
-            <i class="bi bi-basket"></i>
-            공동 구매
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link p-1" href="#">
-            <i class="bi bi-person"></i>
-            MY
-          </a>
-        </li>
-      </ul>
-    </div>
-  </nav>
+  <div th:replace="layout :: menuBar"></div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../static/js/editBox.js"></script>
+<script src="/js/editBox.js"></script>
 </body>
 </html>

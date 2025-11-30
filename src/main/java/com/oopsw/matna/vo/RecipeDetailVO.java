@@ -34,12 +34,13 @@ public class RecipeDetailVO {
 
     private List<DetailIngredientVO> ingredients;
     private List<RecipeStepVO> steps;
+    private List<ReviewsListVO> reviews;
 
     private Map<Integer, Double> spicyLevelPercentages;
 
     @Data
     public static class DetailIngredientVO {
-        private String name;
+        private String ingredientName;
         private Float amount;
         private String unit;
         private Boolean isGroupBuying;

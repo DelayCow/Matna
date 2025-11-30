@@ -75,7 +75,7 @@ public class RecipeDetailRepositoryTests {
 
             String originName = ri.getIngredient().getIngredientName();
 
-            ingVO.setName(ri.getIngredient().getIngredientName()); // 재료 테이블의 이름
+            ingVO.setIngredientName(ri.getIngredient().getIngredientName()); // 재료 테이블의 이름
             ingVO.setAmount(ri.getAmount());
             ingVO.setUnit(ri.getUnit());
 
@@ -149,7 +149,7 @@ public class RecipeDetailRepositoryTests {
 
         System.out.println(" [재료 목록]");
         for (RecipeDetailVO.DetailIngredientVO ing : vo.getIngredients()) {
-            System.out.printf(" - %s %s%s\n", ing.getName(), ing.getAmount(), ing.getUnit());
+            System.out.printf(" - %s %s%s\n", ing.getIngredientName(), ing.getAmount(), ing.getUnit());
 
             if (ing.getAlternatives() != null && !ing.getAlternatives().isEmpty()) {
                 for (IngredientVO alt : ing.getAlternatives()) {
