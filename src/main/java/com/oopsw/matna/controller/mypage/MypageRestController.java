@@ -79,8 +79,8 @@ public class MypageRestController {
         mypageService.addArrival(deliveryData);
     }
 
-    @PostMapping("/withdraw/{memberNo}")
-    public LocalDateTime withdrawMember(@PathVariable("memberNo") int memberNo) {
+    @PostMapping("/getout/{memberNo}")
+    public LocalDateTime deleteMember(@PathVariable("memberNo") int memberNo) {
 
         return mypageService.removeMember(memberNo);
     }
