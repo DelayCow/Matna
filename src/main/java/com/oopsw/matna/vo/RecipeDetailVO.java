@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -32,8 +33,9 @@ public class RecipeDetailVO {
 
 
     private List<DetailIngredientVO> ingredients;
-    private List<DetailStepVO> steps;
+    private List<RecipeStepVO> steps;
 
+    private Map<Integer, Double> spicyLevelPercentages;
 
     @Data
     public static class DetailIngredientVO {
@@ -41,23 +43,7 @@ public class RecipeDetailVO {
         private Float amount;
         private String unit;
 
-        private List<AlternativeVO> alternatives;
-    }
-
-    @Data
-    @AllArgsConstructor
-    public static class AlternativeVO {
-        private String name;
-        private Float amount;
-        private String unit;
-    }
-
-
-    @Data
-    public static class DetailStepVO {
-        private Integer stepOrder;
-        private String content;
-        private String imageUrl;
+        private List<IngredientVO> alternatives;
     }
 
 }

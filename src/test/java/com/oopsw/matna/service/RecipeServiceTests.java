@@ -99,4 +99,9 @@ public class RecipeServiceTests {
         Integer recipeNo = recipeService.addRecipe(recipeDto, thumbnailFile, stepImages);
         System.out.println("등록된 레시피 번호: " + recipeNo);
     }
+
+    @Test
+    public void getRecipeDetail(){
+        System.out.println(recipeService.getRecipeDetail(1));
+    }
 }

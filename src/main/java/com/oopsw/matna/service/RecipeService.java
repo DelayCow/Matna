@@ -4,6 +4,7 @@ import com.oopsw.matna.controller.recipe.RecipeRequest;
 import com.oopsw.matna.repository.*;
 import com.oopsw.matna.repository.entity.*;
 import com.oopsw.matna.vo.IngredientVO;
+import com.oopsw.matna.vo.RecipeDetailVO;
 import com.oopsw.matna.vo.RecipeStepVO;
 import com.oopsw.matna.vo.RecipeVO;
 import lombok.RequiredArgsConstructor;
@@ -13,12 +14,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +31,8 @@ public class RecipeService {
     private final RecipeIngredientRepository recipeIngredientRepository;
     private final RecipeStepRepository recipeStepRepository;
     private final ImageStorageService imageStorageService;
+    private final RecipeAlternativeIngredientRepository recipeAlternativeIngredientRepository;
+    private final ReviewsRepository reviewsRepository;
 
     public Slice<RecipeVO> getRecipeList(Integer spiceLevel, String keyword, Pageable pageable) {
         Slice<Recipe> recipes = recipeRepository.findWithFilters(spiceLevel, keyword, pageable);
@@ -51,8 +55,7 @@ public class RecipeService {
     }
 
     @Transactional
-    public Integer addRecipe(RecipeRequest dto,
-                             MultipartFile thumbnailFile,
+    public Integer addRecipe(RecipeRequest dto, MultipartFile thumbnailFile,
                              Map<String, MultipartFile> stepImages) throws IOException {
         Member author = memberRepository.findById(dto.getMemberNo())
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다. (memberNo: " + dto.getMemberNo() + ")"));
@@ -134,5 +137,100 @@ public class RecipeService {
         }
 
         return savedRecipe.getRecipeNo();
+    }
+
+    @Transactional
+    public RecipeDetailVO getRecipeDetail(Integer recipeNo){
+        Recipe recipe = recipeRepository.findById(recipeNo).get();
+
+        List<RecipeIngredient> rIngredients = recipeIngredientRepository.findByRecipe(recipe);
+
+        List<RecipeStep> rSteps = recipeStepRepository.findByRecipeOrderByStepOrderAsc(recipe);
+
+        List<RecipeAlternativeIngredient> alternatives =
+                recipeAlternativeIngredientRepository.findByReview_Recipe_RecipeNo(recipeNo);
+
+        RecipeDetailVO vo = new RecipeDetailVO();
+
+        vo.setRecipeNo(recipe.getRecipeNo());
+        vo.setTitle(recipe.getTitle());
+        vo.setSummary(recipe.getSummary());
+        vo.setThumbnailUrl(recipe.getImageUrl());
+        vo.setRating(recipe.getAverageRating());
+        vo.setReviewCount(recipe.getReviewCount());
+        vo.setServings(recipe.getServings());
+        vo.setPrepTime(recipe.getPrepTime());
+        vo.setDifficulty(recipe.getDifficulty());
+        vo.setSpicyLevel(recipe.getSpicyLevel());
+        vo.setInDate(recipe.getInDate());
+
+        if (recipe.getAuthor() != null) {
+            vo.setWriterNickname(recipe.getAuthor().getNickname());
+            vo.setWriterProfile(recipe.getAuthor().getImageUrl());
+        }
+
+        List<RecipeDetailVO.DetailIngredientVO> ingVOList = new ArrayList<>();
+        for (RecipeIngredient ri : rIngredients) {
+            RecipeDetailVO.DetailIngredientVO ingVO = new RecipeDetailVO.DetailIngredientVO();
+
+            String originName = ri.getIngredient().getIngredientName();
+
+            ingVO.setName(ri.getIngredient().getIngredientName());
+            ingVO.setAmount(ri.getAmount());
+            ingVO.setUnit(ri.getUnit());
+
+            List<IngredientVO> altList = alternatives.stream()
+                    .filter(alt -> alt.getOriginalIngredientName().equals(originName))
+                    .map(alt -> IngredientVO.builder()
+                            .ingredientName(alt.getAlternativeIngredientName())
+                            .amount(alt.getAmount())
+                            .unit(alt.getUnit())
+                            .build())
+                    .collect(Collectors.toList());
+
+            ingVO.setAlternatives(altList);
+
+            ingVOList.add(ingVO);
+
+        }
+        vo.setIngredients(ingVOList);
+
+        List<RecipeStepVO> stepVOList = new ArrayList<>();
+        for (RecipeStep rs : rSteps) {
+            RecipeStepVO stepVO = RecipeStepVO.builder()
+                    .stepOrder(rs.getStepOrder())
+                    .content(rs.getContent())
+                    .imageUrl(rs.getImageUrl())
+                    .build();
+            stepVOList.add(stepVO);
+        }
+        vo.setSteps(stepVOList);
+
+        List<Reviews> allReviews = reviewsRepository.findByRecipeAndDelDateIsNullOrderByInDateDesc(recipe);
+        long totalReviewCount = allReviews.size();
+
+        Map<Integer, Long> spicyLevelCounts = allReviews.stream()
+                .collect(Collectors.groupingBy(
+                        Reviews::getSpicyLevel,
+                        Collectors.counting()
+                ));
+
+        Map<Integer, Double> spicyLevelPercentages = new LinkedHashMap<>();
+
+        if (totalReviewCount > 0) {
+            for (int i = 0; i <= 5; i++) {
+                long count = spicyLevelCounts.getOrDefault(i, 0L);
+                double percentage = (double) count / totalReviewCount * 100.0;
+                percentage = Math.round(percentage * 100.0) / 100.0;
+
+                spicyLevelPercentages.put(i, percentage);
+            }
+        } else {
+            for (int i = 0; i <= 5; i++) {
+                spicyLevelPercentages.put(i, 0.0);
+            }
+        }
+        vo.setSpicyLevelPercentages(spicyLevelPercentages);
+        return vo;
     }
 }
