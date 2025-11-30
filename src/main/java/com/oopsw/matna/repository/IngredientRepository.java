@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IngredientRepository extends JpaRepository<Ingredient, Integer> {
     @EntityGraph(attributePaths = {"creator"})
@@ -22,4 +23,6 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Integer>
     @EntityGraph(attributePaths = {"creator"})
     List<Ingredient> findByIngredientNameContainingAndDelDateIsNull(String keyword);
 
+    @EntityGraph(attributePaths = {"creator"})
+    Optional<Ingredient> findById(Integer ingredientId);
 }

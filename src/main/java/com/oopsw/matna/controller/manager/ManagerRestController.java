@@ -31,5 +31,13 @@ public class ManagerRestController {
         return managerService.getNotApprovedIngredients();
     }
 
+    @PostMapping("/ingredientManagement")
+    public ManagerIngredientResponse addIngredient(@RequestParam Integer creatorId, @RequestParam String ingredientName) {
+        return managerService.addingredient(creatorId, ingredientName);
+    }
 
+    @DeleteMapping("/ingredientManagement")
+    public ManagerIngredientResponse removeIngredient(@RequestParam Integer ingredientId) {
+        return managerService.removeIngredient(ingredientId);
+    }
 }

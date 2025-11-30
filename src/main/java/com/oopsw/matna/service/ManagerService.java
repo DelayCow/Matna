@@ -2,12 +2,15 @@ package com.oopsw.matna.service;
 
 import com.oopsw.matna.dto.ManagerIngredientResponse;
 import com.oopsw.matna.repository.IngredientRepository;
+import com.oopsw.matna.repository.MemberRepository;
 import com.oopsw.matna.repository.entity.Ingredient;
+import com.oopsw.matna.repository.entity.Member;
 import com.oopsw.matna.vo.IngredientVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ManagerService {
     private final IngredientRepository ingredientRepository;
+    private final MemberRepository memberRepository;
 
     private ManagerIngredientResponse toResponse(Ingredient ingredient) {
         return ManagerIngredientResponse.builder()
@@ -47,4 +51,29 @@ public class ManagerService {
                 .map(this::toResponse)
                 .toList();
     }
+
+    public ManagerIngredientResponse addingredient(Integer creatorId, String ingredientName) {
+        // creator 정보 조회
+        Member creator = memberRepository.findByMemberNo(creatorId);
+
+        Ingredient ingredient = Ingredient.builder()
+                .ingredientName(ingredientName)
+                .creator(creator)
+                .inDate(LocalDateTime.now())
+                .approveDate(LocalDateTime.now())
+                .build();
+
+        Ingredient saved = ingredientRepository.save(ingredient);
+
+        return toResponse(saved);
+    }
+
+    public ManagerIngredientResponse removeIngredient(Integer ingredientId) {
+        Ingredient ingredient = ingredientRepository.findById(ingredientId)
+                .orElseThrow(() -> new RuntimeException("재료를 찾을 수 없습니다."));
+        ingredient.setDelDate(LocalDateTime.now());
+        return toResponse(ingredient);
+    }
+
+
 }
