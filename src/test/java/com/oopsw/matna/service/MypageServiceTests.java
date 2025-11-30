@@ -3,8 +3,10 @@ package com.oopsw.matna.service;
 import com.oopsw.matna.dto.MemberProfileListResponse;
 import com.oopsw.matna.repository.GroupBuyParticipantRepository;
 import com.oopsw.matna.repository.GroupBuyRepository;
+import com.oopsw.matna.repository.MemberRepository;
 import com.oopsw.matna.repository.entity.GroupBuy;
 import com.oopsw.matna.repository.entity.GroupBuyParticipant;
+import com.oopsw.matna.repository.entity.Member;
 import com.oopsw.matna.vo.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,9 @@ public class MypageServiceTests {
 
     @Autowired
     private GroupBuyRepository groupBuyRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
 
     @Test
     public void getMypageRecipeListTest() {
@@ -123,6 +128,19 @@ public class MypageServiceTests {
 
         System.out.println(result.getStatus());
         System.out.println(result.getArrivalDate());
+    }
+
+    @Test
+    public void removeMemberTest() {
+
+        Integer memberNo = 20;
+
+        mypageService.removeMember(memberNo);
+
+        Member result = memberRepository.findById(memberNo).orElse(null);
+
+        System.out.println(result.getMemberNo());
+        System.out.println(result.getDelDate());
     }
 }
 

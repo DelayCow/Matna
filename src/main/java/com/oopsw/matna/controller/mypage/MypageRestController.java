@@ -7,6 +7,7 @@ import com.oopsw.matna.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -78,6 +79,11 @@ public class MypageRestController {
         mypageService.addArrival(deliveryData);
     }
 
+    @PostMapping("/withdraw/{memberNo}")
+    public LocalDateTime withdrawMember(@PathVariable("memberNo") int memberNo) {
+
+        return mypageService.removeMember(memberNo);
+    }
 
 
 }

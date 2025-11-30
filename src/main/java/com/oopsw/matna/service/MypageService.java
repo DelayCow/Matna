@@ -149,4 +149,17 @@ public class MypageService {
         groupBuyRepository.save(groupBuy);
     }
 
+    public LocalDateTime removeMember(Integer memberNo) {
+
+        Member member = memberRepository.findById(memberNo)
+                .get();
+
+        LocalDateTime now = LocalDateTime.now();
+        member.setDelDate(now);
+
+        memberRepository.save(member);
+
+        return now;
+    }
+
 }
