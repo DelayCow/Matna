@@ -40,4 +40,9 @@ public class ManagerRestController {
     public ManagerIngredientResponse removeIngredient(@RequestParam Integer ingredientId) {
         return managerService.removeIngredient(ingredientId);
     }
+
+    @PutMapping("/ingredientManagement")
+    public ManagerIngredientResponse approveIngredient(@RequestParam Integer ingredientId) {
+        return managerService.approveIngredient(ingredientId);
+    }
 }

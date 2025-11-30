@@ -48,11 +48,16 @@ public class ManagerServiceTests {
 
     @Test
     public void addIngredient() {
-        System.out.println(managerService.addingredient(1, "애호박"));
+        System.out.println(managerService.addIngredient(1, "애호박"));
     }
 
     @Test
     public void removeIngredient() {
         System.out.println(managerService.removeIngredient(1));
+    }
+
+    @Test
+    public void approveIngredient() {
+        System.out.println(managerService.approveIngredient(50));
     }
 }

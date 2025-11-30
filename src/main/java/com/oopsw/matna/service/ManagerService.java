@@ -75,5 +75,11 @@ public class ManagerService {
         return toResponse(ingredient);
     }
 
+    public ManagerIngredientResponse approveIngredient(Integer ingredientId) {
+        Ingredient ingredient = ingredientRepository.findById(ingredientId)
+                .orElseThrow(() -> new RuntimeException("재료를 찾을 수 없습니다."));
+        ingredient.setApproveDate(LocalDateTime.now());
+        return toResponse(ingredient);
+    }
 
 }
