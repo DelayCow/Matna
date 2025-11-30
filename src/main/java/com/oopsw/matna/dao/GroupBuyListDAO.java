@@ -8,5 +8,6 @@ import java.util.List;
 @Mapper
 public interface GroupBuyListDAO {
     List<GroupBuyListVO> getParticipantList(Integer participantNo);
+
     List<GroupBuyListVO> getCreateGroupBuyList(Integer creatorNo);
 }

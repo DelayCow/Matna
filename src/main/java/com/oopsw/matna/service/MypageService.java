@@ -1,5 +1,6 @@
 package com.oopsw.matna.service;
 
+import com.oopsw.matna.dao.GroupBuyListDAO;
 import com.oopsw.matna.dto.MemberProfileListResponse;
 import com.oopsw.matna.repository.*;
 import com.oopsw.matna.repository.entity.*;
@@ -25,6 +26,15 @@ public class MypageService {
     private final GroupBuyParticipantRepository groupBuyParticipantRepository;
 
     private final GroupBuyRepository groupBuyRepository;
+
+    private final ReportRepository reportRepository;
+
+    private final MemberReportRepository memberReportRepository;
+
+    private final GroupBuyReportRepository groupBuyReportRepository;
+
+    private final GroupBuyListDAO groupBuyListDAO;
+
 
     public List<RecipeVO> getMypageRecipeList(Integer memberNo) {
 
@@ -232,6 +242,56 @@ public class MypageService {
         member.setPoint(newPoint);
 
         return newPoint;
+    }
+
+    public void reportMember(AllReportVO vo) {
+
+
+        Member reporter = memberRepository.findById(vo.getReporterNo())
+                .get();
+
+        Report report = Report.builder()
+                .reporter(reporter)
+                .imageUrl(vo.getImageUrl())
+                .reason(vo.getReason())
+                .status("WIP")
+                .reportedDate(LocalDateTime.now())
+                .build();
+
+        Report savedReport = reportRepository.save(report);
+
+        Member target = memberRepository.findById(vo.getTargetMemberNo())
+                .orElseThrow(() -> new RuntimeException("신고 대상 회원이 없습니다."));
+
+        memberReportRepository.save(MemberReport.builder()
+                .report(savedReport)
+                .targetMember(target)
+                .build());
+    }
+
+    public void reportGroupBuy(AllReportVO vo) {
+
+
+        Member reporter = memberRepository.findById(vo.getReporterNo())
+                .orElseThrow(() -> new RuntimeException("신고자 정보가 없습니다."));
+
+        Report report = Report.builder()
+                .reporter(reporter)
+                .imageUrl(vo.getImageUrl())
+                .reason(vo.getReason())
+                .status("WIP")
+                .reportedDate(LocalDateTime.now())
+                .build();
+
+        Report savedReport = reportRepository.save(report);
+
+        GroupBuy target = groupBuyRepository.findById(vo.getGroupBuyNo())
+                .orElseThrow(() -> new RuntimeException("신고 대상 공구가 없습니다."));
+
+        groupBuyReportRepository.save(GroupBuyReport.builder()
+                .report(savedReport)
+                .groupBuy(target)
+                .build());
     }
 
 

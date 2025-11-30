@@ -7,6 +7,7 @@ import com.oopsw.matna.service.MypageService;
 import com.oopsw.matna.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -125,6 +126,19 @@ public class MypageRestController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @PostMapping("/report/member")
+    public void reportMember(@RequestBody AllReportVO reportVO) {
+
+        mypageService.reportMember(reportVO);
+    }
+
+    @PostMapping("/report/group")
+    public void reportGroup(@RequestBody AllReportVO reportVO) {
+
+        mypageService.reportGroupBuy(reportVO);
+    }
+
 
 
 }

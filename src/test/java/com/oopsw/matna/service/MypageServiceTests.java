@@ -1,9 +1,11 @@
 package com.oopsw.matna.service;
 
+import com.oopsw.matna.controller.mypage.MypageRestController;
 import com.oopsw.matna.dto.MemberProfileListResponse;
 import com.oopsw.matna.repository.GroupBuyParticipantRepository;
 import com.oopsw.matna.repository.GroupBuyRepository;
 import com.oopsw.matna.repository.MemberRepository;
+import com.oopsw.matna.repository.ReportRepository;
 import com.oopsw.matna.repository.entity.GroupBuy;
 import com.oopsw.matna.repository.entity.GroupBuyParticipant;
 import com.oopsw.matna.repository.entity.Member;
@@ -31,6 +33,9 @@ public class MypageServiceTests {
 
     @Autowired
     private MemberRepository memberRepository;
+
+    @Autowired
+    private ReportRepository reportRepository;
 
     @Test
     public void getMypageRecipeListTest() {
@@ -216,6 +221,56 @@ public class MypageServiceTests {
             System.out.println(e.getMessage());
         }
     }
+
+    @Test
+    @Transactional
+    void reportMemberTest() {
+        AllReportVO vo = AllReportVO.builder()
+                .reporterNo(5)
+                .targetMemberNo(6)
+                .reason("회원 신고 테스트")
+                .imageUrl("ct.jpg")
+                .build();
+
+        System.out.println("입력 데이터: " + vo);
+
+        try {
+            mypageService.reportMember(vo);
+
+            System.out.println("성공!");
+        } catch (Exception e) {
+            System.out.println("실패! " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    @Transactional
+    void reportGroupTest() {
+        int reporterNo = 5;
+        int targetGroupNo = 11;
+
+        AllReportVO vo = AllReportVO.builder()
+                .reporterNo(reporterNo)
+                .groupBuyNo(targetGroupNo)
+                .reason("상품 상태가 다릅니다")
+                .imageUrl("ctest.jpg")
+                .build();
+
+        System.out.println("입력 데이터: " + vo);
+
+        try {
+            mypageService.reportGroupBuy(vo);
+
+            System.out.println("성공!");
+            System.out.println("DB 확인");
+
+        } catch (Exception e) {
+            System.out.println("실패! " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
 
 }
 
