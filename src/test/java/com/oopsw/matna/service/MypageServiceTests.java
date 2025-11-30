@@ -8,6 +8,7 @@ import com.oopsw.matna.repository.entity.GroupBuy;
 import com.oopsw.matna.repository.entity.GroupBuyParticipant;
 import com.oopsw.matna.repository.entity.Member;
 import com.oopsw.matna.vo.*;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -156,5 +157,20 @@ public class MypageServiceTests {
         boolean isNotMatched = mypageService.checkPassword(memberNo, wrongPassword);
         System.out.println("응 아니야" + isNotMatched);
     }
+
+    @Test
+    public void getMemberInfoTest() {
+
+        Integer memberNo = 5;
+
+        MemberVO member = mypageService.getMemberInfo(memberNo);
+
+        System.out.println("ID: " + member.getMemberId());
+        System.out.println("이름: " + member.getAccountName());
+        System.out.println("닉네임: " + member.getNickname());
+        System.out.println("주소: " + member.getAddress());
+        System.out.println("전체 객체: " + member);
+    }
+
 }
 

@@ -170,6 +170,27 @@ public class MypageService {
         return member.getPassword().equals(inputPassword);
     }
 
+    public MemberVO getMemberInfo(Integer memberNo) {
 
+        Member m = memberRepository.findById(memberNo)
+                .get();
+
+        return MemberVO.builder()
+                .memberNo(m.getMemberNo())
+                .memberId(m.getMemberId())
+                // .password(m.getPassword())
+                .accountName(m.getAccountName())
+                .nickname(m.getNickname())
+                .bank(m.getBank())
+                .accountNumber(m.getAccountNumber())
+                .inDate(m.getInDate())
+                .delDate(m.getDelDate())
+                .roll(m.getRoll())
+                .banDate(m.getBanDate())
+                .point(m.getPoint())
+                .imageUrl(m.getImageUrl())
+                .address(m.getAddress())
+                .build();
+    }
 
 }

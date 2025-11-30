@@ -95,5 +95,11 @@ public class MypageRestController {
         return mypageService.checkPassword(memberNo, password);
     }
 
+    @GetMapping("/{memberNo}/info")
+    public MemberVO getMemberInfo(@PathVariable("memberNo") int memberNo) {
+
+        return mypageService.getMemberInfo(memberNo);
+    }
+
 
 }
