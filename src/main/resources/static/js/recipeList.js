@@ -50,7 +50,7 @@ const fetchRecipeData = function(resetPage = true) {
     //     return;
     // }
 
-    let url = `api/recipes/scroll?page=${currentPage}&size=8&sort=${currentSort},desc`; //임시로 8개로
+    let url = `api/recipes?page=${currentPage}&size=8&sort=${currentSort},desc`; //임시로 8개로
 
     if (currentSpicyLevel !== null) {
         url += `&spicyLevel=${currentSpicyLevel}`;

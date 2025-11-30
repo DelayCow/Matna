@@ -19,7 +19,7 @@ public class LocalImageStorageService implements ImageStorageService{
 
     @Override
     public String save(MultipartFile file, String directory) throws IOException {
-        Path directoryPath = Paths.get(uploadPath + directory);
+        Path directoryPath = Paths.get(uploadPath, directory);
         if(!Files.exists(directoryPath)){
             Files.createDirectories(directoryPath);
         }

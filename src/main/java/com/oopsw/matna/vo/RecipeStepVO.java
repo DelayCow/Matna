@@ -10,11 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class RecipeStepVO {
-
-    private Integer recipeStepNo;
-    private Integer recipeNo;    //? 필요 한가?
-    private String imageUrl;
-    private String content;
     private Integer stepOrder;
-
+    private String content;
+    private String imageUrl;
 }

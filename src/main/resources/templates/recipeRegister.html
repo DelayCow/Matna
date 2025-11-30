@@ -13,18 +13,18 @@
 <div class="mobile-container position-relative">
     <div th:replace="layout :: pageHeader('레시피 등록', 'javascript:history.back()')"></div>
 
-    <form class="container-fluid content-area p-3">
+    <form class="container-fluid content-area p-3" method="post">
         <div class="mb-4">
             <h5 class="fw-bold mb-2">썸네일</h5>
             <div class="img-upload-area thumbnail flex-shrink-0">
                 <i class="bi bi-plus fs-1 text-secondary"></i>
-                <input type="file" class="img-file-upload" accept="image/*" style="display: none;">
+                <input type="file" class="img-file-upload" accept="image/*" style="display: none;" />
             </div>
         </div>
 
         <div class="mb-4">
             <h5 class="fw-bold mb-2">제목</h5>
-            <input type="text" class="form-control" id="recipeTitle" name="title" placeholder="제목">
+            <input type="text" class="form-control" id="recipeTitle" name="title" placeholder="제목" required>
         </div>
 
         <div class="mb-4">
@@ -35,8 +35,8 @@
         <div class="row g-2 mb-4 align-items-end">
             <div class="col-6">
                 <label for="category" class="form-label fw-bold">카테고리</label>
-                <select class="form-select w-75" id="category" name="category" aria-label="카테고리 선택">
-                    <option disabled selected>전체</option>
+                <select class="form-select w-75" id="category" name="category" aria-label="카테고리 선택" required>
+                    <option value="" disabled selected>선택하세요</option>
                     <option value="korean">한식</option>
                     <option value="japanese">일식</option>
                     <option value="chinese">중식</option>
@@ -46,9 +46,9 @@
             </div>
             <div class="col-6">
                 <div class="d-flex align-items-center">
-                    <input type="text" class="form-control text-end w-25 me-1" placeholder="0" name="prepTime">
+                    <input type="number" class="form-control text-end w-25 me-1" placeholder="0" name="prepTime" min="0">
                     <span class="me-2">분</span>
-                    <input type="text" class="form-control text-end w-25 ms-auto" placeholder="0" name="servings">
+                    <input type="number" class="form-control text-end w-25 ms-auto" placeholder="0" name="servings" min="1">
                     <span>인분</span>
                 </div>
             </div>
@@ -59,7 +59,7 @@
             <div class="mb-4">
                 <label for="itemSelect" class="form-label fw-bold">재료 선택</label>
                 <div class="select-input-group">
-                    <input type="text" class="form-control" id="itemSelect" placeholder="재료선택" value="">
+                    <input type="text" class="form-control" id="itemSelect" placeholder="재료선택">
                     <i class="bi bi-search select-icon"></i>
                     <div class="dropdown-menu" id="itemDropdownMenu"></div>
                 </div>
@@ -119,13 +119,13 @@
             <div class="recipe-step d-flex mb-3">
                 <div class="img-upload-area me-3 flex-shrink-0">
                     <i class="bi bi-plus fs-1 text-secondary"></i>
-                    <input type="file" class="img-file-upload" accept="image/*" style="display: none;">
+                    <input type="file" class="img-file-upload" accept="image/*" style="display: none;" />
                 </div>
                 <textarea class="form-control" rows="3" placeholder="레시피 설명"></textarea>
             </div>
 
             <div class="text-center">
-                <button class="btn btn-outline-secondary w-100 py-3 mb-5" id="addStepBtn">
+                <button class="btn btn-outline-secondary w-100 py-3 mb-5" type="button" id="addStepBtn">
                     <i class="bi bi-plus fs-4"></i>
                 </button>
                 <button type="submit" class="btn btn-success w-100 py-2 fw-bold">등록</button>
@@ -138,9 +138,9 @@
 
     <div th:replace="layout :: menuBar"></div>
 
-
 </div>
-
+<div th:replace="modal :: modal"></div>
+<div th:replace="modal :: multiModal"></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script type="module" src="/js/recipeRegister.js"></script>
 </body>

@@ -15,7 +15,7 @@ public class IngredientService {
     private final IngredientRepository ingredientRepository;
 
     public List<IngredientVO> findIngredientByKeyword(String keyword) {
-        List<Ingredient> ingredients = ingredientRepository.findByIngredientNameContaining(keyword);
+        List<Ingredient> ingredients = ingredientRepository.findByIngredientNameContainingAndDelDateIsNull(keyword);
         return ingredients.stream().map(ingredient -> IngredientVO.builder()
                 .ingredientNo(ingredient.getIngredientNo())
                 .ingredientName(ingredient.getIngredientName())
