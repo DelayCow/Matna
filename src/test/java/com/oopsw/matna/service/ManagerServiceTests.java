@@ -60,4 +60,15 @@ public class ManagerServiceTests {
     public void approveIngredient() {
         System.out.println(managerService.approveIngredient(50));
     }
+
+    //공구 관리
+    @Test
+    public void getAllGroupBuyList() {
+        System.out.println(managerService.getGroupBuyList(
+                "2024-11-01",
+                "2025-11-30",
+                null,
+                "아"
+        ));
+    }
 }

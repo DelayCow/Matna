@@ -1,6 +1,8 @@
 package com.oopsw.matna.controller.manager;
 
+import com.oopsw.matna.dto.ManagerGroupBuyResponse;
 import com.oopsw.matna.dto.ManagerIngredientResponse;
+import com.oopsw.matna.repository.entity.GroupBuy;
 import com.oopsw.matna.repository.entity.Ingredient;
 import com.oopsw.matna.service.ManagerService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +18,7 @@ import java.util.stream.Collectors;
 public class ManagerRestController {
     private final ManagerService managerService;
 
+    //재료 관리
     @GetMapping("/ingredientManagementa")
     public List<ManagerIngredientResponse> ingredientManagement() {
         return managerService.getIngredients();
@@ -45,4 +48,11 @@ public class ManagerRestController {
     public ManagerIngredientResponse approveIngredient(@RequestParam Integer ingredientId) {
         return managerService.approveIngredient(ingredientId);
     }
+
+    //공구 관리
+    @GetMapping("/groupBuyManagement")
+    public List<ManagerGroupBuyResponse> getGroupBuyList(String startDate, String endDate, String status, String title){
+        return managerService.getGroupBuyList(startDate, endDate, status, title);
+    }
+
 }

@@ -1,12 +1,18 @@
 package com.oopsw.matna.service;
 
+import com.oopsw.matna.dao.GroupBuyListDAO;
+import com.oopsw.matna.dao.ManagerDAO;
+import com.oopsw.matna.dto.ManagerGroupBuyResponse;
 import com.oopsw.matna.dto.ManagerIngredientResponse;
 import com.oopsw.matna.repository.IngredientRepository;
 import com.oopsw.matna.repository.MemberRepository;
+import com.oopsw.matna.repository.entity.GroupBuy;
 import com.oopsw.matna.repository.entity.Ingredient;
 import com.oopsw.matna.repository.entity.Member;
+import com.oopsw.matna.vo.AllGroupBuyListVO;
 import com.oopsw.matna.vo.IngredientVO;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.Group;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,8 +25,11 @@ import java.util.List;
 public class ManagerService {
     private final IngredientRepository ingredientRepository;
     private final MemberRepository memberRepository;
+    private final ManagerDAO managerDAO;
+    private final GroupBuyListDAO groupBuyListDAO;
 
-    private ManagerIngredientResponse toResponse(Ingredient ingredient) {
+    //재료 관리
+    private ManagerIngredientResponse toManagerIngredientResponse(Ingredient ingredient) {
         return ManagerIngredientResponse.builder()
                 .ingredientId(ingredient.getIngredientNo())       // 엔티티 필드명 확인
                 .ingredientName(ingredient.getIngredientName())
@@ -32,7 +41,7 @@ public class ManagerService {
 
     public List<ManagerIngredientResponse> getIngredients() {
         return ingredientRepository.findAll().stream()
-                .map(this::toResponse)
+                .map(this::toManagerIngredientResponse)
                 .toList();
     }
 
@@ -40,7 +49,7 @@ public class ManagerService {
         return ingredientRepository
                 .findByIngredientNameContainingAndDelDateIsNull(keyword)
                 .stream()
-                .map(this::toResponse)
+                .map(this::toManagerIngredientResponse)
                 .toList();
     }
 
@@ -48,7 +57,7 @@ public class ManagerService {
         return ingredientRepository
                 .findAllByApproveDateIsNull()
                 .stream()
-                .map(this::toResponse)
+                .map(this::toManagerIngredientResponse)
                 .toList();
     }
 
@@ -65,21 +74,38 @@ public class ManagerService {
 
         Ingredient saved = ingredientRepository.save(ingredient);
 
-        return toResponse(saved);
+        return toManagerIngredientResponse(saved);
     }
 
     public ManagerIngredientResponse removeIngredient(Integer ingredientId) {
         Ingredient ingredient = ingredientRepository.findById(ingredientId)
                 .orElseThrow(() -> new RuntimeException("재료를 찾을 수 없습니다."));
         ingredient.setDelDate(LocalDateTime.now());
-        return toResponse(ingredient);
+        return toManagerIngredientResponse(ingredient);
     }
 
     public ManagerIngredientResponse approveIngredient(Integer ingredientId) {
         Ingredient ingredient = ingredientRepository.findById(ingredientId)
                 .orElseThrow(() -> new RuntimeException("재료를 찾을 수 없습니다."));
         ingredient.setApproveDate(LocalDateTime.now());
-        return toResponse(ingredient);
+        return toManagerIngredientResponse(ingredient);
     }
 
+    //공구 관리
+    private ManagerGroupBuyResponse toManagerGroupBuyResponse(AllGroupBuyListVO vo) {
+        return ManagerGroupBuyResponse.builder()
+                .groupBuyNo(vo.getGroupBuyNo())
+                .status(vo.getStatus())
+                .inDate(vo.getInDate())
+                .creatorName(vo.getNickname())
+                .title(vo.getTitle())
+                .build();
+    }
+
+    public List<ManagerGroupBuyResponse> getGroupBuyList(String startDate, String endDate, String status, String title){
+        return managerDAO.getAllGroupBuyList(startDate, endDate, status, title)
+                .stream()
+                .map(this::toManagerGroupBuyResponse)
+                .toList();
+    }
 }
