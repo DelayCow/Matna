@@ -1,5 +1,6 @@
 package com.oopsw.matna.controller.mypage;
 
+import java.util.Map;
 import com.oopsw.matna.dto.MemberProfileListResponse;
 import com.oopsw.matna.dto.RecipeListResponse;
 import com.oopsw.matna.service.MypageService;
@@ -83,6 +84,15 @@ public class MypageRestController {
     public LocalDateTime deleteMember(@PathVariable("memberNo") int memberNo) {
 
         return mypageService.removeMember(memberNo);
+    }
+
+    @PostMapping("/checkModal/check-password")
+    public boolean checkPassword(@RequestBody Map<String, Object> requestData) {
+
+        Integer memberNo = (Integer) requestData.get("memberNo");
+        String password = (String) requestData.get("password");
+
+        return mypageService.checkPassword(memberNo, password);
     }
 
 

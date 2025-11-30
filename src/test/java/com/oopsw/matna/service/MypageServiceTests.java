@@ -142,5 +142,19 @@ public class MypageServiceTests {
         System.out.println(result.getMemberNo());
         System.out.println(result.getDelDate());
     }
+
+    @Test
+    public void checkPasswordTest() {
+
+        Integer memberNo = 15;
+        String realPassword = "member_11";
+        String wrongPassword = "wrong_password";
+
+        boolean isMatched = mypageService.checkPassword(memberNo, realPassword);
+        System.out.println("어 형이야" + isMatched);
+
+        boolean isNotMatched = mypageService.checkPassword(memberNo, wrongPassword);
+        System.out.println("응 아니야" + isNotMatched);
+    }
 }
 

@@ -162,4 +162,14 @@ public class MypageService {
         return now;
     }
 
+    public boolean checkPassword(Integer memberNo, String inputPassword) {
+
+        Member member = memberRepository.findById(memberNo)
+                .get();
+
+        return member.getPassword().equals(inputPassword);
+    }
+
+
+
 }
