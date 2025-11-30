@@ -3,9 +3,7 @@ package com.oopsw.matna.controller.mypage;
 import com.oopsw.matna.dto.MemberProfileListResponse;
 import com.oopsw.matna.dto.RecipeListResponse;
 import com.oopsw.matna.service.MypageService;
-import com.oopsw.matna.vo.MemberProfileVO;
-import com.oopsw.matna.vo.MemberVO;
-import com.oopsw.matna.vo.RecipeVO;
+import com.oopsw.matna.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,9 +49,35 @@ public class MypageRestController {
     @PostMapping("/{recipeNo}/recipe")
     public void removeRecipe(@PathVariable("recipeNo") int recipeNo) {
 
-        List<RecipeVO> recipe = mypageService.getMypageRecipeList(recipeNo);
 
         mypageService.removeMypageRecipe(recipeNo);
     }
+
+
+    @PostMapping("/{reviewNo}/review")
+    public void removeReview(@PathVariable("reviewNo") int reviewNo) {
+
+        mypageService.removeReviews(reviewNo);
+    }
+
+    @PostMapping("/groupbuy/shared")
+    public void confirmShareReceive(@RequestBody GroupBuyParticipantVO sharedData) {
+
+        mypageService.editShareGroupBuy(sharedData);
+    }
+
+    @PostMapping("/payment")
+    public void registerPayment(@RequestBody GroupBuyVO paymentData) {
+
+        mypageService.editPayment(paymentData);
+    }
+
+    @PostMapping("/groupbuy/arrival")
+    public void registerArrival(@RequestBody GroupBuyVO deliveryData) {
+
+        mypageService.addArrival(deliveryData);
+    }
+
+
 
 }

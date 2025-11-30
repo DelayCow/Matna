@@ -1,17 +1,14 @@
 package com.oopsw.matna.service;
 
 import com.oopsw.matna.dto.MemberProfileListResponse;
-import com.oopsw.matna.repository.MemberRepository;
-import com.oopsw.matna.repository.RecipeRepository;
-import com.oopsw.matna.repository.ReviewsRepository;
-import com.oopsw.matna.repository.entity.Member;
-import com.oopsw.matna.repository.entity.Recipe;
-import com.oopsw.matna.repository.entity.Reviews;
+import com.oopsw.matna.repository.*;
+import com.oopsw.matna.repository.entity.*;
 import com.oopsw.matna.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,6 +21,10 @@ public class MypageService {
     private final MemberRepository memberRepository;
 
     private final ReviewsRepository reviewsRepository;
+
+    private final GroupBuyParticipantRepository groupBuyParticipantRepository;
+
+    private final GroupBuyRepository groupBuyRepository;
 
     public List<RecipeVO> getMypageRecipeList(Integer memberNo) {
 
@@ -82,9 +83,70 @@ public class MypageService {
 
     public void removeReviews(Integer reviewsNo){
 
+        Reviews review = reviewsRepository.findById(reviewsNo).get();
+        Recipe recipe = review.getRecipe();
 
+        int recipeReviewCount = recipe.getReviewCount();
+        float recipeAverageRating = recipe.getAverageRating();
 
+        review.setDelDate(LocalDateTime.now());
+        reviewsRepository.save(review);
+
+        recipe.removeRating(review.getRating());
+        recipe.setUpdateDate(LocalDateTime.now());
+        recipeRepository.save(recipe);
 
 
     }
+
+
+    public void editShareGroupBuy(GroupBuyParticipantVO sharedData) {
+
+
+        LocalDateTime receiveDate = sharedData.getReceiveDate();
+
+
+        GroupBuyParticipant participant = groupBuyParticipantRepository
+                .findByGroupBuy_GroupBuyNoAndParticipant_MemberNo(
+                        sharedData.getGroupBuyNo(),
+                        sharedData.getParticipantNo()
+                );
+
+        if (participant == null) {
+            throw new RuntimeException("참여 정보를 찾을 수 없습니다.");
+        }
+
+        participant.setReceiveDate(receiveDate);
+        groupBuyParticipantRepository.save(participant);
+    }
+
+    public void editPayment(GroupBuyVO paymentData) {
+
+
+        GroupBuy groupBuy = groupBuyRepository.findById(paymentData.getGroupBuyNo())
+                .get();
+
+        groupBuy.setStatus("paid");
+        groupBuy.setReceiptImageUrl(paymentData.getReceiptImageUrl());
+        groupBuy.setBuyDate(paymentData.getBuyDate());
+        groupBuy.setPaymentNote(paymentData.getPaymentNote());
+
+        groupBuyRepository.save(groupBuy);
+    }
+
+
+    public void addArrival(GroupBuyVO deliveryData) {
+
+
+        GroupBuy groupBuy = groupBuyRepository.findById(deliveryData.getGroupBuyNo())
+                .get();
+
+        groupBuy.setStatus("delivered");
+
+        groupBuy.setArrivalImageUrl(deliveryData.getArrivalImageUrl());
+        groupBuy.setArrivalDate(deliveryData.getArrivalDate());
+
+        groupBuyRepository.save(groupBuy);
+    }
+
 }
