@@ -271,6 +271,24 @@ public class MypageServiceTests {
         }
     }
 
+    @Test
+    @Transactional
+    public void chargePointTest() {
+
+        int memberNo = 5;
+        Member member = memberRepository.findById(memberNo).get();
+        int beforePoint = member.getPoint();
+        int chargeAmount = 10000;
+
+
+        int afterPoint = mypageService.chargePoint(memberNo, chargeAmount);
+
+
+        System.out.println("충전 전: " + beforePoint);
+        System.out.println("충전 후: " + afterPoint);
+
+    }
+
 
 }
 

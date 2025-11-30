@@ -139,6 +139,18 @@ public class MypageRestController {
         mypageService.reportGroupBuy(reportVO);
     }
 
+    @PostMapping("/point/charge")
+    public ResponseEntity<?> chargePoint(@RequestBody Map<String, Integer> requestData) {
+        int memberNo = requestData.get("memberNo");
+        int amount = requestData.get("amount");
+
+        try {
+            int resultPoint = mypageService.chargePoint(memberNo, amount);
+            return ResponseEntity.ok(resultPoint);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
 
 }

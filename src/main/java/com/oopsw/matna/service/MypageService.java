@@ -7,6 +7,7 @@ import com.oopsw.matna.repository.entity.*;
 import com.oopsw.matna.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -292,6 +293,25 @@ public class MypageService {
                 .report(savedReport)
                 .groupBuy(target)
                 .build());
+    }
+
+    @Transactional
+    public int chargePoint(Integer memberNo, int amount) {
+
+
+        Member member = memberRepository.findById(memberNo)
+                .orElseThrow(() -> new RuntimeException("회원 정보를 찾을 수 없습니다."));
+
+        if (amount <= 1000) {
+            throw new RuntimeException("최소 충전 금액은 1000원 입니다.");
+        }
+
+
+        int newPoint = member.getPoint() + amount;
+        member.setPoint(newPoint);
+
+
+        return newPoint;
     }
 
 
