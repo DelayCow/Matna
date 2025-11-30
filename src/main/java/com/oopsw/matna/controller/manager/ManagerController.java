@@ -19,4 +19,9 @@ public class ManagerController {
     public String groupBuyManagement() {
         return "groupBuyManagement";
     }
+
+    @GetMapping("/reportManagement")
+    public String reportManagement() {
+        return "reportManagement";
+    }
 }

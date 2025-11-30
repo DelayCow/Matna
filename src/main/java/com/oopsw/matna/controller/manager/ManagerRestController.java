@@ -50,9 +50,10 @@ public class ManagerRestController {
     }
 
     //공구 관리
-    @GetMapping("/groupBuyManagement")
+    @GetMapping("/groupBuyManagementt")
     public List<ManagerGroupBuyResponse> getGroupBuyList(String startDate, String endDate, String status, String title){
         return managerService.getGroupBuyList(startDate, endDate, status, title);
     }
 
+    //
 }
