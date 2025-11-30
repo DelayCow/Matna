@@ -42,7 +42,7 @@ public class RecipeDetailVO {
         private String name;
         private Float amount;
         private String unit;
-
+        private Boolean isGroupBuying;
         private List<IngredientVO> alternatives;
     }
 

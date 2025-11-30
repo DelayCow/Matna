@@ -14,4 +14,5 @@ public class IngredientVO {
     private String ingredientName;
     private String unit;
     private Float amount;
+    private Boolean isGroupBuying;
 }

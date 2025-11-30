@@ -9,12 +9,10 @@ import com.oopsw.matna.vo.RecipeStepVO;
 import com.oopsw.matna.vo.RecipeVO;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -33,6 +31,7 @@ public class RecipeService {
     private final ImageStorageService imageStorageService;
     private final RecipeAlternativeIngredientRepository recipeAlternativeIngredientRepository;
     private final ReviewsRepository reviewsRepository;
+    private final GroupBuyRepository groupBuyRepository;
 
     public Slice<RecipeVO> getRecipeList(Integer spiceLevel, String keyword, Pageable pageable) {
         Slice<Recipe> recipes = recipeRepository.findWithFilters(spiceLevel, keyword, pageable);
@@ -179,13 +178,30 @@ public class RecipeService {
             ingVO.setAmount(ri.getAmount());
             ingVO.setUnit(ri.getUnit());
 
+            boolean hasActiveGroupBuy = groupBuyRepository
+                    .existsByIngredient_IngredientNoAndStatus(ri.getRecipeIngredientNo(), "OPEN");
+
+            ingVO.setIsGroupBuying(hasActiveGroupBuy);
+
             List<IngredientVO> altList = alternatives.stream()
                     .filter(alt -> alt.getOriginalIngredientName().equals(originName))
-                    .map(alt -> IngredientVO.builder()
-                            .ingredientName(alt.getAlternativeIngredientName())
-                            .amount(alt.getAmount())
-                            .unit(alt.getUnit())
-                            .build())
+                    .map(alt -> {
+                        // 1. 대체 재료 이름으로 Ingredient 엔티티를 찾습니다.
+                        Ingredient alternativeIngredient = ingredientRepository
+                                .findByIngredientNameAndDelDateIsNull(alt.getAlternativeIngredientName())
+                                .orElse(null); // 찾지 못하면 null 처리 (공구 여부 확인 불가)
+
+                        boolean hasAltGroupBuy = false;
+                        if (alternativeIngredient != null) {
+                            hasAltGroupBuy = groupBuyRepository
+                                    .existsByIngredient_IngredientNoAndStatus(alternativeIngredient.getIngredientNo(), "open");
+                        }
+
+                        return IngredientVO.builder()
+                                .ingredientName(alt.getAlternativeIngredientName())
+                                .amount(alt.getAmount()).unit(alt.getUnit())
+                                .isGroupBuying(hasAltGroupBuy).build();
+                    })
                     .collect(Collectors.toList());
 
             ingVO.setAlternatives(altList);
