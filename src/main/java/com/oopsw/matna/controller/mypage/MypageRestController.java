@@ -6,6 +6,7 @@ import com.oopsw.matna.dto.RecipeListResponse;
 import com.oopsw.matna.service.MypageService;
 import com.oopsw.matna.vo.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -80,7 +81,7 @@ public class MypageRestController {
         mypageService.addArrival(deliveryData);
     }
 
-    @PostMapping("/getout/{memberNo}")
+    @DeleteMapping("/getout/{memberNo}")
     public LocalDateTime deleteMember(@PathVariable("memberNo") int memberNo) {
 
         return mypageService.removeMember(memberNo);
@@ -99,6 +100,30 @@ public class MypageRestController {
     public MemberVO getMemberInfo(@PathVariable("memberNo") int memberNo) {
 
         return mypageService.getMemberInfo(memberNo);
+    }
+
+    @PutMapping("/{memberNo}/infoEdit")
+    public void updateProfile(@PathVariable("memberNo") int memberNo, @RequestBody MemberVO editData) {
+
+        editData.setMemberNo(memberNo);
+
+        mypageService.updateMemberProfile(editData);
+    }
+
+    // MypageRestController.java
+
+    @PostMapping("/point/refund")
+    public ResponseEntity<?> refundPoint(@RequestBody Map<String, Integer> requestData) {
+        int memberNo = requestData.get("memberNo");
+        int amount = requestData.get("amount");
+
+        try {
+            int remainingPoint = mypageService.refundPoint(memberNo, amount);
+            return ResponseEntity.ok(remainingPoint);
+
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
 

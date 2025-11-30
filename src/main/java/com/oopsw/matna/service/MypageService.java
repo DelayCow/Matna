@@ -193,4 +193,47 @@ public class MypageService {
                 .build();
     }
 
+
+    public void updateMemberProfile(MemberVO editData) {
+
+        Member member = memberRepository.findById(editData.getMemberNo())
+                        .get();
+
+        member.setNickname(editData.getNickname());
+        member.setImageUrl(editData.getImageUrl());
+        member.setAddress(editData.getAddress());
+
+
+        member.setBank(editData.getBank());
+        member.setAccountNumber(editData.getAccountNumber());
+        member.setAccountName(editData.getAccountName());
+
+
+        if (editData.getPassword() != null && !editData.getPassword().isEmpty()) {
+
+            member.setPassword(editData.getPassword());
+        }
+
+    }
+
+
+    public int refundPoint(Integer memberNo, int refundAmount) {
+
+
+        Member member = memberRepository.findById(memberNo)
+                .get();
+
+
+        if (member.getPoint() < refundAmount) {
+            throw new RuntimeException("보유 포인트보다 환급 금액이 클 수 없습니다.");
+        }
+
+        int newPoint = member.getPoint() - refundAmount;
+        member.setPoint(newPoint);
+
+        return newPoint;
+    }
+
+
+
 }

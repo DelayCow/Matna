@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -170,6 +171,50 @@ public class MypageServiceTests {
         System.out.println("닉네임: " + member.getNickname());
         System.out.println("주소: " + member.getAddress());
         System.out.println("전체 객체: " + member);
+    }
+
+    @Test
+    @Transactional
+    public void editMemberInfoTest() {
+
+        int targetMemberNo = 5;
+
+        MemberVO editMember = MemberVO.builder()
+                .memberNo(targetMemberNo)
+                .nickname("수정했단말이오")
+                .password("new_password_123")
+                .imageUrl("enwene.jpg")
+                .bank("카카오뱅크")
+                .accountNumber("3333-11-2222")
+                .accountName("김루이지")
+                .address("경기도 성남시 판교 옥탑방왕세자")
+                .build();
+
+        mypageService.updateMemberProfile(editMember);
+
+        Member result = memberRepository.findById(targetMemberNo).orElse(null);
+
+        System.out.println("변경된 닉네임: " + result.getNickname());
+        System.out.println("변경된 주소: " + result.getAddress());
+    }
+
+    @Test
+    @Transactional
+    public void refundPointTest() {
+        // Given
+        int memberNo = 5;
+        int currentPoint = 1000;
+
+
+        int remain = mypageService.refundPoint(memberNo, 500);
+        System.out.println("남은 돈: " + remain);
+
+
+        try {
+            mypageService.refundPoint(memberNo, 15000);
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
 }
