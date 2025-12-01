@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -245,7 +244,7 @@ public class MypageService {
         return newPoint;
     }
 
-    public void reportMember(AllReportVO vo) {
+    public void addReportMember(AllReportVO vo) {
 
 
         Member reporter = memberRepository.findById(vo.getReporterNo())
@@ -270,7 +269,7 @@ public class MypageService {
                 .build());
     }
 
-    public void reportGroupBuy(AllReportVO vo) {
+    public void addReportGroupBuy(AllReportVO vo) {
 
 
         Member reporter = memberRepository.findById(vo.getReporterNo())
@@ -313,6 +312,9 @@ public class MypageService {
 
         return newPoint;
     }
+
+//    @Transactional
+//    public Group
 
 
 

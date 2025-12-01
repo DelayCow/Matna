@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', function() {
     let isOwner = false; // "내 페이지인가?" 상태 저장용
     const memberNo = 17;
 
-    fetchProfileData(memberNo);
 
 
     // 1. 레시피 데이터
@@ -47,11 +46,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     };
 
-    // 2. 후기 데이터
-    const reviewData = [
-        { id: 101, title: "인생 버거 등극!", image: "/img/hambugiReview.jpg", rating: 4.0, spicy: "안 매워요" },
-        { id: 201, title: "와인 풍미 예술", image: "/img/cokkioo.jpg", rating: 3.5, spicy: "매워요" }
-    ];
+    const fetchReviewData = function(memberNo) {
+        return fetch(`/api/mypage/${memberNo}/reviewList`, {
+            method: 'GET'
+        }).then(response =>{
+            return response.json();
+        });
+    };
+
+    // // 2. 후기 데이터
+    // const reviewData = [
+    //     { id: 101, title: "인생 버거 등극!", image: "/img/hambugiReview.jpg", rating: 4.0, spicy: "안 매워요" },
+    //     { id: 201, title: "와인 풍미 예술", image: "/img/cokkioo.jpg", rating: 3.5, spicy: "매워요" }
+    // ];
 
     // 3. 공동구매 데이터 (상세 필드 추가됨!)
     const groupData = [
@@ -111,7 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!data) data = {};
 
         const nickname = data.nickname || "맛도리 회원님";
-        const image = data.imageUrl || "기본이미지url"; // 기본이미지 연결 할 것
+        const image = data.imageUrl || "/img/default_profile.jpg;"; // 기본이미지 연결 할 것
         const money = data.points || 0;
 
         const profileMemberNo = data.memberNo;
@@ -207,7 +214,22 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // 4. 후기 카드 생성
-    const createReviewCard = (item) => `
+    const createReviewCard = (item) =>  {
+
+        let spicyText = '';
+        switch (item.spicyLevel) {
+            case 0: spicyText = '안매워요'; break;
+            case 1: spicyText = '약간 매워요'; break;
+            case 2: spicyText = '신라면 맵기'; break;
+            case 3: spicyText = '열라면 맵기'; break;
+            case 4: spicyText = '불닭 맵기'; break;
+            case 5: spicyText = '불닭보다 매워욧'; break;
+            default: spicyText = '';
+        }
+
+        const imgUrl = item.imageUrl ? item.imageUrl :  '/img/default_profile.jpg';
+
+    return`
         <div class="review-card mb-4 col-12" data-id="${item.id}">
             <div class="card-img-wrap"><img src="${item.image}" alt="${item.title}"></div>
             <div class="card-info mt-2 p-2">
@@ -219,6 +241,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="small text-danger"><i class="bi bi-fire me-1"></i>${item.spicy}</div>
             </div>
         </div>`;
+
+    };
 
     // 5. 공동구매 카드 생성 (타임라인 포함!)
     const createGroupCard = (item) => {
@@ -307,11 +331,29 @@ document.addEventListener('DOMContentLoaded', function() {
     if(btnOpen) btnOpen.addEventListener('change', () => { if(btnOpen.checked) renderGroupList('owner'); });
 
     renderCommonArea();
+
     updateStats();
-    fetchRecipeData(15).then(recipeData => {
+
+    fetchProfileData(memberNo);
+
+    fetchRecipeData(memberNo).then(recipeData => {
         document.getElementById('statRecipeCount').innerText = recipeData.length;
         document.getElementById('recipe-list').innerHTML = recipeData.map(createRecipeCard).join('');
     })
+
+    fetchReviewData(memberNo).then(reviewList => {
+        const listContainer = document.getElementById('review-list');
+
+        if (!reviewList || reviewList.length === 0) {
+            listContainer.innerHTML = '<div class="text-center w-100 py-5 text-muted">작성한 후기가 없습니다.</div>';
+        } else {
+            listContainer.innerHTML = reviewList.map(item => createReviewCard(item)).join('');
+        }
+    });
+
+    renderGroupList('participate');
+
+
     // document.getElementById('recipe-list').innerHTML = recipeData.map(createRecipeCard).join('');
     document.getElementById('review-list').innerHTML = reviewData.map(createReviewCard).join('');
 

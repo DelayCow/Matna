@@ -1,6 +1,5 @@
 package com.oopsw.matna.service;
 
-import com.oopsw.matna.controller.mypage.MypageRestController;
 import com.oopsw.matna.dto.MemberProfileListResponse;
 import com.oopsw.matna.repository.GroupBuyParticipantRepository;
 import com.oopsw.matna.repository.GroupBuyRepository;
@@ -10,7 +9,6 @@ import com.oopsw.matna.repository.entity.GroupBuy;
 import com.oopsw.matna.repository.entity.GroupBuyParticipant;
 import com.oopsw.matna.repository.entity.Member;
 import com.oopsw.matna.vo.*;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -235,7 +233,7 @@ public class MypageServiceTests {
         System.out.println("입력 데이터: " + vo);
 
         try {
-            mypageService.reportMember(vo);
+            mypageService.addReportMember(vo);
 
             System.out.println("성공!");
         } catch (Exception e) {
@@ -260,7 +258,7 @@ public class MypageServiceTests {
         System.out.println("입력 데이터: " + vo);
 
         try {
-            mypageService.reportGroupBuy(vo);
+            mypageService.addReportGroupBuy(vo);
 
             System.out.println("성공!");
             System.out.println("DB 확인");

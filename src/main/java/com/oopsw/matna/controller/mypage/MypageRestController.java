@@ -7,7 +7,6 @@ import com.oopsw.matna.service.MypageService;
 import com.oopsw.matna.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -51,6 +50,11 @@ public class MypageRestController {
         mypageService.removeMypageRecipe(recipeNo);
     }
 
+    @GetMapping("/{memberNo}/reviewList")
+    public void getMypageReviewList(@PathVariable("memberNo") int memberNo) {
+
+        mypageService.getMypageReviewsList(memberNo);
+    }
 
     @PostMapping("/{reviewNo}/review")
     public void removeReview(@PathVariable("reviewNo") int reviewNo) {
@@ -82,7 +86,7 @@ public class MypageRestController {
         return mypageService.removeMember(memberNo);
     }
 
-    @PostMapping("/checkModal/check-password")
+    @PostMapping("/checkModal/checkPassword")
     public boolean checkPassword(@RequestBody Map<String, Object> requestData) {
 
         Integer memberNo = (Integer) requestData.get("memberNo");
@@ -130,7 +134,7 @@ public class MypageRestController {
     @PostMapping("/report/group")
     public void reportGroup(@RequestBody AllReportVO reportVO) {
 
-        mypageService.reportGroupBuy(reportVO);
+        mypageService.addReportGroupBuy(reportVO);
     }
 
     @PostMapping("/point/charge")
