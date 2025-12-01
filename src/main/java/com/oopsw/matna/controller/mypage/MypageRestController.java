@@ -128,7 +128,7 @@ public class MypageRestController {
     @PostMapping("/report/member")
     public void reportMember(@RequestBody AllReportVO reportVO) {
 
-        mypageService.reportMember(reportVO);
+        mypageService.addReportMember(reportVO);
     }
 
     @PostMapping("/report/group")
