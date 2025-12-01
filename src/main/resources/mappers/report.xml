@@ -2,19 +2,35 @@
 <!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.oopsw.matna.dao.ReportDAO">
-    <select id="getReports" resultType="com.oopsw.matna.vo.AllReportVO">
+    <resultMap id="allReportMap" type="com.oopsw.matna.vo.AllReportVO">
+        <result property="reportNo" column="reportNo" jdbcType="INTEGER"/>
+        <result property="reporterNo" column="reporterNo" jdbcType="INTEGER"/>
+        <result property="reporterId" column="reporterId" jdbcType="VARCHAR"/>
+        <result property="reporterName" column="reporterName" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="VARCHAR"/>
+        <result property="reportedDate" column="reportedDate" jdbcType="TIMESTAMP"/>
+        <result property="reason" column="reason" jdbcType="VARCHAR"/>
+        <result property="targetNo" column="targetNo" jdbcType="INTEGER"/>
+        <result property="groupBuyNo" column="groupBuyNo" jdbcType="INTEGER"/>
+        <result property="reportCase" column="reportCase" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="getReports" resultMap="allReportMap">
         SELECT
-            rt.report_no      AS reportNo,
-            m.member_id       AS memberId,
-            m.nickname        AS nickname,
-            rt.reported_date  AS reportedDate,
-            rt.status         AS status,
-            rt.reason         AS reason,
-            CASE
-                WHEN gbr.report_no IS NOT NULL THEN 'group_buys'
-                WHEN mr.report_no IS NOT NULL THEN 'members'
-                ELSE 'error'
-                END                AS reportCase
+        rt.report_no AS reportNo,
+        rt.reporter_no AS reporterNo,
+        m.member_id AS reporterId,
+        m.nickname AS reporterName,
+        rt.reported_date AS reportedDate,
+        rt.status AS status,
+        rt.reason AS reason,
+        mr.target_no AS targetNo,
+        gbr.group_buy_no AS groupBuyNo,
+        CASE
+        WHEN gbr.report_no IS NOT NULL THEN 'group_buys'
+        WHEN mr.report_no IS NOT NULL THEN 'members'
+        ELSE 'error'
+        END AS reportCase
         FROM
             REPORTS rt
         JOIN members m ON m.member_no = rt.reporter_no
@@ -26,8 +42,8 @@
             <if test="startDate != null and endDate != null">
                 rt.reported_date between #{startDate} and #{endDate}
             </if>
-            <if test="reportStatus != null">
-                and rt.status = #{reportStatus}
+            <if test="status != null">
+                and rt.status = #{status}
             </if>
             <if test="reportCase == 'members'">
                 AND mr.report_no IS NOT NULL
@@ -35,12 +51,11 @@
             <if test="reportCase == 'group_buys'">
                 AND gbr.report_no IS NOT NULL
             </if>
-            <if test="(memberId != null and memberId != '')
-          or (nickname != null and nickname != '')">
+            <if test="keyword != null and keyword != ''">
                 AND (
-                (#{memberId} != '' AND m.member_id = #{memberId})
+                m.member_id LIKE CONCAT('%', #{keyword}, '%')
                 OR
-                (#{nickname} != '' AND m.nickname = #{nickname})
+                m.nickname LIKE CONCAT('%', #{keyword}, '%')
                 )
             </if>
         </where>
