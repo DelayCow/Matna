@@ -2,22 +2,23 @@ package com.oopsw.matna.service;
 
 import com.oopsw.matna.dao.GroupBuyListDAO;
 import com.oopsw.matna.dao.ManagerDAO;
+import com.oopsw.matna.dao.ReportDAO;
 import com.oopsw.matna.dto.ManagerGroupBuyResponse;
 import com.oopsw.matna.dto.ManagerIngredientResponse;
+import com.oopsw.matna.dto.ManagerReportResponse;
 import com.oopsw.matna.repository.IngredientRepository;
 import com.oopsw.matna.repository.MemberRepository;
-import com.oopsw.matna.repository.entity.GroupBuy;
+import com.oopsw.matna.repository.ReportRepository;
 import com.oopsw.matna.repository.entity.Ingredient;
 import com.oopsw.matna.repository.entity.Member;
+import com.oopsw.matna.repository.entity.Report;
 import com.oopsw.matna.vo.AllGroupBuyListVO;
-import com.oopsw.matna.vo.IngredientVO;
+import com.oopsw.matna.vo.AllReportVO;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.Group;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,7 +27,8 @@ public class ManagerService {
     private final IngredientRepository ingredientRepository;
     private final MemberRepository memberRepository;
     private final ManagerDAO managerDAO;
-    private final GroupBuyListDAO groupBuyListDAO;
+    private final ReportDAO reportDAO;
+    private final ReportRepository reportRepository;
 
     //재료 관리
     private ManagerIngredientResponse toManagerIngredientResponse(Ingredient ingredient) {
@@ -77,18 +79,16 @@ public class ManagerService {
         return toManagerIngredientResponse(saved);
     }
 
-    public ManagerIngredientResponse removeIngredient(Integer ingredientId) {
+    public void removeIngredient(Integer ingredientId) {
         Ingredient ingredient = ingredientRepository.findById(ingredientId)
                 .orElseThrow(() -> new RuntimeException("재료를 찾을 수 없습니다."));
         ingredient.setDelDate(LocalDateTime.now());
-        return toManagerIngredientResponse(ingredient);
     }
 
-    public ManagerIngredientResponse approveIngredient(Integer ingredientId) {
+    public void approveIngredient(Integer ingredientId) {
         Ingredient ingredient = ingredientRepository.findById(ingredientId)
                 .orElseThrow(() -> new RuntimeException("재료를 찾을 수 없습니다."));
         ingredient.setApproveDate(LocalDateTime.now());
-        return toManagerIngredientResponse(ingredient);
     }
 
     //공구 관리
@@ -107,5 +107,32 @@ public class ManagerService {
                 .stream()
                 .map(this::toManagerGroupBuyResponse)
                 .toList();
+    }
+
+    //신고 관리
+    private ManagerReportResponse toManagerReportManagementResponse(AllReportVO vo) {
+        Member reporter = memberRepository.findById(vo.getReporterNo()).get();
+        return ManagerReportResponse.builder()
+                .managerReportId(vo.getReportNo())
+                .status(vo.getStatus())
+                .reportedDate(vo.getReportedDate())
+                .reporterName(reporter.getNickname())
+                .reason(vo.getReason())
+                .targetMemberNo(vo.getTargetNo())
+                .groupBuyNo(vo.getGroupBuyNo())
+                .build();
+    }
+
+    public List<ManagerReportResponse> getReportList(LocalDate startDate, LocalDate endDate, String status, String reportCase, String keyword){
+        return reportDAO.getReports(startDate, endDate, status, reportCase, keyword)
+                .stream()
+                .map(this::toManagerReportManagementResponse)
+                .toList();
+    }
+
+    public void editReportStatus(Integer reportNo) {
+        Report report = reportRepository.findWithReporterByReportNo(reportNo)
+                .orElseThrow(() -> new RuntimeException("Report가 없습니다."));
+        report.setStatus("complete");
     }
 }

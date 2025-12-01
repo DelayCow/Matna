@@ -2,15 +2,13 @@ package com.oopsw.matna.controller.manager;
 
 import com.oopsw.matna.dto.ManagerGroupBuyResponse;
 import com.oopsw.matna.dto.ManagerIngredientResponse;
-import com.oopsw.matna.repository.entity.GroupBuy;
-import com.oopsw.matna.repository.entity.Ingredient;
+import com.oopsw.matna.dto.ManagerReportResponse;
 import com.oopsw.matna.service.ManagerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,19 +32,19 @@ public class ManagerRestController {
         return managerService.getNotApprovedIngredients();
     }
 
-    @PostMapping("/ingredientManagement")
+    @PostMapping("/ingredientManagement/add")
     public ManagerIngredientResponse addIngredient(@RequestParam Integer creatorId, @RequestParam String ingredientName) {
         return managerService.addIngredient(creatorId, ingredientName);
     }
 
-    @DeleteMapping("/ingredientManagement")
-    public ManagerIngredientResponse removeIngredient(@RequestParam Integer ingredientId) {
-        return managerService.removeIngredient(ingredientId);
+    @PutMapping("/ingredientManagement/remove")
+    public void removeIngredient(@RequestParam Integer ingredientId) {
+        managerService.removeIngredient(ingredientId);
     }
 
-    @PutMapping("/ingredientManagement")
-    public ManagerIngredientResponse approveIngredient(@RequestParam Integer ingredientId) {
-        return managerService.approveIngredient(ingredientId);
+    @PutMapping("/ingredientManagement/approve")
+    public void approveIngredient(@RequestParam Integer ingredientId) {
+        managerService.approveIngredient(ingredientId);
     }
 
     //공구 관리
@@ -55,5 +53,9 @@ public class ManagerRestController {
         return managerService.getGroupBuyList(startDate, endDate, status, title);
     }
 
-    //
+
+    @GetMapping("/reportManagementa")
+    public List<ManagerReportResponse> getReportList(LocalDate startDate, LocalDate endDate, String status, String reportCase, String keyword){
+        return managerService.getReportList(startDate, endDate, status, reportCase, keyword);
+    }
 }

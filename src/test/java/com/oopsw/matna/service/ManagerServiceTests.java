@@ -2,13 +2,16 @@ package com.oopsw.matna.service;
 
 import com.oopsw.matna.dto.ManagerIngredientResponse;
 import com.oopsw.matna.repository.IngredientRepository;
+import com.oopsw.matna.repository.ReportRepository;
 import com.oopsw.matna.repository.entity.Ingredient;
+import com.oopsw.matna.repository.entity.Report;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.time.LocalDate;
 import java.util.List;
 
 @SpringBootTest
@@ -18,6 +21,8 @@ public class ManagerServiceTests {
 
     @Autowired
     private IngredientRepository ingredientRepository;
+    @Autowired
+    private ReportRepository reportRepository;
 
     private ManagerIngredientResponse toResponse(Ingredient ingredient) {
         return ManagerIngredientResponse.builder()
@@ -53,12 +58,18 @@ public class ManagerServiceTests {
 
     @Test
     public void removeIngredient() {
-        System.out.println(managerService.removeIngredient(1));
+        Ingredient ingredient = ingredientRepository.findById(1)
+                .orElseThrow(() -> new RuntimeException("ingredient가 없습니다."));
+        managerService.removeIngredient(1);
+        System.out.println(ingredient);
     }
 
     @Test
     public void approveIngredient() {
-        System.out.println(managerService.approveIngredient(50));
+        Ingredient ingredient = ingredientRepository.findById(1)
+                .orElseThrow(() -> new RuntimeException("ingredient가 없습니다."));
+        managerService.approveIngredient(1);
+        System.out.println(ingredient);
     }
 
     //공구 관리
@@ -70,5 +81,25 @@ public class ManagerServiceTests {
                 null,
                 "아"
         ));
+    }
+
+    //신고 관리
+    @Test
+    public void getReportList(){
+        System.out.println(managerService.getReportList(
+                LocalDate.of(2025, 11, 19),
+                LocalDate.of(2025, 11, 25),
+                "WIP",
+                "group_buys",
+                ""
+        ));
+    }
+
+    @Test
+    public void editReport(){
+        Report report = reportRepository.findWithReporterByReportNo(1)
+                .orElseThrow(() -> new RuntimeException("report 없습니다."));;
+        managerService.editReportStatus(1);
+        System.out.println(report);
     }
 }
