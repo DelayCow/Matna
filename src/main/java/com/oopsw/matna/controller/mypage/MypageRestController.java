@@ -41,13 +41,7 @@ public class MypageRestController {
     @GetMapping("/{memberNo}/profile")
     public MemberProfileListResponse getMypageProfileList(@PathVariable("memberNo") int memberNo) {
 
-        MemberProfileListResponse memberProfile = mypageService.getMypageMember(memberNo);
-
-        return MemberProfileListResponse.builder()
-                .nickname(memberProfile.getNickname())
-                .imageUrl(memberProfile.getImageUrl())
-                .points(memberProfile.getPoints())
-                .build();
+        return mypageService.getMypageMember(memberNo);
     }
 
     @PostMapping("/{recipeNo}/recipe")
