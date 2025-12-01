@@ -122,6 +122,8 @@ public class PeriodGroupBuyRepositoryTests {
         System.out.println(initialPaymentPoint+" "+currentPoint+" "+newPoint);
     }
 
+
+
     @Test//  [마지막 참여/기간만료] GroupBuy 진행상황 (status) CLOSED 업데이트")
     void testUpdateStatusToClosed() {
         // Given: 상태를 변경할 GroupBuy (ID는 Long 타입으로 일관성 있게 변경)
