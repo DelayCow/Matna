@@ -32,7 +32,7 @@ public class RecipeRestController {
     public Slice<RecipeResponse> getRecipeList(
             @RequestParam(required = false) Integer spicyLevel,
             @RequestParam(required = false) String keyword,
-            @PageableDefault(page = 0, size = 8)
+            @PageableDefault(page = 0, size = 20)
             @SortDefault.SortDefaults({
                     @SortDefault(sort = "inDate", direction = Sort.Direction.DESC),
                     @SortDefault(sort = "reviewCount", direction = Sort.Direction.DESC)
@@ -85,7 +85,16 @@ public class RecipeRestController {
         ));
     }
 
-//    @PostMapping("/images")
+    @DeleteMapping("/recipes/{recipeNo}")
+    public ResponseEntity<?> deleteRecipe(@PathVariable Integer recipeNo) {
+        Integer memberNo = 5;
+        recipeService.removeRecipe(memberNo, recipeNo);
+        return ResponseEntity.ok(Map.of(
+                "recipeNo", recipeNo,
+                "message", "레시피를 삭제했습니다."
+        ));
+    }
+//    @PostMapping("/images") //이미지 업로드 테스트 컨트롤러
 //    public ResponseEntity<?> addRecipeImage(
 //            @RequestPart(value="image") MultipartFile imageFile
 //    ) throws IOException {

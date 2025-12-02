@@ -96,12 +96,12 @@
                     <input type="radio" class="btn-check" th:name="${ing.ingredientName.replace(' ', '_')} + '_unit'" th:id="${ing.ingredientName.replace(' ', '_')} + '_unit_g'" value="g" autocomplete="off" th:checked="${ing.unit == 'g'}">
                     <label class="btn btn-outline-secondary btn-sm" th:for="${ing.ingredientName.replace(' ', '_')} + '_unit_g'">그램(g)</label>
                 </div>
-                <button class="btn btn-danger ms-4 flex-shrink-0" type="button"
-                        style="height: 32px; width: 50px; padding: 0;"
-                        th:data-ingredient-id="${ing.ingredientName.replace(' ', '_')} + '_div'"
-                        onclick="handleDeleteIngredient(this)">
-                    삭제
-                </button>
+<!--                <button class="btn btn-danger ms-4 flex-shrink-0" type="button"-->
+<!--                        style="height: 32px; width: 50px; padding: 0;"-->
+<!--                        th:data-ingredient-id="${ing.ingredientName.replace(' ', '_')} + '_div'"-->
+<!--                        onclick="handleDeleteIngredient(this)">-->
+<!--                    삭제-->
+<!--                </button>-->
             </div>
         </div>
 
@@ -163,9 +163,9 @@
             </div>
 
             <div class="text-center">
-                <button class="btn btn-outline-secondary w-100 py-3 mb-5" type="button" id="addStepBtn">
-                    <i class="bi bi-plus fs-4"></i>
-                </button>
+<!--                <button class="btn btn-outline-secondary w-100 py-3 mb-5" type="button" id="addStepBtn">-->
+<!--                    <i class="bi bi-plus fs-4"></i>-->
+<!--                </button>-->
                 <button type="submit" class="btn btn-success w-100 py-2 fw-bold">수정 완료</button>
 
             </div>

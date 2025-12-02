@@ -43,7 +43,7 @@
           <i class="bi bi-three-dots-vertical text-dark"></i>
           <div class="edit-box text-center bg-white">
             <a th:href="@{'/recipe/edit/' + ${recipeDetail.recipeNo}}" class="mb-2">수정</a>
-            <a class="mt-2">삭제</a>
+            <a class="mt-2" id="removeRecipe" th:data-id="${recipeDetail.recipeNo}">삭제</a>
           </div>
         </div>
 
@@ -206,7 +206,9 @@
 
   <div th:replace="layout :: menuBar"></div>
 </div>
+<div th:replace="modal :: modal"></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/js/editBox.js"></script>
+<script type="module" src="/js/removeRecipe.js"></script>
 </body>
 </html>

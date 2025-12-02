@@ -273,7 +273,6 @@ public class RecipeService {
         if (dto.getThumnailUrl() != null && dto.getThumnailUrl().equals(currentThumbnail)) {
             thumbnailUrl = currentThumbnail;
         } else if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
-            // 새 파일 업로드
             if (currentThumbnail != null) {
                 imageStorageService.delete(currentThumbnail);
             }
@@ -303,14 +302,11 @@ public class RecipeService {
             throw new IllegalArgumentException("재료 개수가 일치하지 않습니다.");
         }
 
-        // 재료 값만 업데이트 (Setter 사용)
         for (int i = 0; i < existingIngredients.size(); i++) {
             RecipeIngredient recipeIngredient = existingIngredients.get(i);
             IngredientVO newData = dto.getIngredient().get(i);
 
-            // 재료가 변경되었는지 확인
             if (!recipeIngredient.getIngredient().getIngredientName().equals(newData.getIngredientName())) {
-                // 다른 재료로 변경된 경우
                 Ingredient ingredient = ingredientRepository.findByIngredientNameAndDelDateIsNull(newData.getIngredientName())
                         .orElseGet(() -> {
                             Ingredient newIngredient = Ingredient.builder()
@@ -323,12 +319,10 @@ public class RecipeService {
                 recipeIngredient.setIngredient(ingredient);
             }
 
-            // 수량/단위 업데이트 (Setter 사용)
             recipeIngredient.setAmount(newData.getAmount().floatValue());
             recipeIngredient.setUnit(newData.getUnit());
         }
 
-        // 5. 기존 스텝 조회
         List<RecipeStep> existingSteps = recipeStepRepository.findByRecipeOrderByStepOrderAsc(recipe);
 
         if (dto.getStep() == null || dto.getStep().isEmpty()) {
@@ -341,24 +335,19 @@ public class RecipeService {
 
         int newFileIndex = 0;
 
-        // 스텝 값만 업데이트 (Setter 사용)
         for (int i = 0; i < existingSteps.size(); i++) {
             RecipeStep recipeStep = existingSteps.get(i);
             RecipeStepVO newData = dto.getStep().get(i);
             String oldImageUrl = recipeStep.getImageUrl();
             String stepImageUrl;
 
-            // 이미지 처리
             if (newData.getImageUrl() != null && newData.getImageUrl().equals(oldImageUrl)) {
-                // 기존 이미지 유지
                 stepImageUrl = oldImageUrl;
             } else if (stepImages != null && newFileIndex < stepImages.size()) {
-                // 새 파일 업로드
                 MultipartFile stepImage = stepImages.get(newFileIndex++);
                 if (stepImage == null || stepImage.isEmpty()) {
                     throw new IllegalArgumentException(newData.getStepOrder() + "번째 단계의 이미지는 필수입니다.");
                 }
-                // 기존 이미지 삭제
                 if (oldImageUrl != null) {
                     imageStorageService.delete(oldImageUrl);
                 }
@@ -366,12 +355,18 @@ public class RecipeService {
             } else {
                 throw new IllegalArgumentException(newData.getStepOrder() + "번째 단계의 이미지는 필수입니다.");
             }
-
-            // 내용 및 이미지 업데이트 (Setter 사용)
             recipeStep.setContent(newData.getContent());
             recipeStep.setImageUrl(stepImageUrl);
         }
 
         return savedRecipe.getRecipeNo();
+    }
+
+    public void removeRecipe(Integer memberNo, Integer recipeNo) {
+        Recipe recipe = recipeRepository.findById(recipeNo).get();
+        if(!recipe.getAuthor().getMemberNo().equals(memberNo))
+            throw new IllegalArgumentException("레시피를 삭제할 권한이 없습니다.");
+        recipe.setDelDate(LocalDateTime.now());
+        recipeRepository.save(recipe);
     }
 }

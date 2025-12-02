@@ -148,6 +148,9 @@ public class RecipeServiceTests {
 
         Integer recipeNo = recipeService.editRecipe(recipeDto, thumbnailFile, stepImages, memberNo);
         System.out.println("등록된 레시피 번호: " + recipeNo);
-
+    }
+    @Test
+    public void removeRecipeTest(){
+        recipeService.removeRecipe(5, 12);
     }
 }

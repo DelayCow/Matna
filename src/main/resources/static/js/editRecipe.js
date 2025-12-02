@@ -130,15 +130,15 @@ const deleteIngredient = function (id) {
     }
 }
 
-const handleDeleteIngredient = function(button) {
-    const ingredientId = button.getAttribute('data-ingredient-id');
-    if (ingredientId) {
-        deleteIngredient(ingredientId);
-    }
-}
+// const handleDeleteIngredient = function(button) {
+//     const ingredientId = button.getAttribute('data-ingredient-id');
+//     if (ingredientId) {
+//         deleteIngredient(ingredientId);
+//     }
+// }
 
 window.deleteIngredient = deleteIngredient;
-window.handleDeleteIngredient = handleDeleteIngredient;
+// window.handleDeleteIngredient = handleDeleteIngredient;
 
 const addIngredientHtml = function (name) {
     const id = name.replace(/[^a-zA-Z0-9가-힣]/g, '_');
