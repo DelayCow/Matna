@@ -96,6 +96,9 @@
             gb.ingredient_no AS ingredientNo,
             pgb.max_participants,
             gb.fee_rate,
+            gb.price,
+            gb.quantity,
+            gb.unit,
             gb.item_sale_url AS itemSaleUrl,
 
             -- PeriodGroupBuy의 PK 추가

@@ -29,10 +29,8 @@ public class QuantityGroupBuyService {
     }
 
     public Ingredient addIngredient(Integer creatorNo, String ingredientName) {
-        // 생성자 존재 여부 확인
         Member creatorMember = memberRepository.findById(creatorNo)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. 회원번호: " + creatorNo));
-        // 중복 재료명 검증
         if (ingredientRepository.existsByIngredientName(ingredientName.trim())) {
             throw new IllegalStateException("이미 존재하는 재료명입니다: " + ingredientName);
         }
@@ -47,10 +45,8 @@ public class QuantityGroupBuyService {
 
     @Transactional
     public QuantityGroupBuy addQuantityGroupBuy(QuantityGroupBuyCreateVO vo) {
-        // 재료 존재 여부 확인
         Ingredient ingredient = ingredientRepository.findById(vo.getIngredientNo())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 재료입니다. 재료번호: " + vo.getIngredientNo()));
-        // 생성자 존재 여부 확인
         Member creator = memberRepository.findById(vo.getCreatorNo())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. 회원번호: " + vo.getCreatorNo()));
 
@@ -98,13 +94,10 @@ public class QuantityGroupBuyService {
 
     @Transactional
     public GroupBuyParticipant addParticipantToQuantityGroupBuy(GroupBuyParticipantVO vo) {
-        // 참여자 존재 여부 확인
         Member participantMember = memberRepository.findById(vo.getParticipantNo())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. 회원번호: " + vo.getParticipantNo()));
-        // 공동구매 존재 여부 확인
         GroupBuy groupBuy = groupBuyRepository.findById(vo.getGroupBuyNo())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공동구매입니다. 공구번호: " + vo.getGroupBuyNo()));
-        // QuantityGroupBuy 조회
         QuantityGroupBuy quantityGroupBuy = quantityGroupBuyRepository.findByGroupBuy(groupBuy);
         if (quantityGroupBuy == null) {
             throw new IllegalArgumentException("수량 공동구매 정보를 찾을 수 없습니다.");
@@ -158,14 +151,11 @@ public class QuantityGroupBuyService {
 
     @Transactional
     public void editCancelParticipantGroupBuy(Integer groupBuyParticipantNo){
-        // 참여자 존재 여부 확인
         GroupBuyParticipant groupBuyParticipant = groupBuyParticipantRepository.findById(groupBuyParticipantNo)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 참여 정보입니다. 참여자번호: " + groupBuyParticipantNo));
-        // 이미 취소된 참여인지 확인
         if (groupBuyParticipant.getCancelDate() != null) {
             throw new IllegalStateException("이미 취소된 참여입니다. 취소일: " + groupBuyParticipant.getCancelDate());
         }
-        // 공동구매 상태 확인
         GroupBuy groupBuy = groupBuyParticipant.getGroupBuy();
         if ("closed".equals(groupBuy.getStatus())) {
             throw new IllegalStateException("마감된 공동구매는 취소할 수 없습니다.");
@@ -185,14 +175,11 @@ public class QuantityGroupBuyService {
 
     @Transactional
     public QuantityGroupBuy editForceCloseQuantityGroupBuy(Integer groupBuyNo, Integer creatorNo) {
-        // 공동구매 존재 여부 확인
         GroupBuy groupBuy = groupBuyRepository.findById(groupBuyNo)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공동구매입니다. 공구번호: " + groupBuyNo));
-        // 개설자 권한 확인
         if (!groupBuy.getCreator().getMemberNo().equals(creatorNo)) {
             throw new IllegalArgumentException("개설자만 강제 마감할 수 있습니다.");
         }
-        // 이미 마감된 공동구매인지 확인
         if ("closed".equals(groupBuy.getStatus())) {
             throw new IllegalStateException("이미 마감된 공동구매입니다.");
         }
@@ -225,7 +212,6 @@ public class QuantityGroupBuyService {
         // 개설자가 남은 수량 추가 부담
         quantityGroupBuy.setMyQuantity(initialMyQuantity + remainingQuantity);
         quantityGroupBuyRepository.save(quantityGroupBuy);
-        // 공동구매 상태를 'closed'로 변경
         groupBuy.setStatus("closed");
         groupBuyRepository.save(groupBuy);
 

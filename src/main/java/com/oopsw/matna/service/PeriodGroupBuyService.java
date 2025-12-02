@@ -37,10 +37,8 @@ public class PeriodGroupBuyService {
     }
 
     public Ingredient addIngredient(Integer creatorNo, String ingredientName) {
-        // 생성자 존재 여부 확인
         Member creatorMember = memberRepository.findById(creatorNo)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. 회원번호: " + creatorNo));
-        // 중복 재료명 검증
         if (ingredientRepository.existsByIngredientName(ingredientName.trim())) {
             throw new IllegalStateException("이미 존재하는 재료명입니다: " + ingredientName);
         }
@@ -55,13 +53,11 @@ public class PeriodGroupBuyService {
 
     @Transactional
     public PeriodGroupBuy addPeriodGroupBuy(PeroidGroupBuyCreateVO vo) {
-        // 재료 존재 여부 확인
         Ingredient ingredient = ingredientRepository.findById(vo.getIngredientNo())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 재료입니다. 재료번호: " + vo.getIngredientNo()));
-        // 생성자 존재 여부 확인
         Member creator = memberRepository.findById(vo.getCreatorNo())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. 회원번호: " + vo.getCreatorNo()));
-        // GroupBuy 생성 및 저장
+
         GroupBuy groupBuy = groupBuyRepository.save(
                 GroupBuy.builder()
                         .ingredient(ingredient)
@@ -96,10 +92,8 @@ public class PeriodGroupBuyService {
 
     @Transactional
     public GroupBuyParticipant addParticipantToPeriodGroupBuy(GroupBuyParticipantVO vo) {
-        // 참여자 존재 여부 확인
         Member participantMember = memberRepository.findById(vo.getParticipantNo())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. 회원번호: " + vo.getParticipantNo()));
-        // 공동구매 존재 여부 확인
         GroupBuy groupBuy = groupBuyRepository.findById(vo.getGroupBuyNo())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공동구매입니다. 공구번호: " + vo.getGroupBuyNo()));
 
@@ -128,21 +122,20 @@ public class PeriodGroupBuyService {
 
     @Transactional
     public void editGroupBuyStatusAndRefund(Integer groupBuyNo) {
-        // 공동구매 존재 여부 확인
         GroupBuy groupBuy = groupBuyRepository.findById(groupBuyNo)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공동구매입니다. 공구번호: " + groupBuyNo));
-        // PeriodGroupBuy 조회
         PeriodGroupBuy periodGroupBuy = periodGroupBuyRepository.findByGroupBuy(groupBuy);
         if (periodGroupBuy == null) {
             throw new IllegalArgumentException("해당 공동구매의 기간 정보를 찾을 수 없습니다.");
         }
+
         // 현재 참여자 수 확인
         List<GroupBuyParticipant> participants = groupBuyParticipantRepository.findByGroupBuy(groupBuy);
         int currentParticipantCount = participants.size();
         int maxParticipants = periodGroupBuy.getMaxParticipants();
         LocalDateTime dueDate = periodGroupBuy.getDueDate();
 
-        // 마감 조건 확인: 최대 참여자 도달(개설자 포함이므로 -1) 또는 DueDate 만료
+        // 마감 조건 확인
         boolean isMaxParticipantsReached = currentParticipantCount >= (maxParticipants - 1);
         boolean isDueDatePassed = LocalDateTime.now().isAfter(dueDate);
 
@@ -159,24 +152,19 @@ public class PeriodGroupBuyService {
         Integer totalQuantity = groupBuy.getQuantity();
         Integer feeRate = groupBuy.getFeeRate();
 
-        // 참여자 1인당 최종 금액 및 수량 계산
         int finalQuantityPerPerson = totalQuantity / currentParticipantCount;
         int finalPaymentPointPerPerson = (int) Math.round(
                 (totalPrice * (1.0 + (feeRate / 100.0))) / currentParticipantCount
         );
 
-        // 각 참여자에게 최종 금액 확정 및 차액 환불
         for (GroupBuyParticipant participant : participants) {
-            // 최종 수량 및 최종 결제 금액 설정
             participant.setMyQuantity(finalQuantityPerPerson);
             participant.setFinalPaymentPoint(finalPaymentPointPerPerson);
             groupBuyParticipantRepository.save(participant);
 
-            // 차액 환불 계산
             int initialPaymentPoint = participant.getInitialPaymentPoint();
             int refundAmount = initialPaymentPoint - finalPaymentPointPerPerson;
 
-            // 환불 처리 (차액이 양수일 경우에만)
             if (refundAmount > 0) {
                 Member member = participant.getParticipant();
                 member.setPoint(member.getPoint() + refundAmount);
@@ -187,10 +175,8 @@ public class PeriodGroupBuyService {
 
     @Transactional
     public void editCancelParticipantGroupBuy(Integer groupBuyParticipantNo){
-        // 참여자 존재 여부 확인
         GroupBuyParticipant groupBuyParticipant = groupBuyParticipantRepository.findById(groupBuyParticipantNo)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 참여 정보입니다. 참여자번호: " + groupBuyParticipantNo));
-        // 이미 취소된 참여인지 확인
         if (groupBuyParticipant.getCancelDate() != null) {
             throw new IllegalStateException("이미 취소된 참여입니다. 취소일: " + groupBuyParticipant.getCancelDate());
         }
@@ -214,19 +200,16 @@ public class PeriodGroupBuyService {
 
     @Transactional
     public void editPeriodCreatorCancelAndRefund(Integer groupBuyNo, String cancelReason) {
-        // 공동구매 존재 여부 확인
         GroupBuy groupBuy = groupBuyRepository.findById(groupBuyNo)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공동구매입니다. 공구번호: " + groupBuyNo));
-        // 이미 마감된 공동구매인지 확인
         if ("closed".equals(groupBuy.getStatus())) {
             throw new IllegalStateException("이미 마감된 공동구매는 취소할 수 없습니다.");
         }
-        // 이미 취소된 공동구매인지 확인
         if ("canceled".equals(groupBuy.getStatus())) {
             throw new IllegalStateException("이미 취소된 공동구매입니다.");
         }
 
-        // 1. GroupBuy 상태를 'canceled'로 변경 및 취소 사유 설정
+        // 1. GroupBuy 상태 변경 및 취소 사유
         groupBuy.setStatus("canceled");
         groupBuy.setCancelReason(cancelReason);
         groupBuyRepository.save(groupBuy);
@@ -246,7 +229,7 @@ public class PeriodGroupBuyService {
             int currentPoint = member.getPoint();
             member.setPoint(currentPoint + initialPaymentPoint);
             memberRepository.save(member);
-            // 취소 일시 설정
+
             participant.setCancelDate(LocalDateTime.now());
             groupBuyParticipantRepository.save(participant);
         }
@@ -261,19 +244,16 @@ public class PeriodGroupBuyService {
         return list;
     }
 
-
+    @Transactional
     public Map<String, Object> getPeriodGroupBuyDetail(Integer periodGroupBuyNo) {
-        // 1. 공동구매 상세 정보 조회
         PeriodGroupBuyDetailVO detailVO = periodGroupBuyDAO.selectPeriodGroupBuyDetail(periodGroupBuyNo);
         if (detailVO == null) {
             throw new IllegalArgumentException("존재하지 않는 기간 공동구매입니다. 번호: " + periodGroupBuyNo);
         }
 
-        // 2. 참여자 목록 조회
         List<Map<String, Object>> participantInfoList = new ArrayList<>();
         List<GroupBuyParticipant> participants =
                 groupBuyParticipantRepository.findByGroupParticipantNoOrderByParticipatedDateAsc(periodGroupBuyNo);
-
         if (participants != null && !participants.isEmpty()) {
             for (GroupBuyParticipant gbp : participants) {
                 if (gbp == null) continue;
@@ -289,10 +269,8 @@ public class PeriodGroupBuyService {
             }
         }
 
-        // 3. 관련 레시피 목록 조회
         List<Map<String, Object>> recipeInfoList = new ArrayList<>();
         Integer ingredientNo = detailVO.getIngredientNo();
-
         if (ingredientNo != null) {
             List<RecipeIngredient> recipeIngredients =
                     recipeIngredientRepository.findByIngredientIngredientNoOrderByRecipeInDateDesc(ingredientNo);

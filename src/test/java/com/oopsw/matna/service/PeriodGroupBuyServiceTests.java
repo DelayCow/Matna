@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 @SpringBootTest
-@Transactional
 public class PeriodGroupBuyServiceTests {
     @Autowired
     private PeriodGroupBuyService periodGroupBuyService;

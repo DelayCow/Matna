@@ -5,6 +5,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const daySelects = document.querySelectorAll('.day-select')
     const hourSelects = document.querySelectorAll('.time-select');
 
+    // const fetchPeriodHomeData = function(){
+    //     return fetch(`/api/period-group-buy/home`,{
+    //         method: 'GET'
+    //     }).then(response => {
+    //         return response.json();
+    //     })
+    // }
+
     createDayOptions(daySelects, 7, 1);
     createTimeOptions(hourSelects);
     updateUnits();
