@@ -60,9 +60,9 @@ public class RecipeRestController {
             @RequestPart("recipeRequest") String recipeRequestJson,
             @RequestPart(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
             @RequestParam Map<String, MultipartFile> stepImages) throws IOException {
-        // JSON 문자열을 DTO로 변환
+        Integer memberNo = 5;
         RecipeRequest recipeRequest = objectMapper.readValue(recipeRequestJson, RecipeRequest.class);
-        Integer recipeNo = recipeService.addRecipe(recipeRequest, thumbnailFile, stepImages);
+        Integer recipeNo = recipeService.addRecipe(recipeRequest, thumbnailFile, stepImages, memberNo);
 
         return ResponseEntity.ok(Map.of(
                 "recipeNo", recipeNo,
@@ -70,15 +70,31 @@ public class RecipeRestController {
         ));
     }
 
-    @PostMapping("/images")
-    public ResponseEntity<?> addRecipeImage(
-            @RequestPart(value="image") MultipartFile imageFile
-    ) throws IOException {
-        String imageUrl = null;
-        if (imageFile == null || imageFile.isEmpty()) {
-            throw new IllegalArgumentException("썸네일 이미지는 필수입니다.");
-        }
-        imageUrl = imageStorageService.save(imageFile, "/recipe/thumbnails");
-        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("imageUrl", imageUrl));
+    @PutMapping("/recipes")
+    public ResponseEntity<?> editRecipe(
+            @RequestPart("recipeRequest") String recipeRequestJson,
+            @RequestPart(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
+            @RequestParam Map<String, MultipartFile> stepImages) throws IOException {
+        Integer memberNo = 5;
+        RecipeRequest recipeRequest = objectMapper.readValue(recipeRequestJson, RecipeRequest.class);
+        Integer recipeNo = recipeService.editRecipe(recipeRequest, thumbnailFile, stepImages, memberNo);
+
+        return ResponseEntity.ok(Map.of(
+                "recipeNo", recipeNo,
+                "message", "레시피를 수정했습니다."
+        ));
     }
+
+//    @PostMapping("/images")
+//    public ResponseEntity<?> addRecipeImage(
+//            @RequestPart(value="image") MultipartFile imageFile
+//    ) throws IOException {
+//        String imageUrl = null;
+//        if (imageFile == null || imageFile.isEmpty()) {
+//            throw new IllegalArgumentException("썸네일 이미지는 필수입니다.");
+//        }
+//        imageUrl = imageStorageService.save(imageFile, "/recipe/thumbnails");
+//        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("imageUrl", imageUrl));
+//    }
+
 }

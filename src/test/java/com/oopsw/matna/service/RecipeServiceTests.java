@@ -54,9 +54,9 @@ public class RecipeServiceTests {
 
     @Test
     void addRecipeTest() throws IOException {
+        Integer memberNo = 5;
         // Given
         RecipeRequest recipeDto = RecipeRequest.builder()
-                .memberNo(5)
                 .title("테스트").summary("테스트").category("korean").difficulty("easy")
                 .prepTime(10).spicyLevel(0).servings(1)
                 .build();
@@ -96,12 +96,58 @@ public class RecipeServiceTests {
                 new FileInputStream(stepImagePath)
         ));
 
-        Integer recipeNo = recipeService.addRecipe(recipeDto, thumbnailFile, stepImages);
+        Integer recipeNo = recipeService.addRecipe(recipeDto, thumbnailFile, stepImages, memberNo);
         System.out.println("등록된 레시피 번호: " + recipeNo);
     }
 
     @Test
     public void getRecipeDetail(){
         System.out.println(recipeService.getRecipeDetail(1));
+    }
+
+    @Test
+    public void editRecipeTest() throws IOException {
+        Integer memberNo = 5;
+        RecipeRequest recipeDto = RecipeRequest.builder()
+                .recipeNo(14)
+                .title("수정테스트").summary("수정테스트").category("korean").difficulty("easy")
+                .prepTime(10).spicyLevel(0).servings(1)
+                .build();
+        // 재료
+        List<IngredientVO> ingredients = new ArrayList<>();
+        IngredientVO ingredient = IngredientVO.builder()
+                .ingredientName("양파").amount(100.0f).unit("g")
+                .build();
+        ingredients.add(ingredient);
+        recipeDto.setIngredient(ingredients);
+        // 단계
+        List<RecipeStepVO> steps = new ArrayList<>();
+        RecipeStepVO step = RecipeStepVO.builder()
+                .stepOrder(1).content("테스트").imageUrl("stepImage_1").build();
+        steps.add(step);
+        recipeDto.setStep(steps);
+
+        // 실제 파일 경로에서 읽기 (경로는 실제 환경에 맞게 수정)
+        String thumbnailPath = "src/main/resources/static/img/basil.jpg";
+        String stepImagePath = "src/main/resources/static/img/burger.png";
+
+        MultipartFile thumbnailFile = new MockMultipartFile(
+                "thumbnail",
+                "thumbnail.jpg",
+                "image/jpeg",
+                new FileInputStream(thumbnailPath)
+        );
+
+        Map<String, MultipartFile> stepImages = new HashMap<>();
+        stepImages.put("stepImage_1", new MockMultipartFile(
+                "step1",
+                "step1.jpg",
+                "image/jpeg",
+                new FileInputStream(stepImagePath)
+        ));
+
+        Integer recipeNo = recipeService.editRecipe(recipeDto, thumbnailFile, stepImages, memberNo);
+        System.out.println("등록된 레시피 번호: " + recipeNo);
+
     }
 }

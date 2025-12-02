@@ -19,6 +19,7 @@ public class RecipeDetailVO {
     private String title;
     private String summary;
     private String thumbnailUrl;
+    private String category;
     private Float rating;
     private Integer reviewCount;
     private Integer servings;
@@ -27,7 +28,7 @@ public class RecipeDetailVO {
     private Integer spicyLevel;
     private LocalDateTime inDate;
 
-
+    private Integer writerNo;
     private String writerNickname;
     private String writerProfile;
 

@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 public class RecipeRequest {
-    private Integer memberNo;
+    private Integer recipeNo;
     private String title;
     private String summary;
     private String category;

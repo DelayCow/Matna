@@ -117,6 +117,7 @@ function updateDropdownMenu(results) {
 }
 
 const deleteIngredient = function (id) {
+    console.log(id)
     const elementToRemove = document.getElementById(id);
     if (elementToRemove) {
         elementToRemove.remove();
@@ -129,7 +130,15 @@ const deleteIngredient = function (id) {
     }
 }
 
+const handleDeleteIngredient = function(button) {
+    const ingredientId = button.getAttribute('data-ingredient-id');
+    if (ingredientId) {
+        deleteIngredient(ingredientId);
+    }
+}
+
 window.deleteIngredient = deleteIngredient;
+window.handleDeleteIngredient = handleDeleteIngredient;
 
 const addIngredientHtml = function (name) {
     const id = name.replace(/[^a-zA-Z0-9가-힣]/g, '_');
@@ -179,6 +188,16 @@ const addIngredient = function (e, name) {
     searchInput.blur();
 }
 
+const loadExistingIngredients = function() {
+    const existingIngredients = document.querySelectorAll('#ingredientContainer .ingredient-item input[name="ingredientName"]');
+    existingIngredients.forEach(input => {
+        const ingredientName = input.value;
+        if (ingredientName && !addedIngredients.includes(ingredientName)) {
+            addedIngredients.push(ingredientName);
+        }
+    });
+    console.log('기존 재료 로드 완료:', addedIngredients);
+}
 function collectIngredients() {
     const ingredients = [];
     const ingredientDivs = document.querySelectorAll('#ingredientContainer > div.ingredient-item');
@@ -214,7 +233,6 @@ function collectSteps(formData) {
         const imgUploadArea = div.querySelector('.img-upload-area');
 
         let fileInput = imgUploadArea?.querySelector('.img-file-upload');
-
         let imageFileName = null;
 
         if (fileInput && fileInput.files.length > 0) {
@@ -223,35 +241,46 @@ function collectSteps(formData) {
 
             formData.append(fieldName, file);
             imageFileName = fieldName;
-        } else if (imgUploadArea && imgUploadArea.classList.contains('has-image')) {
-            console.warn(`${order}번 단계: 이미지가 표시되지만 파일을 찾을 수 없습니다`);
-        } else {
-            console.warn(`${order}번 단계: 이미지가 없습니다`);
+        }else if (imgUploadArea) {
+            const originalUrl = imgUploadArea.getAttribute('data-original-url');
+            const backgroundImage = imgUploadArea.style.backgroundImage;
+
+            if (originalUrl && originalUrl.trim() !== '') {
+                imageFileName = originalUrl;
+            } else if (backgroundImage && backgroundImage !== 'none' && backgroundImage !== '') {
+                imageFileName = 'EXISTING';
+            }
         }
 
         steps.push({
             stepOrder: order,
             content: contentTextarea ? contentTextarea.value : '',
-            imageUrl: imageFileName || null,
+            imageUrl: imageFileName,
         });
     });
 
     return steps;
 }
 
-
 async function submitRecipeData(form) {
     const formData = new FormData();
     const recipeData = {};
     const errors = [];
-
+    const recipeNo = form.querySelector('#recipeNo').value;
+    recipeData.recipeNo = recipeNo;
     const thumbnailInput = document.querySelector('.img-upload-area.thumbnail .img-file-upload');
+    const imgUploadArea = document.querySelector('.img-upload-area');
     if (thumbnailInput && thumbnailInput.files.length > 0) {
         formData.append('thumbnailFile', thumbnailInput.files[0]);
         recipeData.thumnailUrl = 'thumbnailFile';
-    } else {
-        recipeData.thumnailUrl = null;
-        errors.push('썸네일 이미지를 등록해주세요');
+    }else if (imgUploadArea) {
+        const originalUrl = imgUploadArea.getAttribute('data-original-url');
+        const backgroundImage = imgUploadArea.style.backgroundImage;
+        if (originalUrl && originalUrl.trim() !== '') {
+            recipeData.thumnailUrl = originalUrl;
+        } else if (backgroundImage && backgroundImage !== 'none' && backgroundImage !== '') {
+            recipeData.thumnailUrl = 'EXISTING';
+        }
     }
 
     const title = form.querySelector('#recipeTitle').value.trim();
@@ -322,17 +351,17 @@ async function submitRecipeData(form) {
     const recipeJsonString = JSON.stringify(recipeData);
 
     formData.append('recipeRequest', recipeJsonString);
-
+    console.log(recipeData)
     try {
         const response = await fetch('/api/recipes', {
-            method: 'POST',
+            method: 'PUT',
             body: formData
         });
 
         if (response.ok) {
             showAlertModal(
-                '등록 완료',
-                '레시피가 성공적으로 등록되었습니다!',
+                '수정 완료',
+                '레시피가 성공적으로 수정되었습니다!',
                 'success',
                 () => {
                     window.location.href = '/recipe';
@@ -343,8 +372,8 @@ async function submitRecipeData(form) {
             const errorMessage = errorData.message || '서버 오류가 발생했습니다.';
 
             showAlertModal(
-                '등록 실패',
-                `레시피 등록에 실패했습니다.<br><br><small class="text-muted">${errorMessage}</small>`,
+                '수정 실패',
+                `레시피 수정에 실패했습니다.<br><br><small class="text-muted">${errorMessage}</small>`,
                 'error'
             );
         }
@@ -372,6 +401,7 @@ document.addEventListener('DOMContentLoaded',function (){
     });
 
     initializeSpicyIcons();
+    loadExistingIngredients();
 
     const recipeForm = document.querySelector('form.container-fluid.content-area');
 

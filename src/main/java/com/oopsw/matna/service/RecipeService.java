@@ -52,9 +52,9 @@ public class RecipeService {
 
     @Transactional
     public Integer addRecipe(RecipeRequest dto, MultipartFile thumbnailFile,
-                             Map<String, MultipartFile> stepImages) throws IOException {
-        Member author = memberRepository.findById(dto.getMemberNo())
-                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다. (memberNo: " + dto.getMemberNo() + ")"));
+                             Map<String, MultipartFile> stepImages, Integer memberNo) throws IOException {
+        Member author = memberRepository.findById(memberNo)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다. (memberNo: " + memberNo + ")"));
 
         String thumbnailUrl = null;
         if (thumbnailFile == null || thumbnailFile.isEmpty()) {
@@ -136,7 +136,7 @@ public class RecipeService {
     }
 
     @Transactional
-    public RecipeDetailVO getRecipeDetail(Integer recipeNo){
+    public RecipeDetailVO getRecipeDetail(Integer recipeNo) {
         Recipe recipe = recipeRepository.findById(recipeNo).get();
 
         List<RecipeIngredient> rIngredients = recipeIngredientRepository.findByRecipe(recipe);
@@ -151,6 +151,7 @@ public class RecipeService {
         vo.setRecipeNo(recipe.getRecipeNo());
         vo.setTitle(recipe.getTitle());
         vo.setSummary(recipe.getSummary());
+        vo.setCategory(recipe.getCategory());
         vo.setThumbnailUrl(recipe.getImageUrl());
         vo.setRating(recipe.getAverageRating());
         vo.setReviewCount(recipe.getReviewCount());
@@ -161,6 +162,7 @@ public class RecipeService {
         vo.setInDate(recipe.getInDate());
 
         if (recipe.getAuthor() != null) {
+            vo.setWriterNo(recipe.getAuthor().getMemberNo());
             vo.setWriterNickname(recipe.getAuthor().getNickname());
             vo.setWriterProfile(recipe.getAuthor().getImageUrl());
         }
@@ -254,5 +256,122 @@ public class RecipeService {
         }
         vo.setSpicyLevelPercentages(spicyLevelPercentages);
         return vo;
+    }
+
+    @Transactional
+    public Integer editRecipe(RecipeRequest dto, MultipartFile thumbnailFile,
+                              Map<String, MultipartFile> stepImages, Integer memberNo) throws IOException {
+        Recipe recipe = recipeRepository.findById(dto.getRecipeNo()).get();
+
+        if (!recipe.getAuthor().getMemberNo().equals(memberNo)) {
+            throw new IllegalArgumentException("레시피를 수정할 권한이 없습니다.");
+        }
+
+        String thumbnailUrl;
+        String currentThumbnail = recipe.getImageUrl();
+
+        if (dto.getThumnailUrl() != null && dto.getThumnailUrl().equals(currentThumbnail)) {
+            thumbnailUrl = currentThumbnail;
+        } else if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
+            // 새 파일 업로드
+            if (currentThumbnail != null) {
+                imageStorageService.delete(currentThumbnail);
+            }
+            thumbnailUrl = imageStorageService.save(thumbnailFile, "recipe/thumbnails");
+        } else {
+            throw new IllegalArgumentException("썸네일 이미지는 필수입니다.");
+        }
+
+        recipe.setTitle(dto.getTitle());
+        recipe.setSummary(dto.getSummary());
+        recipe.setCategory(dto.getCategory());
+        recipe.setImageUrl(thumbnailUrl);
+        recipe.setSpicyLevel(dto.getSpicyLevel());
+        recipe.setDifficulty(dto.getDifficulty());
+        recipe.setCategory(dto.getCategory());
+        recipe.setServings(dto.getServings());
+
+        Recipe savedRecipe = recipeRepository.save(recipe);
+
+        List<RecipeIngredient> existingIngredients = recipeIngredientRepository.findByRecipe(recipe);
+
+        if (dto.getIngredient() == null || dto.getIngredient().isEmpty()) {
+            throw new IllegalArgumentException("재료는 최소 1개 이상 필요합니다.");
+        }
+
+        if (existingIngredients.size() != dto.getIngredient().size()) {
+            throw new IllegalArgumentException("재료 개수가 일치하지 않습니다.");
+        }
+
+        // 재료 값만 업데이트 (Setter 사용)
+        for (int i = 0; i < existingIngredients.size(); i++) {
+            RecipeIngredient recipeIngredient = existingIngredients.get(i);
+            IngredientVO newData = dto.getIngredient().get(i);
+
+            // 재료가 변경되었는지 확인
+            if (!recipeIngredient.getIngredient().getIngredientName().equals(newData.getIngredientName())) {
+                // 다른 재료로 변경된 경우
+                Ingredient ingredient = ingredientRepository.findByIngredientNameAndDelDateIsNull(newData.getIngredientName())
+                        .orElseGet(() -> {
+                            Ingredient newIngredient = Ingredient.builder()
+                                    .ingredientName(newData.getIngredientName())
+                                    .creator(recipe.getAuthor())
+                                    .inDate(LocalDateTime.now())
+                                    .build();
+                            return ingredientRepository.save(newIngredient);
+                        });
+                recipeIngredient.setIngredient(ingredient);
+            }
+
+            // 수량/단위 업데이트 (Setter 사용)
+            recipeIngredient.setAmount(newData.getAmount().floatValue());
+            recipeIngredient.setUnit(newData.getUnit());
+        }
+
+        // 5. 기존 스텝 조회
+        List<RecipeStep> existingSteps = recipeStepRepository.findByRecipeOrderByStepOrderAsc(recipe);
+
+        if (dto.getStep() == null || dto.getStep().isEmpty()) {
+            throw new IllegalArgumentException("레시피 단계는 최소 1개 이상 필요합니다.");
+        }
+
+        if (existingSteps.size() != dto.getStep().size()) {
+            throw new IllegalArgumentException("레시피 단계 개수가 일치하지 않습니다.");
+        }
+
+        int newFileIndex = 0;
+
+        // 스텝 값만 업데이트 (Setter 사용)
+        for (int i = 0; i < existingSteps.size(); i++) {
+            RecipeStep recipeStep = existingSteps.get(i);
+            RecipeStepVO newData = dto.getStep().get(i);
+            String oldImageUrl = recipeStep.getImageUrl();
+            String stepImageUrl;
+
+            // 이미지 처리
+            if (newData.getImageUrl() != null && newData.getImageUrl().equals(oldImageUrl)) {
+                // 기존 이미지 유지
+                stepImageUrl = oldImageUrl;
+            } else if (stepImages != null && newFileIndex < stepImages.size()) {
+                // 새 파일 업로드
+                MultipartFile stepImage = stepImages.get(newFileIndex++);
+                if (stepImage == null || stepImage.isEmpty()) {
+                    throw new IllegalArgumentException(newData.getStepOrder() + "번째 단계의 이미지는 필수입니다.");
+                }
+                // 기존 이미지 삭제
+                if (oldImageUrl != null) {
+                    imageStorageService.delete(oldImageUrl);
+                }
+                stepImageUrl = imageStorageService.save(stepImage, "recipe/steps");
+            } else {
+                throw new IllegalArgumentException(newData.getStepOrder() + "번째 단계의 이미지는 필수입니다.");
+            }
+
+            // 내용 및 이미지 업데이트 (Setter 사용)
+            recipeStep.setContent(newData.getContent());
+            recipeStep.setImageUrl(stepImageUrl);
+        }
+
+        return savedRecipe.getRecipeNo();
     }
 }
