@@ -112,14 +112,14 @@ public class ManagerService {
     //신고 관리
     private ManagerReportResponse toManagerReportManagementResponse(AllReportVO vo) {
         Member reporter = memberRepository.findById(vo.getReporterNo()).get();
+        String type = (vo.getTargetNo() != null) ? "회원 신고" : "공동구매 신고";
         return ManagerReportResponse.builder()
                 .managerReportId(vo.getReportNo())
                 .status(vo.getStatus())
                 .reportedDate(vo.getReportedDate())
                 .reporterName(reporter.getNickname())
                 .reason(vo.getReason())
-                .targetMemberNo(vo.getTargetNo())
-                .groupBuyNo(vo.getGroupBuyNo())
+                .type(type)
                 .build();
     }
 
@@ -128,6 +128,11 @@ public class ManagerService {
                 .stream()
                 .map(this::toManagerReportManagementResponse)
                 .toList();
+    }
+
+    public Report getReportById(Integer reportId) {
+        return reportRepository.findById(reportId)
+                .orElseThrow(() -> new RuntimeException("Report 조회 실패"));
     }
 
     public void editReportStatus(Integer reportNo) {

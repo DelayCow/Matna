@@ -17,4 +17,5 @@ public class ManagerReportResponse {
     private String reason;
     private Integer targetMemberNo;
     private Integer groupBuyNo;
+    private String type;
 }

@@ -12,12 +12,12 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/manager")
+@RequestMapping("/api/manager")
 public class ManagerRestController {
     private final ManagerService managerService;
 
     //재료 관리
-    @GetMapping("/ingredientManagementa")
+    @GetMapping("/ingredientManagement")
     public List<ManagerIngredientResponse> ingredientManagement() {
         return managerService.getIngredients();
     }
@@ -53,9 +53,18 @@ public class ManagerRestController {
         return managerService.getGroupBuyList(startDate, endDate, status, title);
     }
 
-
-    @GetMapping("/reportManagementa")
-    public List<ManagerReportResponse> getReportList(LocalDate startDate, LocalDate endDate, String status, String reportCase, String keyword){
+    //신고 관리
+    @GetMapping("/reportManagement")
+    public List<ManagerReportResponse> getReportList(@RequestParam(required = false) LocalDate startDate,
+                                                     @RequestParam(required = false) LocalDate endDate,
+                                                     @RequestParam(required = false) String status,
+                                                     @RequestParam(required = false, name = "reportCase") String reportCase,
+                                                     @RequestParam(required = false) String keyword){
         return managerService.getReportList(startDate, endDate, status, reportCase, keyword);
+    }
+
+    @PutMapping("/reportManagement/edit")
+    public void editReport(@RequestParam Integer reportId) {
+        managerService.editReportStatus(reportId);
     }
 }
