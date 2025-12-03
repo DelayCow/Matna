@@ -65,6 +65,6 @@ document.addEventListener('DOMContentLoaded', function(){
     });
     deleteProfileBtn.addEventListener('click', function(e) {
         e.preventDefault();
-        profileImageElement.src = '../static/img/user.png';
+        profileImageElement.src = '/img/user.png';
     });
 })

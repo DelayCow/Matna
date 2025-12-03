@@ -25,6 +25,15 @@
 .edit-box.show {
     display: block !important;
 }
+.edit-box a {
+    display: block;
+    padding: 3px 0;
+    text-decoration: none;
+    color: #343a40;
+}
+.edit-box a:hover {
+    color: red;
+}
 
 /* 2. 재료 목록 테이블 스타일 */
 .ingredient-row {

@@ -25,8 +25,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const recipeData = [
         {
             "recipeNo": 45,
-            "thumbnailUrl": "../static/img/steamedeggs.jpg",
-            "writerProfile": "../static/img/user.png",
+            "thumbnailUrl": "/img/steamedeggs.jpg",
+            "writerProfile": "/img/user.png",
             "writerNickname": "침대견",
             "title": "안주로 딱~ 폭신하고 부드러운 계란찜",
             "averageRating": 4.5,
@@ -38,8 +38,8 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         {
             "recipeNo": 5,
-            "thumbnailUrl": "../static/img/ravioli.jpg",
-            "writerProfile": "../static/img/user.png",
+            "thumbnailUrl": "/img/ravioli.jpg",
+            "writerProfile": "/img/user.png",
             "writerNickname": "눕오리",
             "title": "속을 뜨끈하게 한국인 입맛에 맞춘 라비올리",
             "averageRating": 4.0,
@@ -60,8 +60,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const quantityGroupBuyData = [
         {
             "groupBuyNo": 45,
-            "groupBuyImageUrl": "../static/img/orange.jpg",
-            "creatorImageUrl": "../static/img/user.png",
+            "groupBuyImageUrl": "/img/orange.jpg",
+            "creatorImageUrl": "/img/user.png",
             "nickname": "해피",
             "title": "고당도 제주 감귤 1kg",
             "remainingQty": 300,
@@ -72,8 +72,8 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         {
             "groupBuyNo": 12,
-            "groupBuyImageUrl": "../static/img/mushroom.jpg",
-            "creatorImageUrl": "../static/img/user.png",
+            "groupBuyImageUrl": "/img/mushroom.jpg",
+            "creatorImageUrl": "/img/user.png",
             "nickname": "말이오",
             "title": "표고버섯 살 사람",
             "remainingQty": 10,
@@ -84,8 +84,8 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         {
             "groupBuyNo": 35,
-            "groupBuyImageUrl": "../static/img/tomato.jpg",
-            "creatorImageUrl": "../static/img/user.png",
+            "groupBuyImageUrl": "/img/tomato.jpg",
+            "creatorImageUrl": "/img/user.png",
             "nickname": "도맛도",
             "title": "방울토마토 공구해요",
             "remainingQty": 300,
@@ -105,8 +105,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const periodGroupBuyData = [
         {
             "groupBuyNo": 4,
-            "groupBuyImageUrl": "../static/img/basil.jpg",
-            "creatorImageUrl": "../static/img/user.png",
+            "groupBuyImageUrl": "/img/basil.jpg",
+            "creatorImageUrl": "/img/user.png",
             "nickname": "밥도둑",
             "title": "바질 같이사기",
             "dueDate": "2025-12-11 14:30",
@@ -118,8 +118,8 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         {
             "groupBuyNo": 24,
-            "groupBuyImageUrl": "../static/img/potato.jpg",
-            "creatorImageUrl": "../static/img/user.png",
+            "groupBuyImageUrl": "/img/potato.jpg",
+            "creatorImageUrl": "/img/user.png",
             "nickname": "흙감자",
             "title": "수미감자 왔어요",
             "dueDate": "2025-12-12 17:30",
@@ -145,8 +145,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const reviewData = [
         {
             "reviewNo": 46,
-            "reviewImage": "../static/img/tteokbokki.jpg",
-            "writerProfileImage": "../static/img/user.png",
+            "reviewImage": "/img/tteokbokki.jpg",
+            "writerProfileImage": "/img/user.png",
             "writerNickname": "베베는오리",
             "title": "다이어트 떡볶이 만들어봤어요",
             "rating": 4.5,
@@ -154,8 +154,8 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         {
             "reviewNo": 4,
-            "reviewImage": "../static/img/salad.jpg",
-            "writerProfileImage": "../static/img/user.png",
+            "reviewImage": "/img/salad.jpg",
+            "writerProfileImage": "/img/user.png",
             "writerNickname": "춘냥이",
             "title": "유자드레싱 따라해봤어요",
             "rating": 5.0,

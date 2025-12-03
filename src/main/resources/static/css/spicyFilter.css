@@ -1,6 +1,4 @@
 .spicy-filter-container {
-    padding: 10px 15px;
-    border-bottom: 1px solid #e9ecef;
     overflow-x: auto;
     white-space: nowrap;
     -webkit-overflow-scrolling: touch;

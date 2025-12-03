@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 public class MypageController {
     @GetMapping("/mypage")
     public String mypage() {
-        return "/mypage";
+        return "mypage";
     }
 
 }
