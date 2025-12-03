@@ -16,6 +16,7 @@ import com.oopsw.matna.vo.AllGroupBuyListVO;
 import com.oopsw.matna.vo.AllReportVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -42,7 +43,7 @@ public class ManagerService {
     }
 
     public List<ManagerIngredientResponse> getIngredients() {
-        return ingredientRepository.findAll().stream()
+        return ingredientRepository.findAllByApproveDateIsNotNullAndDelDateIsNull().stream()
                 .map(this::toManagerIngredientResponse)
                 .toList();
     }
@@ -79,16 +80,20 @@ public class ManagerService {
         return toManagerIngredientResponse(saved);
     }
 
+    @Transactional
     public void removeIngredient(Integer ingredientId) {
         Ingredient ingredient = ingredientRepository.findById(ingredientId)
                 .orElseThrow(() -> new RuntimeException("재료를 찾을 수 없습니다."));
         ingredient.setDelDate(LocalDateTime.now());
+        ingredientRepository.save(ingredient);
     }
 
+    @Transactional
     public void approveIngredient(Integer ingredientId) {
         Ingredient ingredient = ingredientRepository.findById(ingredientId)
                 .orElseThrow(() -> new RuntimeException("재료를 찾을 수 없습니다."));
         ingredient.setApproveDate(LocalDateTime.now());
+        ingredientRepository.save(ingredient);
     }
 
     //공구 관리

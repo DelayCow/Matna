@@ -17,6 +17,8 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Integer>
     List<Ingredient> findByIngredientNo(Integer ingredientNo);
     @EntityGraph(attributePaths = {"creator"})
     List<Ingredient> findAllByApproveDateIsNull();
+    @EntityGraph(attributePaths = {"creator"})
+    List<Ingredient> findAllByApproveDateIsNotNullAndDelDateIsNull();
 
 
     boolean existsByIngredientName(String name); // 재료 중복 검사
