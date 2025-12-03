@@ -6,13 +6,17 @@ import com.oopsw.matna.repository.entity.GroupBuyParticipant;
 import com.oopsw.matna.repository.entity.Member;
 import com.oopsw.matna.repository.entity.QuantityGroupBuy;
 import com.oopsw.matna.vo.GroupBuyParticipantVO;
+import com.oopsw.matna.vo.PeriodGroupBuyHomeVO;
 import com.oopsw.matna.vo.QuantityGroupBuyCreateVO;
+import com.oopsw.matna.vo.QuantityGroupBuyHomeVO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @SpringBootTest
 public class QuantityGroupBuyServiceTests {
@@ -219,5 +223,48 @@ public class QuantityGroupBuyServiceTests {
                 "최종 확보 수량이 총 필요 수량과 같아야 합니다.");
 
         System.out.println("개설자가 남은 수량(" + remainingQuantity + groupBuy.getUnit() + ")을 부담하여 공동구매가 마감되었습니다.");
+    }
+
+    @Test
+    void getQuantityGroupBuyHomeVariousConditionsTest() {
+        // 1. 최신 등록순
+        System.out.println("1. 최신 등록순");
+        Map<String, Object> params1 = new HashMap<>();
+        List<QuantityGroupBuyHomeVO> list1 = quantityGroupBuyService.getQuantityGroupBuyHome(params1);
+        assertNotNull(list1);
+        System.out.println("조회 건수: " + list1.size());
+
+        // 2. 마감 임박순
+        System.out.println("2. 마감 임박순 ");
+        Map<String, Object> params2 = new HashMap<>();
+        params2.put("orderBy", "dueSoon");
+        List<QuantityGroupBuyHomeVO> list2 = quantityGroupBuyService.getQuantityGroupBuyHome(params2);
+        assertNotNull(list2);
+        System.out.println("조회 건수: " + list2.size());
+
+        // 3. 키워드 검색 - "쌀"
+        System.out.println("3. 키워드 검색: '쌀'");
+        Map<String, Object> params3 = new HashMap<>();
+        params3.put("keyword", "쌀");
+        List<QuantityGroupBuyHomeVO> list3 = quantityGroupBuyService.getQuantityGroupBuyHome(params3);
+        assertNotNull(list3);
+        System.out.println("조회 건수: " + list3.size());
+
+        // 4. 키워드 검색 + 마감 임박순
+        System.out.println("4. 키워드 검색 + 마감 임박순: '고구마'");
+        Map<String, Object> params4 = new HashMap<>();
+        params4.put("keyword", "고구마");
+        params4.put("orderBy", "deadline");
+        List<QuantityGroupBuyHomeVO> list4 = quantityGroupBuyService.getQuantityGroupBuyHome(params4);
+        assertNotNull(list4);
+        System.out.println("조회 건수: " + list4.size());
+        if (!list4.isEmpty()) {
+            System.out.println("첫 번째 결과: " + list4.get(0).getTitle());
+        }
+        // 5. null params
+        System.out.println("5. null params (기본 조회)");
+        List<QuantityGroupBuyHomeVO> list5 = quantityGroupBuyService.getQuantityGroupBuyHome(null);
+        assertNotNull(list5);
+        System.out.println("조회 건수: " + list5.size());
     }
 }

@@ -456,7 +456,7 @@ public class PeriodGroupBuyServiceTests {
         // 2. 마감 임박순
         System.out.println("2. 마감 임박순 ");
         Map<String, Object> params2 = new HashMap<>();
-        params2.put("orderBy", "deadline");
+        params2.put("orderBy", "dueSoon");
         List<PeriodGroupBuyHomeVO> list2 = periodGroupBuyService.getPeriodGroupBuyHome(params2);
         assertNotNull(list2);
         System.out.println("조회 건수: " + list2.size());

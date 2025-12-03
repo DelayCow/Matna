@@ -1,13 +1,15 @@
-package com.oopsw.matna.vo;
+package com.oopsw.matna.dto;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @Builder
-@Data
+@Getter
 @ToString
-public class QuantityGroupBuyHomeVO {
+public class QuantityListResponse {
     private Integer groupBuyNo;
     private String title;
     private String nickname;
@@ -19,11 +21,11 @@ public class QuantityGroupBuyHomeVO {
     private Integer quantity;
     private Integer myQuantity;
     private Integer remainingQty;
-    private Double remainingRatio;
+    private String unit;
     private Integer pricePerUnit;
     private Integer shareAmount;
+    private Double remainingRatio;
 
-    private String unit;
     private String shareLocation;
     private Integer quantityGroupBuyNo;
 }

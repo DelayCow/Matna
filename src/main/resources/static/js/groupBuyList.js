@@ -28,6 +28,31 @@ const api = {
             }
             return res.json();
         });
+    },
+    // 수량공구 목록 조회 (새로 추가한다고 가정)
+    getQuantityGroupBuyList: (keyword, orderBy) => {
+        let url = '/api/quantityGroupBuy/home';
+        const params = new URLSearchParams();
+
+        if (keyword && keyword.trim()) {
+            params.append('keyword', keyword);
+        }
+        if (orderBy && orderBy !== 'recent') {
+            params.append('orderBy', orderBy);
+        }
+
+        if (params.toString()) {
+            url += '?' + params.toString();
+        }
+
+        return fetch(url, {
+            method: 'GET'
+        }).then(res => {
+            if (!res.ok) {
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+        });
     }
 };
 
@@ -140,8 +165,65 @@ const card = {
         </div>
       </div>
     `;
+    },
+
+    // 수량공구 카드 생성 (함수 이름 수정 및 내용 업데이트)
+    createQuantityCard: (item) => {
+        const address = utils.formatAddress(item.shareLocation);
+        const creatorImageUrl = item.creatorImageUrl || '/img/user.png';
+        const groupBuyImageUrl = item.groupBuyImageUrl || '/img/placeholder.jpg';
+        const nickname = item.nickname || '익명';
+        const title = item.title || '제목 없음';
+        const quantity = item.quantity || 0;
+        const remainingQty = item.remainingQty || 0;
+        const unit = item.unit || 'g';
+        const shareAmount = item.shareAmount || 0;
+        const pricePerUnit = item.pricePerUnit ? item.pricePerUnit.toLocaleString() : '0';
+
+        // 수량공구 고유 번호 사용
+        const quantityGroupBuyNo = item.quantityGroupBuyNo || 0;
+
+        // 남은 수량 계산
+        const totalQty = quantity ? quantity.toLocaleString() : '0';
+        const remaining = remainingQty ? remainingQty.toLocaleString() : '0';
+
+
+        return `
+      <div class="col">
+        <!-- data-type과 data-no에 수량공구 정보 사용 -->
+        <div class="card card-custom card-wide" data-type="quantity" data-no="${quantityGroupBuyNo}" style="cursor: pointer;">
+          <img src="${groupBuyImageUrl}" class="card-img-top" alt="${title}"
+               onerror="this.onerror=null; this.src='/img/placeholder.jpg';">
+          <div class="card-body px-0 py-2">
+            <div class="d-flex align-items-center mb-1">
+              <img src="${creatorImageUrl}" class="profile-img" alt="User" 
+                   style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;"
+                   onerror="this.onerror=null; this.src='/img/user.png';">
+              <div class="overflow-hidden w-100 ms-2">
+                <div class="d-flex overflow-hidden w-100">
+                  <small class="fw-bold text-nowrap">${nickname}</small>
+                  <p class="card-text text-truncate mb-0 ms-2">${title}</p>
+                </div>
+                <!-- 수량공구는 마감일이 아닌 남은 수량을 강조 -->
+                <small class="text-danger d-block mb-1 fw-bold">
+                  남은 수량 : ${remaining} ${unit} / ${totalQty} ${unit}
+                </small>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fw-bold">
+                ${pricePerUnit}원/${shareAmount}${unit} 
+              </span>
+              <span class="badge badge-location">${address}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
     }
 };
+
+
 
 // === 렌더링 함수 ===
 const render = {
@@ -179,24 +261,75 @@ const render = {
                 }
             });
         });
+    },
+
+    // 수량공구 목록 렌더링
+    quantityGroupBuyList: (items) => {
+        const container = document.getElementById('quantityBuyContainer'); // 별도의 컨테이너 가정
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        if (!items || items.length === 0) {
+            container.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted">검색 결과가 없습니다.</p>
+                </div>
+            `;
+            return;
+        }
+
+        items.forEach(item => {
+            container.insertAdjacentHTML('beforeend', card.createQuantityCard(item));
+        });
+
+        // 수량공구 카드 클릭 이벤트 추가
+        const cards = container.querySelectorAll('.card[data-type="quantity"]');
+        cards.forEach(cardEl => {
+            cardEl.addEventListener('click', function() {
+                const quantityGroupBuyNo = this.dataset.no;
+                if (quantityGroupBuyNo) {
+                    window.location.href = `/quantityGroupBuy/detail/${quantityGroupBuyNo}`; // URL 변경 가정
+                }
+            });
+        });
     }
 };
 
-// === 데이터 로드 함수 ===
+// 기간공구 로드 함수
 async function loadPeriodGroupBuyList() {
     try {
         const data = await api.getPeriodGroupBuyList(currentKeyword, currentOrderBy);
         render.periodGroupBuyList(data);
     } catch (error) {
-        console.error('데이터 로드 중 오류 발생:', error);
+        console.error('기간공구 데이터 로드 중 오류 발생:', error);
 
         const container = document.getElementById('periodBuyContainer');
         if (container) {
             container.innerHTML = `
         <div class="col-12 text-center py-5">
-          <p class="text-danger">데이터를 불러오는 중 오류가 발생했습니다.</p>
+          <p class="text-danger">기간공구 데이터를 불러오는 중 오류가 발생했습니다.</p>
         </div>
       `;
+        }
+    }
+}
+
+// 수량공구 로드
+async function loadQuantityGroupBuyList() {
+    try {
+        const data = await api.getQuantityGroupBuyList(currentKeyword, currentOrderBy);
+        render.quantityGroupBuyList(data);
+    } catch (error) {
+        console.error('수량공구 데이터 로드 중 오류 발생:', error);
+
+        const container = document.getElementById('quantityBuyContainer');
+        if (container) {
+            container.innerHTML = `
+                <div class="col-12 text-center py-5">
+                    <p class="text-danger">수량공구 데이터를 불러오는 중 오류가 발생했습니다.</p>
+                </div>
+            `;
         }
     }
 }
@@ -209,7 +342,13 @@ function setupEventHandlers() {
         searchInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 currentKeyword = this.value.trim();
-                loadPeriodGroupBuyList();
+                // 활성화된 탭에 따라 로드 함수 호출
+                const activeTab = document.querySelector('.nav-link.active');
+                if (activeTab && activeTab.id === 'quantity-tab') {
+                    loadQuantityGroupBuyList();
+                } else {
+                    loadPeriodGroupBuyList();
+                }
             }
         });
     }
@@ -232,7 +371,13 @@ function setupEventHandlers() {
             const sortType = this.getAttribute('data-sort');
             if (sortType) {
                 currentOrderBy = sortType;
-                loadPeriodGroupBuyList();
+                // 활성화된 탭에 따라 로드 함수 호출
+                const activeTab = document.querySelector('.nav-link.active');
+                if (activeTab && activeTab.id === 'quantity-tab') {
+                    loadQuantityGroupBuyList();
+                } else {
+                    loadPeriodGroupBuyList();
+                }
             }
         });
     });
@@ -262,12 +407,27 @@ function setupEventHandlers() {
             loadPeriodGroupBuyList();
         });
     }
+
+    // 수량공구 탭 전환 이벤트
+    const quantityTab = document.getElementById('quantity-tab');
+    if (quantityTab) {
+        quantityTab.addEventListener('shown.bs.tab', function() {
+            // 수량공구 탭으로 전환시 데이터 새로고침
+            loadQuantityGroupBuyList();
+        });
+    }
 }
 
 // === 초기화 ===
 document.addEventListener('DOMContentLoaded', function() {
     // 이벤트 핸들러 설정
     setupEventHandlers();
-    // 초기 데이터 로드
-    loadPeriodGroupBuyList();
+
+    // 초기 데이터 로드 (활성화된 탭에 따라)
+    const activeTab = document.querySelector('.nav-link.active');
+    if (activeTab && activeTab.id === 'quantity-tab') {
+        loadQuantityGroupBuyList();
+    } else {
+        loadPeriodGroupBuyList();
+    }
 });

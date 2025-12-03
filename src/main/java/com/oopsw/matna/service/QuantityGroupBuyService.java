@@ -1,16 +1,17 @@
 package com.oopsw.matna.service;
 
+import com.oopsw.matna.dao.QuantityGroupBuyDAO;
 import com.oopsw.matna.repository.*;
 import com.oopsw.matna.repository.entity.*;
-import com.oopsw.matna.vo.GroupBuyParticipantVO;
-import com.oopsw.matna.vo.PeroidGroupBuyCreateVO;
-import com.oopsw.matna.vo.QuantityGroupBuyCreateVO;
+import com.oopsw.matna.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class QuantityGroupBuyService {
     private final MemberRepository memberRepository;
     private final GroupBuyRepository groupBuyRepository;
     private final GroupBuyParticipantRepository groupBuyParticipantRepository;
+    private final QuantityGroupBuyDAO quantityGroupBuyDAO;
 
     public List<Ingredient> getIngredientKeyword(String keyword){
         if (keyword == null || keyword.trim().isEmpty()) {
@@ -216,5 +218,14 @@ public class QuantityGroupBuyService {
         groupBuyRepository.save(groupBuy);
 
         return quantityGroupBuy;
+    }
+
+
+    public List<QuantityGroupBuyHomeVO> getQuantityGroupBuyHome(Map<String, Object> params) {
+        if (params == null) {
+            params = new HashMap<>();
+        }
+        List<QuantityGroupBuyHomeVO> list = quantityGroupBuyDAO.selectQuantityGroupBuyHomeList(params);
+        return list;
     }
 }
