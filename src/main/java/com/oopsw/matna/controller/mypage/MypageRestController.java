@@ -5,6 +5,7 @@ import com.oopsw.matna.dto.MemberProfileListResponse;
 import com.oopsw.matna.dto.RecipeListResponse;
 import com.oopsw.matna.service.MypageService;
 import com.oopsw.matna.vo.*;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +18,17 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @RequestMapping("/api/mypage")
 public class MypageRestController {
+
     private final MypageService mypageService;
+
+//    // 개발용 가짜 로그인
+//    @GetMapping("/dev/login")
+//    public String devLogin(@RequestParam int memberNo, HttpSession session) {
+//
+//        session.setAttribute("loginMemberNo", memberNo);
+//
+//        return "개발용 로그인 완료! 현재 사용자 번호: " + memberNo;
+//    }
 
     @GetMapping("/{memberNo}/recipe")
     public List<RecipeListResponse> getMypageRecipeList(@PathVariable("memberNo") int memberNo) {
@@ -51,15 +62,16 @@ public class MypageRestController {
     }
 
     @GetMapping("/{memberNo}/reviewList")
-    public void getMypageReviewList(@PathVariable("memberNo") int memberNo) {
+    public List<ReviewsListVO> getMypageReviewList(@PathVariable("memberNo") int memberNo) {
 
-        mypageService.getMypageReviewsList(memberNo);
+
+        return mypageService.getMypageReviewsList(memberNo);
     }
 
     @PostMapping("/{reviewNo}/review")
-    public void removeReview(@PathVariable("reviewNo") int reviewNo) {
+    public List<ReviewsListVO> removeReview(@PathVariable("reviewNo") int reviewNo) {
 
-        mypageService.removeReviews(reviewNo);
+        return mypageService.removeReviews(reviewNo);
     }
 
     @PostMapping("/groupbuy/shared")
@@ -83,6 +95,7 @@ public class MypageRestController {
     @DeleteMapping("/getout/{memberNo}")
     public LocalDateTime deleteMember(@PathVariable("memberNo") int memberNo) {
 
+
         return mypageService.removeMember(memberNo);
     }
 
@@ -98,18 +111,20 @@ public class MypageRestController {
     @GetMapping("/{memberNo}/info")
     public MemberVO getMemberInfo(@PathVariable("memberNo") int memberNo) {
 
+
         return mypageService.getMemberInfo(memberNo);
     }
 
     @PutMapping("/{memberNo}/infoEdit")
     public void updateProfile(@PathVariable("memberNo") int memberNo, @RequestBody MemberVO editData) {
 
+
         editData.setMemberNo(memberNo);
 
         mypageService.updateMemberProfile(editData);
     }
 
-    // MypageRestController.java
+
 
     @PostMapping("/point/refund")
     public ResponseEntity<?> refundPoint(@RequestBody Map<String, Integer> requestData) {
@@ -148,6 +163,16 @@ public class MypageRestController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+
+    @GetMapping("/{memberNo}/groupBuy/participation")
+    public List<GroupBuyListVO> getGroupBuyParticipantList(@PathVariable("memberNo") int memberNo,
+                                                           @RequestParam(value = "filter", defaultValue = "ALL") String filter) {
+
+
+
+        return mypageService.getParticipatedGroupBuyList(memberNo, filter);
     }
 
 

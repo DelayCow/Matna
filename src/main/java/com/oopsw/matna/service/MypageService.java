@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +33,7 @@ public class MypageService {
     private final GroupBuyReportRepository groupBuyReportRepository;
 
     private final GroupBuyListDAO groupBuyListDAO;
+    private final PeriodGroupBuyRepository periodGroupBuyRepository;
 
 
     public List<RecipeVO> getMypageRecipeList(Integer memberNo) {
@@ -74,11 +74,9 @@ public class MypageService {
 
     }
 
-    public List<ReviewsListVO> getMypageReviewsList(Integer memberNo) {
+    public List<ReviewsListVO> getMypageReviewsList(int memberNo) {
 
         List<Reviews> entities = reviewsRepository.findReviewsByAuthor_MemberNoAndDelDateIsNullOrderByInDateDesc(memberNo);
-
-        List<ReviewsListVO> reviewsListVOList = new ArrayList<>();
 
         return entities.stream()
                 .map(r -> ReviewsListVO.builder()
@@ -91,7 +89,7 @@ public class MypageService {
                 .collect(Collectors.toList());
     }
 
-    public void removeReviews(Integer reviewsNo){
+    public List<ReviewsListVO> removeReviews(Integer reviewsNo){
 
         Reviews review = reviewsRepository.findById(reviewsNo).get();
         Recipe recipe = review.getRecipe();
@@ -107,6 +105,7 @@ public class MypageService {
         recipeRepository.save(recipe);
 
 
+        return null;
     }
 
 
@@ -313,8 +312,12 @@ public class MypageService {
         return newPoint;
     }
 
-//    @Transactional
-//    public Group
+    public List<GroupBuyListVO> getParticipatedGroupBuyList(Integer memberNo, String filterStatus) {
+        if (filterStatus == null || filterStatus.isEmpty()) {
+            filterStatus = "ALL";
+        }
+        return groupBuyListDAO.getParticipantList(memberNo, filterStatus);
+    }
 
 
 

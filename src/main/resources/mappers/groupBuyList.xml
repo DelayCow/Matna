@@ -45,6 +45,11 @@
 
         WHERE
             gbp.participant_no = #{participantNo}
+
+        <if test="filter != null and filter != 'ALL'">
+            AND gb.status = #{filter}
+        </if>
+
         ORDER BY
             gbp.participated_date DESC;
     </select>
