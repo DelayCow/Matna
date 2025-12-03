@@ -129,4 +129,20 @@ public class MemberRepositoryTests {
         m.setPoint(m.getPoint() + updatePoint);
         memberRepository.save(m);
     }
+
+    @Test
+    public void isDuplicatedIdTest(){
+        String memberId = "member_20";
+        Member member = memberRepository.findByMemberId(memberId);
+        if(member == null){
+            System.out.println("false");
+        }else System.out.println("true");
+
+    }
+    @Test
+    public void isDuplicatedNicknameTest(){
+        String nickname = "마리오";
+        Boolean result = memberRepository.existsByNickname(nickname);
+        System.out.println(result);
+    }
 }
