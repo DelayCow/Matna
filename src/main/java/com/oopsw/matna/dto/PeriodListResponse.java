@@ -18,10 +18,11 @@ public class PeriodListResponse {
     private LocalDateTime inDate;
     private LocalDateTime dueDate;
 
-    private int minPricePerPerson;
-    private int maxPricePerPerson;
+    private Integer minPricePerPerson;
+    private Integer maxPricePerPerson;
     private String shareLocation;
 
-    private int participants;
-    private int maxParticipants;
+    private Integer participants;
+    private Integer maxParticipants;
+    private Integer periodGroupBuyNo;
 }

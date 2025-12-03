@@ -44,7 +44,8 @@
         -- 14. groupBuyNo (Long/Integer)
         gb.group_buy_no AS groupBuyNo,
         -- 15. ingredientName (String)
-        i.ingredient_name AS ingredientName
+        i.ingredient_name AS ingredientName,
+        pgb.period_group_buy_no AS periodGroupBuyNo
 
         FROM
         GROUP_BUYS gb

@@ -37,3 +37,26 @@
 #addPeriodBuy, #addQuantityBuy{
     cursor: pointer;
 }
+.badge-location {
+    background-color: #f8f9fa;
+    color: #495057;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+}
+
+.profile-img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.card-custom {
+    transition: transform 0.2s;
+}
+
+.card-custom:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}

@@ -47,6 +47,7 @@ public class PeriodRestController {
                         .shareLocation(vo.getShareLocation())
                         .participants(vo.getParticipants())
                         .maxParticipants(vo.getMaxParticipants())
+                        .periodGroupBuyNo(vo.getPeriodGroupBuyNo())
                         .build())
                 .collect(Collectors.toList());
         return ResponseEntity.ok(responseList);
