@@ -11,6 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class MypageController {
     @GetMapping("/mypage")
     public String mypage() {
-        return "/mypage";
+        return "mypage";
     }
 }

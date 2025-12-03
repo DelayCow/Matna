@@ -6,6 +6,9 @@ import com.oopsw.matna.vo.RecipeVO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
@@ -28,7 +31,6 @@ public class RecipeRepositoryTests {
     RecipeStepRepository recipeStepRepository;
     @Autowired
     RecipeIngredientRepository recipeIngredientRepository;
-
 
     @Test
     void findAllByDelDateIsNullOrderByRecipeNoDesc() {
@@ -228,10 +230,6 @@ public class RecipeRepositoryTests {
                         .averageRating(recipe.getAverageRating())
                         .reviewCount(recipe.getReviewCount())
                         .thumbnailUrl(recipe.getImageUrl())
-                        .difficulty(recipe.getDifficulty())
-                        .prepTime(recipe.getPrepTime())
-                        .servings(recipe.getServings())
-                        .spicyLevel(recipe.getSpicyLevel())
                         .build()).collect(Collectors.toList());
         System.out.println(recipeList);
     }
@@ -247,24 +245,24 @@ public class RecipeRepositoryTests {
 
     @Test
     public void AllSearchWithFiltersTest(){
-        List<Recipe> list1 = recipeRepository.findWithFilters(
-                null, null, Sort.by(Sort.Direction.DESC, "recipeNo"));
+        Slice<Recipe> list1 = recipeRepository.findWithFilters(
+                null, null, PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "inDate")));
 
         // 2. [상황 2] "후기순" 선택 + "맵기 1단계" 필터
-        List<Recipe> list2 = recipeRepository.findWithFilters(
-                1, null, Sort.by(Sort.Direction.DESC, "reviewCount"));
+        Slice<Recipe> list2 = recipeRepository.findWithFilters(
+                1, null, PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "reviewCount")));
 
         // 3. [상황 3] "김치" 검색 + "맵기 2단계" + "최신순" 유지
-        List<Recipe> list3 = recipeRepository.findWithFilters(
-                2, "김치", Sort.by(Sort.Direction.DESC, "recipeNo"));
+        Slice<Recipe> list3 = recipeRepository.findWithFilters(
+                2, "김치", PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "inDate")));
         //최신순 이면서 맵기 4단계
-        List<Recipe> list4 = recipeRepository.findWithFilters(
-                3, null, Sort.by(Sort.Direction.DESC, "recipeNo"));
+        Slice<Recipe> list4 = recipeRepository.findWithFilters(
+                3, null, PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "inDate")));
 
         // 결과 확인
         System.out.println("--- 상황 1 결과 최신순--");
         for (Recipe r : list1) {
-            System.out.println("제목: " + r.getTitle() + " / 맵기: " + r.getSpicyLevel() + " / 후기수: " + r.getReviewCount() + "평점" + r.getAverageRating() + "인분" + r.getServings() + "조리시간" + r.getPrepTime() + "난이도" + r.getDifficulty() + "썸네일" + r.getImageUrl() + "아 근데 이러면 vo 만든 보람이" + r.getInDate());
+            System.out.println("제목: " + r.getTitle() + " / 맵기: " + r.getSpicyLevel() + " / 후기수: " + r.getReviewCount() + "평점" + r.getAverageRating() + "인분" + r.getServings() + "조리시간" + r.getPrepTime() + "난이도" + r.getDifficulty() + "썸네일" + r.getImageUrl() + "작성날짜" + r.getInDate());
         }
 
         System.out.println("--- 상황 2 결과 (후기순 + 맵기1) ---");
@@ -279,7 +277,7 @@ public class RecipeRepositoryTests {
 
         System.out.println("--- 상황 2 결과 (최신순 + 맵기4) ---");
         for (Recipe r : list4) {
-            System.out.println("제목: " + r.getTitle() + " / 맵기: " + r.getSpicyLevel() + " / 후기수: " + r.getReviewCount());
+            System.out.println("제목: " + r.getTitle() + " / 맵기: " + r.getSpicyLevel() + " / 작성날짜: " + r.getInDate());
         }
     }
 

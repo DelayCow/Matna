@@ -1,10 +1,12 @@
-function initializeSpicyIcons() {
+import { currentSpicyLevel, dispatchFilterChange, setCurrentSpicyLevel } from './searchRecipe.js';
+
+export function initializeSpicyIcons() {
     const spicyIcons = document.querySelectorAll('.spicy-level-icon');
 
     spicyIcons.forEach(icon => {
         const level = parseInt(icon.getAttribute('data-level'));
         const iconContainer = icon.querySelector('.icon-container');
-        const spicyImagePath = '../static/img/spicy.png';
+        const spicyImagePath = '/img/spicy.png';
 
         if (iconContainer) {
             iconContainer.innerHTML = '';
@@ -22,10 +24,13 @@ function initializeSpicyIcons() {
         icon.addEventListener('click', function(e) {
             if(this.classList.contains('active')){
                 this.classList.remove('active');
-                return;
+                setCurrentSpicyLevel(null);
+            }else{
+                spicyIcons.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                setCurrentSpicyLevel(level);
             }
-            spicyIcons.forEach(i => i.classList.remove('active'));
-            this.classList.add('active');
+            dispatchFilterChange('spicy', currentSpicyLevel);
         });
     });
 }

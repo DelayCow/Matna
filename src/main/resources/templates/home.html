@@ -6,22 +6,19 @@
   <title>home</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="../static/css/layout.css">
-  <link rel="stylesheet" href="../static/css/home.css">
-  <link rel="stylesheet" href="../static/css/card.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/home.css">
+  <link rel="stylesheet" href="/css/card.css">
 </head>
 <body>
 <div class="mobile-container position-relative">
-  <header class="d-flex justify-content-between align-items-center p-3 bg-white sticky-top" style="z-index: 1020;">
-    <h4 class="m-0 fw-bold">로고자리</h4>
-    <a href="#" class="text-dark"><i class="bi bi-bell fs-4"></i></a>
-  </header>
 
+  <div th:replace="layout :: mainHeader"></div>
   <div class="px-3" id="main">
 
       <section class="mb-3">
         <div class="d-flex align-items-center mb-3">
-          <img src="../static/img/cooking.png">
+          <img src="/img/cooking.png">
           <h5 class="section-title m-0">많이 따라하는 레시피</h5>
         </div>
 
@@ -95,7 +92,7 @@
       <section class="mb-3">
         <div class="mb-3">
           <div class="d-flex align-items-center">
-            <img src="../static/img/collision.png">
+            <img src="/img/collision.png">
             <h5 class="section-title m-0">마감임박한 수량공구</h5>
           </div>
           <p class="section-subtitle">원하는 수량만큼 공구하고 싶어요</p>
@@ -117,7 +114,7 @@
       <section class="mb-3">
         <div class="mb-3">
           <div class="d-flex align-items-center">
-            <img src="../static/img/collision.png">
+            <img src="/img/collision.png">
             <h5 class="section-title m-0">마감임박한 기간공구</h5>
           </div>
           <p class="section-subtitle">원하는 기간안에 공구하고 싶어요</p>
@@ -137,7 +134,7 @@
 
       <section class="mb-0">
         <div class="d-flex align-items-center mb-3">
-          <img src="../static/img/plate.png">
+          <img src="/img/plate.png">
           <h5 class="section-title m-0">최근 올라온 후기</h5>
         </div>
 
@@ -155,40 +152,12 @@
       </section>
     </div>
 
-  <nav class="navbar fixed-bottom bg-white bottom-nav p-0">
-  <div class="container-fluid p-0">
-    <ul class="nav w-100 justify-content-between py-2 px-5">
-      <li class="nav-item">
-        <a class="nav-link active p-1" href="#">
-          <i class="bi bi-house-door-fill"></i>
-          홈
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link p-1" href="#">
-          <i class="bi bi-book"></i>
-          레시피
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link p-1" href="#">
-          <i class="bi bi-basket"></i>
-          공동 구매
-        </a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link p-1" href="#">
-          <i class="bi bi-person"></i>
-          MY
-        </a>
-      </li>
-    </ul>
-  </div>
-</nav>
+  <div th:replace="layout :: menuBar"></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../static/js/card.js"></script>
-<script src="../static/js/home.js"></script>
+<script src="/js/layout.js"></script>
+<script src="/js/card.js"></script>
+<script src="/js/home.js"></script>
 </body>
 </html>
