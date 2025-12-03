@@ -18,12 +18,12 @@ public class ManagerRestController {
 
     //재료 관리
     @GetMapping("/ingredientManagement")
-    public List<ManagerIngredientResponse> ingredientManagement() {
+    public List<ManagerIngredientResponse> getIngredient() {
         return managerService.getIngredients();
     }
 
     @GetMapping("/ingredientManagement/search")
-    public List<ManagerIngredientResponse> searchIngredient(@RequestParam String keyword) {
+    public List<ManagerIngredientResponse> getIngredientByKeyword(@RequestParam String keyword) {
         return managerService.getIngredientsByName(keyword);
     }
 
