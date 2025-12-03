@@ -49,4 +49,20 @@ public class ReviewRestController {
                 .spicyLevel(reviewsVO.getSpicyLevel())
                 .build();
     }
+
+    @GetMapping("/recent")
+    public List<ReviewResponse> getRecentReviews(){
+        List<ReviewsVO> reviews = reviewService.getRecentReviews();
+        return reviews.stream().map(reviewsVO -> ReviewResponse.builder()
+                .reviewNo(reviewsVO.getReviewNo())
+                .title(reviewsVO.getTitle())
+                .content(reviewsVO.getContent())
+                .reviewImage(reviewsVO.getReviewImage())
+                .writerNickname(reviewsVO.getWriterNickname())
+                .writerProfileImage(reviewsVO.getWriterProfileImage())
+                .inDate(reviewsVO.getInDate())
+                .rating(reviewsVO.getRating())
+                .spicyLevel(reviewsVO.getSpicyLevel())
+                .build()).collect(Collectors.toList());
+    }
 }

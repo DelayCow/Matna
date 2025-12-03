@@ -15,7 +15,10 @@ public class ReviewServiceTests {
     }
 
     @Test
-    void getRecipeDetail(){
+    void getReviewDetail(){
         System.out.println(reviewService.getReviewDetail(1));
     }
+
+    @Test
+    void getRecentReview(){System.out.println(reviewService.getRecentReviews());}
 }

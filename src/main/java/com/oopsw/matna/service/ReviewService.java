@@ -60,4 +60,30 @@ public class ReviewService {
                 .writerProfileImage(reviews.getAuthor().getImageUrl())
                 .build();
     }
+
+    public List<ReviewsVO> getRecentReviews(){
+        List<Reviews> ent = reviewsRepository.findTop10ByDelDateIsNullOrderByInDateDesc();
+        List<ReviewsVO> voList = new ArrayList<>();
+
+        for (Reviews r : ent) {
+            ReviewsVO vo = new ReviewsVO();
+            vo.setReviewNo(r.getReviewNo());
+            vo.setTitle(r.getTitle());
+            vo.setContent(r.getContent());
+            vo.setReviewImage(r.getImageUrl());
+            vo.setRating(r.getRating());
+            vo.setSpicyLevel(r.getSpicyLevel());
+            vo.setInDate(r.getInDate());
+
+
+            if (r.getAuthor() != null) {
+                vo.setWriterNickname(r.getAuthor().getNickname());
+                vo.setWriterProfileImage(r.getAuthor().getImageUrl());
+            }
+
+            voList.add(vo);
+        }
+        return voList;
+
+    }
 }
