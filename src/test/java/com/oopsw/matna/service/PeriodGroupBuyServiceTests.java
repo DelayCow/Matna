@@ -96,7 +96,7 @@ public class PeriodGroupBuyServiceTests {
                 .imageUrl("http://example.com/image_path/goguma.jpg")
                 .content("유기농 밤고구마예요~ 저렴한데 양이 너무 많아요")
                 .itemSaleUrl("http://sale.site/item/123")
-                .dueDate(LocalDateTime.of(2025, 11, 30, 17, 30))
+                .dueDate(LocalDateTime.of(2025, 12, 30, 17, 30))
                 .maxParticipants(10)
                 .build();
 

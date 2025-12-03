@@ -1,4 +1,4 @@
-package com.oopsw.matna.vo;
+package com.oopsw.matna.dto;
 
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +10,7 @@ import java.time.LocalTime;
 @Builder
 @Data
 @ToString
-public class PeroidGroupBuyCreateVO {
+public class PeriodCreateResponse {
     private Integer ingredientNo;
     private String ingredientName;
     private Integer creatorNo;

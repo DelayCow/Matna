@@ -10,6 +10,7 @@ import com.oopsw.matna.vo.PeroidGroupBuyCreateVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -36,7 +37,13 @@ public class PeriodGroupBuyService {
         return ingredientRepository.findByIngredientNameContaining(keyword);
     }
 
-    public Ingredient addIngredient(Integer creatorNo, String ingredientName) {
+    public Ingredient addIngredient(Integer creatorNo, MultipartFile thumbnailFile, String ingredientName) {
+        String thumbnailUrl = null;
+        if (thumbnailFile == null || thumbnailFile.isEmpty()) {
+            throw new IllegalArgumentException("상품 이미지는 필수입니다.");
+        }
+        thumbnailUrl = imageStorageService.save(thumbnailFile, "groupbuy/thumbnails");
+
         Member creatorMember = memberRepository.findById(creatorNo)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. 회원번호: " + creatorNo));
         if (ingredientRepository.existsByIngredientName(ingredientName.trim())) {

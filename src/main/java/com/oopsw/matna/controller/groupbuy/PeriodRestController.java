@@ -1,14 +1,19 @@
 package com.oopsw.matna.controller.groupbuy;
 
-import com.oopsw.matna.dto.PeriodDetailInfo;
-import com.oopsw.matna.dto.PeriodDetailResponse;
-import com.oopsw.matna.dto.PeriodListResponse;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.oopsw.matna.dto.*;
+import com.oopsw.matna.repository.entity.Ingredient;
+import com.oopsw.matna.repository.entity.PeriodGroupBuy;
 import com.oopsw.matna.service.PeriodGroupBuyService;
+import com.oopsw.matna.vo.IngredientVO;
 import com.oopsw.matna.vo.PeriodGroupBuyDetailVO;
 import com.oopsw.matna.vo.PeriodGroupBuyHomeVO;
+import com.oopsw.matna.vo.PeroidGroupBuyCreateVO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -21,6 +26,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/periodGroupBuy")
 public class PeriodRestController {
     private final PeriodGroupBuyService periodGroupBuyService;
+    private final ObjectMapper objectMapper;
 
     @GetMapping("/home")
     public ResponseEntity<List<PeriodListResponse>> getPeriodGroupBuyList(
@@ -94,7 +100,57 @@ public class PeriodRestController {
     }
 
 //    @PostMapping("/register")
-//    public ResponseEntity
+//    public ResponseEntity<Map<String, Object>> addPeriodGroupBuy(
+//            @RequestPart("PeriodRegisterRequest") String registerRequestJson,
+//            @RequestPart(value = "thumbnailFile", required = false) MultipartFile thumbnailFile) {
+//        Map<String, Object> response = new HashMap<>();
+//        try {
+//            PeriodGroupBuy periodGroupBuy = periodGroupBuyService.addPeriodGroupBuy(registerRequestJson);
+//            response.put("success", true);
+//            response.put("data", periodGroupBuy);
+//            return ResponseEntity.ok(response);
+//        } catch (Exception e) {
+//            response.put("success", false);
+//            response.put("message", "공동구매 등록 중 오류가 발생했습니다.");
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+//        }
+//    }
 
+    @PostMapping("/register")
+    public ResponseEntity<Map<String, Object>> addPeriodGroupBuy(
+            @RequestPart("periodRegisterRequest") String registerRequestJson,
+            @RequestPart(value = "thumbnailFile", required = false) MultipartFile thumbnailFile) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            // JSON 문자열을 VO 객체로 변환
+            PeroidGroupBuyCreateVO vo = objectMapper.readValue(registerRequestJson, PeroidGroupBuyCreateVO.class);
+
+            // 이미지 파일 처리
+            if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
+                // TODO: 파일 저장 로직 구현
+                // String imageUrl = fileService.saveFile(thumbnailFile);
+                // vo.setImageUrl(imageUrl);
+
+                // 임시로 파일명 저장
+                vo.setImageUrl("/uploads/" + thumbnailFile.getOriginalFilename());
+            }
+
+            PeriodGroupBuy periodGroupBuy = periodGroupBuyService.addPeriodGroupBuy(vo);
+
+            response.put("success", true);
+            response.put("message", "공동구매가 성공적으로 등록되었습니다.");
+            response.put("data", periodGroupBuy);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "공동구매 등록 중 오류가 발생했습니다: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 
 }
