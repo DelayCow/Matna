@@ -72,7 +72,8 @@
         GROUP BY
         gb.group_buy_no, gb.title, m.nickname, m.image_url, gb.image_url, gb.in_date,
         pgb.due_date, gb.buy_end_date, i.ingredient_name,
-        gb.price, gb.fee_rate, pgb.max_participants, gb.share_location
+        gb.price, gb.fee_rate, pgb.max_participants, gb.share_location,
+        pgb.period_group_buy_no
 
         ORDER BY
         <choose>
