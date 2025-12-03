@@ -14,7 +14,7 @@ public class PeriodGroupBuyDetailVO {
     private String content;
     private String imageUrl;
     private Integer ingredientNo;
-    private int maxParticipants;
+    private Integer maxParticipants;
     private Integer feeRate;
     private Integer price;
     private Integer quantity;
@@ -22,7 +22,7 @@ public class PeriodGroupBuyDetailVO {
     private String itemSaleUrl;
     private Integer periodGroupBuyNo;
 
-    private int participants;
+    private Integer participants;
 
     private LocalDateTime inDate;
     private String shareLocation;
