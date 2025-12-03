@@ -290,122 +290,152 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ========== 폼 제출 ==========
-    function submitForm() {
-        // 필수 입력값 검증
+    async function submitForm() {
+        const formData = new FormData();
+        const periodData = {};
+        const errors = [];
+
+        // 썸네일 이미지 검증 (필수)
+        if (fileInput.files.length === 0) {
+            errors.push('상품 이미지를 등록해주세요');
+        } else {
+            formData.append('thumbnailFile', fileInput.files[0]);
+        }
+
+        // 제목 검증
         const title = document.getElementById('title').value.trim();
-        const ingredientNo = selectedIngredientNo || ingredientNoInput.value;
-        const price = document.getElementById('price').value;
-        const quantity = document.getElementById('quantity').value;
-        const feeRate = document.getElementById('fee_rate').value;
-        const maxParticipants = document.getElementById('maxParticipants').value;
-        const content = document.getElementById('content').value.trim();
-
         if (!title) {
-            alert('제목을 입력해주세요.');
-            return;
+            errors.push('제목을 입력해주세요');
         }
+        periodData.title = title;
 
+        // 재료 검증
+        const ingredientNo = selectedIngredientNo || ingredientNoInput.value;
         if (!ingredientNo) {
-            alert('품목을 선택해주세요.');
-            return;
+            errors.push('품목을 선택해주세요');
         }
+        periodData.ingredientNo = parseInt(ingredientNo);
+        periodData.ingredientName = searchInput.value;
 
-        if (!price || price <= 0) {
-            alert('상품 가격을 입력해주세요.');
-            return;
-        }
+        // 작성자 (TODO: 실제 로그인한 사용자 번호로 변경)
+        periodData.creatorNo = 6;
 
-        if (!quantity || quantity <= 0) {
-            alert('상품 이량을 입력해주세요.');
-            return;
-        }
-
-        if (!maxParticipants || maxParticipants <= 0) {
-            alert('최대 인원수를 입력해주세요.');
-            return;
-        }
-
-        // 모집기간 (마감일) 계산
+        // 모집기간 (마감일)
         const joinYear = document.getElementById('joinYear').value;
         const joinMonth = document.getElementById('joinMonth').value;
         const joinDay = document.getElementById('joinDay').value;
         const joinTime = document.getElementById('joinTime').value;
-
         const dueDate = `${joinYear}-${String(joinMonth).padStart(2, '0')}-${String(joinDay).padStart(2, '0')}T${joinTime}:00`;
+        periodData.dueDate = dueDate;
 
         // 구매 기간
         const buyEndDate = parseInt(document.getElementById('deadline').value);
+        if (!buyEndDate || buyEndDate <= 0) {
+            errors.push('구매 기간을 선택해주세요');
+        }
+        periodData.buyEndDate = buyEndDate;
 
         // 나눔 기간
         const shareEndDate = parseInt(document.getElementById('sharingTimeWeek').value);
+        if (!shareEndDate || shareEndDate <= 0) {
+            errors.push('나눔 기간을 선택해주세요');
+        }
+        periodData.shareEndDate = shareEndDate;
+
         const shareTime = document.getElementById('sharingTimeHour').value;
+        periodData.shareTime = shareTime;
 
         // 나눔 장소
         const shareLocation = document.getElementById('addressSearch').value.trim();
+        if (!shareLocation) {
+            errors.push('나눔 장소를 입력해주세요');
+        }
+        periodData.shareLocation = shareLocation;
+
         const shareDetailAddress = document.getElementById('detailAddress').value.trim();
+        periodData.shareDetailAddress = shareDetailAddress;
+
+        // 상품 가격
+        const price = parseInt(document.getElementById('price').value);
+        if (!price || price <= 0) {
+            errors.push('상품 가격을 입력해주세요');
+        }
+        periodData.price = price;
+
+        // 상품 이량
+        const quantity = parseInt(document.getElementById('quantity').value);
+        if (!quantity || quantity <= 0) {
+            errors.push('상품 이량을 입력해주세요');
+        }
+        periodData.quantity = quantity;
 
         // 단위
         const unit = weightRadio.checked ? 'g' : '개';
+        periodData.unit = unit;
 
-        // 이미지 URL (파일 업로드 구현 필요)
-        let imageUrl = '';
-        if (fileInput.files.length > 0) {
-            // TODO: 실제로는 서버에 파일을 업로드하고 URL을 받아와야 함
-            imageUrl = '/uploads/temp-image.jpg';
+        // 수수료
+        const feeRate = parseInt(document.getElementById('fee_rate').value) || 0;
+        periodData.feeRate = feeRate;
+
+        // 최대 인원수
+        const maxParticipants = parseInt(document.getElementById('maxParticipants').value);
+        if (!maxParticipants || maxParticipants <= 0) {
+            errors.push('최대 인원수를 입력해주세요');
         }
+        periodData.maxParticipants = maxParticipants;
+
+        // 내용
+        const content = document.getElementById('content').value.trim();
+        if (!content) {
+            errors.push('내용을 입력해주세요');
+        }
+        periodData.content = content;
 
         // 상품 판매 URL
         const itemSaleUrl = document.getElementById('itemSaleUrl').value.trim();
+        periodData.itemSaleUrl = itemSaleUrl || null;
 
-        // VO 객체 생성
-        const vo = {
-            ingredientNo: parseInt(ingredientNo),
-            ingredientName: searchInput.value,
-            creatorNo: 6, // TODO: 실제 로그인한 사용자 번호로 변경
-            title: title,
-            buyEndDate: buyEndDate,
-            shareEndDate: shareEndDate,
-            shareTime: shareTime,
-            shareLocation: shareLocation,
-            shareDetailAddress: shareDetailAddress,
-            price: parseInt(price),
-            quantity: parseInt(quantity),
-            unit: unit,
-            feeRate: parseInt(feeRate) || 0,
-            imageUrl: imageUrl,
-            content: content,
-            itemSaleUrl: itemSaleUrl,
-            dueDate: dueDate,
-            maxParticipants: parseInt(maxParticipants)
-        };
+        // 에러가 있으면 중단
+        if (errors.length > 0) {
+            alert('다음 항목을 확인해주세요:\n\n' + errors.map((err, idx) => `${idx + 1}. ${err}`).join('\n'));
+            return;
+        }
 
-        console.log('제출 데이터:', vo);
+        // JSON 문자열로 변환하여 FormData에 추가
+        const periodJsonString = JSON.stringify(periodData);
+        formData.append('periodRegisterRequest', periodJsonString);
 
-        // API 호출
-        fetch('/periodGroupBuy/register', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(vo)
-        })
-            .then(response => {
-                if (!response.ok) {
-                    return response.text().then(text => {
-                        throw new Error(text || '등록에 실패했습니다.');
-                    });
-                }
-                return response.json();
-            })
-            .then(data => {
-                alert('기간 공동구매가 성공적으로 등록되었습니다!');
-                console.log('등록 결과:', data);
-                window.location.href = '/groupbuy';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('등록 중 오류가 발생했습니다: ' + error.message);
+        console.log('제출 데이터:', periodData);
+        console.log('첨부 파일:', fileInput.files[0]?.name);
+
+        // 로딩 표시
+        submitBtn.disabled = true;
+        submitBtn.textContent = '등록 중...';
+
+        try {
+            const response = await fetch('/api/periodGroupBuy/register', {
+                method: 'POST',
+                body: formData
             });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                alert(result.message || '기간 공동구매가 성공적으로 등록되었습니다!');
+                console.log('등록 결과:', result);
+                window.location.href = '/groupBuy';
+            } else {
+                const errorMessage = result.message || '등록에 실패했습니다.';
+                alert(`등록 실패\n\n${errorMessage}`);
+            }
+        } catch (error) {
+            console.error('네트워크 오류:', error);
+            alert('서버와 통신할 수 없습니다.\n잠시 후 다시 시도해주세요.');
+        } finally {
+            // 로딩 해제
+            submitBtn.disabled = false;
+            submitBtn.textContent = '게시';
+        }
     }
 
     // ========== 이벤트 리스너 설정 ==========

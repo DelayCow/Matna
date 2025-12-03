@@ -119,27 +119,27 @@ public class PeriodRestController {
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> addPeriodGroupBuy(
             @RequestPart("periodRegisterRequest") String registerRequestJson,
-            @RequestPart(value = "thumbnailFile", required = false) MultipartFile thumbnailFile) {
+            @RequestPart(value = "thumbnailFile") MultipartFile thumbnailFile) {
         Map<String, Object> response = new HashMap<>();
         try {
-            // JSON 문자열을 VO 객체로 변환
-            PeroidGroupBuyCreateVO vo = objectMapper.readValue(registerRequestJson, PeroidGroupBuyCreateVO.class);
+            // JSON 문자열을 Request 객체로 변환
+            PeriodRegisterRequest request = objectMapper.readValue(
+                    registerRequestJson,
+                    PeriodRegisterRequest.class
+            );
 
-            // 이미지 파일 처리
-            if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
-                // TODO: 파일 저장 로직 구현
-                // String imageUrl = fileService.saveFile(thumbnailFile);
-                // vo.setImageUrl(imageUrl);
-
-                // 임시로 파일명 저장
-                vo.setImageUrl("/uploads/" + thumbnailFile.getOriginalFilename());
-            }
-
-            PeriodGroupBuy periodGroupBuy = periodGroupBuyService.addPeriodGroupBuy(vo);
+            // Service 호출 (이미지 파일과 함께 전달)
+            PeriodGroupBuy periodGroupBuy = periodGroupBuyService.addPeriodGroupBuy(request, thumbnailFile);
 
             response.put("success", true);
             response.put("message", "공동구매가 성공적으로 등록되었습니다.");
-            response.put("data", periodGroupBuy);
+            response.put("data", Map.of(
+                    "periodGroupBuyNo", periodGroupBuy.getPeriodGroupBuyNo(),
+                    "groupBuyNo", periodGroupBuy.getGroupBuy().getGroupBuyNo(),
+                    "title", periodGroupBuy.getGroupBuy().getTitle(),
+                    "imageUrl", periodGroupBuy.getGroupBuy().getImageUrl()
+            ));
+
             return ResponseEntity.ok(response);
         } catch (IllegalArgumentException e) {
             response.put("success", false);

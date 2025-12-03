@@ -1,5 +1,6 @@
 package com.oopsw.matna.service;
 
+import com.oopsw.matna.controller.groupbuy.PeriodRegisterRequest;
 import com.oopsw.matna.repository.*;
 import com.oopsw.matna.repository.entity.*;
 import com.oopsw.matna.vo.GroupBuyParticipantVO;
@@ -9,10 +10,12 @@ import com.oopsw.matna.vo.PeroidGroupBuyCreateVO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.HashMap;
@@ -45,7 +48,7 @@ public class PeriodGroupBuyServiceTests {
     }
 
     @Test
-    void addIngredientTest() {
+    void addIngredientTest() throws IOException {
         Integer creatorNo = 5;
         String ingredientName = "브로콜리";
         // 회원 존재 여부 확인
@@ -70,17 +73,20 @@ public class PeriodGroupBuyServiceTests {
     }
 
     @Test
-    void addPeriodGroupBuyTest() {
+    void addPeriodGroupBuyTest() throws IOException {
         Integer ingredientNo = 23;
         Integer creatorNo = 16;
+
         // 재료 존재 여부 확인
         ingredientRepository.findById(ingredientNo)
                 .orElseThrow(() -> new AssertionError("테스트용 재료(ingredientNo: " + ingredientNo + ")가 존재하지 않습니다."));
+
         // 회원 존재 여부 확인
         memberRepository.findById(creatorNo)
                 .orElseThrow(() -> new AssertionError("테스트용 회원(memberNo: " + creatorNo + ")이 존재하지 않습니다."));
 
-        PeroidGroupBuyCreateVO vo = PeroidGroupBuyCreateVO.builder()
+        // Request 객체 생성
+        PeriodRegisterRequest request = PeriodRegisterRequest.builder()
                 .ingredientNo(ingredientNo)
                 .creatorNo(creatorNo)
                 .title("김치/동치미랑 먹으면 딱좋은 밤고구마 20kg 같이 사요")
@@ -93,15 +99,24 @@ public class PeriodGroupBuyServiceTests {
                 .quantity(20000)
                 .unit("g")
                 .feeRate(3)
-                .imageUrl("http://example.com/image_path/goguma.jpg")
                 .content("유기농 밤고구마예요~ 저렴한데 양이 너무 많아요")
                 .itemSaleUrl("http://sale.site/item/123")
                 .dueDate(LocalDateTime.of(2025, 12, 30, 17, 30))
                 .maxParticipants(10)
                 .build();
 
-        PeriodGroupBuy result = periodGroupBuyService.addPeriodGroupBuy(vo);
+        // Mock 이미지 파일 생성
+        MockMultipartFile mockFile = new MockMultipartFile(
+                "thumbnailFile",
+                "goguma.jpg",
+                "image/jpeg",
+                "test image content".getBytes()
+        );
 
+        // Service 메소드 호출
+        PeriodGroupBuy result = periodGroupBuyService.addPeriodGroupBuy(request, mockFile);
+
+        // 검증
         assertNotNull(result);
         assertNotNull(result.getPeriodGroupBuyNo());
         assertNotNull(result.getGroupBuy());
@@ -119,8 +134,10 @@ public class PeriodGroupBuyServiceTests {
         assertEquals(0, groupBuy.getScrapCount());
         assertEquals("서울 금천구 가산디지털1로 70", groupBuy.getShareLocation());
         assertEquals("호서대벤처 1층입구", groupBuy.getShareDetailAddress());
+        assertNotNull(groupBuy.getImageUrl()); // 이미지 URL이 저장되었는지 확인
+
         // PeriodGroupBuy 검증
-        assertEquals(LocalDateTime.of(2025, 11, 30, 17, 30), result.getDueDate());
+        assertEquals(LocalDateTime.of(2025, 12, 30, 17, 30), result.getDueDate());
         assertEquals(10, result.getMaxParticipants());
 
         // DB 조회 확인
@@ -130,6 +147,7 @@ public class PeriodGroupBuyServiceTests {
         assertEquals(result.getPeriodGroupBuyNo(), savedPeriodGroupBuy.getPeriodGroupBuyNo());
 
         System.out.println("GroupBuy 제목: " + groupBuy.getTitle());
+        System.out.println("이미지 URL: " + groupBuy.getImageUrl());
         System.out.println("PeriodGroupBuy 마감일: " + result.getDueDate());
         System.out.println("최대 참여자 수: " + result.getMaxParticipants());
     }

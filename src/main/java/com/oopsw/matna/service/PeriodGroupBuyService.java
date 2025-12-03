@@ -1,5 +1,6 @@
 package com.oopsw.matna.service;
 
+import com.oopsw.matna.controller.groupbuy.PeriodRegisterRequest;
 import com.oopsw.matna.dao.PeriodGroupBuyDAO;
 import com.oopsw.matna.repository.*;
 import com.oopsw.matna.repository.entity.*;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,6 +30,7 @@ public class PeriodGroupBuyService {
     private final GroupBuyParticipantRepository groupBuyParticipantRepository;
     private final PeriodGroupBuyDAO periodGroupBuyDAO;
     private final RecipeIngredientRepository recipeIngredientRepository;
+    private final ImageStorageService imageStorageService;
 
 
     public List<Ingredient> getIngredientKeyword(String keyword){
@@ -37,13 +40,7 @@ public class PeriodGroupBuyService {
         return ingredientRepository.findByIngredientNameContaining(keyword);
     }
 
-    public Ingredient addIngredient(Integer creatorNo, MultipartFile thumbnailFile, String ingredientName) {
-        String thumbnailUrl = null;
-        if (thumbnailFile == null || thumbnailFile.isEmpty()) {
-            throw new IllegalArgumentException("상품 이미지는 필수입니다.");
-        }
-        thumbnailUrl = imageStorageService.save(thumbnailFile, "groupbuy/thumbnails");
-
+    public Ingredient addIngredient(Integer creatorNo, String ingredientName) throws IOException {
         Member creatorMember = memberRepository.findById(creatorNo)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. 회원번호: " + creatorNo));
         if (ingredientRepository.existsByIngredientName(ingredientName.trim())) {
@@ -59,30 +56,36 @@ public class PeriodGroupBuyService {
     }
 
     @Transactional
-    public PeriodGroupBuy addPeriodGroupBuy(PeroidGroupBuyCreateVO vo) {
-        Ingredient ingredient = ingredientRepository.findById(vo.getIngredientNo())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 재료입니다. 재료번호: " + vo.getIngredientNo()));
-        Member creator = memberRepository.findById(vo.getCreatorNo())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. 회원번호: " + vo.getCreatorNo()));
+    public PeriodGroupBuy addPeriodGroupBuy(PeriodRegisterRequest request, MultipartFile thumbnailFile) throws IOException {
+        String thumbnailUrl = null;
+        if (thumbnailFile == null || thumbnailFile.isEmpty()) {
+            throw new IllegalArgumentException("상품 이미지는 필수입니다.");
+        }
+        thumbnailUrl = imageStorageService.save(thumbnailFile, "groupbuy/thumbnails");
+
+        Ingredient ingredient = ingredientRepository.findById(request.getIngredientNo())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 재료입니다. 재료번호: " + request.getIngredientNo()));
+        Member creator = memberRepository.findById(request.getCreatorNo())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. 회원번호: " + request.getCreatorNo()));
 
         GroupBuy groupBuy = groupBuyRepository.save(
                 GroupBuy.builder()
                         .ingredient(ingredient)
                         .creator(creator)
-                        .title(vo.getTitle().trim())
-                        .buyEndDate(vo.getBuyEndDate())
-                        .shareEndDate(vo.getShareEndDate())
-                        .shareTime(vo.getShareTime())
-                        .shareLocation(vo.getShareLocation())
-                        .shareDetailAddress(vo.getShareDetailAddress())
-                        .price(vo.getPrice())
-                        .quantity(vo.getQuantity())
-                        .unit(vo.getUnit())
-                        .feeRate(vo.getFeeRate())
-                        .imageUrl(vo.getImageUrl())
-                        .content(vo.getContent())
+                        .title(request.getTitle().trim())
+                        .buyEndDate(request.getBuyEndDate())
+                        .shareEndDate(request.getShareEndDate())
+                        .shareTime(request.getShareTime())
+                        .shareLocation(request.getShareLocation())
+                        .shareDetailAddress(request.getShareDetailAddress())
+                        .price(request.getPrice())
+                        .quantity(request.getQuantity())
+                        .unit(request.getUnit())
+                        .feeRate(request.getFeeRate())
+                        .imageUrl(thumbnailUrl)
+                        .content(request.getContent())
                         .inDate(LocalDateTime.now())
-                        .itemSaleUrl(vo.getItemSaleUrl())
+                        .itemSaleUrl(request.getItemSaleUrl())
                         .scrapCount(0)
                         .status("open")
                         .build()
@@ -90,8 +93,8 @@ public class PeriodGroupBuyService {
         PeriodGroupBuy periodGroupBuy = periodGroupBuyRepository.save(
                 PeriodGroupBuy.builder()
                         .groupBuy(groupBuy)
-                        .dueDate(vo.getDueDate())
-                        .maxParticipants(vo.getMaxParticipants())
+                        .dueDate(request.getDueDate())
+                        .maxParticipants(request.getMaxParticipants())
                         .build()
         );
         return periodGroupBuy;
