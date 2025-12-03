@@ -328,4 +328,5 @@ public class MypageService {
         return groupBuyListDAO.getHostList(memberNo, filterStatus);
     }
 
+
 }

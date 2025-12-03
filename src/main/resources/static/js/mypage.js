@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-    // let isOwner = false; // "내 페이지인가?" 상태 저장용
+    let isOwner = true;
 
     const memberNo = 17; // [테스트용] 로그인 기능 구현 후 세션값으로 대체 필요
     let currentGroupTab = 'participate';
@@ -8,12 +8,31 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     const getStatusStep = (status) => {
-        switch (status) {
-            case 'OPEN': case 'RECRUITING': return 1;
-            case 'CLOSED': case 'PAYMENT_WAIT': return 2;
-            case 'PAID': case 'DELIVERED': return 3;
-            case 'SHARED': case 'COMPLETED': return 4;
-            default: return 1;
+
+        const cleanStatus = String(status).trim().toUpperCase();
+
+        switch (cleanStatus) {
+            case 'OPEN':
+            case 'RECRUITING':
+                return 1;
+
+            case 'CLOSED':
+            case 'PAYMENT_WAIT':
+                return 2;
+
+            case 'PAID':
+            case 'DELIVERED':
+                return 3;
+
+            case 'SHARED':
+            case 'COMPLETED':
+                return 4;
+
+            case 'CANCELED':
+                return 0;
+
+            default:
+                return 1;
         }
     };
 
@@ -36,8 +55,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const image = data.imageUrl || "/img/default_profile.jpg";
         const money = data.points || 0;
         const profileMemberNo = data.memberNo;
-
-        const isOwner = true; // [테스트용] 일단 내 페이지라고 가정
 
         if (isOwner && headerArea) {
             headerArea.innerHTML = `<button class="btn p-0 border-0" id="headerMenuBtn"><i class="bi bi-three-dots-vertical fs-4 text-dark"></i></button>
@@ -155,6 +172,24 @@ document.addEventListener('DOMContentLoaded', function() {
             timelineHtml += `<div class="step-item ${activeClass}"><div class="step-circle"></div><span class="step-text">${stepName}</span></div>`;
         });
         timelineHtml += '</div>';
+
+        const buttonHtml = isOwner
+            ? `<button class="btn ${btnConfig.cls} btn-sm text-nowrap z-index-front" style="font-size: 0.75rem;">${btnConfig.text}</button>`
+            : '';
+
+        // (B) 상세 정보(수량, 가격 등): 주인이 아니면 안 보여줌
+        const detailsHtml = isOwner
+            ? `
+            <div class="group-details">
+                <span>신청 수량 <strong>${item.myQuantity}</strong></span>
+           
+                <div class="text-muted" style="font-size: 0.8rem;">나 외에 ${item.participantExMe}명 참여 중</div>
+                ${ item.remainingQuantity > 0
+                ? `<div class="text-primary fw-bold mt-1" style="font-size: 0.8rem;">남은 수량: ${item.remainingQuantity}</div>`
+                : `<div class="text-secondary fw-bold mt-1" style="font-size: 0.8rem;">모집 완료</div>`
+            }
+            </div>`
+            : '';
 
         return `
         <div class="group-card mb-3 p-3 border rounded bg-white shadow-sm" onclick="location.href='/groupBuy/detail?no=${item.groupBuyNo}'" style="cursor:pointer;">
