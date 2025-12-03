@@ -1,6 +1,5 @@
 package com.oopsw.matna.controller.groupbuy;
 
-import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,8 +13,20 @@ public class GroupBuyController {
     }
 
     @GetMapping("/periodGroupBuy/detail/{periodGroupBuyNo}")
-    public String getDetail(@PathVariable Integer periodGroupBuyNo, Model model) {
+    public String getPeriodDetail(@PathVariable Integer periodGroupBuyNo, Model model) {
         model.addAttribute("periodGroupBuyNo", periodGroupBuyNo);
-        return "periodGroupBuyDetail";
+        return "/periodGroupBuyDetail";
     }
+
+    @GetMapping("/quantityGroupBuy/detail/{quantityGroupBuyNo}")
+    public String getQuantityDetail(@PathVariable Integer quantityGroupBuyNo, Model model) {
+        model.addAttribute("quantityGroupBuyNo", quantityGroupBuyNo);
+        return "/quantityGroupBuyDetail";
+    }
+
+    @GetMapping("/periodGroupBuy/register")
+    public String periodGroupBuyRegister() {
+        return "/addPeriodGroupBuy";
+    }
+
 }
