@@ -7,7 +7,6 @@ import com.oopsw.matna.repository.entity.*;
 import com.oopsw.matna.vo.GroupBuyParticipantVO;
 import com.oopsw.matna.vo.PeriodGroupBuyDetailVO;
 import com.oopsw.matna.vo.PeriodGroupBuyHomeVO;
-import com.oopsw.matna.vo.PeroidGroupBuyCreateVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -262,9 +261,18 @@ public class PeriodGroupBuyService {
             throw new IllegalArgumentException("존재하지 않는 기간 공동구매입니다. 번호: " + periodGroupBuyNo);
         }
 
+        Integer groupBuyNo = detailVO.getGroupBuyNo();
+        if (groupBuyNo == null) {
+            throw new IllegalStateException("공동구매 기본 번호(GroupBuyNo)를 찾을 수 없습니다.");
+        }
+        GroupBuy groupBuy = groupBuyRepository.findById(groupBuyNo)
+                .orElseThrow(() -> new IllegalStateException("GroupBuy 엔티티를 찾을 수 없습니다. 번호: " + groupBuyNo));
         List<Map<String, Object>> participantInfoList = new ArrayList<>();
         List<GroupBuyParticipant> participants =
-                groupBuyParticipantRepository.findByGroupParticipantNoOrderByParticipatedDateAsc(periodGroupBuyNo);
+                groupBuyParticipantRepository.findByGroupBuyAndCancelDateIsNullOrderByParticipatedDateAsc(groupBuy);
+
+
+
         if (participants != null && !participants.isEmpty()) {
             for (GroupBuyParticipant gbp : participants) {
                 if (gbp == null) continue;

@@ -1,3 +1,27 @@
+// normal, participant, creator
+const status = 'normal'
+const normalBtn = document.querySelector('.normal-btn');
+const participantBtn = document.querySelector('.participant-btn');
+const creatorRunningBtn = document.querySelector('.creator-running-btn');
+
+function showBtnByStatus(status){
+    const allBtns = [normalBtn, participantBtn, creatorRunningBtn];
+    allBtns.forEach(btn => btn.classList.remove('show'));
+
+    switch (status){
+        case 'normal':
+            normalBtn.classList.add('show');
+            break;
+        case 'participant':
+            participantBtn.classList.add('show');
+            break;
+        case 'creator':
+            creatorRunningBtn.classList.add('show');
+            break;
+    }
+}
+showBtnByStatus(status);
+
 // === API 호출 ===
 const api = {
     getDetail: () =>
