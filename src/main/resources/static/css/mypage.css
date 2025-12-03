@@ -206,27 +206,21 @@
     box-shadow: 0 0 0 3px #fff;
 }
 
-
 .step-item.active .step-circle {
-
     border-color: #333;
-    background-color: #333;
+    background-color: #333; /* 내부도 검은색 */
 }
-
-
 .step-item.active .step-text {
     color: #333;
     font-weight: bold;
 }
 
-
+/* ★★★ [색상 수정] 현재 단계 (Current) -> 초록색 ★★★ */
 .step-item.current .step-circle {
     border-color: #198754; /* 초록색 테두리 */
     background-color: #198754; /* 초록색 채움 */
     transform: scale(1.2); /* 강조를 위해 약간 커짐 */
 }
-
-.step-item.active .step-text,
 .step-item.current .step-text {
     color: #198754;
     font-weight: bold;
