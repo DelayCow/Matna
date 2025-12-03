@@ -145,4 +145,33 @@ public class MemberRepositoryTests {
         Boolean result = memberRepository.existsByNickname(nickname);
         System.out.println(result);
     }
+
+    @Test
+    public void addMemberTest(){
+        MemberVO memberVO = MemberVO.builder()
+                .memberId("test11")
+                .password("test11")
+                .nickname("테스트10")
+                .accountName("테스트")
+                .accountNumber("302-1234-5678-01")
+                .bank("신한은행")
+                .address("서울시 금천구 독산동")
+                .build();
+        if(memberRepository.existsByNickname(memberVO.getNickname()) || memberRepository.findByMemberId(memberVO.getMemberId()) != null){
+            System.out.println("false");
+            return;
+        }
+        Member member = memberRepository.save(Member.builder()
+                .memberId(memberVO.getMemberId())
+                .password(bCryptPasswordEncoder.encode(memberVO.getPassword()))
+                .nickname(memberVO.getNickname())
+                .accountName(memberVO.getAccountName())
+                .accountNumber(memberVO.getAccountNumber())
+                .bank(memberVO.getBank())
+                .address(memberVO.getAddress())
+                .role("ROLE_USER")
+                .point(0)
+                .build());
+        System.out.println(member != null);
+    }
 }

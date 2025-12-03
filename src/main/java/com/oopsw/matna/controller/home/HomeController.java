@@ -1,11 +1,20 @@
 package com.oopsw.matna.controller.home;
 
 
+import com.oopsw.matna.service.MemberService;
+import com.oopsw.matna.vo.MemberVO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Controller
+@RequiredArgsConstructor
 public class HomeController {
+    private final MemberService memberService;
+
     @GetMapping("/")
     public String home() {
         return "home";
@@ -34,4 +43,20 @@ public class HomeController {
     public String register() {
         return "register";
     }
+
+    @PostMapping("/member")
+    public String addMember(@ModelAttribute MemberRequset memberRequest) {
+        if(memberService.addMember(MemberVO.builder()
+                .memberId(memberRequest.getMemberId())
+                .password(memberRequest.getPassword())
+                .nickname(memberRequest.getNickname())
+                .accountName(memberRequest.getAccountName())
+                .accountNumber(memberRequest.getAccountNumber())
+                .address(memberRequest.getAddress())
+                .bank(memberRequest.getBank())
+                .build())){
+            return "redirect:/login";
+        };
+        return "redirect:/register";
+    };
 }
