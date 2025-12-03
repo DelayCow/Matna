@@ -57,7 +57,7 @@
         LEFT JOIN
         GROUP_BUY_PARTICIPANT gbp ON gbp.group_buy_no = gb.group_buy_no AND gbp.cancel_date IS NULL AND gbp.participant_no != gb.creator_no
         WHERE
-        gb.status = 'OPEN'
+        gb.status = 'open'
 
         <!-- 검색어 조건 처리 (keyword 파라미터가 있을 경우) -->
         <if test="keyword != null and keyword != ''">
@@ -85,6 +85,19 @@
             </otherwise>
         </choose>
     </select>
+
+
+    <update id="updateStatusToClosedIfDueDatePassed" parameterType="java.time.LocalDateTime">
+        UPDATE
+        GROUP_BUYS gb
+        JOIN
+        PERIOD_GROUP_BUYS pgb ON gb.group_buy_no = pgb.group_buy_no
+        SET
+        gb.status = 'closed'
+        WHERE
+        gb.status = 'open'
+        AND pgb.due_date &lt; NOW()  <!-- MySQL 기준: pgb.due_date < NOW() -->
+    </update>
 
 
     <select id="selectPeriodGroupBuyDetail" parameterType="int" resultType="com.oopsw.matna.vo.PeriodGroupBuyDetailVO">

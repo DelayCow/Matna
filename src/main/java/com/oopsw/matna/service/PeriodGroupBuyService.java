@@ -240,6 +240,7 @@ public class PeriodGroupBuyService {
         if (params == null) {
             params = new HashMap<>();
         }
+        periodGroupBuyDAO.updateStatusToClosedIfDueDatePassed(LocalDateTime.now());
         List<PeriodGroupBuyHomeVO> list = periodGroupBuyDAO.selectGroupBuyListForHome(params);
         return list;
     }
