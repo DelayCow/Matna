@@ -3,22 +3,17 @@ package com.oopsw.matna.controller.ingredient;
 import com.oopsw.matna.repository.entity.Ingredient;
 import com.oopsw.matna.service.PeriodGroupBuyService;
 import com.oopsw.matna.dto.IngredientResponse;
-import com.oopsw.matna.repository.entity.Ingredient;
 import com.oopsw.matna.service.IngredientService;
 import com.oopsw.matna.service.PeriodGroupBuyService;
 import com.oopsw.matna.vo.IngredientVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map;
 import java.util.stream.Collectors;
 
