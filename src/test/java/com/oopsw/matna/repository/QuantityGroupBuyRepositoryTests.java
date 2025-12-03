@@ -138,7 +138,6 @@ public class QuantityGroupBuyRepositoryTests {
 
     @Test
     void testUpdateStatusToClosed_QuantityMet() {
-        // Given: 상태를 변경할 GroupBuy
         Integer GroupBuyId = 32;
         GroupBuy groupBuy = groupBuyRepository.findById(GroupBuyId).get();
 

@@ -1,6 +1,8 @@
-package com.oopsw.matna.vo;
+package com.oopsw.matna.dto;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -8,13 +10,13 @@ import java.time.LocalTime;
 @Builder
 @Data
 @ToString
-public class PeriodGroupBuyDetailVO {
+public class PeriodDetailInfo {
     private Integer groupBuyNo;
     private String title;
     private String content;
     private String imageUrl;
     private Integer ingredientNo;
-    private Integer maxParticipants;
+    private int maxParticipants;
     private Integer feeRate;
     private Integer price;
     private Integer quantity;
@@ -22,7 +24,7 @@ public class PeriodGroupBuyDetailVO {
     private String itemSaleUrl;
     private Integer periodGroupBuyNo;
 
-    private Integer participants;
+    private int participants;
 
     private LocalDateTime inDate;
     private String shareLocation;
@@ -36,6 +38,4 @@ public class PeriodGroupBuyDetailVO {
     private Integer remainingTime;
     private String status;
 
-    private String profileImageUrl;
-    private String nickname;
 }
