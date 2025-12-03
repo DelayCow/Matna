@@ -2,24 +2,42 @@ package com.oopsw.matna.controller.ingredient;
 
 import com.oopsw.matna.repository.entity.Ingredient;
 import com.oopsw.matna.service.PeriodGroupBuyService;
+import com.oopsw.matna.dto.IngredientResponse;
+import com.oopsw.matna.repository.entity.Ingredient;
+import com.oopsw.matna.service.IngredientService;
+import com.oopsw.matna.service.PeriodGroupBuyService;
+import com.oopsw.matna.vo.IngredientVO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/ingredients")
+@RequestMapping("/api")
 public class IngredientRestController {
-
+    private final IngredientService ingredientService;
     private final PeriodGroupBuyService periodGroupBuyService;
 
-    @GetMapping("/search")
+    @GetMapping("/ingredients")
+    public List<IngredientResponse> findIngredientByKeyword(@RequestParam String keyword) {
+        List<IngredientVO> ingredients = ingredientService.findIngredientByKeyword(keyword);
+        return ingredients.stream().map(ingredient -> IngredientResponse.builder()
+                .ingredientNo(ingredient.getIngredientNo())
+                .ingredientName(ingredient.getIngredientName())
+                .build()).collect(Collectors.toList());
+    };
+
+    @GetMapping("/ingredients/search")
     public ResponseEntity<?> getIngredients(@RequestParam String keyword) {
         try {
             List<Ingredient> ingredients = periodGroupBuyService.getIngredientKeyword(keyword);
@@ -41,7 +59,7 @@ public class IngredientRestController {
         }
     }
 
-    @PostMapping("/add")
+    @PostMapping("/ingredients/add")
     public ResponseEntity<?> addIngredient(
             @RequestParam Integer creatorNo,
             @RequestParam String ingredientName) {

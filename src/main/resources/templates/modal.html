@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+</head>
+<body>
+<!-- 알림 모달 (성공/실패 공통) -->
+<div th:fragment="modal" class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="alertModalLabel">
+                    <i class="bi" id="modalIcon"></i>
+                    <span id="modalTitle"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-primary" id="modalConfirmBtn" data-bs-dismiss="modal">확인</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 검증 오류 모달 (여러 항목 리스트) -->
+<div th:fragment="multiModal" class="modal fade" id="validationModal" tabindex="-1" aria-labelledby="validationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-warning bg-opacity-10 border-0">
+                <h5 class="modal-title text-warning" id="validationModalLabel">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    입력 항목을 확인해주세요
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul class="list-group list-group-flush" id="validationList"></ul>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-warning" data-bs-dismiss="modal">확인</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

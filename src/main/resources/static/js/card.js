@@ -33,11 +33,12 @@ const translateRecipeData = function(recipe){
     return translatedRecipe
 }
 const createRecipeCard = function (r){
+    const writerProfileUrl = r.writerProfile || "/img/user.png";
     return `<div class="card card-custom card-wide" data-type="recipe" data-no="${r.recipeNo}">
             <img src="${r.thumbnailUrl}" class="card-img-top" alt="${r.title}">
             <div class="card-body px-0 py-2">
               <div class="d-flex align-items-center mb-1">
-                <img src=${r.writerProfile} class="profile-img" alt="User">
+                <img src=${writerProfileUrl} class="profile-img" alt="User">
                 <div class="overflow-hidden w-100">
                   <div class="d-flex overflow-hidden w-100">
                     <small class="fw-bold text-nowrap">${r.writerNickname}</small>
@@ -53,7 +54,7 @@ const createRecipeCard = function (r){
                 <span class="text-secondary"><i class="bi bi-person"></i> ${r.servings}인분</span>
                 <span class="text-secondary"><i class="bi bi-clock"></i> ${r.prepTime}분</span>
                 <span class="text-secondary"><i class="bi bi-star"></i> ${r.difficulty}</span>
-                <span><img src="../static/img/spicy.png" class="spicy"> ${r.spicyLevel}</span>
+                <span><img src="/img/spicy.png" class="spicy"> ${r.spicyLevel}</span>
               </div>
             </div>
           </div>`;
