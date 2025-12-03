@@ -320,5 +320,12 @@ public class MypageService {
     }
 
 
+    public List<GroupBuyListVO> getHostedGroupBuyList(Integer memberNo, String filterStatus) {
+
+        if (filterStatus == null || filterStatus.isEmpty()) {
+            filterStatus = "ALL";
+        }
+        return groupBuyListDAO.getHostList(memberNo, filterStatus);
+    }
 
 }

@@ -13,5 +13,12 @@ public interface GroupBuyListDAO {
             @Param("filter") String filter
     );
 
+    List<GroupBuyListVO> getHostList(
+            @Param("memberNo") Integer memberNo,
+            @Param("filter") String filter
+    );
+
     List<GroupBuyListVO> getCreateGroupBuyList(Integer creatorNo);
 }
+
+

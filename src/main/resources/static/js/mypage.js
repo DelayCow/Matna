@@ -214,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const baseUrl = (currentGroupTab === 'participate')
                 ? `/api/mypage/${memberNo}/groupBuy/participation`
-                : `/api/mypage/${memberNo}/groupBuy/hosting`;
+                : `/api/mypage/${memberNo}/groupBuy/host`;
 
             const url = `${baseUrl}?filter=${currentFilterStatus}`;
 
@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if(btnOpen) {
         btnOpen.addEventListener('change', () => {
             if(btnOpen.checked) {
-                currentGroupTab = 'hosting';
+                currentGroupTab = 'host';
                 fetchGroupData(); // 데이터 다시 로드
             }
         });

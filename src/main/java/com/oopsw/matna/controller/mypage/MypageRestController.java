@@ -175,5 +175,13 @@ public class MypageRestController {
         return mypageService.getParticipatedGroupBuyList(memberNo, filter);
     }
 
+    @GetMapping("/{memberNo}/groupBuy/host")
+    public List<GroupBuyListVO> getGroupBuyHostList(
+            @PathVariable("memberNo") int memberNo,
+            @RequestParam(value = "filter", defaultValue = "ALL") String filter
+    ) {
+        return mypageService.getHostedGroupBuyList(memberNo, filter);
+    }
+
 
 }
