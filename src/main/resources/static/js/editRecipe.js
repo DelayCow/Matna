@@ -52,49 +52,49 @@ function setupImageUploadListeners(container) {
     }
 }
 
-document.getElementById('addStepBtn').addEventListener('click', function (e) {
-    e.preventDefault();
-    const parentDiv = this.parentElement;
-    const newStep = document.createElement('div');
-    newStep.className = 'recipe-step d-flex mb-3';
-    newStep.innerHTML = `
-        <div class="img-upload-area me-3 flex-shrink-0">
-            <i class="bi bi-plus fs-1 text-secondary"></i>
-            <input type="file" class="img-file-upload" accept="image/*" style="display: none;" />
-        </div>
-        <textarea class="form-control" rows="3" placeholder="레시피 설명"></textarea>
-    `;
-    parentDiv.before(newStep);
-
-    const newStepImageContainer = newStep.querySelector('.img-upload-area');
-    if (newStepImageContainer) {
-        setupImageUploadListeners(newStepImageContainer);
-    } else {
-        console.error('새 단계의 .img-upload-area를 찾을 수 없습니다');
-    }
-});
+// document.getElementById('addStepBtn').addEventListener('click', function (e) {
+//     e.preventDefault();
+//     const parentDiv = this.parentElement;
+//     const newStep = document.createElement('div');
+//     newStep.className = 'recipe-step d-flex mb-3';
+//     newStep.innerHTML = `
+//         <div class="img-upload-area me-3 flex-shrink-0">
+//             <i class="bi bi-plus fs-1 text-secondary"></i>
+//             <input type="file" class="img-file-upload" accept="image/*" style="display: none;" />
+//         </div>
+//         <textarea class="form-control" rows="3" placeholder="레시피 설명"></textarea>
+//     `;
+//     parentDiv.before(newStep);
+//
+//     const newStepImageContainer = newStep.querySelector('.img-upload-area');
+//     if (newStepImageContainer) {
+//         setupImageUploadListeners(newStepImageContainer);
+//     } else {
+//         console.error('새 단계의 .img-upload-area를 찾을 수 없습니다');
+//     }
+// });
 
 const ingredientContainer = document.getElementById('ingredientContainer');
 const other = document.getElementById('otherItem');
-document.getElementById('addOtherItemBtn').addEventListener('click', (e) => addIngredient(e, other.value))
+// document.getElementById('addOtherItemBtn').addEventListener('click', (e) => addIngredient(e, other.value))
 let addedIngredients = [];
 
 const searchInput = document.getElementById('itemSelect');
 const itemMenu = document.getElementById('itemDropdownMenu');
 let isItemClicked = false;
 
-searchInput.addEventListener('input', debounce(function() {
-    if (isItemClicked) {
-        isItemClicked = false;
-        return;
-    }
-    const query = this.value.trim();
-    if (query.length > 0) {
-        fetchSearchResults(query, updateDropdownMenu);
-    } else {
-        itemMenu.classList.remove('show');
-    }
-}, 300));
+// searchInput.addEventListener('input', debounce(function() {
+//     if (isItemClicked) {
+//         isItemClicked = false;
+//         return;
+//     }
+//     const query = this.value.trim();
+//     if (query.length > 0) {
+//         fetchSearchResults(query, updateDropdownMenu);
+//     } else {
+//         itemMenu.classList.remove('show');
+//     }
+// }, 300));
 
 function updateDropdownMenu(results) {
     itemMenu.innerHTML = '';
@@ -106,7 +106,7 @@ function updateDropdownMenu(results) {
             a.href = '#';
             a.textContent = item.ingredientName;
 
-            a.addEventListener('click', (e) => addIngredient(e, item.ingredientName));
+            // a.addEventListener('click', (e) => addIngredient(e, item.ingredientName));
 
             itemMenu.appendChild(a);
         });
@@ -117,7 +117,6 @@ function updateDropdownMenu(results) {
 }
 
 const deleteIngredient = function (id) {
-    console.log(id)
     const elementToRemove = document.getElementById(id);
     if (elementToRemove) {
         elementToRemove.remove();
@@ -196,7 +195,6 @@ const loadExistingIngredients = function() {
             addedIngredients.push(ingredientName);
         }
     });
-    console.log('기존 재료 로드 완료:', addedIngredients);
 }
 function collectIngredients() {
     const ingredients = [];
@@ -410,7 +408,7 @@ document.addEventListener('DOMContentLoaded',function (){
         try {
             await submitRecipeData(this);
         } catch (error) {
-            console.error("레시피 등록 처리 중 최종 오류:", error);
+            console.error("레시피 수정 처리 중 최종 오류:", error);
             showAlertModal(
                 '오류 발생',
                 '예상치 못한 오류가 발생했습니다.<br>잠시 후 다시 시도해주세요.',
