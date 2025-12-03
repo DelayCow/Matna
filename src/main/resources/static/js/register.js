@@ -24,27 +24,74 @@ document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('login-btn').addEventListener('click', function(){
         location.href="login.html";
     })
-    document.getElementById('idCheck').addEventListener('click', function(){
-        msg = document.getElementById('idcheckmsg')
-        msg.classList.remove('notshow');
-        const isDuplicated = true;//id중복확인 api로 true/false받기
-        if(isDuplicated){
-            msg.innerText = "사용할 수 있는 아이디입니다.";
-            msg.classList.add('available');
-        }else{
-            msg.innerText = "사용할 수 없는 아이디입니다.";
+    document.getElementById('idCheck').addEventListener('click', async function(e){
+        e.preventDefault();
+        msg = document.getElementById('idcheckmsg');
+        msg.classList.remove('notshow', 'available', 'unavailable');
+
+        const memberIdValue = document.querySelector('#memberId').value;
+
+        if (!memberIdValue.trim()) {
+            msg.innerText = "아이디를 입력해주세요.";
+            msg.classList.add('unavailable');
+            return;
+        }
+        try{
+            const response = await fetch(`/api/auth/check/id?memberId=${memberIdValue}`)
+
+            if(!response.ok){
+                const errorData = await response.json();
+                console.error(errorData.message);
+            }
+            const data = await response.json();
+            const isDuplicated = data.result;
+
+            if(!isDuplicated){
+                msg.innerText = "사용할 수 있는 아이디입니다.";
+                msg.classList.add('available');
+            }else{
+                msg.innerText = "사용할 수 없는 아이디입니다.";
+                msg.classList.add('unavailable');
+            }
+        } catch (error) {
+            console.error('아이디 중복 확인 중 오류 발생:', error);
+            msg.innerText = "오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
             msg.classList.add('unavailable');
         }
+
     })
-    document.getElementById('nicknameCheck').addEventListener('click', function(){
-        msg = document.getElementById('nicknamecheckmsg')
-        msg.classList.remove('notshow');
-        const isDuplicated = false; //닉네임중복확인api booelan값
-        if(isDuplicated){
-            msg.innerText = "사용할 수 있는 닉네임입니다.";
-            msg.classList.add('available');
-        }else{
-            msg.innerText = "사용할 수 없는 닉네임입니다.";
+    document.getElementById('nicknameCheck').addEventListener('click', async function(e){
+        e.preventDefault();
+        msg = document.getElementById('nicknamecheckmsg');
+        msg.classList.remove('notshow', 'available', 'unavailable');
+
+        const nicknameValue = document.querySelector('#nickname').value;
+
+        if (!nicknameValue.trim()) {
+            msg.innerText = "닉네임을 입력해주세요.";
+            msg.classList.add('unavailable');
+            return;
+        }
+        try{
+            const response = await fetch(`/api/auth/check/nickname?nickname=${nicknameValue}`)
+
+            if(!response.ok){
+                const errorData = await response.json();
+                console.error(errorData.message);
+            }
+            const data = await response.json();
+            const isDuplicated = data.result;
+
+            if(!isDuplicated){
+                msg.innerText = "사용할 수 있는 닉네임입니다.";
+                msg.classList.add('available');
+            }else{
+                msg.innerText = "사용할 수 없는 닉네임입니다.";
+                msg.classList.add('unavailable');
+            }
+        } catch (error) {
+            console.error('닉네임 중복 확인 중 오류 발생:', error);
+            msg.innerText = "오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
             msg.classList.add('unavailable');
         }
     })
