@@ -13,7 +13,9 @@
         gb.share_end_date        AS shareEndDate,
         gb.buy_date              AS buyDate,
         gb.arrival_date          AS arrivalDate,
+        gb.unit                     AS unit,
         gbp.receive_date         AS receiveDate,
+
 
         /* 남은 수량 계산 */
         CASE
@@ -73,6 +75,7 @@
         gb.share_end_date        AS shareEndDate,
         gb.buy_date              AS buyDate,
         gb.arrival_date          AS arrivalDate,
+        gb.unit AS unit,
 
         /* 참여 내역이 없으면 NULL 처리 */
         gbp.receive_date         AS receiveDate,

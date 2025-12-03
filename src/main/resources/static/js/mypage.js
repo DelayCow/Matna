@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-    // let isOwner = false; // "내 페이지인가?" 상태 저장용
+    let isOwner = true; // 내 페이지인가 dkslsrk
 
     const memberNo = 17; // [테스트용] 로그인 기능 구현 후 세션값으로 대체 필요
     let currentGroupTab = 'participate';
@@ -8,12 +8,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     const getStatusStep = (status) => {
-        switch (status) {
-            case 'OPEN': case 'RECRUITING': return 1;
-            case 'CLOSED': case 'PAYMENT_WAIT': return 2;
-            case 'PAID': case 'DELIVERED': return 3;
-            case 'SHARED': case 'COMPLETED': return 4;
-            default: return 1;
+
+        const cleanStatus = String(status).trim().toUpperCase();
+
+
+        switch (cleanStatus) {
+            case 'OPEN':
+            case 'RECRUITING':
+                return 1;
+
+            case 'CLOSED':
+            case 'PAYMENT_WAIT':
+                return 2;
+
+            case 'PAID':
+            case 'DELIVERED':
+                return 3;
+
+            case 'SHARED':
+            case 'COMPLETED':
+                return 4;
+
+            case 'CANCELED':
+                return 0;
+
+            default:
+                return 1;
         }
     };
 
@@ -37,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const money = data.points || 0;
         const profileMemberNo = data.memberNo;
 
-        const isOwner = true; // [테스트용] 일단 내 페이지라고 가정
+        // const isOwner = false; // [테스트용] 일단 내 페이지라고 가정
 
         if (isOwner && headerArea) {
             headerArea.innerHTML = `<button class="btn p-0 border-0" id="headerMenuBtn"><i class="bi bi-three-dots-vertical fs-4 text-dark"></i></button>
@@ -64,6 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     const createRecipeCard = (item) => {
+
 
         const imgUrl = item.image ? item.image : '/img/default_food.jpg';
 
@@ -142,11 +163,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     const createGroupCard = (item) => {
+
+        console.log("단위 데이터 확인:", item.unit);
+        const unit = item.unit || '';
+
         const currentStep = getStatusStep(item.status);
+
         const btnConfig = getButtonConfig(item.status);
 
         const steps = ["모집", "상품결제", "상품도착", "나눔진행"];
         let timelineHtml = '<div class="timeline-steps">';
+        // 계산 식 다시 해야 함 아오
         steps.forEach((stepName, index) => {
             const stepNum = index + 1;
             let activeClass = "";
@@ -156,29 +183,47 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         timelineHtml += '</div>';
 
+
+
+        const buttonHtml = isOwner
+            ? `<button class="btn ${btnConfig.cls} btn-sm text-nowrap z-index-front" style="font-size: 0.75rem;">${btnConfig.text}</button>`
+            : '';
+
+        // (B) 상세 정보(수량, 가격 등): 주인이 아니면 안 보여줌
+        const detailsHtml = isOwner
+            ? `
+            <div class="group-details">
+                <span>신청 수량 <strong>${item.myQuantity}${unit}</strong></span>
+           
+                <div class="text-muted" style="font-size: 0.8rem;">나 외에 ${item.participantExMe}명 참여 중</div>
+                ${ item.remainingQuantity > 0
+                ? `<div class="text-primary fw-bold mt-1" style="font-size: 0.8rem;">남은 수량: ${item.remainingQuantity}${unit}</div>`
+                : `<div class="text-secondary fw-bold mt-1" style="font-size: 0.8rem;">모집 완료</div>`
+            }
+            </div>`
+            : '';
+
+
         return `
         <div class="group-card mb-3 p-3 border rounded bg-white shadow-sm" onclick="location.href='/groupBuy/detail?no=${item.groupBuyNo}'" style="cursor:pointer;">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-                <div class="flex-grow-1 me-3">${timelineHtml}</div>
-                <button class="btn ${btnConfig.cls} btn-sm text-nowrap z-index-front" style="font-size: 0.75rem;">${btnConfig.text}</button>
+        <div class="d-flex justify-content-between align-items-start mb-2">
+            <div class="flex-grow-1 me-3">${timelineHtml}</div>
+            
+            ${buttonHtml} 
+            
+        </div>
+        <div class="d-flex align-items-center gap-3">
+            <div class="rounded overflow-hidden border" style="width: 80px; height: 80px; flex-shrink: 0;">
+                <img src="${item.imageUrl || '/img/default_food.jpg'}" alt="${item.title}" class="w-100 h-100 object-fit-cover">
             </div>
-            <div class="d-flex align-items-center gap-3">
-                <div class="rounded overflow-hidden border" style="width: 80px; height: 80px; flex-shrink: 0;">
-                    <img src="${item.imageUrl || '/img/default_food.jpg'}" alt="${item.title}" class="w-100 h-100 object-fit-cover">
-                </div>
-                <div class="group-info flex-grow-1">
-                    <h5 class="fw-bold mb-1" style="font-size: 1rem;">${item.title}</h5>
-                    <div class="group-details">
-                        <span>신청 수량 <strong>${item.myQuantity}</strong></span>
-                        <div class="text-muted" style="font-size: 0.8rem;">나 외에 ${item.participantExMe}명 참여 중</div>
-                        ${ item.remainingQuantity > 0
-            ? `<div class="text-primary fw-bold mt-1" style="font-size: 0.8rem;">남은 수량: ${item.remainingQuantity}</div>`
-            : `<div class="text-secondary fw-bold mt-1" style="font-size: 0.8rem;">모집 완료</div>`
-        }
-                    </div>
-                </div>
+            <div class="group-info flex-grow-1">
+                <h5 class="fw-bold mb-1" style="font-size: 1rem;">${item.title}</h5>
+                
+                ${detailsHtml}
+                
             </div>
-        </div>`;
+        </div>
+    </div>`;
     };
 
 
