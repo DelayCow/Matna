@@ -65,7 +65,7 @@ public class PeriodRestController {
             Map<String, Object> serviceResultMap = periodGroupBuyService.getPeriodGroupBuyDetail(periodGroupBuyNo);
             PeriodGroupBuyDetailVO detailVO = (PeriodGroupBuyDetailVO) serviceResultMap.get("groupBuyDetail");
 
-            @SuppressWarnings("unchecked")
+//            @SuppressWarnings("unchecked")
             List<Map<String, Object>> participantMapList = (List<Map<String, Object>>) serviceResultMap.get("participants");
             List<PeriodDetailResponse.ParticipantInfo> participantList = participantMapList.stream()
                     .map(map -> PeriodDetailResponse.ParticipantInfo.builder()
@@ -75,7 +75,7 @@ public class PeriodRestController {
                             .build())
                     .collect(Collectors.toList());
 
-            @SuppressWarnings("unchecked")
+//            @SuppressWarnings("unchecked")
             List<Map<String, Object>> recipeMapList = (List<Map<String, Object>>) serviceResultMap.get("recipes");
             List<PeriodDetailResponse.RecipeInfo> recipeList = recipeMapList.stream()
                     .map(map -> PeriodDetailResponse.RecipeInfo.builder()
@@ -98,23 +98,6 @@ public class PeriodRestController {
             return ResponseEntity.notFound().build();
         }
     }
-
-//    @PostMapping("/register")
-//    public ResponseEntity<Map<String, Object>> addPeriodGroupBuy(
-//            @RequestPart("PeriodRegisterRequest") String registerRequestJson,
-//            @RequestPart(value = "thumbnailFile", required = false) MultipartFile thumbnailFile) {
-//        Map<String, Object> response = new HashMap<>();
-//        try {
-//            PeriodGroupBuy periodGroupBuy = periodGroupBuyService.addPeriodGroupBuy(registerRequestJson);
-//            response.put("success", true);
-//            response.put("data", periodGroupBuy);
-//            return ResponseEntity.ok(response);
-//        } catch (Exception e) {
-//            response.put("success", false);
-//            response.put("message", "공동구매 등록 중 오류가 발생했습니다.");
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-//        }
-//    }
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> addPeriodGroupBuy(

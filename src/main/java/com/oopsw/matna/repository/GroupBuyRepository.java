@@ -11,4 +11,6 @@ public interface GroupBuyRepository extends JpaRepository<GroupBuy,Integer> {
     List<GroupBuy> findByCreator_MemberNo(Integer creatorNo);
     List<GroupBuy> findByIngredient_IngredientNo(Integer ingredientNo);
     boolean existsByIngredient_IngredientNoAndStatus(Integer ingredientNo, String status);
+
+    Integer groupBuyNo(Integer groupBuyNo);
 }
