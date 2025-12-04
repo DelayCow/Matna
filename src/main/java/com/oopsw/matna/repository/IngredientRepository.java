@@ -24,6 +24,8 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Integer>
     @EntityGraph(attributePaths = {"creator"})
     List<Ingredient> findByIngredientNameContainingAndDelDateIsNull(String keyword);
 
+    Optional<Ingredient> findByIngredientNameAndDelDateIsNull(String name);
+
     @EntityGraph(attributePaths = {"creator"})
     Optional<Ingredient> findById(Integer ingredientId);
 
