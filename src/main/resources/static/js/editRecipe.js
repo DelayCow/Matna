@@ -52,27 +52,27 @@ function setupImageUploadListeners(container) {
     }
 }
 
-// document.getElementById('addStepBtn').addEventListener('click', function (e) {
-//     e.preventDefault();
-//     const parentDiv = this.parentElement;
-//     const newStep = document.createElement('div');
-//     newStep.className = 'recipe-step d-flex mb-3';
-//     newStep.innerHTML = `
-//         <div class="img-upload-area me-3 flex-shrink-0">
-//             <i class="bi bi-plus fs-1 text-secondary"></i>
-//             <input type="file" class="img-file-upload" accept="image/*" style="display: none;" />
-//         </div>
-//         <textarea class="form-control" rows="3" placeholder="레시피 설명"></textarea>
-//     `;
-//     parentDiv.before(newStep);
-//
-//     const newStepImageContainer = newStep.querySelector('.img-upload-area');
-//     if (newStepImageContainer) {
-//         setupImageUploadListeners(newStepImageContainer);
-//     } else {
-//         console.error('새 단계의 .img-upload-area를 찾을 수 없습니다');
-//     }
-// });
+document.getElementById('addStepBtn').addEventListener('click', function (e) {
+    e.preventDefault();
+    const parentDiv = this.parentElement;
+    const newStep = document.createElement('div');
+    newStep.className = 'recipe-step d-flex mb-3';
+    newStep.innerHTML = `
+        <div class="img-upload-area me-3 flex-shrink-0">
+            <i class="bi bi-plus fs-1 text-secondary"></i>
+            <input type="file" class="img-file-upload" accept="image/*" style="display: none;" />
+        </div>
+        <textarea class="form-control" rows="3" placeholder="레시피 설명"></textarea>
+    `;
+    parentDiv.before(newStep);
+
+    const newStepImageContainer = newStep.querySelector('.img-upload-area');
+    if (newStepImageContainer) {
+        setupImageUploadListeners(newStepImageContainer);
+    } else {
+        console.error('새 단계의 .img-upload-area를 찾을 수 없습니다');
+    }
+});
 
 const ingredientContainer = document.getElementById('ingredientContainer');
 const other = document.getElementById('otherItem');
@@ -83,18 +83,18 @@ const searchInput = document.getElementById('itemSelect');
 const itemMenu = document.getElementById('itemDropdownMenu');
 let isItemClicked = false;
 
-// searchInput.addEventListener('input', debounce(function() {
-//     if (isItemClicked) {
-//         isItemClicked = false;
-//         return;
-//     }
-//     const query = this.value.trim();
-//     if (query.length > 0) {
-//         fetchSearchResults(query, updateDropdownMenu);
-//     } else {
-//         itemMenu.classList.remove('show');
-//     }
-// }, 300));
+searchInput.addEventListener('input', debounce(function() {
+    if (isItemClicked) {
+        isItemClicked = false;
+        return;
+    }
+    const query = this.value.trim();
+    if (query.length > 0) {
+        fetchSearchResults(query, updateDropdownMenu);
+    } else {
+        itemMenu.classList.remove('show');
+    }
+}, 300));
 
 function updateDropdownMenu(results) {
     itemMenu.innerHTML = '';
