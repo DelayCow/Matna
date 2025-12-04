@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const userData = {
         name: "베베는오리",
-        image: "../static/img/user1.png",
+        image: "/img/user1.png",
         money: 5600,
         isOwner: isMyPage
     };

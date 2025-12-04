@@ -1,128 +1,97 @@
-document.addEventListener('DOMContentLoaded', function() {
+import {
+    currentPage,
+    currentSpicyLevel,
+    currentKeyword,
+    currentSort,
+    setCurrentPage, setCurrentKeyword
+} from './searchRecipe.js';
 
-    initializeSpicyIcons();
+import { initializeSpicyIcons } from './spicyFilter.js';
+import { initializeDropdown } from './dropDown.js';
 
-    const recipeContainer = document.getElementById('recipeContainer');
-    const recipeData = [
-{
-    "recipeNo": 45,
-    "thumbnailUrl": "../static/img/steamedeggs.jpg",
-    "writerProfile": "../static/img/user.png",
-    "writerNickname": "침대견",
-    "title": "안주로 딱~ 폭신하고 부드러운 계란찜",
-    "averageRating": 4.5,
-    "reviewCount": 8,
-    "servings": 1,
-    "prepTime": 10,
-    "difficulty": "easy",
-    "spicyLevel": 0
-},
-{
-    "recipeNo": 5,
-    "thumbnailUrl": "../static/img/ravioli.jpg",
-    "writerProfile": "../static/img/user.png",
-    "writerNickname": "눕오리",
-    "title": "속을 뜨끈하게 한국인 입맛에 맞춘 라비올리",
-    "averageRating": 4.0,
-    "reviewCount": 14,
-    "servings": 2,
-    "prepTime": 20,
-    "difficulty": "normal",
-    "spicyLevel": 0
-},
-{
-    "recipeNo": 45,
-    "thumbnailUrl": "../static/img/steamedeggs.jpg",
-    "writerProfile": "../static/img/user.png",
-    "writerNickname": "침대견",
-    "title": "안주로 딱~ 폭신하고 부드러운 계란찜",
-    "averageRating": 4.5,
-    "reviewCount": 8,
-    "servings": 1,
-    "prepTime": 10,
-    "difficulty": "easy",
-    "spicyLevel": 0
-},
-{
-    "recipeNo": 5,
-    "thumbnailUrl": "../static/img/ravioli.jpg",
-    "writerProfile": "../static/img/user.png",
-    "writerNickname": "눕오리",
-    "title": "속을 뜨끈하게 한국인 입맛에 맞춘 라비올리",
-    "averageRating": 4.0,
-    "reviewCount": 14,
-    "servings": 2,
-    "prepTime": 20,
-    "difficulty": "normal",
-    "spicyLevel": 0
-},
-{
-    "recipeNo": 45,
-    "thumbnailUrl": "../static/img/steamedeggs.jpg",
-    "writerProfile": "../static/img/user.png",
-    "writerNickname": "침대견",
-    "title": "안주로 딱~ 폭신하고 부드러운 계란찜",
-    "averageRating": 4.5,
-    "reviewCount": 8,
-    "servings": 1,
-    "prepTime": 10,
-    "difficulty": "easy",
-    "spicyLevel": 0
-},
-{
-    "recipeNo": 5,
-    "thumbnailUrl": "../static/img/ravioli.jpg",
-    "writerProfile": "../static/img/user.png",
-    "writerNickname": "눕오리",
-    "title": "속을 뜨끈하게 한국인 입맛에 맞춘 라비올리",
-    "averageRating": 4.0,
-    "reviewCount": 14,
-    "servings": 2,
-    "prepTime": 20,
-    "difficulty": "normal",
-    "spicyLevel": 0
-},
-{
-    "recipeNo": 45,
-    "thumbnailUrl": "../static/img/steamedeggs.jpg",
-    "writerProfile": "../static/img/user.png",
-    "writerNickname": "침대견",
-    "title": "안주로 딱~ 폭신하고 부드러운 계란찜",
-    "averageRating": 4.5,
-    "reviewCount": 8,
-    "servings": 1,
-    "prepTime": 10,
-    "difficulty": "easy",
-    "spicyLevel": 0
-},
-{
-    "recipeNo": 5,
-    "thumbnailUrl": "../static/img/ravioli.jpg",
-    "writerProfile": "../static/img/user.png",
-    "writerNickname": "눕오리",
-    "title": "속을 뜨끈하게 한국인 입맛에 맞춘 라비올리",
-    "averageRating": 4.0,
-    "reviewCount": 14,
-    "servings": 2,
-    "prepTime": 20,
-    "difficulty": "normal",
-    "spicyLevel": 0
-},
-    ]
-    recipeData.forEach(recipe => {
-    const translatedFormatRecipe = translateRecipeData(recipe);
-    const cardHtml = createRecipeCard(translatedFormatRecipe);
-    recipeContainer.insertAdjacentHTML('beforeend', `<div class="col d-flex justify-content-center" > ${cardHtml} </div>`)
-})
+const recipeContainer = document.getElementById('recipeContainer');
+
+const addRecipeCard = function(recipeData) {
+    if (recipeContainer === null) {
+        console.error("Recipe container element not found.");
+        return;
+    }
+
+    const recipes = recipeData.content;
+    // hasNext = !recipeData.last; //나중에 무한스크롤 구현시 사용
+
+    recipes.forEach(recipe => {
+        const translatedFormatRecipe = translateRecipeData(recipe);
+        const cardHtml = createRecipeCard(translatedFormatRecipe);
+        recipeContainer.insertAdjacentHTML('beforeend', `<div class="col d-flex justify-content-center" > ${cardHtml} </div>`)
+    })
+
     document.querySelectorAll('.card-custom').forEach(card => {
-    card.addEventListener('click', function() {
-    const noValue = this.getAttribute('data-no');
-    const type = this.getAttribute('data-type');
+        card.addEventListener('click', function() {
+            const noValue = this.getAttribute('data-no');
+            const type = this.getAttribute('data-type');
+            if (noValue) {
+                location.href = `recipe/detail/${noValue}`;
+            }
+        });
+    });
+};
 
-    if (noValue) {
-    // window.location.href = `http://127.0.0.1:5432/${type}/detail/${noValue}`; //api 예상
-    alert(type + noValue) //테스트
+const fetchRecipeData = function(resetPage = true) {
+    if (resetPage) {
+        setCurrentPage(0);
+        // hasNext = true;
+        if (recipeContainer) {
+            recipeContainer.innerHTML = '';
+        }
+    }
+
+    // if (!hasNext) {
+    //     return;
+    // }
+
+    let url = `api/recipes?page=${currentPage}&size=20&sort=${currentSort},desc`; //임시로 20개로
+
+    if (currentSpicyLevel !== null) {
+        url += `&spicyLevel=${currentSpicyLevel}`;
+    }
+    if (currentKeyword !== null && currentKeyword.trim() !== "") {
+        url += `&keyword=${encodeURIComponent(currentKeyword.trim())}`;
+    }
+
+    fetch(url)
+        .then(response => {
+            return response.json();
+        })
+        .then(recipeData => {
+            addRecipeCard(recipeData);
+            setCurrentPage(currentPage + 1);
+        })
+        .catch(error => {
+            console.error("데이터를 불러오는 중 오류 발생:", error);
+        });
+};
+
+function initializeSearch() {
+    const searchInput = document.querySelector('.search-input');
+
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            setCurrentKeyword(this.value);
+            fetchRecipeData(true);
+        }
+    });
 }
+
+document.addEventListener('recipeFilterChange', function(e) {
+    //여기서만 필터, 검색, 정렬 감지해서 반영
+    fetchRecipeData(true);
 });
-});
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeSpicyIcons();
+    initializeDropdown();
+    initializeSearch();
+
+    fetchRecipeData();
 });

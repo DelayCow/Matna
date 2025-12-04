@@ -12,4 +12,7 @@ import lombok.NoArgsConstructor;
 public class IngredientVO {
     private Integer ingredientNo;
     private String ingredientName;
+    private String unit;
+    private Float amount;
+    private Boolean isGroupBuying;
 }

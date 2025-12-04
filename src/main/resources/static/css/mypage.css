@@ -185,11 +185,13 @@
     position: relative;
     z-index: 1;
     text-align: center;
-    background: transparent; /* ★수정: 배경을 투명하게 해서 박스 느낌 제거 */
-    width: 60px; /* 텍스트 줄바꿈 방지용 최소 너비 확보 */
+    background: transparent;
+    /*width: 60px;*/
     display: flex;
     flex-direction: column;
     align-items: center;
+    white-space: nowrap;
+    word-break: keep-all;
 }
 
 /* 4. 동그라미 (선을 가려주는 역할) */
@@ -206,34 +208,26 @@
     box-shadow: 0 0 0 3px #fff;
 }
 
-/* 활성화 상태 (초록색) */
 .step-item.active .step-circle {
-    border-color: #198754;
-    background-color: #198754;
-    box-shadow: 0 0 0 3px #fff; /* 활성화돼도 주변 여백 유지 */
+    border-color: #333;
+    background-color: #333; /* 내부도 검은색 */
+}
+.step-item.active .step-text {
+    color: #333;
+    font-weight: bold;
 }
 
-/* 현재 단계 (검정색 테두리 + 초록색 채움) */
+/* ★★★ [색상 수정] 현재 단계 (Current) -> 초록색 ★★★ */
 .step-item.current .step-circle {
-    border-color: #000;
-    background-color: #000; /* 혹은 초록색 */
-    box-shadow: 0 0 0 3px #fff;
+    border-color: #198754; /* 초록색 테두리 */
+    background-color: #198754; /* 초록색 채움 */
+    transform: scale(1.2); /* 강조를 위해 약간 커짐 */
 }
-
-/* 텍스트 스타일 */
-.step-text {
-    font-size: 0.7rem; /* 글자 크기 살짝 키움 */
-    color: #999;
-    line-height: 1.2;
-    word-break: keep-all; /* 단어 중간에 줄바꿈 방지 */
-}
-
-.step-item.active .step-text,
 .step-item.current .step-text {
-    color: #000;
+    color: #198754;
     font-weight: bold;
 }
 
 /* 카드 내부 폰트 조정 */
-.group-details { font-size: 0.85rem; color: #555; }
+.group-details { font-size: 0.65rem; color: #555; }
 .price-highlight { color: #dc3545; font-weight: bold; } /* 빨간색 강조 */

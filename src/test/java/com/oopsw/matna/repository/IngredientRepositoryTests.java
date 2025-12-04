@@ -45,10 +45,9 @@ public class IngredientRepositoryTests {
         List<IngredientVO> voList = new ArrayList<>();
 
         for (Ingredient entity : entities) {
-            IngredientVO vo = new IngredientVO(
-                    entity.getIngredientNo(),
-                    entity.getIngredientName()
-            );
+            IngredientVO vo = IngredientVO.builder()
+                    .ingredientNo(entity.getIngredientNo())
+                    .ingredientName(entity.getIngredientName()).build();
             voList.add(vo);
         }
 

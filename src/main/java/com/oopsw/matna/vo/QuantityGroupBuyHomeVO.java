@@ -19,8 +19,11 @@ public class QuantityGroupBuyHomeVO {
     private Integer quantity;
     private Integer myQuantity;
     private Integer remainingQty;
-    private String unit;
+    private Double remainingRatio;
     private Integer pricePerUnit;
+    private Integer shareAmount;
 
+    private String unit;
     private String shareLocation;
+    private Integer quantityGroupBuyNo;
 }

@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Data
 @Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class AllReportVO {
@@ -21,6 +21,7 @@ public class AllReportVO {
     private LocalDateTime reportedDate;
     private String imageUrl;
     private String reason;
+    private Integer targetMemberNo;
     private Integer targetNo;
     private Integer groupBuyNo;
     private String reportCase;

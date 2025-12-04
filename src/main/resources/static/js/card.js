@@ -33,11 +33,12 @@ const translateRecipeData = function(recipe){
     return translatedRecipe
 }
 const createRecipeCard = function (r){
+    const writerProfileUrl = r.writerProfile || "/img/user.png";
     return `<div class="card card-custom card-wide" data-type="recipe" data-no="${r.recipeNo}">
             <img src="${r.thumbnailUrl}" class="card-img-top" alt="${r.title}">
             <div class="card-body px-0 py-2">
               <div class="d-flex align-items-center mb-1">
-                <img src=${r.writerProfile} class="profile-img" alt="User">
+                <img src=${writerProfileUrl} class="profile-img" alt="User">
                 <div class="overflow-hidden w-100">
                   <div class="d-flex overflow-hidden w-100">
                     <small class="fw-bold text-nowrap">${r.writerNickname}</small>
@@ -53,36 +54,38 @@ const createRecipeCard = function (r){
                 <span class="text-secondary"><i class="bi bi-person"></i> ${r.servings}인분</span>
                 <span class="text-secondary"><i class="bi bi-clock"></i> ${r.prepTime}분</span>
                 <span class="text-secondary"><i class="bi bi-star"></i> ${r.difficulty}</span>
-                <span><img src="../static/img/spicy.png" class="spicy"> ${r.spicyLevel}</span>
+                <span><img src="/img/spicy.png" class="spicy"> ${r.spicyLevel}</span>
               </div>
             </div>
           </div>`;
 }
 const translateGroupBuyData = function (groupbuy){
     const translatedGroupBuy = { ...groupbuy };
-    const fullAddress = translatedGroupBuy.address;
+    const fullAddress = translatedGroupBuy.shareLocation;
     const addressParts = fullAddress.split(' ');
     const district = addressParts.find(part => part.endsWith('구'));
 
     if (district) {
-        translatedGroupBuy.address = district;
+        translatedGroupBuy.shareLocation = district;
     } else {
-        translatedGroupBuy.address = addressParts.length > 1 ? addressParts[1] : '주소 오류';
+        translatedGroupBuy.shareLocation = addressParts.length > 1 ? addressParts[1] : '주소 오류';
     }
     return translatedGroupBuy;
 }
 const createQuantityGBCard = function (q){
-    return `<div class="card card-custom card-wide" data-type="quantity" data-no="${q.groupBuyNo}">
+    const creatorImageUrl = q.creatorImageUrl || '/img/user.png';
+
+    return `<div class="card card-custom card-wide" data-type="quantityGroupBuy" data-no="${q.quantityGroupBuyNo}">
             <img src="${q.groupBuyImageUrl}" class="card-img-top" alt="${q.title}">
             <div class="card-body px-0 py-2">
               <div class="d-flex align-items-center mb-1">
-                <img src="${q.creatorImageUrl}" class="profile-img" alt="User">
+                <img src="${creatorImageUrl}" class="profile-img" alt="User">
                 <div class="overflow-hidden w-100">
                   <div class="d-flex overflow-hidden w-100">
                     <small class="fw-bold text-nowrap">${q.nickname}</small>
                     <p class="card-text text-truncate mb-0 ms-2">${q.title}</p>
                   </div>
-                  <small class="text-danger d-block mb-1">남은 수량 : ${q.remainingQty}${q.unit}</small>
+                  <small class="text-danger d-block mb-1">남은 수량 : ${q.remainingQty}${q.unit} / ${q.quantity}${q.unit}</small>
                 </div>
               </div>
               <div class="d-flex justify-content-between align-items-center">
@@ -90,17 +93,18 @@ const createQuantityGBCard = function (q){
                   <span class="fw-bold">${q.pricePerUnit}원</span>
                   <small class="text-muted">(${q.shareAmount}${q.unit}당)</small>
                 </div>
-                <span class="badge badge-location">${q.address}</span>
+                <span class="badge badge-location">${q.shareLocation}</span>
               </div>
             </div>
           </div>`;
 }
 const createPeriodGBCard = function (p){
-    return `<div class="card card-custom card-wide" data-type="period" data-no="${p.groupBuyNo}">
+    const creatorImageUrl = p.creatorImageUrl || '/img/user.png';
+    return `<div class="card card-custom card-wide" data-type="periodGroupBuy" data-no="${p.periodGroupBuyNo}">
             <img src="${p.groupBuyImageUrl}" class="card-img-top" alt="${p.title}">
             <div class="card-body px-0 py-2">
               <div class="d-flex align-items-center mb-1">
-                <img src="${p.creatorImageUrl}" class="profile-img" alt="User">
+                <img src="${creatorImageUrl}" class="profile-img" alt="User">
                 <div class="overflow-hidden w-100">
                   <div class="d-flex overflow-hidden w-100">
                     <small class="fw-bold text-nowrap">${p.nickname}</small>
@@ -110,8 +114,8 @@ const createPeriodGBCard = function (p){
                 </div>
               </div>
               <div class="d-flex justify-content-between align-items-center">
-                <span class="fw-bold">${p.minPricePerPerson}~${p.maxPricePerPerson}원 <small class="text-muted fw-normal">(<span class="text-danger">2</span>/5)</small></span>
-                <span class="badge badge-location">${p.address}</span>
+                <span class="fw-bold">${p.minPricePerPerson}~${p.maxPricePerPerson}원 <small class="text-muted fw-normal">(<span class="text-danger">${p.participants}</span>/${p.maxParticipants})</small></span>
+                <span class="badge badge-location">${p.shareLocation}</span>
               </div>
             </div>
           </div>`;
@@ -153,7 +157,7 @@ function startCountdownTimer(timerElement) {
 }
 const translateReviewData = function (review){
     const translatedReview = { ...review };
-    translatedReview.inDate = review.inDate.split(' ')[0].replace(/-/g, '.');
+    translatedReview.inDate = review.inDate.split('T')[0].replace(/-/g, '.');
     return translatedReview;
 }
 const createReviewCard = function (r){

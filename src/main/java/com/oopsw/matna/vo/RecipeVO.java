@@ -24,6 +24,7 @@ public class RecipeVO {
     private Integer prepTime;
     private String difficulty;
     private Integer spicyLevel;
-
+    private String summary;
+    private String category;
 
 }

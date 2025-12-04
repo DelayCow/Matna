@@ -15,12 +15,18 @@
         gb.quantity AS quantity,
         qgb.my_quantity AS myQuantity,
 
-        gb.quantity - (qgb.my_quantity + IFNULL(SUM(gbp.my_quantity), 0)) AS remainingQty, -- 남은 수량 (Integer)
+        -- 남은 수량 (Integer): 총 수량 - (생성자 수량 + 참가자 총 수량)
+        gb.quantity - (qgb.my_quantity + IFNULL(t1.totalParticipantQty, 0)) AS remainingQty,
 
-        gb.unit AS unit,
+        -- 남은 수량 비율 (Double): 남은 수량 / 전체 수량
+        (gb.quantity - (qgb.my_quantity + IFNULL(t1.totalParticipantQty, 0))) / NULLIF(gb.quantity, 0) AS remainingRatio,
+
         qgb.price_per_unit AS pricePerUnit,
+        qgb.share_amount AS shareAmount,
+        gb.unit AS unit,
 
-        gb.share_location AS shareLocation
+        gb.share_location AS shareLocation,
+        qgb.quantity_group_buy_no AS quantityGroupBuyNo
 
         FROM
         GROUP_BUYS gb
@@ -30,8 +36,20 @@
         INGREDIENTS i ON i.ingredient_no = gb.ingredient_no
         JOIN
         QUANTITY_GROUP_BUYS qgb ON qgb.group_buy_no = gb.group_buy_no
-        LEFT JOIN
-        GROUP_BUY_PARTICIPANT gbp ON gbp.group_buy_no = gb.group_buy_no AND gbp.cancel_date IS NULL
+
+        -- T1: 참가자 수량을 서브쿼리로 미리 합산하여 group_buy_no별 총합을 계산
+        LEFT JOIN (
+        SELECT
+        group_buy_no,
+        IFNULL(SUM(my_quantity), 0) AS totalParticipantQty
+        FROM
+        GROUP_BUY_PARTICIPANT
+        WHERE
+        cancel_date IS NULL
+        GROUP BY
+        group_buy_no
+        ) t1 ON t1.group_buy_no = gb.group_buy_no
+
         WHERE
         gb.status = 'open'
 
@@ -43,24 +61,13 @@
             )
         </if>
 
-        GROUP BY
-        gb.group_buy_no, gb.title, m.nickname, m.image_url, gb.image_url, gb.in_date,
-        i.ingredient_name, gb.quantity, qgb.my_quantity, gb.unit, qgb.price_per_unit, -- ⬅️ qgb.my_quantity 추가 및 순서 조정
-        gb.share_location
+        -- 참가자 수량 합산이 서브쿼리(t1)에서 처리되므로, 메인 쿼리에서는 GROUP BY가 더 이상 필요하지 않습니다.
 
         ORDER BY
         <choose>
-            <when test="orderBy != null and orderBy == 'remaining'">
-                (
-                (gb.quantity - (qgb.my_quantity + IFNULL(SUM(gbp.my_quantity), 0)))
-                /
-                NULLIF(gb.quantity - qgb.my_quantity, 0)
-                ) IS NULL ASC,
-                (
-                (gb.quantity - (qgb.my_quantity + IFNULL(SUM(gbp.my_quantity), 0)))
-                /
-                NULLIF(gb.quantity - qgb.my_quantity, 0)
-                ) ASC,
+            <when test="orderBy != null and orderBy == 'dueSoon'">
+                ((gb.quantity - (qgb.my_quantity + IFNULL(t1.totalParticipantQty, 0))) / NULLIF(gb.quantity, 0)) IS NULL ASC,
+                ((gb.quantity - (qgb.my_quantity + IFNULL(t1.totalParticipantQty, 0))) / NULLIF(gb.quantity, 0)) ASC,
                 gb.in_date DESC
             </when>
             <otherwise>
