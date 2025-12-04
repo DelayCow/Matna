@@ -195,6 +195,18 @@ public class ReviewsRepositoryTests {
 
     }
 
+    //추가! 마이페이지 에서 본인 번호로 리뷰 가져오기
+    @Test
+    void getMypageReviewsTest() {
+
+        Integer memberNo = 12;
+
+        List<Reviews> entities = reviewsRepository.findReviewsByAuthor_MemberNoAndDelDateIsNullOrderByInDateDesc(memberNo);
+
+        System.out.println();
+
+        }
+
     // 특정 레시피 후기 찾기
     @Test
     void getRecipeReviewsTest() {
