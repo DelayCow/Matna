@@ -1,13 +1,15 @@
-package com.oopsw.matna.vo;
+package com.oopsw.matna.dto;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @Builder
-@Data
+@Getter
 @ToString
-public class PeriodGroupBuyHomeVO {
+public class PeriodListResponse {
     private String title;
     private String nickname;
     private String creatorImageUrl;
@@ -15,8 +17,6 @@ public class PeriodGroupBuyHomeVO {
 
     private LocalDateTime inDate;
     private LocalDateTime dueDate;
-    private Integer purchasePeriodDays;
-    private LocalDateTime finalPurchaseDeadline;
 
     private Integer minPricePerPerson;
     private Integer maxPricePerPerson;
@@ -24,8 +24,5 @@ public class PeriodGroupBuyHomeVO {
 
     private Integer participants;
     private Integer maxParticipants;
-
-    private Integer groupBuyNo;
-    private String ingredientName;
     private Integer periodGroupBuyNo;
 }

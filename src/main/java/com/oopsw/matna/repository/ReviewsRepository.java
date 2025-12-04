@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface ReviewsRepository extends CrudRepository<Reviews, Integer> {
@@ -30,4 +31,7 @@ public interface ReviewsRepository extends CrudRepository<Reviews, Integer> {
 
 
     List<Reviews> findByAuthor_MemberNoAndDelDateIsNull(Integer authorNo);
+
+    @EntityGraph(attributePaths = {"author"})
+    Optional<Reviews> findByReviewNoAndDelDateIsNull(Integer recipeNo);
 }
