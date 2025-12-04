@@ -76,7 +76,7 @@ document.getElementById('addStepBtn').addEventListener('click', function (e) {
 
 const ingredientContainer = document.getElementById('ingredientContainer');
 const other = document.getElementById('otherItem');
-document.getElementById('addOtherItemBtn').addEventListener('click', (e) => addIngredient(e, other.value))
+// document.getElementById('addOtherItemBtn').addEventListener('click', (e) => addIngredient(e, other.value))
 let addedIngredients = [];
 
 const searchInput = document.getElementById('itemSelect');
@@ -106,7 +106,7 @@ function updateDropdownMenu(results) {
             a.href = '#';
             a.textContent = item.ingredientName;
 
-            a.addEventListener('click', (e) => addIngredient(e, item.ingredientName));
+            // a.addEventListener('click', (e) => addIngredient(e, item.ingredientName));
 
             itemMenu.appendChild(a);
         });
@@ -117,7 +117,6 @@ function updateDropdownMenu(results) {
 }
 
 const deleteIngredient = function (id) {
-    console.log(id)
     const elementToRemove = document.getElementById(id);
     if (elementToRemove) {
         elementToRemove.remove();
@@ -196,7 +195,6 @@ const loadExistingIngredients = function() {
             addedIngredients.push(ingredientName);
         }
     });
-    console.log('기존 재료 로드 완료:', addedIngredients);
 }
 function collectIngredients() {
     const ingredients = [];
@@ -410,7 +408,7 @@ document.addEventListener('DOMContentLoaded',function (){
         try {
             await submitRecipeData(this);
         } catch (error) {
-            console.error("레시피 등록 처리 중 최종 오류:", error);
+            console.error("레시피 수정 처리 중 최종 오류:", error);
             showAlertModal(
                 '오류 발생',
                 '예상치 못한 오류가 발생했습니다.<br>잠시 후 다시 시도해주세요.',
