@@ -2,18 +2,18 @@
 <!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.oopsw.matna.dao.GroupBuyListDAO">
-    <select id="getParticipantList" resultType="com.oopsw.matna.vo.GroupBuyListVO">
+    <select id="getParticipantList" parameterType="java.lang.Integer" resultType="com.oopsw.matna.vo.GroupBuyListVO">
         SELECT
         gb.group_buy_no          AS groupBuyNo,
         gb.title,
         gb.status,
         gb.image_url             AS imageUrl,
+        gb.unit                  AS unit,
         gb.in_date               AS inDate,
         gb.buy_end_date          AS buyEndDate,
         gb.share_end_date        AS shareEndDate,
         gb.buy_date              AS buyDate,
         gb.arrival_date          AS arrivalDate,
-        gb.unit                     AS unit,
         gbp.receive_date         AS receiveDate,
 
 
@@ -64,18 +64,18 @@
     </select>
 
 
-    <select id="getHostList" resultType="com.oopsw.matna.vo.GroupBuyListVO">
+    <select id="getHostList" parameterType="java.lang.Integer" resultType="com.oopsw.matna.vo.GroupBuyListVO">
         SELECT
         gb.group_buy_no          AS groupBuyNo,
         gb.title,
         gb.status,
         gb.image_url             AS imageUrl,
+        gb.unit                  AS unit,
         gb.in_date               AS inDate,
         gb.buy_end_date          AS buyEndDate,
         gb.share_end_date        AS shareEndDate,
         gb.buy_date              AS buyDate,
         gb.arrival_date          AS arrivalDate,
-        gb.unit AS unit,
 
         /* 참여 내역이 없으면 NULL 처리 */
         gbp.receive_date         AS receiveDate,

@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
 
-    // let isOwner = false; // "내 페이지인가?" 상태 저장용
+    let isOwner = false; // "내 페이지?
 
     const memberNo = 17; // [테스트용] 로그인 기능 구현 후 세션값으로 대체 필요
     let currentGroupTab = 'participate';
@@ -38,9 +38,31 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     const getButtonConfig = (status) => {
-        if (status === 'OPEN') return { text: "참여 취소", cls: "btn-outline-danger" };
-        if (status === 'PAID') return { text: "배송 조회", cls: "btn-outline-primary" };
-        if (status === 'DELIVERED') return { text: "수령 확인", cls: "btn-success" };
+        const s = String(status).trim().toUpperCase();
+
+        if (s === 'OPEN' || s === 'RECRUITING') {
+            return { text: "참여 취소", cls: "btn-outline-danger" };
+        }
+
+        // ★ [핵심] CLOSED 상태면 null 반환 (버튼 숨김 신호)
+        if (s === 'CLOSED' || s === 'PAYMENT_WAIT') {
+            return null;
+        }
+
+        if (s === 'PAID') {
+            return { text: "결제정보 확인", cls: "btn-outline-primary" };
+        }
+
+        if (s === 'DELIVERED') {
+            return { text: "도착정보 확인", cls: "btn-success" };
+        }
+
+        if (s === 'SHARED' || s === 'COMPLETED') {
+            // 'btn-share' 클래스가 CSS에 없다면 btn-success로 대체 추천
+            return { text: "나눔 받았어요!", cls: "btn-success" };
+        }
+
+        // 기본값
         return { text: "상세 보기", cls: "btn-outline-secondary" };
     };
 
@@ -109,6 +131,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const editUrl = `/recipe/edit?id=${item.id}`;
 
+        const detailUrl = `/recipe/detail/${item.id}`;
+
         const kebabMenuHtml = (typeof isOwner !== 'undefined' && isOwner) ? `
         <div class="dropdown ms-auto">
             <button class="btn btn-link text-secondary p-0 border-0" type="button" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
@@ -121,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         return `
     <div class="recipe-card mb-4 col-12" data-id="${item.id}">
-        <div class="card-img-wrap">
+        <div class="card-img-wrap" onclick="location.href='${detailUrl}'">
             <img src="${imgUrl}" alt="${item.title}" onerror="this.src='/img/default_food.jpg'">
         </div>
         <div class="card-info mt-2 p-2">
@@ -138,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 ${ spicyText ? `<span class="bg-danger-subtle text-danger px-2 py-1 rounded-pill border border-danger-subtle"><i class="bi bi-fire me-1"></i>${spicyText}</span>` : '' }
             </div>
         </div>
-    </div>`;
+    </div>`
     };
 
     const createReviewCard = (item) => {
@@ -163,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const createGroupCard = (item) => {
 
-        console.log("단위 데이터 확인:", item.unit);
+
         const unit = item.unit || '';
 
         const currentStep = getStatusStep(item.status);
@@ -183,8 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
         timelineHtml += '</div>';
 
 
-
-        const buttonHtml = isOwner
+        const buttonHtml = (isOwner && btnConfig)
             ? `<button class="btn ${btnConfig.cls} btn-sm text-nowrap z-index-front" style="font-size: 0.75rem;">${btnConfig.text}</button>`
             : '';
 
@@ -201,7 +224,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             </div>`
             : '';
-
 
         return `
         <div class="group-card mb-3 p-3 border rounded bg-white shadow-sm" onclick="location.href='/groupBuy/detail?no=${item.groupBuyNo}'" style="cursor:pointer;">
@@ -264,6 +286,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const response = await fetch(url);
             if (!response.ok) throw new Error("Network Error");
+            // {
+            //     const errorMessage = await response.text();
+            //     throw new Error(`서버 에러 (${response.status}): ${errorMessage}`);
+            // }
             const dataList = await response.json();
 
             if (!dataList || dataList.length === 0) {

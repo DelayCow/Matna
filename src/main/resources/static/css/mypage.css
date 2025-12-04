@@ -185,11 +185,13 @@
     position: relative;
     z-index: 1;
     text-align: center;
-    background: transparent; /* ★수정: 배경을 투명하게 해서 박스 느낌 제거 */
-    width: 60px; /* 텍스트 줄바꿈 방지용 최소 너비 확보 */
+    background: transparent;
+    /*width: 60px;*/
     display: flex;
     flex-direction: column;
     align-items: center;
+    white-space: nowrap;
+    word-break: keep-all;
 }
 
 /* 4. 동그라미 (선을 가려주는 역할) */
@@ -227,5 +229,5 @@
 }
 
 /* 카드 내부 폰트 조정 */
-.group-details { font-size: 0.85rem; color: #555; }
+.group-details { font-size: 0.65rem; color: #555; }
 .price-highlight { color: #dc3545; font-weight: bold; } /* 빨간색 강조 */
