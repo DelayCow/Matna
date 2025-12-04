@@ -74,10 +74,14 @@
                     <label class="btn btn-outline-secondary" for="btnOpen">개설</label>
                 </div>
 
-                <select class="form-select form-select-sm w-auto border-secondary" aria-label="상태 필터">
-                    <option selected>전체</option>
-                    <option value="1">진행중</option>
-                    <option value="2">완료</option>
+                <select id= "groupStatusFilter" class="form-select form-select-sm w-auto border-secondary" aria-label="상태 필터">
+                    <option value="ALL">전체</option>
+                    <option value="OPEN">모집중</option>
+                    <option value="CLOSED">모집마감</option>
+                    <option value="PAID">결제완료</option>
+                    <option value="SHARED">나눔중</option>
+                    <option value="DELIVERED">도착완료</option>
+                    <option value="CANCELED">중단</option>
                 </select>
             </div>
 
