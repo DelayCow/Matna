@@ -13,6 +13,7 @@ function handleImageUpload(input, target) {
             target.style.backgroundPosition = 'center';
             target.style.backgroundRepeat = 'no-repeat';
 
+            target.removeAttribute('data-original-url');
             //아이콘만 숨기기
             const icon = target.querySelector('i');
             if (icon) {
@@ -52,7 +53,7 @@ function setupImageUploadListeners(container) {
     }
 }
 
-document.getElementById('addStepBtn').addEventListener('click', function (e) {
+document.getElementById('addStepBtn')?.addEventListener('click', function (e) {
     e.preventDefault();
     const parentDiv = this.parentElement;
     const newStep = document.createElement('div');
@@ -83,7 +84,7 @@ const searchInput = document.getElementById('itemSelect');
 const itemMenu = document.getElementById('itemDropdownMenu');
 let isItemClicked = false;
 
-searchInput.addEventListener('input', debounce(function() {
+searchInput?.addEventListener('input', debounce(function() {
     if (isItemClicked) {
         isItemClicked = false;
         return;
@@ -229,7 +230,8 @@ function collectSteps(formData) {
         const order = index + 1;
         const contentTextarea = div.querySelector('textarea');
         const imgUploadArea = div.querySelector('.img-upload-area');
-
+        console.log(`\n--- Step ${order} ---`);
+        console.log('imgUploadArea:', imgUploadArea);
         let fileInput = imgUploadArea?.querySelector('.img-file-upload');
         let imageFileName = null;
 
@@ -239,17 +241,18 @@ function collectSteps(formData) {
 
             formData.append(fieldName, file);
             imageFileName = fieldName;
+            console.log('✅ 새 파일 업로드:', fieldName, file.name);
         }else if (imgUploadArea) {
             const originalUrl = imgUploadArea.getAttribute('data-original-url');
             const backgroundImage = imgUploadArea.style.backgroundImage;
-
+            console.log('data-original-url:', originalUrl);
             if (originalUrl && originalUrl.trim() !== '') {
                 imageFileName = originalUrl;
             } else if (backgroundImage && backgroundImage !== 'none' && backgroundImage !== '') {
                 imageFileName = 'EXISTING';
             }
         }
-
+        console.log('최종 imageFileName:', imageFileName);
         steps.push({
             stepOrder: order,
             content: contentTextarea ? contentTextarea.value : '',
@@ -349,7 +352,6 @@ async function submitRecipeData(form) {
     const recipeJsonString = JSON.stringify(recipeData);
 
     formData.append('recipeRequest', recipeJsonString);
-    console.log(recipeData)
     try {
         const response = await fetch('/api/recipes', {
             method: 'PUT',
