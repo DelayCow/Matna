@@ -25,7 +25,7 @@ public class MemberRepositoryTests {
     @Test
     @Transactional
     public void updateBanDate() {
-        Member member = memberRepository.findByMemberId("member_18").get();
+        Member member = memberRepository.findByMemberNo(11);
 
         LocalDateTime banDate = LocalDateTime.of(2025, 11, 25, 0, 0);
         member.setBanDate(banDate);
