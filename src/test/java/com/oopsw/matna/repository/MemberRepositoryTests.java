@@ -39,20 +39,6 @@ public class MemberRepositoryTests {
     }
 
 
-//    @Test
-//    @Transactional
-//    @Commit
-//    public void encodeAllPasswords() {
-//        List<Member> members = memberRepository.findAll();
-//        for (Member member : members) {
-//            String plainPassword = member.getPassword();
-//            String encodedPassword = bCryptPasswordEncoder.encode(plainPassword);
-//            member.setPassword(encodedPassword);
-//
-//        }
-//        memberRepository.flush();
-//    }
-
     @Test
     public void isTruePasswordTest() {
         Integer memberNo = 5;
