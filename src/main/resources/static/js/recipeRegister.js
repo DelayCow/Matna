@@ -135,26 +135,26 @@ const addIngredientHtml = function (name) {
     const id = name.replace(/[^a-zA-Z0-9가-힣]/g, '_');
     const uniqueUnitName = `${id}_unit`;
 
-    return `<div class="d-flex align-items-center mt-3 p-2 bg-light rounded ingredient-item" id="${id}_div">
-            <input type="text" class="form-control form-control-sm me-2" style="width: 30%; flex-shrink: 0;" placeholder="재료명" name="ingredientName" value="${name}" readonly>
+    return `<div class="d-flex align-items-center mt-3 p-2 bg-light rounded ingredient-item justify-content-between flex-wrap" id="${id}_div">
+            <input type="text" class="form-control form-control-sm me-2" style="width: 30%;" placeholder="재료명" name="ingredientName" value="${name}" readonly>
 
-            <input type="number" class="form-control form-control-sm text-end me-2" style="width: 20%; flex-shrink: 0;" placeholder="수량" name="amount" min="0" step="0.1">
+            <input type="number" class="form-control form-control-sm text-end me-2" style="width: 20%;" placeholder="수량" name="amount" min="0" step="0.1">
 
-            <div class="d-flex unit-radio-group" style="width: 40%; flex-shrink: 0;">
+            <div class="d-flex unit-radio-group" style="width: 40%;">
                 <input type="radio" class="btn-check" name="${uniqueUnitName}" id="${id}_unit_ml" value="ml" autocomplete="off" checked>
-                <label class="btn btn-outline-secondary btn-sm me-1" for="${id}_unit_ml">ml</label>
+                <label class="btn btn-outline-secondary btn-sm me-1" for="${id}_unit_ml" style="height: 32px; width: 30px;">ml</label>
 
                 <input type="radio" class="btn-check" name="${uniqueUnitName}" id="${id}_unit_ea" value="개" autocomplete="off">
-                <label class="btn btn-outline-secondary btn-sm me-1" for="${id}_unit_ea">개</label>
+                <label class="btn btn-outline-secondary btn-sm me-1" for="${id}_unit_ea" style="height: 32px; width: 30px;">개</label>
 
                 <input type="radio" class="btn-check" name="${uniqueUnitName}" id="${id}_unit_sp" value="T" autocomplete="off">
-                <label class="btn btn-outline-secondary btn-sm me-1" for="${id}_unit_sp">스푼(T)</label>
+                <label class="btn btn-outline-secondary btn-sm me-1 text-nowrap" for="${id}_unit_sp" style="height: 32px; width: 60px;">스푼(T)</label>
 
                 <input type="radio" class="btn-check" name="${uniqueUnitName}" id="${id}_unit_g" value="g" autocomplete="off">
-                <label class="btn btn-outline-secondary btn-sm" for="${id}_unit_g">그램(g)</label>
+                <label class="btn btn-outline-secondary btn-sm text-nowrap" for="${id}_unit_g" style="height: 32px; width: 60px;">그램(g)</label>
             </div>
 
-            <button class="btn btn-danger ms-4 flex-shrink-0" type="button" style="height: 32px; width: 50px; padding: 0;" onclick="deleteIngredient('${id}_div')">
+            <button class="btn btn-danger text-nowrap" type="button" style="height: 32px; width: 50px; padding: 0;" onclick="deleteIngredient('${id}_div')">
                 삭제
             </button>
         </div>`
