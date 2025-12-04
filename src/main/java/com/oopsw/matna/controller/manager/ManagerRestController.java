@@ -32,23 +32,23 @@ public class ManagerRestController {
         return managerService.getNotApprovedIngredients();
     }
 
-    @PostMapping("/ingredientManagement/add")
+    @PostMapping("/ingredientManagement")
     public ManagerIngredientResponse addIngredient(@RequestParam Integer creatorId, @RequestParam String ingredientName) {
         return managerService.addIngredient(creatorId, ingredientName);
     }
 
-    @PutMapping("/ingredientManagement/remove")
-    public void removeIngredient(@RequestParam Integer ingredientId) {
-        managerService.removeIngredient(ingredientId);
+    @DeleteMapping("/ingredientManagement")
+    public void deleteIngredient(@RequestParam Integer ingredientId) {
+        managerService.deleteIngredient(ingredientId);
     }
 
-    @PutMapping("/ingredientManagement/approve")
+    @PutMapping("/ingredientManagement")
     public void approveIngredient(@RequestParam Integer ingredientId) {
         managerService.approveIngredient(ingredientId);
     }
 
     //공구 관리
-    @GetMapping("/groupBuyManagementt")
+    @GetMapping("/groupBuyManagement")
     public List<ManagerGroupBuyResponse> getGroupBuyList(String startDate, String endDate, String status, String title){
         return managerService.getGroupBuyList(startDate, endDate, status, title);
     }

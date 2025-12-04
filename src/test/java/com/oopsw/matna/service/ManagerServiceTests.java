@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDate;
-import java.util.List;
 
 @SpringBootTest
 public class ManagerServiceTests {
@@ -57,10 +56,10 @@ public class ManagerServiceTests {
     }
 
     @Test
-    public void removeIngredient() {
+    public void deleteIngredient() {
         Ingredient ingredient = ingredientRepository.findById(1)
                 .orElseThrow(() -> new RuntimeException("ingredient가 없습니다."));
-        managerService.removeIngredient(1);
+        managerService.deleteIngredient(1);
         System.out.println(ingredient);
     }
 

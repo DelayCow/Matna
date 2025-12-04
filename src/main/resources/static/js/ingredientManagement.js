@@ -48,8 +48,7 @@ ingredientTable.addEventListener("click", (e) => {
     const id = tr?.dataset?.id;
     if (btn.classList.contains("btn-delete")) {
         if (confirm("정말 삭제하시겠습니까?")) {
-            // 서버 요청 예시 (PUT 또는 DELETE) — 아래는 PUT으로 구성한 기존 API에 맞춘 예
-            fetch(`/api/manager/ingredientManagement/remove?ingredientId=${id}`, { method: "PUT" })
+            fetch(`/api/manager/ingredientManagement?ingredientId=${id}`, { method: "DELETE" })
                 .then(res => {
                     if (!res.ok) throw new Error("삭제 실패");
                     tr.remove();
@@ -66,7 +65,7 @@ newIngredientTable.addEventListener("click", (e) => {
     const id = tr?.dataset?.id;
     if (btn.classList.contains("btn-approve")) {
         if (confirm("승인하시겠습니까?")) {
-            fetch(`/api/manager/ingredientManagement/approve?ingredientId=${id}`, { method: "PUT" })
+            fetch(`/api/manager/ingredientManagement?ingredientId=${id}`, { method: "PUT" })
                 .then(res => {
                     if (!res.ok) throw new Error("승인 실패");
                     // 승인되면 행을 승인 테이블로 이동 (간단 처리: 페이지에서 제거 후 재로딩하거나 행 이동)
@@ -77,7 +76,7 @@ newIngredientTable.addEventListener("click", (e) => {
         }
     } else if (btn.classList.contains("btn-delete")) {
         if (confirm("정말 삭제하시겠습니까?")) {
-            fetch(`/api/manager/ingredientManagement/remove?ingredientId=${id}`, { method: "PUT" })
+            fetch(`/api/manager/ingredientManagement?ingredientId=${id}`, { method: "DELETE" })
                 .then(res => {
                     if (!res.ok) throw new Error("삭제 실패");
                     tr.remove();
@@ -100,7 +99,7 @@ addBtn.addEventListener("click", () => {
     if (!value) { alert("재료명을 입력하세요."); return; }
     // 예: creatorId는 현재 로그인된 유저 id로 대체해야 함. 여기선 예시 1 사용.
     const creatorId = 1;
-    fetch(`/api/manager/ingredientManagement/add?creatorId=${creatorId}&ingredientName=${encodeURIComponent(value)}`, {
+    fetch(`/api/manager/ingredientManagement?creatorId=${creatorId}&ingredientName=${encodeURIComponent(value)}`, {
         method: "POST"
     })
         .then(res => {

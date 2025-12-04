@@ -1,6 +1,5 @@
 package com.oopsw.matna.service;
 
-import com.oopsw.matna.dao.GroupBuyListDAO;
 import com.oopsw.matna.dao.ManagerDAO;
 import com.oopsw.matna.dao.ReportDAO;
 import com.oopsw.matna.dto.ManagerGroupBuyResponse;
@@ -43,7 +42,7 @@ public class ManagerService {
     }
 
     public List<ManagerIngredientResponse> getIngredients() {
-        return ingredientRepository.findAllByApproveDateIsNotNullAndDelDateIsNull().stream()
+        return ingredientRepository.findAllByApproveDateIsNotNullAndDelDateIsNullOrderByIngredientNoDesc().stream()
                 .map(this::toManagerIngredientResponse)
                 .toList();
     }
@@ -81,7 +80,7 @@ public class ManagerService {
     }
 
     @Transactional
-    public void removeIngredient(Integer ingredientId) {
+    public void deleteIngredient(Integer ingredientId) {
         Ingredient ingredient = ingredientRepository.findById(ingredientId)
                 .orElseThrow(() -> new RuntimeException("재료를 찾을 수 없습니다."));
         ingredient.setDelDate(LocalDateTime.now());
