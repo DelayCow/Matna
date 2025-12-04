@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let isItemClicked = false;
     let selectedIngredientNo = null;
-
+    const creatorNo = document.getElementById('creatorNo').textContent;
     // ========== 초기화 ==========
     init();
 
@@ -317,8 +317,8 @@ document.addEventListener('DOMContentLoaded', function() {
         periodData.ingredientNo = parseInt(ingredientNo);
         periodData.ingredientName = searchInput.value;
 
-        // 작성자 (TODO: 실제 로그인한 사용자 번호로 변경)
-        periodData.creatorNo = 6;
+        // 작성자
+        periodData.creatorNo = creatorNo;
 
         // 모집기간 (마감일)
         const joinYear = document.getElementById('joinYear').value;
@@ -469,9 +469,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('addOtherItemBtn').addEventListener('click', function() {
             const otherItem = document.getElementById('otherItem').value.trim();
             if (otherItem) {
-                // TODO: 실제 로그인한 사용자 번호로 변경
-                const creatorNo = 6;
-
                 fetch(`/api/ingredients/add?creatorNo=${creatorNo}&ingredientName=${encodeURIComponent(otherItem)}`, {
                     method: 'POST'
                 })
