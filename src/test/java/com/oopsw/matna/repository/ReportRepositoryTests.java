@@ -45,9 +45,9 @@ public class ReportRepositoryTests {
                 .reporterNo(5)
                 .imageUrl("image.url")
                 .reason("신고해보기크크")
-                .targetMemberNo(6).build();
+                .targetNo(6).build();
         Member reporter = memberRepository.findById(report.getReporterNo()).get();
-        Member target = memberRepository.findById(report.getTargetMemberNo()).get();
+        Member target = memberRepository.findById(report.getTargetNo()).get();
         Report savedReport = reportRepository.save(Report.builder()
                 .reporter(reporter)
                 .status("WIP")

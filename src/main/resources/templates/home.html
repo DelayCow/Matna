@@ -29,59 +29,6 @@
           </button>
 
           <div id="recipeScroll" class="horizontal-scroll">
-
-<!--            <div class="card card-custom card-wide" data-type="recipe" data-no="45">-->
-<!--            <img src="../static/img/steamedeggs.jpg" class="card-img-top" alt="안주로 딱~ 폭신하고 부드러운 계란찜">-->
-<!--            <div class="card-body px-0 py-2">-->
-<!--              <div class="d-flex align-items-center mb-1">-->
-<!--                <img src="../static/img/user.png" class="profile-img" alt="User">-->
-<!--                <div class="overflow-hidden w-100">-->
-<!--                  <div class="d-flex overflow-hidden w-100">-->
-<!--                    <small class="fw-bold text-nowrap">침대견</small>-->
-<!--                    <p class="card-text text-truncate mb-0 ms-2">안주로 딱~ 폭신하고 부드러운 계란찜</p>-->
-<!--                  </div>-->
-<!--                  <div class="small text-muted">-->
-<!--                    <span class="text-warning"><i class="bi bi-star-fill"></i> 4.5</span>-->
-<!--                    <span>| 후기 8</span>-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--              <div class="small text-muted text-center">-->
-<!--                <span class="text-secondary"><i class="bi bi-person"></i> 1인분</span>-->
-<!--                <span class="text-secondary"><i class="bi bi-clock"></i> 10분</span>-->
-<!--                <span class="text-secondary"><i class="bi bi-star"></i> 쉬움</span>-->
-<!--                <span><img src="../static/img/spicy.png" class="spicy">  안매워요</span>-->
-<!--              </div>-->
-<!--            </div>-->
-<!--          </div>-->
-                <!--타임리프방식-->
-<!--            <div th:each="r : ${recipes}" class="card card-custom card-wide" data-type="recipe" th:data-no="${r.recipeNo}">-->
-<!--              <img th:src="${r.imageUrl}" class="card-img-top" th:alt="${r.title}">-->
-<!--              <div class="card-body px-0 py-2">-->
-<!--                <div class="d-flex align-items-center mb-1">-->
-<!--                  <img th:src="${r.profileUrl}" class="profile-img" alt="User">-->
-<!--                  <div class="overflow-hidden w-100">-->
-<!--                    <div class="d-flex overflow-hidden w-100">-->
-<!--                      <small class="fw-bold text-nowrap" th:text="${r.nickname}"></small>-->
-<!--                      <p class="card-text text-truncate mb-0 ms-2" th:text="${r.title}"></p>-->
-<!--                    </div>-->
-<!--                    <div class="small text-muted">-->
-<!--                      <span class="text-warning">-->
-<!--                        <i class="bi bi-star-fill"></i> <span th:text="${r.averageRecipe}"></span>-->
-<!--                      </span>-->
-<!--                      <span>| 후기 <span th:text="${r.reviewCount}"></span></span>-->
-<!--                    </div>-->
-<!--                  </div>-->
-<!--                </div>-->
-<!--                <div class="small text-muted text-center">-->
-<!--                  <span class="text-secondary"><i class="bi bi-person"></i> <span th:text="${r.servings}"></span>인분</span>-->
-<!--                  <span class="text-secondary"><i class="bi bi-clock"></i> <span th:text="${r.prep_time}"></span>분</span>-->
-<!--                  <span class="text-secondary"><i class="bi bi-star"></i> <span th:text="#{difficulty.__${r.difficulty}__}"></span></span>-->
-<!--                  <span><img src="../static/img/spicy.png" class="spicy">  <span th:text="#{spicy.__${r.spicyLevel}__}"></span></span>-->
-<!--                </div>-->
-<!--              </div>-->
-<!--            </div>-->
-
           </div>
           <button class="btn btn-sm btn-light scroll-btn right-arrow position-absolute top-50 end-0 translate-middle-y rounded-circle shadow-sm" data-target="#recipeScroll">
             <i class="bi bi-chevron-right"></i>

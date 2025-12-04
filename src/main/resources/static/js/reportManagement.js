@@ -1,16 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     const tableBody = document.querySelector(".table-content tbody");
-    const searchInput = document.querySelector(".search-section input[type='text']");
-    const categorySelect = document.querySelector(".search-section select");
-    const statusButtons = document.querySelectorAll(".search-section .btn");
-    const searchBtn = document.querySelector(".search-section button.btn-primary");
+    const searchInput = document.querySelector("#keyword");
+    const categorySelect = document.querySelector("#reportCase");
+    const statusButtons = document.querySelectorAll(".status-buttons button");
+    const searchBtn = document.querySelector(".search-btn");
 
-    let reportList = [];   // 전체 데이터
-    let filteredList = []; // 필터 적용된 데이터
-
-
-    // 🔥 초기 데이터 로딩
+    // 초기 데이터 로딩
     loadReportData();
 
 
@@ -18,19 +14,23 @@ document.addEventListener("DOMContentLoaded", () => {
     // 1) API에서 신고 리스트 호출
     // =====================================================================
     async function loadReportData() {
+        const params = new URLSearchParams({
+            startDate: document.getElementById("startDate").value || "",
+            endDate: document.getElementById("endDate").value || "",
+            status: document.getElementById("status").value || "",
+            reportCase: document.getElementById("reportCase").value || "",
+            keyword: document.getElementById("keyword").value || "",
+        });
+
         try {
-            // 실제 엔드포인트로 변경해야 함
-            const res = await fetch("/api/reports");
-            reportList = await res.json();
-            filteredList = reportList;
+            const res = await fetch(`/api/manager/reportManagement?${params}`);
+            const data = await res.json();
+            renderTable(data);
 
-            renderTable(filteredList);
-
-        } catch (error) {
-            console.error("신고 데이터 불러오기 실패:", error);
+        } catch (e) {
+            console.error("데이터 로드 실패:", e);
         }
     }
-
 
     // =====================================================================
     // 2) 테이블 렌더링 함수
@@ -50,9 +50,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 <tr>
                     <td>${index + 1}</td>
                     <td><span class="btn btn-sm ${statusColor(item.status)}">${item.status}</span></td>
-                    <td>${item.reportDate}</td>
-                    <td>${item.reporter}</td>
-                    <td>${shorten(item.content)}</td>
+                    <td>${formatDate(item.reportedDate)}</td>
+                    <td>${item.reporterName}</td>
+                    <td>${shorten(item.reason)}</td>
                     <td>${item.type}</td>
                     <td><button class="btn btn-sm btn-primary">상세보기 🔍</button></td>
                 </tr>
@@ -77,12 +77,16 @@ document.addEventListener("DOMContentLoaded", () => {
         return text.length > 20 ? text.substring(0, 20) + "..." : text;
     }
 
+    function formatDate(dateStr) {
+        if (!dateStr) return "-";
+        return dateStr.replace("T", ".");
+    }
 
     // =====================================================================
     // 3) 검색 버튼 클릭
     // =====================================================================
     searchBtn.addEventListener("click", () => {
-        applyFilters();
+        loadReportData();
     });
 
 
@@ -91,8 +95,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // =====================================================================
     statusButtons.forEach(btn => {
         btn.addEventListener("click", () => {
-            const status = btn.textContent.trim();
-            applyFilters(status);
+            document.getElementById("status").value = btn.dataset.status;
+            loadReportData();
         });
     });
 
@@ -100,32 +104,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // =====================================================================
     // 5) 전체 필터링 함수
     // =====================================================================
-    function applyFilters(statusFilter = null) {
-        const keyword = searchInput.value.trim();
-        const category = categorySelect.value;
-
-        filteredList = reportList.filter(item => {
-            let ok = true;
-
-            // 상태 필터
-            if (statusFilter && statusFilter !== "전체") {
-                ok = ok && item.status === statusFilter;
-            }
-
-            // 카테고리 필터
-            if (category !== "전체") {
-                ok = ok && item.type.includes(category);
-            }
-
-            // 검색 필터 (닉네임 + 아이디)
-            if (keyword) {
-                ok = ok && item.reporter.includes(keyword);
-            }
-
-            return ok;
-        });
-
-        renderTable(filteredList);
-    }
+    categorySelect.addEventListener("change", () => {
+        loadReportData();
+    });
 
 });
