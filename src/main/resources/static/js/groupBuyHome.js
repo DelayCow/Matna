@@ -133,7 +133,7 @@ const card = {
         const periodGroupBuyNo = item.periodGroupBuyNo || 0;
 
         return `
-      <div class="col">
+      <div class="col d-flex justify-content-center">
         <div class="card card-custom card-wide" data-type="period" data-no="${periodGroupBuyNo}" style="cursor: pointer;">
           <img src="${groupBuyImageUrl}" class="card-img-top" alt="${title}"
                onerror="this.onerror=null; this.src='/img/placeholder.jpg';">
@@ -189,7 +189,7 @@ const card = {
 
 
         return `
-      <div class="col">
+      <div class="col d-flex justify-content-center">
         <!-- data-type과 data-no에 수량공구 정보 사용 -->
         <div class="card card-custom card-wide" data-type="quantity" data-no="${quantityGroupBuyNo}" style="cursor: pointer;">
           <img src="${groupBuyImageUrl}" class="card-img-top" alt="${title}"
