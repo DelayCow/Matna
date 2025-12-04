@@ -1,4 +1,7 @@
 /* 사이드바 기본 */
+.content {
+    margin-left: 240px; /* sidebar width 그대로 */
+}
 .sidebar {
     width: 240px;
     height: 100vh;

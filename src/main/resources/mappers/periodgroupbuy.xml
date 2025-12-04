@@ -44,7 +44,8 @@
         -- 14. groupBuyNo (Long/Integer)
         gb.group_buy_no AS groupBuyNo,
         -- 15. ingredientName (String)
-        i.ingredient_name AS ingredientName
+        i.ingredient_name AS ingredientName,
+        pgb.period_group_buy_no AS periodGroupBuyNo
 
         FROM
         GROUP_BUYS gb
@@ -57,7 +58,7 @@
         LEFT JOIN
         GROUP_BUY_PARTICIPANT gbp ON gbp.group_buy_no = gb.group_buy_no AND gbp.cancel_date IS NULL AND gbp.participant_no != gb.creator_no
         WHERE
-        gb.status = 'OPEN'
+        gb.status = 'open'
 
         <!-- 검색어 조건 처리 (keyword 파라미터가 있을 경우) -->
         <if test="keyword != null and keyword != ''">
@@ -71,12 +72,13 @@
         GROUP BY
         gb.group_buy_no, gb.title, m.nickname, m.image_url, gb.image_url, gb.in_date,
         pgb.due_date, gb.buy_end_date, i.ingredient_name,
-        gb.price, gb.fee_rate, pgb.max_participants, gb.share_location
+        gb.price, gb.fee_rate, pgb.max_participants, gb.share_location,
+        pgb.period_group_buy_no
 
         ORDER BY
         <choose>
             <!-- 1. 마감 임박순: 모집 마감일(pgb.due_date) 기준 오름차순 정렬 -->
-            <when test="orderBy != null and orderBy == 'deadline'">
+            <when test="orderBy != null and orderBy == 'dueSoon'">
                 pgb.due_date ASC, gb.in_date DESC
             </when>
             <!-- 2. 기본값: 최신 등록순 -->
@@ -85,6 +87,19 @@
             </otherwise>
         </choose>
     </select>
+
+
+    <update id="updateStatusToClosedIfDueDatePassed" parameterType="java.time.LocalDateTime">
+        UPDATE
+        GROUP_BUYS gb
+        JOIN
+        PERIOD_GROUP_BUYS pgb ON gb.group_buy_no = pgb.group_buy_no
+        SET
+        gb.status = 'closed'
+        WHERE
+        gb.status = 'open'
+        AND pgb.due_date &lt; NOW()  <!-- MySQL 기준: pgb.due_date < NOW() -->
+    </update>
 
 
     <select id="selectPeriodGroupBuyDetail" parameterType="int" resultType="com.oopsw.matna.vo.PeriodGroupBuyDetailVO">
@@ -96,6 +111,9 @@
             gb.ingredient_no AS ingredientNo,
             pgb.max_participants,
             gb.fee_rate,
+            gb.price,
+            gb.quantity,
+            gb.unit,
             gb.item_sale_url AS itemSaleUrl,
 
             -- PeriodGroupBuy의 PK 추가

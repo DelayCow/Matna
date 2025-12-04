@@ -14,12 +14,15 @@ public class PeriodGroupBuyDetailVO {
     private String content;
     private String imageUrl;
     private Integer ingredientNo;
-    private int maxParticipants;
-    private double feeRate;
+    private Integer maxParticipants;
+    private Integer feeRate;
+    private Integer price;
+    private Integer quantity;
+    private String unit;
     private String itemSaleUrl;
     private Integer periodGroupBuyNo;
 
-    private int participants;
+    private Integer participants;
 
     private LocalDateTime inDate;
     private String shareLocation;
@@ -31,8 +34,8 @@ public class PeriodGroupBuyDetailVO {
 
     private LocalDateTime dueDate;
     private Integer remainingTime;
-
     private String status;
+
     private String profileImageUrl;
     private String nickname;
 }

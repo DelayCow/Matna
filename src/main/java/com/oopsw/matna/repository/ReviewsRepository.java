@@ -1,12 +1,14 @@
 package com.oopsw.matna.repository;
 
+import com.oopsw.matna.repository.entity.Member;
 import com.oopsw.matna.repository.entity.Recipe;
 import com.oopsw.matna.repository.entity.Reviews;
+import com.oopsw.matna.vo.ReviewsListVO;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface ReviewsRepository extends CrudRepository<Reviews, Integer> {
@@ -23,6 +25,13 @@ public interface ReviewsRepository extends CrudRepository<Reviews, Integer> {
     @EntityGraph(attributePaths = {"author"})
     List<Reviews> findTop10ByRecipeAndDelDateIsNullOrderByInDateDesc(Recipe recipe);
 
+    // 추가 마이페이지 리뷰 목록
+    @EntityGraph(attributePaths = {"author"})
+    List<Reviews> findReviewsByAuthor_MemberNoAndDelDateIsNullOrderByInDateDesc(Integer memberNo);
+
 
     List<Reviews> findByAuthor_MemberNoAndDelDateIsNull(Integer authorNo);
+
+    @EntityGraph(attributePaths = {"author"})
+    Optional<Reviews> findByReviewNoAndDelDateIsNull(Integer recipeNo);
 }

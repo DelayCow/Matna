@@ -4,50 +4,138 @@
 <mapper namespace="com.oopsw.matna.dao.GroupBuyListDAO">
     <select id="getParticipantList" parameterType="java.lang.Integer" resultType="com.oopsw.matna.vo.GroupBuyListVO">
         SELECT
-            gb.group_buy_no groupBuyNo,
-            gb.title,
-            gb.status,
-            gb.image_url imageUrl,
-            gb.in_date inDate,
-            gb.buy_end_date buyEndDate,
-            gb.share_end_date shareEndDate,
-            gb.buy_date buyDate,
-            gb.arrival_date arrivalDate,
-            gbp.receive_date receiveDate,
-            CASE
-                WHEN qgb.my_quantity IS NOT NULL THEN
-                    gb.quantity - (COALESCE(total_participant.total_qty, 0) + qgb.my_quantity)
-                ELSE
-                    0
-                END AS remainingQuantity,
-            gbp.my_quantity myQuantity,
-            gbp.participated_date participatedDate,
-            gbp.final_payment_point finalPaymentPoint,
-            (total_participant.total_count - 1) AS participantExMe,
-            0 AS totalSettlementPoint
+        gb.group_buy_no          AS groupBuyNo,
+        gb.title,
+        gb.status,
+        gb.image_url             AS imageUrl,
+        gb.unit                  AS unit,
+        gb.in_date               AS inDate,
+        gb.buy_end_date          AS buyEndDate,
+        gb.share_end_date        AS shareEndDate,
+        gb.buy_date              AS buyDate,
+        gb.arrival_date          AS arrivalDate,
+        gbp.receive_date         AS receiveDate,
+
+
+        /* 남은 수량 계산 */
+        CASE
+        WHEN gb.quantity > 0 THEN
+        gb.quantity - (COALESCE(total_participant.total_qty, 0))
+        ELSE 0
+        END                      AS remainingQuantity,
+
+        gbp.my_quantity          AS myQuantity,
+        gbp.participated_date    AS participatedDate,
+        gbp.final_payment_point  AS finalPaymentPoint,
+
+        /* 나를 제외한 참여자 수: 전체 - 1 */
+        (COALESCE(total_participant.total_count, 0) - 1) AS participantExMe,
+
+        0                        AS totalSettlementPoint
 
         FROM
-            GROUP_BUY_PARTICIPANT gbp
-                JOIN
-            GROUP_BUYS gb ON gbp.group_buy_no = gb.group_buy_no
-                LEFT JOIN
-            (SELECT
-                 sub_gbp.group_buy_no,
-                 SUM(sub_gbp.my_quantity) AS total_qty,
-                 COUNT(sub_gbp.participant_no) AS total_count
-             FROM
-                 GROUP_BUY_PARTICIPANT sub_gbp
-             GROUP BY
-                 sub_gbp.group_buy_no
-            ) total_participant ON gb.group_buy_no = total_participant.group_buy_no
-                LEFT JOIN
-            QUANTITY_GROUP_BUYS qgb ON gb.group_buy_no = qgb.group_buy_no
+        GROUP_BUY_PARTICIPANT gbp
+        JOIN GROUP_BUYS gb ON gbp.group_buy_no = gb.group_buy_no
+
+        /* 전체 통계용 서브쿼리 (여기는 순수하게 합계만 구해야 함) */
+        LEFT JOIN
+        (SELECT
+        sub_gbp.group_buy_no,
+        SUM(sub_gbp.my_quantity) AS total_qty,
+        COUNT(sub_gbp.participant_no) AS total_count
+        FROM
+        GROUP_BUY_PARTICIPANT sub_gbp
+        GROUP BY
+        sub_gbp.group_buy_no
+        ) total_participant ON gb.group_buy_no = total_participant.group_buy_no
+
+        LEFT JOIN
+        QUANTITY_GROUP_BUYS qgb ON gb.group_buy_no = qgb.group_buy_no
 
         WHERE
-            gbp.participant_no = #{participantNo}
+        gbp.participant_no = #{participantNo}
+
+        <if test="filter != null and filter != 'ALL'">
+            AND gb.status = #{filter}
+        </if>
+
         ORDER BY
-            gbp.participated_date DESC;
+        gbp.participated_date DESC
     </select>
+
+
+    <select id="getHostList" parameterType="java.lang.Integer" resultType="com.oopsw.matna.vo.GroupBuyListVO">
+        SELECT
+        gb.group_buy_no          AS groupBuyNo,
+        gb.title,
+        gb.status,
+        gb.image_url             AS imageUrl,
+        gb.unit                  AS unit,
+        gb.in_date               AS inDate,
+        gb.buy_end_date          AS buyEndDate,
+        gb.share_end_date        AS shareEndDate,
+        gb.buy_date              AS buyDate,
+        gb.arrival_date          AS arrivalDate,
+
+        /* 참여 내역이 없으면 NULL 처리 */
+        gbp.receive_date         AS receiveDate,
+
+        /* 남은 수량 계산 */
+        CASE
+        WHEN gb.quantity > 0 THEN
+        gb.quantity - COALESCE(total_participant.total_qty, 0)
+        ELSE 0
+        END                      AS remainingQuantity,
+
+        /* 내 수량이 없으면 0으로 표시 */
+        COALESCE(gbp.my_quantity, 0) AS myQuantity,
+
+        gbp.participated_date    AS participatedDate,
+        gbp.final_payment_point  AS finalPaymentPoint,
+
+        /* 나를 제외한 참여자 수 계산 (내가 참여 안 했으면 전체, 했으면 -1) */
+        CASE
+        WHEN gbp.participant_no IS NOT NULL THEN (COALESCE(total_participant.total_count, 0) - 1)
+        ELSE COALESCE(total_participant.total_count, 0)
+        END                      AS participantExMe,
+
+        0                        AS totalSettlementPoint
+
+        FROM
+        GROUP_BUYS gb
+
+        LEFT JOIN
+        GROUP_BUY_PARTICIPANT gbp
+        ON gb.group_buy_no = gbp.group_buy_no
+        AND gbp.participant_no = #{memberNo}
+
+        /* 전체 통계용 서브쿼리 */
+        LEFT JOIN
+        (SELECT
+        sub_gbp.group_buy_no,
+        SUM(sub_gbp.my_quantity) AS total_qty,
+        COUNT(sub_gbp.participant_no) AS total_count
+        FROM
+        GROUP_BUY_PARTICIPANT sub_gbp
+        GROUP BY
+        sub_gbp.group_buy_no
+        ) total_participant ON gb.group_buy_no = total_participant.group_buy_no
+
+        /* 수량 테이블 조인 (필요시) */
+        LEFT JOIN
+        QUANTITY_GROUP_BUYS qgb ON gb.group_buy_no = qgb.group_buy_no
+
+        WHERE
+        gb.creator_no = #{memberNo}
+        <if test="filter != null and filter != 'ALL'">
+            AND gb.status = #{filter}
+        </if>
+
+        ORDER BY
+        gb.in_date DESC
+    </select>
+
+
     <select id="getCreateGroupBuyList" parameterType="java.lang.Integer" resultType="com.oopsw.matna.vo.GroupBuyListVO">
         SELECT DISTINCT
             gb.group_buy_no groupBuyNo,

@@ -15,16 +15,17 @@ public class PeriodGroupBuyHomeVO {
 
     private LocalDateTime inDate;
     private LocalDateTime dueDate;
-    private int purchasePeriodDays;
+    private Integer purchasePeriodDays;
     private LocalDateTime finalPurchaseDeadline;
 
-    private int minPricePerPerson;
-    private int maxPricePerPerson;
+    private Integer minPricePerPerson;
+    private Integer maxPricePerPerson;
     private String shareLocation;
 
-    private int participants;
-    private int maxParticipants;
+    private Integer participants;
+    private Integer maxParticipants;
 
-    private Long groupBuyNo;
+    private Integer groupBuyNo;
     private String ingredientName;
+    private Integer periodGroupBuyNo;
 }
