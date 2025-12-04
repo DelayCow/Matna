@@ -23,7 +23,7 @@
       <div class="d-flex justify-content-between align-items-start mb-2">
         <div class="d-flex align-items-center">
           <div class="d-flex flex-column align-items-center me-2">
-            <img th:src="${recipeDetail.writerProfile}" src="/img/user1.png" class="profile-img-lg me-2" alt="Profile">
+            <img th:src="${recipeDetail.writerProfile} ?: '/img/user.png'" class="profile-img-lg me-2" alt="Profile">
             <small class="mt-1" th:text="${recipeDetail.writerNickname}"></small>
           </div>
           <div>
