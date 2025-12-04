@@ -7,6 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 public interface ReviewsRepository extends CrudRepository<Reviews, Integer> {
@@ -25,4 +26,7 @@ public interface ReviewsRepository extends CrudRepository<Reviews, Integer> {
 
 
     List<Reviews> findByAuthor_MemberNoAndDelDateIsNull(Integer authorNo);
+
+    @EntityGraph(attributePaths = {"author"})
+    Optional<Reviews> findByReviewNoAndDelDateIsNull(Integer recipeNo);
 }

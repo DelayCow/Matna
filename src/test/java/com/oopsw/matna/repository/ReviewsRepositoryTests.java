@@ -212,7 +212,7 @@ public class ReviewsRepositoryTests {
 
             vo.setReviewNo(r.getReviewNo());
             vo.setTitle(r.getTitle());
-//            vo.setContent(r.getContent());
+            vo.setContent(r.getContent());
             vo.setReviewImage(r.getImageUrl());
             vo.setRating(r.getRating());
             vo.setSpicyLevel(r.getSpicyLevel());
@@ -232,7 +232,7 @@ public class ReviewsRepositoryTests {
         for (ReviewsVO vo : voList) {
             System.out.println("후기 번호: " + vo.getReviewNo());
             System.out.println("제목: " + vo.getTitle());
-//            System.out.println("내용: " + vo.getContent());
+            System.out.println("내용: " + vo.getContent());
             System.out.println("사진 URL: " + vo.getReviewImage());
             System.out.println("별점: " + vo.getRating());
             System.out.println("맵기: " + vo.getSpicyLevel());
