@@ -34,8 +34,8 @@
         0                        AS totalSettlementPoint
 
         FROM
-        GROUP_BUY_PARTICIPANT gbp
-        JOIN GROUP_BUYS gb ON gbp.group_buy_no = gb.group_buy_no
+        group_buy_participant gbp
+        JOIN group_buys gb ON gbp.group_buy_no = gb.group_buy_no
 
         /* 전체 통계용 서브쿼리 (여기는 순수하게 합계만 구해야 함) */
         LEFT JOIN
@@ -44,13 +44,13 @@
         SUM(sub_gbp.my_quantity) AS total_qty,
         COUNT(sub_gbp.participant_no) AS total_count
         FROM
-        GROUP_BUY_PARTICIPANT sub_gbp
+        group_buy_participant sub_gbp
         GROUP BY
         sub_gbp.group_buy_no
         ) total_participant ON gb.group_buy_no = total_participant.group_buy_no
 
         LEFT JOIN
-        QUANTITY_GROUP_BUYS qgb ON gb.group_buy_no = qgb.group_buy_no
+        quantity_group_buys qgb ON gb.group_buy_no = qgb.group_buy_no
 
         WHERE
         gbp.participant_no = #{participantNo}
@@ -102,10 +102,10 @@
         0                        AS totalSettlementPoint
 
         FROM
-        GROUP_BUYS gb
+        group_buys gb
 
         LEFT JOIN
-        GROUP_BUY_PARTICIPANT gbp
+        group_buy_participant gbp
         ON gb.group_buy_no = gbp.group_buy_no
         AND gbp.participant_no = #{memberNo}
 
@@ -116,14 +116,14 @@
         SUM(sub_gbp.my_quantity) AS total_qty,
         COUNT(sub_gbp.participant_no) AS total_count
         FROM
-        GROUP_BUY_PARTICIPANT sub_gbp
+        group_buy_participant sub_gbp
         GROUP BY
         sub_gbp.group_buy_no
         ) total_participant ON gb.group_buy_no = total_participant.group_buy_no
 
         /* 수량 테이블 조인 (필요시) */
         LEFT JOIN
-        QUANTITY_GROUP_BUYS qgb ON gb.group_buy_no = qgb.group_buy_no
+        quantity_group_buys qgb ON gb.group_buy_no = qgb.group_buy_no
 
         WHERE
         gb.creator_no = #{memberNo}
@@ -167,9 +167,9 @@
                 END AS totalSettlementPoint
 
         FROM
-            GROUP_BUYS gb
+            group_buys gb
                 LEFT JOIN
-            GROUP_BUY_PARTICIPANT gbp ON gbp.group_buy_no = gb.group_buy_no
+            group_buy_participant gbp ON gbp.group_buy_no = gb.group_buy_no
                 LEFT JOIN
             (SELECT
                  sub_gbp.group_buy_no,
@@ -177,12 +177,12 @@
                  COUNT(sub_gbp.participant_no) AS total_count,
                  SUM(sub_gbp.final_payment_point) AS total_settlement_point
              FROM
-                 GROUP_BUY_PARTICIPANT sub_gbp
+                 group_buy_participant sub_gbp
              GROUP BY
                  sub_gbp.group_buy_no
             ) total_participant ON gb.group_buy_no = total_participant.group_buy_no
                 LEFT JOIN
-            QUANTITY_GROUP_BUYS qgb ON gb.group_buy_no = qgb.group_buy_no
+            quantity_group_buys qgb ON gb.group_buy_no = qgb.group_buy_no
 
         WHERE
             gb.creator_no = #{creatorNo}
