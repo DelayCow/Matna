@@ -17,11 +17,7 @@
 </head>
 <body>
 <div class="mobile-container position-relative">
-  <header class="d-flex justify-content-between align-items-center p-3 bg-white sticky-top period-detail-header" style="z-index: 1020;">
-    <a href="#" class="text-dark"><i class="bi bi-chevron-left fs-4"></i></a>
-    <h4 class="m-0 fw-bold">공동구매</h4>
-    <a href="#" class="text-dark"><i class="bi bi-bell fs-4"></i></a>
-  </header>
+  <div th:replace="layout :: pageHeader('공동구매', 'javascript:history.back()')"></div>
 
   <div class="container-fluid content-area p-0">
 
@@ -135,36 +131,7 @@
     </div>
   </div>
 
-  <nav class="navbar fixed-bottom bg-white bottom-nav p-0">
-    <div class="container-fluid p-0">
-      <ul class="nav w-100 justify-content-between py-2 px-5">
-        <li class="nav-item">
-          <a class="nav-link active p-1" href="#">
-            <i class="bi bi-house-door-fill"></i>
-            홈
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link p-1" href="#">
-            <i class="bi bi-book"></i>
-            레시피
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link p-1" href="#">
-            <i class="bi bi-basket"></i>
-            공동 구매
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link p-1" href="#">
-            <i class="bi bi-person"></i>
-            MY
-          </a>
-        </li>
-      </ul>
-    </div>
-  </nav>
+  <div th:replace="layout :: menuBar"></div>
 </div>
 
 <!-- 모달 -->

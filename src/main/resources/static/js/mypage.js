@@ -1,8 +1,11 @@
+import {showAlertModal} from "./modal.js";
+
 document.addEventListener('DOMContentLoaded', function() {
 
-    let isOwner = false; // "내 페이지?
+    const isOwnerText = document.getElementById('isOwner').textContent.trim().toLowerCase();
+    const isOwner = isOwnerText === 'true';
 
-    const memberNo = 17; // [테스트용] 로그인 기능 구현 후 세션값으로 대체 필요
+    const memberNo = document.getElementById('memberNo').textContent;
     let currentGroupTab = 'participate';
     let currentFilterStatus = 'ALL';
 
@@ -70,12 +73,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const renderCommonArea = (data) => {
         const headerArea = document.getElementById('header-right-area');
         const profileArea = document.getElementById('profile-main-area');
-        const btnsArea = document.getElementById('profile-action-btns');
+        // const btnsArea = document.getElementById('profile-action-btns');
 
         if (!data) data = {};
 
         const nickname = data.nickname || "맛도리 회원님";
-        const image = data.imageUrl || "/img/default_profile.jpg";
+        const image = data.imageUrl || "/img/user.png";
         const money = data.points || 0;
         const profileMemberNo = data.memberNo;
 
@@ -83,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (isOwner && headerArea) {
             headerArea.innerHTML = `<button class="btn p-0 border-0" id="headerMenuBtn"><i class="bi bi-three-dots-vertical fs-4 text-dark"></i></button>
-            <ul class="custom-dropdown" id="headerDropdown"><li><a href="#">정보 수정</a></li><li><a href="#">로그아웃</a></li><li><a href="#" class="text-danger">탈퇴</a></li></ul>`;
+            <ul class="custom-dropdown" id="headerDropdown"><li><a href="#">정보 수정</a></li><li><a href="/logout">로그아웃</a></li><li><a href="#" class="text-danger">탈퇴</a></li></ul>`;
         } else if (headerArea) { headerArea.innerHTML = ''; }
 
         let subInfo = isOwner
@@ -95,13 +98,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 `<img src="${image}" class="rounded-circle border me-3" width="60" height="60"><div><h5 class="fw-bold mb-1">${nickname}</h5><div>${subInfo}</div></div>`;
         }
 
-        if(btnsArea) {
-            btnsArea.innerHTML = isOwner ? '' : `
-                <div class="d-flex gap-2">
-                    <button class="btn btn-success flex-grow-1 text-white shadow-sm py-2" style="background-color:#6CC537;border:none;">채팅</button>
-                    <button class="btn btn-success flex-grow-1 text-white shadow-sm py-2" style="background-color:#6CC537;border:none;">팔로우</button>
-                </div>`;
-        }
+        // if(btnsArea) {
+        //     btnsArea.innerHTML = isOwner ? '' : `
+        //         <div class="d-flex gap-2">
+        //             <button class="btn btn-success flex-grow-1 text-white shadow-sm py-2" style="background-color:#6CC537;border:none;">채팅</button>
+        //             <button class="btn btn-success flex-grow-1 text-white shadow-sm py-2" style="background-color:#6CC537;border:none;">팔로우</button>
+        //         </div>`;
+        // }
     };
 
 
@@ -129,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
 
-        const editUrl = `/recipe/edit?id=${item.id}`;
+        const editUrl = `/recipe/edit/${item.id}`;
 
         const detailUrl = `/recipe/detail/${item.id}`;
 
@@ -139,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <ul class="dropdown-menu dropdown-menu-end shadow border-0">
                 <li><a class="dropdown-item small" href="${editUrl}">수정</a></li>
                 <li><hr class="dropdown-divider my-1"></li>
-                <li><button class="dropdown-item small text-danger btn-delete" data-id="${item.id}">삭제</button></li>
+                <li><button id="removeRecipe" class="dropdown-item small text-danger btn-delete" data-id="${item.id}">삭제</button></li>
             </ul>
         </div>` : '';
 
@@ -164,6 +167,42 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>`
     };
+
+    const removeRecipe = async function(recipeNo){
+        try{
+            const response = await fetch(`/api/recipes/${recipeNo}`,{
+                method: 'DELETE'
+            });
+
+            if(response.ok) {
+                showAlertModal(
+                    '삭제 완료',
+                    '레시피가 성공적으로 삭제되었습니다!',
+                    'success',
+                    () => {
+                        window.location.href = '/recipe';
+                    }
+                );
+            }else{
+                const errorData = await response.json();
+                const errorMessage = errorData.message || '서버 오류가 발생했습니다.';
+
+                showAlertModal(
+                    '삭제 실패',
+                    `레시피 삭제에 실패했습니다.<br><br><small class="text-muted">${errorMessage}</small>`,
+                    'error'
+                );
+            }
+
+        }catch(error){
+            console.error('네트워크 오류:', error);
+            showAlertModal(
+                '네트워크 오류',
+                '서버와 통신할 수 없습니다.<br>잠시 후 다시 시도해주세요.',
+                'error'
+            );
+        }
+    }
 
     const createReviewCard = (item) => {
 
@@ -205,7 +244,7 @@ document.addEventListener('DOMContentLoaded', function() {
             timelineHtml += `<div class="step-item ${activeClass}"><div class="step-circle"></div><span class="step-text">${stepName}</span></div>`;
         });
         timelineHtml += '</div>';
-
+        if(!isOwner){timelineHtml = '';}
 
         const buttonHtml = (isOwner && btnConfig)
             ? `<button class="btn ${btnConfig.cls} btn-sm text-nowrap z-index-front" style="font-size: 0.75rem;">${btnConfig.text}</button>`
@@ -395,6 +434,23 @@ document.addEventListener('DOMContentLoaded', function() {
         filterReview.addEventListener('click', showReviewList);
         // 만약 라디오 버튼이라면 'change' 이벤트도 추가
         filterReview.addEventListener('change', () => { if(filterReview.checked) showReviewList(); });
+    }
+
+    if (listRecipe) {
+        listRecipe.addEventListener('click', function(e) {
+            const deleteButton = e.target.closest('.btn-delete');
+
+            if (deleteButton) {
+                const recipeNo = deleteButton.getAttribute('data-id');
+
+                showAlertModal(
+                    '레시피 삭제',
+                    '레시피를 삭제하시겠습니까?',
+                    'error',
+                    () => removeRecipe(recipeNo)
+                );
+            }
+        });
     }
 
     renderCommonArea();

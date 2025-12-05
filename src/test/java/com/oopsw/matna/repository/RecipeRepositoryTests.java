@@ -162,7 +162,7 @@ public class RecipeRepositoryTests {
         Member writer = memberRepository.save(Member.builder()
                 .memberId("Test_Id")
                 .nickname("테스트용닉네임")
-                .password("1234").roll("USER").point(0).inDate(LocalDateTime.now())
+                .password("1234").role("USER").point(0).inDate(LocalDateTime.now())
                 .build());
 
         Ingredient onion = ingredientRepository.save(Ingredient.builder()

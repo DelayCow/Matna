@@ -333,28 +333,33 @@ public class RecipeService {
             throw new IllegalArgumentException("레시피 단계 개수가 일치하지 않습니다.");
         }
 
-        int newFileIndex = 0;
-
         for (int i = 0; i < existingSteps.size(); i++) {
             RecipeStep recipeStep = existingSteps.get(i);
             RecipeStepVO newData = dto.getStep().get(i);
             String oldImageUrl = recipeStep.getImageUrl();
-            String stepImageUrl;
+            String stepImageUrl = null;
 
-            if (newData.getImageUrl() != null && newData.getImageUrl().equals(oldImageUrl)) {
-                stepImageUrl = oldImageUrl;
-            } else if (stepImages != null && newFileIndex < stepImages.size()) {
-                MultipartFile stepImage = stepImages.get(newFileIndex++);
-                if (stepImage == null || stepImage.isEmpty()) {
-                    throw new IllegalArgumentException(newData.getStepOrder() + "번째 단계의 이미지는 필수입니다.");
+            String imageKey = newData.getImageUrl();
+
+            if (imageKey != null) {
+                if (imageKey.startsWith("http") || imageKey.startsWith("/uploads") || imageKey.startsWith("uploads")) {
+                    stepImageUrl = imageKey;
                 }
-                if (oldImageUrl != null) {
-                    imageStorageService.delete(oldImageUrl);
+                else if (stepImages != null && stepImages.containsKey(imageKey)) {
+                    MultipartFile stepImage = stepImages.get(imageKey);
+                    if (stepImage != null && !stepImage.isEmpty()) {
+                        if (oldImageUrl != null) {
+                            imageStorageService.delete(oldImageUrl);
+                        }
+                        stepImageUrl = imageStorageService.save(stepImage, "recipe/steps");
+                    }
                 }
-                stepImageUrl = imageStorageService.save(stepImage, "recipe/steps");
-            } else {
+            }
+
+            if (stepImageUrl == null) {
                 throw new IllegalArgumentException(newData.getStepOrder() + "번째 단계의 이미지는 필수입니다.");
             }
+
             recipeStep.setContent(newData.getContent());
             recipeStep.setImageUrl(stepImageUrl);
         }

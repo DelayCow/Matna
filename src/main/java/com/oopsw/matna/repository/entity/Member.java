@@ -34,8 +34,8 @@ public class Member {
     private LocalDateTime inDate;
     @Column(name = "del_date")
     private LocalDateTime delDate;
-    @Column(name = "roll", nullable = false, length = 10)
-    private String roll;
+    @Column(name = "role", nullable = false, length = 10)
+    private String role;
     @Column(name = "ban_date")
     private LocalDateTime banDate;
     @Column(name = "point", nullable = false)

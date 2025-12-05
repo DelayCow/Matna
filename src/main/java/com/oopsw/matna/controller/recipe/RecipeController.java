@@ -1,8 +1,10 @@
 package com.oopsw.matna.controller.recipe;
 
+import com.oopsw.matna.auth.PrincipalDetails;
 import com.oopsw.matna.service.RecipeService;
 import com.oopsw.matna.vo.RecipeDetailVO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,19 +23,17 @@ public class RecipeController {
     }
 
     @GetMapping("/detail/{recipeNo}")
-    public String recipeDetail(@PathVariable("recipeNo") String recipeNo, Model model){
-        Integer memberNo = 5;
+    public String recipeDetail(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("recipeNo") String recipeNo, Model model){
         Integer recipeNoInt = Integer.parseInt(recipeNo);
         RecipeDetailVO recipeDetailVO = recipeService.getRecipeDetail(recipeNoInt);
         model.addAttribute("recipeDetail", recipeDetailVO);
-        model.addAttribute("currentMemberNo", memberNo);
+        model.addAttribute("currentMemberNo", principalDetails.getMemberNo());
         return "recipeDetail";
     }
 
     @GetMapping("/edit/{recipeNo}")
-    public String editRecipe(@PathVariable("recipeNo") String recipeNo, Model model){
-        //멤버번호랑 작성자 번호 같은지 확인필요
-        Integer memberNo = 5;
+    public String editRecipe(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("recipeNo") String recipeNo, Model model){
+        Integer memberNo = principalDetails.getMemberNo();
         Integer recipeNoInt = Integer.parseInt(recipeNo);
         RecipeDetailVO recipeDetailVO = recipeService.getRecipeDetail(recipeNoInt);
         if(recipeDetailVO.getWriterNo().equals(memberNo)){

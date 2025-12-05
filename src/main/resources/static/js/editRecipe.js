@@ -13,6 +13,7 @@ function handleImageUpload(input, target) {
             target.style.backgroundPosition = 'center';
             target.style.backgroundRepeat = 'no-repeat';
 
+            target.removeAttribute('data-original-url');
             //아이콘만 숨기기
             const icon = target.querySelector('i');
             if (icon) {
@@ -52,7 +53,7 @@ function setupImageUploadListeners(container) {
     }
 }
 
-document.getElementById('addStepBtn').addEventListener('click', function (e) {
+document.getElementById('addStepBtn')?.addEventListener('click', function (e) {
     e.preventDefault();
     const parentDiv = this.parentElement;
     const newStep = document.createElement('div');
@@ -76,14 +77,14 @@ document.getElementById('addStepBtn').addEventListener('click', function (e) {
 
 const ingredientContainer = document.getElementById('ingredientContainer');
 const other = document.getElementById('otherItem');
-document.getElementById('addOtherItemBtn').addEventListener('click', (e) => addIngredient(e, other.value))
+// document.getElementById('addOtherItemBtn').addEventListener('click', (e) => addIngredient(e, other.value))
 let addedIngredients = [];
 
 const searchInput = document.getElementById('itemSelect');
 const itemMenu = document.getElementById('itemDropdownMenu');
 let isItemClicked = false;
 
-searchInput.addEventListener('input', debounce(function() {
+searchInput?.addEventListener('input', debounce(function() {
     if (isItemClicked) {
         isItemClicked = false;
         return;
@@ -106,7 +107,7 @@ function updateDropdownMenu(results) {
             a.href = '#';
             a.textContent = item.ingredientName;
 
-            a.addEventListener('click', (e) => addIngredient(e, item.ingredientName));
+            // a.addEventListener('click', (e) => addIngredient(e, item.ingredientName));
 
             itemMenu.appendChild(a);
         });
@@ -117,7 +118,6 @@ function updateDropdownMenu(results) {
 }
 
 const deleteIngredient = function (id) {
-    console.log(id)
     const elementToRemove = document.getElementById(id);
     if (elementToRemove) {
         elementToRemove.remove();
@@ -196,7 +196,6 @@ const loadExistingIngredients = function() {
             addedIngredients.push(ingredientName);
         }
     });
-    console.log('기존 재료 로드 완료:', addedIngredients);
 }
 function collectIngredients() {
     const ingredients = [];
@@ -231,7 +230,8 @@ function collectSteps(formData) {
         const order = index + 1;
         const contentTextarea = div.querySelector('textarea');
         const imgUploadArea = div.querySelector('.img-upload-area');
-
+        console.log(`\n--- Step ${order} ---`);
+        console.log('imgUploadArea:', imgUploadArea);
         let fileInput = imgUploadArea?.querySelector('.img-file-upload');
         let imageFileName = null;
 
@@ -241,17 +241,18 @@ function collectSteps(formData) {
 
             formData.append(fieldName, file);
             imageFileName = fieldName;
+            console.log('✅ 새 파일 업로드:', fieldName, file.name);
         }else if (imgUploadArea) {
             const originalUrl = imgUploadArea.getAttribute('data-original-url');
             const backgroundImage = imgUploadArea.style.backgroundImage;
-
+            console.log('data-original-url:', originalUrl);
             if (originalUrl && originalUrl.trim() !== '') {
                 imageFileName = originalUrl;
             } else if (backgroundImage && backgroundImage !== 'none' && backgroundImage !== '') {
                 imageFileName = 'EXISTING';
             }
         }
-
+        console.log('최종 imageFileName:', imageFileName);
         steps.push({
             stepOrder: order,
             content: contentTextarea ? contentTextarea.value : '',
@@ -351,7 +352,6 @@ async function submitRecipeData(form) {
     const recipeJsonString = JSON.stringify(recipeData);
 
     formData.append('recipeRequest', recipeJsonString);
-    console.log(recipeData)
     try {
         const response = await fetch('/api/recipes', {
             method: 'PUT',
@@ -410,7 +410,7 @@ document.addEventListener('DOMContentLoaded',function (){
         try {
             await submitRecipeData(this);
         } catch (error) {
-            console.error("레시피 등록 처리 중 최종 오류:", error);
+            console.error("레시피 수정 처리 중 최종 오류:", error);
             showAlertModal(
                 '오류 발생',
                 '예상치 못한 오류가 발생했습니다.<br>잠시 후 다시 시도해주세요.',

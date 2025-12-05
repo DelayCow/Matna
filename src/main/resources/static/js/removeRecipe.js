@@ -49,4 +49,9 @@ document.addEventListener('DOMContentLoaded', function(){
             );
         }
     }
+
+    document.getElementById('writer-profile').addEventListener('click', function (){
+        const writerNo = this.getAttribute('data-no');
+        location.href=`/mypage/${writerNo}`;
+    })
 })

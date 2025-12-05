@@ -2,6 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>editRecipe</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -58,43 +59,43 @@
         </div>
 
         <div class="mb-4" id="ingredientContainer">
-            <h5 class="fw-bold mb-3">재료 추가</h5>
-            <div class="mb-4">
-                <label for="itemSelect" class="form-label fw-bold">재료 선택</label>
-                <div class="select-input-group">
-                    <input type="text" class="form-control" id="itemSelect" placeholder="재료선택">
-                    <i class="bi bi-search select-icon"></i>
-                    <div class="dropdown-menu" id="itemDropdownMenu"></div>
-                </div>
-            </div>
+            <h5 class="fw-bold mb-3">재료 수정</h5>
+<!--            <div class="mb-4">-->
+<!--                <label for="itemSelect" class="form-label fw-bold">재료 선택</label>-->
+<!--                <div class="select-input-group">-->
+<!--                    <input type="text" class="form-control" id="itemSelect" placeholder="재료선택">-->
+<!--                    <i class="bi bi-search select-icon"></i>-->
+<!--                    <div class="dropdown-menu" id="itemDropdownMenu"></div>-->
+<!--                </div>-->
+<!--            </div>-->
 
-            <div class="mb-4">
-                <label for="otherItem" class="form-label fw-bold">기타 재료 선택</label>
-                <div class="d-flex align-items-center">
-                    <input type="text" class="form-control me-2" id="otherItem" placeholder="선택지에 없는 재료를 추가하세요!">
-                    <button class="btn btn-outline-secondary" type="button" id="addOtherItemBtn" style="height: 44px; width: 44px; border-radius: 8px;">
-                        <i class="bi bi-plus fs-5"></i>
-                    </button>
-                </div>
-            </div>
+<!--            <div class="mb-4">-->
+<!--                <label for="otherItem" class="form-label fw-bold">기타 재료 선택</label>-->
+<!--                <div class="d-flex align-items-center">-->
+<!--                    <input type="text" class="form-control me-2" id="otherItem" placeholder="선택지에 없는 재료를 추가하세요!">-->
+<!--                    <button class="btn btn-outline-secondary" type="button" id="addOtherItemBtn" style="height: 44px; width: 44px; border-radius: 8px;">-->
+<!--                        <i class="bi bi-plus fs-5"></i>-->
+<!--                    </button>-->
+<!--                </div>-->
+<!--            </div>-->
 
-            <div th:each="ing : ${recipeDetail.ingredients}" class="d-flex align-items-center mt-3 p-2 bg-light rounded ingredient-item" th:id="${ing.ingredientName.replace(' ', '_')} + '_div'">
+            <div th:each="ing : ${recipeDetail.ingredients}" class="d-flex align-items-center mt-3 p-2 bg-light rounded ingredient-item justify-content-between flex-wrap" th:id="${ing.ingredientName.replace(' ', '_')} + '_div'">
                 <input type="text" class="form-control form-control-sm me-2" style="width: 30%; flex-shrink: 0;" placeholder="재료명" name="ingredientName" th:value="${ing.ingredientName}" readonly>
 
                 <input type="number" class="form-control form-control-sm text-end me-2" style="width: 20%; flex-shrink: 0;" placeholder="수량" name="amount" min="0" step="0.1" th:value="${ing.amount}">
 
-                <div class="d-flex unit-radio-group" style="width: 40%; flex-shrink: 0;">
+                <div class="d-flex unit-radio-group flex-wrap" style="width: 40%;">
                     <input type="radio" class="btn-check" th:name="${ing.ingredientName.replace(' ', '_')} + '_unit'" th:id="${ing.ingredientName.replace(' ', '_')} + '_unit_ml'" value="ml" autocomplete="off" th:checked="${ing.unit == 'ml'}">
-                    <label class="btn btn-outline-secondary btn-sm me-1" th:for="${ing.ingredientName.replace(' ', '_')} + '_unit_ml'">ml</label>
+                    <label class="btn btn-outline-secondary btn-sm me-1" style="height: 32px; width: 30px;" th:for="${ing.ingredientName.replace(' ', '_')} + '_unit_ml'">ml</label>
 
                     <input type="radio" class="btn-check" th:name="${ing.ingredientName.replace(' ', '_')} + '_unit'" th:id="${ing.ingredientName.replace(' ', '_')} + '_unit_ea'" value="개" autocomplete="off" th:checked="${ing.unit == '개'}">
-                    <label class="btn btn-outline-secondary btn-sm me-1" th:for="${ing.ingredientName.replace(' ', '_')} + '_unit_ea'">개</label>
+                    <label class="btn btn-outline-secondary btn-sm me-1" style="height: 32px; width: 30px;" th:for="${ing.ingredientName.replace(' ', '_')} + '_unit_ea'">개</label>
 
                     <input type="radio" class="btn-check" th:name="${ing.ingredientName.replace(' ', '_')} + '_unit'" th:id="${ing.ingredientName.replace(' ', '_')} + '_unit_sp'" value="T" autocomplete="off" th:checked="${ing.unit == 'T'}">
-                    <label class="btn btn-outline-secondary btn-sm me-1" th:for="${ing.ingredientName.replace(' ', '_')} + '_unit_sp'">스푼(T)</label>
+                    <label class="btn btn-outline-secondary btn-sm me-1 text-nowrap" style="height: 32px; width: 60px;" th:for="${ing.ingredientName.replace(' ', '_')} + '_unit_sp'">스푼(T)</label>
 
                     <input type="radio" class="btn-check" th:name="${ing.ingredientName.replace(' ', '_')} + '_unit'" th:id="${ing.ingredientName.replace(' ', '_')} + '_unit_g'" value="g" autocomplete="off" th:checked="${ing.unit == 'g'}">
-                    <label class="btn btn-outline-secondary btn-sm" th:for="${ing.ingredientName.replace(' ', '_')} + '_unit_g'">그램(g)</label>
+                    <label class="btn btn-outline-secondary btn-sm text-nowrap" style="height: 32px; width: 60px;" th:for="${ing.ingredientName.replace(' ', '_')} + '_unit_g'">그램(g)</label>
                 </div>
 <!--                <button class="btn btn-danger ms-4 flex-shrink-0" type="button"-->
 <!--                        style="height: 32px; width: 50px; padding: 0;"-->
