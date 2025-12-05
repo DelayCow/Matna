@@ -29,13 +29,13 @@
         qgb.quantity_group_buy_no AS quantityGroupBuyNo
 
         FROM
-        GROUP_BUYS gb
+        group_buys gb
         JOIN
-        MEMBERS m ON m.member_no = gb.creator_no
+        members m ON m.member_no = gb.creator_no
         JOIN
-        INGREDIENTS i ON i.ingredient_no = gb.ingredient_no
+        ingredients i ON i.ingredient_no = gb.ingredient_no
         JOIN
-        QUANTITY_GROUP_BUYS qgb ON qgb.group_buy_no = gb.group_buy_no
+        quantity_group_buys qgb ON qgb.group_buy_no = gb.group_buy_no
 
         -- T1: 참가자 수량을 서브쿼리로 미리 합산하여 group_buy_no별 총합을 계산
         LEFT JOIN (
@@ -43,7 +43,7 @@
         group_buy_no,
         IFNULL(SUM(my_quantity), 0) AS totalParticipantQty
         FROM
-        GROUP_BUY_PARTICIPANT
+        group_buy_participant
         WHERE
         cancel_date IS NULL
         GROUP BY
