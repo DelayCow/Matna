@@ -11,6 +11,7 @@
 <body>
 <div class="mobile-container position-relative">
   <div th:replace="layout :: pageHeader('기간공구 생성', 'javascript:history.back()')"></div>
+  <div th:text="${creatorNo}" style="display: none" id="creatorNo"></div>
   <main class="p-4 pb-0">
 
     <div class="mb-4">
@@ -148,7 +149,7 @@
   </main>
 
   <div class="bottom-post">
-    <button class="btn btn-secondary btn-post w-100 py-2" id="submitBtn">
+    <button class="btn btn-primary btn-post w-100 py-2" id="submitBtn">
       게시
     </button>
   </div>

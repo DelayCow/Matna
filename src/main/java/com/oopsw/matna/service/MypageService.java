@@ -194,7 +194,7 @@ public class MypageService {
                 .accountNumber(m.getAccountNumber())
                 .inDate(m.getInDate())
                 .delDate(m.getDelDate())
-                .roll(m.getRoll())
+                .role(m.getRole())
                 .banDate(m.getBanDate())
                 .point(m.getPoint())
                 .imageUrl(m.getImageUrl())

@@ -2,6 +2,7 @@ package com.oopsw.matna.controller.recipe;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.oopsw.matna.auth.PrincipalDetails;
 import com.oopsw.matna.dto.RecipeResponse;
 import com.oopsw.matna.service.ImageStorageService;
 import com.oopsw.matna.service.RecipeService;
@@ -14,6 +15,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -56,13 +58,12 @@ public class RecipeRestController {
     }
 
     @PostMapping("/recipes")
-    public ResponseEntity<?> addRecipe(
+    public ResponseEntity<?> addRecipe(@AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestPart("recipeRequest") String recipeRequestJson,
             @RequestPart(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
             @RequestParam Map<String, MultipartFile> stepImages) throws IOException {
-        Integer memberNo = 5;
         RecipeRequest recipeRequest = objectMapper.readValue(recipeRequestJson, RecipeRequest.class);
-        Integer recipeNo = recipeService.addRecipe(recipeRequest, thumbnailFile, stepImages, memberNo);
+        Integer recipeNo = recipeService.addRecipe(recipeRequest, thumbnailFile, stepImages, principalDetails.getMemberNo());
 
         return ResponseEntity.ok(Map.of(
                 "recipeNo", recipeNo,
@@ -71,13 +72,12 @@ public class RecipeRestController {
     }
 
     @PutMapping("/recipes")
-    public ResponseEntity<?> editRecipe(
+    public ResponseEntity<?> editRecipe(@AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestPart("recipeRequest") String recipeRequestJson,
             @RequestPart(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
             @RequestParam Map<String, MultipartFile> stepImages) throws IOException {
-        Integer memberNo = 5;
         RecipeRequest recipeRequest = objectMapper.readValue(recipeRequestJson, RecipeRequest.class);
-        Integer recipeNo = recipeService.editRecipe(recipeRequest, thumbnailFile, stepImages, memberNo);
+        Integer recipeNo = recipeService.editRecipe(recipeRequest, thumbnailFile, stepImages, principalDetails.getMemberNo());
 
         return ResponseEntity.ok(Map.of(
                 "recipeNo", recipeNo,
@@ -86,9 +86,8 @@ public class RecipeRestController {
     }
 
     @DeleteMapping("/recipes/{recipeNo}")
-    public ResponseEntity<?> deleteRecipe(@PathVariable Integer recipeNo) {
-        Integer memberNo = 5;
-        recipeService.removeRecipe(memberNo, recipeNo);
+    public ResponseEntity<?> deleteRecipe(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable Integer recipeNo) {
+        recipeService.removeRecipe(principalDetails.getMemberNo(), recipeNo);
         return ResponseEntity.ok(Map.of(
                 "recipeNo", recipeNo,
                 "message", "레시피를 삭제했습니다."
