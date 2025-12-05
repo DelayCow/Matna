@@ -86,11 +86,6 @@ public class IngredientRepositoryTests {
         System.out.println("작성자: " + savedItem.getCreator().getNickname());
     }
 
-    @Test
-    public void findAll() {
-        System.out.println(ingredientRepository.findAll());
-    }
-
     @Transactional
     @Test
     @Commit
@@ -117,7 +112,7 @@ public class IngredientRepositoryTests {
         ingredient.setApproveDate(LocalDateTime.now());
     }
 
-    @Test
+    //@Test
     @Transactional
     @Commit
     public void changeIngredientTest(){

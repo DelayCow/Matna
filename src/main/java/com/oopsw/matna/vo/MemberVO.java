@@ -16,7 +16,7 @@ public class MemberVO {
     private String accountNumber;
     private LocalDateTime inDate;
     private LocalDateTime delDate;
-    private String roll;
+    private String role;
     private LocalDateTime banDate;
     private Integer point;
     private String imageUrl;
