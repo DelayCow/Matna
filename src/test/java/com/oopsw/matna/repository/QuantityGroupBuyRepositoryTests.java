@@ -27,7 +27,7 @@ public class QuantityGroupBuyRepositoryTests {
     GroupBuyParticipantRepository groupBuyParticipantRepository;
 
     @Test
-    void testSearchIngredientKeyword() {
+    void getSearchIngredientKeywordTest() {
         String keyword = "쌀";
         List<Ingredient> results = ingredientRepository.findByIngredientNameContaining(keyword);
         for (Ingredient ingredient : results) {
@@ -36,11 +36,11 @@ public class QuantityGroupBuyRepositoryTests {
     }
 
     @Test
-    void testAddIngredient() {
+    void addIngredientTest() {
         Member creatorMember = memberRepository.findById(5).get();
         Ingredient newIngredient = ingredientRepository.save(
                 Ingredient.builder()
-                        .ingredientName("모닝빵")
+                        .ingredientName("빵")
                         .creator(creatorMember)
                         .inDate(LocalDateTime.now())
                         .build());
@@ -48,7 +48,7 @@ public class QuantityGroupBuyRepositoryTests {
     }
 
     @Test
-    void testAddQuantityGroupBuy() { // testAddPeriodGroupBuy -> testAddQuantityGroupBuy 변경
+    void addQuantityGroupBuyTest() { // testAddPeriodGroupBuy -> testAddQuantityGroupBuy 변경
         Ingredient ingredientNo = ingredientRepository.findById(45).get();
         Member creatorMember = memberRepository.findById(16).get();
 
@@ -91,9 +91,9 @@ public class QuantityGroupBuyRepositoryTests {
     }
 
     @Test
-    void testJoinQuantityGroupBuy() {
+    void editJoinQuantityGroupBuyTest() {
         Member participantMember = memberRepository.findById(12).get();
-        GroupBuy groupBuyNo = groupBuyRepository.findById(32).get();
+        GroupBuy groupBuyNo = groupBuyRepository.findById(23).get();
         QuantityGroupBuy quantityGroupBuy = quantityGroupBuyRepository.findByGroupBuy(groupBuyNo);
 
         // 초기 결제 금액 계산: (참여 수량 * 단위 가격) * (1 + 수수료율)
@@ -117,9 +117,9 @@ public class QuantityGroupBuyRepositoryTests {
     }
 
     @Test
-    void testPayQuantityPoint() {
+    void editPayQuantityPointTest() {
         Member participantMember = memberRepository.findById(12).get();
-        GroupBuyParticipant groupBuyParticipant = groupBuyParticipantRepository.findById(70).get();
+        GroupBuyParticipant groupBuyParticipant = groupBuyParticipantRepository.findById(64).get();
 
         int initialPaymentPoint = groupBuyParticipant.getInitialPaymentPoint();
         int currentPoint = participantMember.getPoint();
@@ -137,8 +137,8 @@ public class QuantityGroupBuyRepositoryTests {
     }
 
     @Test
-    void testUpdateStatusToClosed_QuantityMet() {
-        Integer GroupBuyId = 32;
+    void editStatusToClosedQuantityMetTest() {
+        Integer GroupBuyId = 23;
         GroupBuy groupBuy = groupBuyRepository.findById(GroupBuyId).get();
 
         QuantityGroupBuy quantityGroupBuy = quantityGroupBuyRepository.findByGroupBuy(groupBuy);
@@ -159,8 +159,8 @@ public class QuantityGroupBuyRepositoryTests {
     }
 
     @Test
-    void testUpdateStatusToClosed_CreatorForcedClose() {
-        Integer GroupBuyId = 32;
+    void editStatusToClosedCreatorForcedCloseTest() {
+        Integer GroupBuyId = 23;
         GroupBuy groupBuy = groupBuyRepository.findById(GroupBuyId).get();
 
         QuantityGroupBuy quantityGroupBuy = quantityGroupBuyRepository.findByGroupBuy(groupBuy);
@@ -183,9 +183,9 @@ public class QuantityGroupBuyRepositoryTests {
     }
 
     @Test
-    void testCancelJoinGroupBuy() {
+    void editCancelJoinGroupBuyTest() {
         Member participantMember = memberRepository.findById(12).get();
-        GroupBuyParticipant groupBuyParticipant = groupBuyParticipantRepository.findById(70).get();
+        GroupBuyParticipant groupBuyParticipant = groupBuyParticipantRepository.findById(64).get();
 
         groupBuyParticipant.setCancelDate(LocalDateTime.now());
         groupBuyParticipantRepository.save(groupBuyParticipant);
@@ -202,8 +202,8 @@ public class QuantityGroupBuyRepositoryTests {
 
     @Test
         // [개설자 중단] GroupBuy 상태 CANCELED로 변경 및 참여자 전액 환불")
-    void testQuantityCreatorCancelAndRefund() {
-        Integer targetGroupBuyId = 32;
+    void editQuantityCreatorCancelAndRefundTest() {
+        Integer targetGroupBuyId = 23;
         String cancelStatus = "canceled";
         String cancelReason = "양배추 가격이 올랐습니다"; // 취소 사유
 
