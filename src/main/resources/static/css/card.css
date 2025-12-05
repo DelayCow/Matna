@@ -4,6 +4,7 @@
     width: 160px;
     border: none;
     cursor: pointer;
+    transition: transform 0.2s;
 }
 .card-wide {
     width: 300px;
@@ -14,6 +15,12 @@
     object-fit: cover;
     border-radius: 10px;
 }
+
+.card-custom:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
 .spicy{
     width: 15px;
 }

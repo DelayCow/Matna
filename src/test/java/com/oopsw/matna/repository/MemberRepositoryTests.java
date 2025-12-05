@@ -6,11 +6,12 @@ import com.oopsw.matna.vo.MemberVO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-//import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @SpringBootTest
@@ -19,13 +20,13 @@ public class MemberRepositoryTests {
     @Autowired
     private MemberRepository memberRepository;
 
-//    @Autowired
-//    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Test
     @Transactional
     public void updateBanDate() {
-        Member member = memberRepository.findByMemberId("member_18").get();
+        Member member = memberRepository.findByMemberId("member_18");
 
         LocalDateTime banDate = LocalDateTime.of(2025, 11, 25, 0, 0);
         member.setBanDate(banDate);
@@ -39,27 +40,26 @@ public class MemberRepositoryTests {
     }
 
 
-//    @Test
-//    @Transactional
-//    @Commit
-//    public void encodeAllPasswords() {
-//        List<Member> members = memberRepository.findAll();
-//        for (Member member : members) {
-//            String plainPassword = member.getPassword();
-//            String encodedPassword = bCryptPasswordEncoder.encode(plainPassword);
-//            member.setPassword(encodedPassword);
-//
-//        }
-//        memberRepository.flush();
-//    }
+    @Test
+    @Transactional
+    @Commit
+    public void encodeAllPasswords() {
+        List<Member> members = memberRepository.findAll();
+        for (Member member : members) {
+            String plainPassword = member.getPassword();
+            String encodedPassword = bCryptPasswordEncoder.encode(plainPassword);
+            member.setPassword(encodedPassword);
+
+        }
+        memberRepository.flush();
+    }
 
     @Test
     public void isTruePasswordTest() {
         Integer memberNo = 5;
         String password = "member_1";
         Member m = memberRepository.findById(memberNo).get();
-        boolean isMatched = m.getPassword().equals(password);
-//        boolean isMatched = bCryptPasswordEncoder.matches(password, m.getPassword());
+        boolean isMatched = bCryptPasswordEncoder.matches(password, m.getPassword());
         System.out.println(isMatched);
     }
 
@@ -76,7 +76,7 @@ public class MemberRepositoryTests {
                 .accountNumber(m.getAccountNumber())
                 .inDate(m.getInDate())
                 .delDate(m.getDelDate())
-                .roll(m.getRoll())
+                .role(m.getRole())
                 .banDate(m.getBanDate())
                 .point(m.getPoint())
                 .imageUrl(m.getImageUrl())
@@ -102,8 +102,7 @@ public class MemberRepositoryTests {
 
         Member m = memberRepository.findById(editMember.getMemberNo()).get();
         m.setNickname(editMember.getNickname());
-//        m.setPassword(bCryptPasswordEncoder.encode(editMember.getPassword()));
-        m.setPassword(editMember.getPassword());
+        m.setPassword(bCryptPasswordEncoder.encode(editMember.getPassword()));
         m.setImageUrl(editMember.getImageUrl());
         m.setBank(editMember.getBank());
         m.setAccountNumber(editMember.getAccountNumber());
@@ -129,5 +128,50 @@ public class MemberRepositoryTests {
         }
         m.setPoint(m.getPoint() + updatePoint);
         memberRepository.save(m);
+    }
+
+    @Test
+    public void isDuplicatedIdTest(){
+        String memberId = "member_20";
+        Member member = memberRepository.findByMemberId(memberId);
+        if(member == null){
+            System.out.println("false");
+        }else System.out.println("true");
+
+    }
+    @Test
+    public void isDuplicatedNicknameTest(){
+        String nickname = "마리오";
+        Boolean result = memberRepository.existsByNickname(nickname);
+        System.out.println(result);
+    }
+
+    @Test
+    public void addMemberTest(){
+        MemberVO memberVO = MemberVO.builder()
+                .memberId("test11")
+                .password("test11")
+                .nickname("테스트10")
+                .accountName("테스트")
+                .accountNumber("302-1234-5678-01")
+                .bank("신한은행")
+                .address("서울시 금천구 독산동")
+                .build();
+        if(memberRepository.existsByNickname(memberVO.getNickname()) || memberRepository.findByMemberId(memberVO.getMemberId()) != null){
+            System.out.println("false");
+            return;
+        }
+        Member member = memberRepository.save(Member.builder()
+                .memberId(memberVO.getMemberId())
+                .password(bCryptPasswordEncoder.encode(memberVO.getPassword()))
+                .nickname(memberVO.getNickname())
+                .accountName(memberVO.getAccountName())
+                .accountNumber(memberVO.getAccountNumber())
+                .bank(memberVO.getBank())
+                .address(memberVO.getAddress())
+                .role("ROLE_USER")
+                .point(0)
+                .build());
+        System.out.println(member != null);
     }
 }

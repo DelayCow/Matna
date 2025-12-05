@@ -48,15 +48,15 @@
         pgb.period_group_buy_no AS periodGroupBuyNo
 
         FROM
-        GROUP_BUYS gb
+        group_buys gb
         JOIN
-        MEMBERS m ON m.member_no = gb.creator_no
+        members m ON m.member_no = gb.creator_no
         JOIN
-        INGREDIENTS i ON i.ingredient_no = gb.ingredient_no
+        ingredients i ON i.ingredient_no = gb.ingredient_no
         JOIN
-        PERIOD_GROUP_BUYS pgb ON pgb.group_buy_no = gb.group_buy_no
+        period_group_buys pgb ON pgb.group_buy_no = gb.group_buy_no
         LEFT JOIN
-        GROUP_BUY_PARTICIPANT gbp ON gbp.group_buy_no = gb.group_buy_no AND gbp.cancel_date IS NULL AND gbp.participant_no != gb.creator_no
+        group_buy_participant gbp ON gbp.group_buy_no = gb.group_buy_no AND gbp.cancel_date IS NULL AND gbp.participant_no != gb.creator_no
         WHERE
         gb.status = 'open'
 
@@ -72,7 +72,8 @@
         GROUP BY
         gb.group_buy_no, gb.title, m.nickname, m.image_url, gb.image_url, gb.in_date,
         pgb.due_date, gb.buy_end_date, i.ingredient_name,
-        gb.price, gb.fee_rate, pgb.max_participants, gb.share_location
+        gb.price, gb.fee_rate, pgb.max_participants, gb.share_location,
+        pgb.period_group_buy_no
 
         ORDER BY
         <choose>
@@ -90,9 +91,9 @@
 
     <update id="updateStatusToClosedIfDueDatePassed" parameterType="java.time.LocalDateTime">
         UPDATE
-        GROUP_BUYS gb
+        group_buys gb
         JOIN
-        PERIOD_GROUP_BUYS pgb ON gb.group_buy_no = pgb.group_buy_no
+        period_group_buys pgb ON gb.group_buy_no = pgb.group_buy_no
         SET
         gb.status = 'closed'
         WHERE

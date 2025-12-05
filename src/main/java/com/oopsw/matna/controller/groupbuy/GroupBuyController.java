@@ -1,5 +1,7 @@
 package com.oopsw.matna.controller.groupbuy;
 
+import com.oopsw.matna.auth.PrincipalDetails;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +27,8 @@ public class GroupBuyController {
     }
 
     @GetMapping("/periodGroupBuy/register")
-    public String periodGroupBuyRegister() {
+    public String periodGroupBuyRegister(@AuthenticationPrincipal PrincipalDetails principalDetails, Model model) {
+        model.addAttribute("creatorNo", principalDetails.getMemberNo());
         return "/addPeriodGroupBuy";
     }
 
