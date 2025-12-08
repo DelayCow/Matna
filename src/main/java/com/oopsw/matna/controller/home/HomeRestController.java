@@ -1,6 +1,5 @@
 package com.oopsw.matna.controller.home;
 
-import com.oopsw.matna.controller.recipe.RecipeRequest;
 import com.oopsw.matna.service.MemberService;
 import com.oopsw.matna.vo.MemberVO;
 import lombok.RequiredArgsConstructor;

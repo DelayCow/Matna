@@ -1,15 +1,19 @@
 package com.oopsw.matna.controller.review;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oopsw.matna.dto.ReviewResponse;
 import com.oopsw.matna.service.ReviewService;
+import com.oopsw.matna.vo.ReviewsRegisterVO;
 import com.oopsw.matna.vo.ReviewsVO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -17,6 +21,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/reviews")
 public class ReviewRestController {
     private final ReviewService reviewService;
+    private final ObjectMapper objectMapper;
 
     @GetMapping("/recipe/{recipeNo}")
     public List<ReviewResponse> getRecipeReviews(@PathVariable Integer recipeNo){
@@ -64,5 +69,16 @@ public class ReviewRestController {
                 .rating(reviewsVO.getRating())
                 .spicyLevel(reviewsVO.getSpicyLevel())
                 .build()).collect(Collectors.toList());
+    }
+
+    @PostMapping("/{recipeNo}")
+    public ResponseEntity<?> addReview(@RequestPart("reviewRequest") String reviewRequestJson,
+                                       @RequestPart(value = "reviewImage", required = false) MultipartFile reviewImage) throws IOException {
+        ReviewsRegisterVO reviewRegister = objectMapper.readValue(reviewRequestJson, ReviewsRegisterVO.class);
+        Integer reviewNo = reviewService.addReview(reviewRegister, reviewImage);
+        return ResponseEntity.ok(Map.of(
+                "recipeNo", reviewNo,
+                "message", "리뷰를 등록했습니다."
+        ));
     }
 }

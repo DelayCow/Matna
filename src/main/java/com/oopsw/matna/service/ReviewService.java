@@ -1,22 +1,34 @@
 package com.oopsw.matna.service;
 
+import com.oopsw.matna.repository.MemberRepository;
+import com.oopsw.matna.repository.RecipeAlternativeIngredientRepository;
 import com.oopsw.matna.repository.RecipeRepository;
 import com.oopsw.matna.repository.ReviewsRepository;
+import com.oopsw.matna.repository.entity.Member;
 import com.oopsw.matna.repository.entity.Recipe;
+import com.oopsw.matna.repository.entity.RecipeAlternativeIngredient;
 import com.oopsw.matna.repository.entity.Reviews;
 import com.oopsw.matna.vo.RecipeVO;
+import com.oopsw.matna.vo.ReviewsRegisterVO;
 import com.oopsw.matna.vo.ReviewsVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
     private final RecipeRepository recipeRepository;
     private final ReviewsRepository reviewsRepository;
+    private final MemberRepository memberRepository;
+    private final RecipeAlternativeIngredientRepository recipeAlternativeIngredientRepository;
+    private final ImageStorageService imageStorageService;
 
     public List<ReviewsVO> getRecipeReviews(Integer recipeNo) {
         Recipe recipe = recipeRepository.findById(recipeNo).get();
@@ -85,5 +97,53 @@ public class ReviewService {
         }
         return voList;
 
+    }
+
+    public Integer addReview(ReviewsRegisterVO vo, MultipartFile reviewImage) throws IOException {
+        Member writer = memberRepository.findById(vo.getWriterNo())
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다. (memberNo: " + vo.getWriterNo() + ")"));
+        Recipe recipe = recipeRepository.findById(vo.getRecipeNo())
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 레시피번호입니다. (recipeNo: " + vo.getRecipeNo() + ")"));
+
+        String reviewImageUrl = null;
+        if (reviewImage == null || reviewImage.isEmpty()) {
+            throw new IllegalArgumentException("리뷰 이미지는 필수입니다.");
+        }
+        reviewImageUrl = imageStorageService.save(reviewImage, "review");
+
+        Reviews review = Reviews.builder()
+                .author(writer)
+                .recipe(recipe)
+                .title(vo.getTitle())
+                .content(vo.getContent())
+                .rating(vo.getRating())
+                .spicyLevel(vo.getSpicyLevel())
+                .imageUrl(reviewImageUrl)
+                .likesCount(0)
+                .inDate(LocalDateTime.now())
+                .build();
+
+        Reviews newReview = reviewsRepository.save(review);
+
+        if (vo.getAlternatives() != null) {
+            for (ReviewsRegisterVO.AlternativeRegisterVO altVO : vo.getAlternatives()) {
+                RecipeAlternativeIngredient altEntity = RecipeAlternativeIngredient.builder()
+                        .review(review)
+                        .originalIngredientName(altVO.getOriginalIngredientName())
+                        .alternativeIngredientName(altVO.getAlternativeIngredientName())
+                        .amount(altVO.getAmount())
+                        .unit(altVO.getUnit())
+                        .build();
+                recipeAlternativeIngredientRepository.save(altEntity);
+            }
+        }
+
+        float totalScore = recipe.getAverageRating() * recipe.getReviewCount();
+        recipe.setReviewCount(recipe.getReviewCount() + 1);
+        recipe.setAverageRating((totalScore + vo.getRating()) / recipe.getReviewCount() );
+
+        recipeRepository.save(recipe);
+
+        return newReview.getReviewNo();
     }
 }

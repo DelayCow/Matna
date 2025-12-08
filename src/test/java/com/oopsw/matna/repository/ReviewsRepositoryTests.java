@@ -77,17 +77,16 @@ public class ReviewsRepositoryTests {
     @Transactional
     @Rollback(false)
     void registerReviewTest() {
-
-        Integer writerNo = 11;
-        Integer recipeNo = 1;
+        Integer writerNo = 23;
+        Integer recipeNo = 15;
 
         ReviewsRegisterVO vo = new ReviewsRegisterVO();
         vo.setWriterNo(writerNo);
         vo.setRecipeNo(recipeNo);
         vo.setTitle("리뷰 테스트");
         vo.setContent("테스트!");
-        vo.setRating(5.0f);
-        vo.setSpicyLevel(1);
+        vo.setRating(4.0f);
+        vo.setSpicyLevel(2);
         vo.setReviewImage("img.jpg");
 
 
@@ -100,11 +99,9 @@ public class ReviewsRepositoryTests {
         altList.add(alt);
         vo.setAlternatives(altList);
 
-
         Member writer = memberRepository.findById(vo.getWriterNo()).get();
         Recipe recipe = recipeRepository.findById(vo.getRecipeNo()).get();
 
-        // (1) 후기 저장
         Reviews newReview = Reviews.builder()
                 .author(writer)
                 .recipe(recipe)
@@ -133,12 +130,11 @@ public class ReviewsRepositoryTests {
         }
 
         // 후기 수 상승
-        recipe.addRating(vo.getRating());
-
-        recipe.setUpdateDate(LocalDateTime.now());
+        float totalScore = recipe.getAverageRating() * recipe.getReviewCount();
+        recipe.setReviewCount(recipe.getReviewCount() + 1);
+        recipe.setAverageRating((totalScore + vo.getRating()) / recipe.getReviewCount() );
 
         recipeRepository.save(recipe);
-
 
         System.out.println(">>> 후기 등록 완료. ID: " + newReview.getReviewNo());
         System.out.println(">>> 레시피 후기 수 변경: " + recipe.getReviewCount());
