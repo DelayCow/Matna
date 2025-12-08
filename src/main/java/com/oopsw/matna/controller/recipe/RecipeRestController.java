@@ -6,6 +6,7 @@ import com.oopsw.matna.auth.PrincipalDetails;
 import com.oopsw.matna.dto.RecipeResponse;
 import com.oopsw.matna.service.ImageStorageService;
 import com.oopsw.matna.service.RecipeService;
+import com.oopsw.matna.vo.RecipeRegisterVO;
 import com.oopsw.matna.vo.RecipeVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -62,8 +63,8 @@ public class RecipeRestController {
             @RequestPart("recipeRequest") String recipeRequestJson,
             @RequestPart(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
             @RequestParam Map<String, MultipartFile> stepImages) throws IOException {
-        RecipeRequest recipeRequest = objectMapper.readValue(recipeRequestJson, RecipeRequest.class);
-        Integer recipeNo = recipeService.addRecipe(recipeRequest, thumbnailFile, stepImages, principalDetails.getMemberNo());
+        RecipeRegisterVO recipeRegister = objectMapper.readValue(recipeRequestJson, RecipeRegisterVO.class);
+        Integer recipeNo = recipeService.addRecipe(recipeRegister, thumbnailFile, stepImages, principalDetails.getMemberNo());
 
         return ResponseEntity.ok(Map.of(
                 "recipeNo", recipeNo,
@@ -76,8 +77,8 @@ public class RecipeRestController {
             @RequestPart("recipeRequest") String recipeRequestJson,
             @RequestPart(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
             @RequestParam Map<String, MultipartFile> stepImages) throws IOException {
-        RecipeRequest recipeRequest = objectMapper.readValue(recipeRequestJson, RecipeRequest.class);
-        Integer recipeNo = recipeService.editRecipe(recipeRequest, thumbnailFile, stepImages, principalDetails.getMemberNo());
+        RecipeRegisterVO recipeRegister = objectMapper.readValue(recipeRequestJson, RecipeRegisterVO.class);
+        Integer recipeNo = recipeService.editRecipe(recipeRegister, thumbnailFile, stepImages, principalDetails.getMemberNo());
 
         return ResponseEntity.ok(Map.of(
                 "recipeNo", recipeNo,
