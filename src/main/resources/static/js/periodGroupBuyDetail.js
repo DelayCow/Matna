@@ -121,8 +121,28 @@ const render = {
 
         // 남은 시간
         const remainingTimeEl = document.getElementById('data-remaining-time');
-        if (remainingTimeEl) {
-            remainingTimeEl.textContent = utils.formatRemainingTime(detail.remainingTime);
+        const dueDate = detail.dueDate;
+
+        if (remainingTimeEl && dueDate) {
+            // dueDate를 밀리초 타임스탬프로 변환
+            const targetTimeMs = new Date(dueDate).getTime();
+            const now = new Date().getTime();
+            const initialRemainingMs = targetTimeMs - now;
+
+            if (initialRemainingMs > 0) {
+                // 마감 시간이 남았으면 카운트다운 시작
+                utils.startCountdown(remainingTimeEl, targetTimeMs);
+            } else {
+                // 이미 마감된 경우
+                remainingTimeEl.innerHTML = '모집마감';
+                remainingTimeEl.classList.remove('text-danger');
+                remainingTimeEl.classList.add('text-muted');
+            }
+        } else if (remainingTimeEl) {
+            // dueDate 정보가 없는 경우
+            remainingTimeEl.innerHTML = '모집마감 정보 없음';
+            remainingTimeEl.classList.remove('text-danger');
+            remainingTimeEl.classList.add('text-muted');
         }
 
         // 예상 금액
@@ -251,16 +271,52 @@ const render = {
 
 // === 유틸리티 함수 ===
 const utils = {
-    // 남은 시간 포맷팅 (분 단위를 D일 HH:MM:SS로)
-    formatRemainingTime: (minutes) => {
-        if (typeof minutes !== 'number' || minutes < 0) return '마감됨';
+    startCountdown: (timerElement, targetTimestampMs) => {
+        const targetTime = targetTimestampMs;
 
-        const days = Math.floor(minutes / (60 * 24));
-        minutes %= 60 * 24;
-        const hours = Math.floor(minutes / 60);
-        const mins = minutes % 60;
+        // 이전에 설정된 interval이 있다면 제거 (중복 실행 방지)
+        if (timerElement.dataset.timerIntervalId) {
+            clearInterval(parseInt(timerElement.dataset.timerIntervalId));
+        }
 
-        return `${days}일 ${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:00`;
+        let timerInterval;
+
+        const updateCountdown = () => {
+            const now = new Date().getTime();
+            let distance = targetTime - now; // 남은 시간 (ms)
+
+            if (distance <= 0) {
+                clearInterval(timerInterval);
+                // 카운트다운 종료 시점에는 순수 텍스트를 사용해도 되므로 textContent 사용
+                timerElement.textContent = '모집마감';
+                timerElement.classList.remove('text-danger');
+                timerElement.classList.add('text-muted');
+                // 데이터 속성에서 interval ID 제거
+                delete timerElement.dataset.timerIntervalId;
+                return;
+            }
+
+            const D_IN_MS = 1000 * 60 * 60 * 24;
+            const H_IN_MS = 1000 * 60 * 60;
+            const M_IN_MS = 1000 * 60;
+
+            const days = Math.floor(distance / D_IN_MS);
+            const hours = Math.floor((distance % D_IN_MS) / H_IN_MS);
+            const minutes = Math.floor((distance % H_IN_MS) / M_IN_MS);
+            const seconds = Math.floor((distance % M_IN_MS) / 1000);
+
+            // HTML 태그(<span>)를 포함하여 스타일을 적용해야 하므로 반드시 innerHTML을 사용합니다.
+            timerElement.innerHTML = `
+                <span class="font-bold text-lg">${days}</span>일 
+                <span class="font-bold text-lg">${String(hours).padStart(2, '0')}</span> :
+                <span class="font-bold text-lg">${String(minutes).padStart(2, '0')}</span> :
+                <span class="font-bold text-lg">${String(seconds).padStart(2, '0')}</span>
+            `;
+        };
+
+        timerInterval = setInterval(updateCountdown, 1000);
+        timerElement.dataset.timerIntervalId = timerInterval.toString();
+        updateCountdown(); // 즉시 실행하여 지연 없이 표시
     },
 
     // 가격 테이블 생성
