@@ -304,6 +304,7 @@ public class PeriodGroupBuyService {
                     Member author = recipe.getAuthor();
 
                     Map<String, Object> recipeInfo = new HashMap<>();
+                    recipeInfo.put("recipeNo", recipe.getRecipeNo());
                     recipeInfo.put("title", recipe.getTitle() != null ? recipe.getTitle() : "제목 없음");
                     recipeInfo.put("imageUrl", recipe.getImageUrl() != null ? recipe.getImageUrl() : "");
                     recipeInfo.put("authorNickname", author != null && author.getNickname() != null ? author.getNickname() : "익명");

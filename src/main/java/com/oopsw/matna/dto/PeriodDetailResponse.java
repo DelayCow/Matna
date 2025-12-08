@@ -27,6 +27,7 @@ public class PeriodDetailResponse {
     @Data
     @Builder
     public static class RecipeInfo {
+        private Integer recipeNo;
         private String title;
         private String imageUrl;
         private String authorNickname;

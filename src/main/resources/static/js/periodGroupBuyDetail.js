@@ -250,9 +250,10 @@ const render = {
                 const imageUrl = recipe.imageUrl || 'https://placehold.co/150x100/A0B2C9/ffffff?text=Recipe';
                 const title = recipe.title || '제목 없음';
                 const authorNickname = recipe.authorNickname || '익명';
+                const recipeNo = recipe.recipeNo;
 
                 const card = `
-          <div class="card card-custom card-wide me-3 flex-shrink-0">
+          <div class="card card-custom card-wide me-3 flex-shrink-0" style="cursor: pointer;" onclick="location.href='/recipe/detail/${recipeNo}'">
             <img src="${imageUrl}" class="card-img-top" alt="레시피 이미지" 
                  onerror="this.onerror=null; this.src='https://placehold.co/150x100/A0B2C9/ffffff?text=Recipe';">
             <div class="card-body px-2 py-2">
