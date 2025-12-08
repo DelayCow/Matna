@@ -37,7 +37,7 @@ public class QuantityGroupBuyDaoTests {
 
     @Test
     //최신 등록순 정렬 테스트 및 기본 필드 매핑 검증")
-    void testSelectGroupBuyListRecentOrder() {
+    void getGroupBuyListRecentOrderTest() {
         Map<String, Object> params = new HashMap<>();
         List<QuantityGroupBuyHomeVO> list = quantityGroupBuyDAO.selectQuantityGroupBuyHomeList(params);
 
@@ -48,7 +48,7 @@ public class QuantityGroupBuyDaoTests {
 
     @Test
     //마감 임박순 정렬 테스트 (남은 수량 비율 기준)")
-    void testSelectGroupBuyListRemainingOrder() {
+    void getGroupBuyListRemainingOrderTest() {
         Map<String, Object> params = new HashMap<>();
         params.put("orderBy", "remaining");
         List<QuantityGroupBuyHomeVO> list = quantityGroupBuyDAO.selectQuantityGroupBuyHomeList(params);
@@ -87,7 +87,7 @@ public class QuantityGroupBuyDaoTests {
 
     @Test
     //검색 기능 테스트 (제목/재료명/나눔장소)")
-    void testSelectGroupBuyListWithKeyword() {
+    void getGroupBuyListWithKeywordTest() {
         String testKeyword = "양배추";
         Map<String, Object> params = new HashMap<>();
         params.put("keyword", testKeyword);
@@ -99,7 +99,7 @@ public class QuantityGroupBuyDaoTests {
     }
 
     @Test
-    void testSelectQuantityGroupBuyDetail(){
+    void getQuantityGroupBuyDetailTest(){
         Integer testQuantityGroupBuyNo = 17;
         QuantityGroupBuyDetailVO detailVO = quantityGroupBuyDAO.selectQuantityGroupBuyDetail(testQuantityGroupBuyNo);
 
@@ -107,7 +107,7 @@ public class QuantityGroupBuyDaoTests {
     }
 
     @Test
-    void testSelectQuantityDetailInParticipant() {
+    void getQuantityDetailInParticipantTest() {
         Integer testQuantityGroupBuyNo = 17;
 
         List<GroupBuyParticipant> participants =
@@ -129,7 +129,7 @@ public class QuantityGroupBuyDaoTests {
     }
 
     @Test
-    void testSelectQuantityDetailInRecipes(){
+    void getQuantityDetailInRecipesTest(){
         Integer testIngredientNo = 45;
         List<RecipeIngredient> results =
                 recipeIngredientRepository.findByIngredientIngredientNoOrderByRecipeInDateDesc(testIngredientNo);
