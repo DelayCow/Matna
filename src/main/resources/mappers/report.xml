@@ -32,12 +32,12 @@
         ELSE 'error'
         END AS reportCase
         FROM
-            REPORTS rt
+            reports rt
         JOIN members m ON m.member_no = rt.reporter_no
         LEFT JOIN
-            MEMBER_REPORTS mr ON rt.report_no = mr.report_no
+            member_reports mr ON rt.report_no = mr.report_no
         LEFT JOIN
-            GROUP_BUY_REPORTS gbr ON rt.report_no = gbr.report_no
+            group_buy_reports gbr ON rt.report_no = gbr.report_no
         <where>
             <if test="startDate != null and endDate != null">
                 rt.reported_date between #{startDate} and #{endDate}
