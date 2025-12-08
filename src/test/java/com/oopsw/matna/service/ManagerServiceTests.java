@@ -76,9 +76,9 @@ public class ManagerServiceTests {
     public void getAllGroupBuyList() {
         System.out.println(managerService.getGroupBuyList(
                 "2024-11-01",
-                "2025-11-30",
-                null,
-                "아"
+                "2025-12-30",
+                "",
+                "open"
         ));
     }
 

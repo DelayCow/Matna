@@ -106,8 +106,8 @@ public class ManagerService {
                 .build();
     }
 
-    public List<ManagerGroupBuyResponse> getGroupBuyList(String startDate, String endDate, String status, String title){
-        return managerDAO.getAllGroupBuyList(startDate, endDate, status, title)
+    public List<ManagerGroupBuyResponse> getGroupBuyList(String startDate, String endDate, String title, String status){
+        return managerDAO.getAllGroupBuyList(startDate, endDate, title, status)
                 .stream()
                 .map(this::toManagerGroupBuyResponse)
                 .toList();
