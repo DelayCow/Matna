@@ -16,13 +16,13 @@
                 ELSE 'error'
                 END AS groupBuyCase
         FROM
-            GROUP_BUYS gb
+            group_buys gb
                 JOIN
-            MEMBERS m ON m.member_no = gb.creator_no
+            members m ON m.member_no = gb.creator_no
                 LEFT JOIN
-            PERIOD_GROUP_BUYS pgb ON gb.group_buy_no = pgb.group_buy_no
+            period_group_buys pgb ON gb.group_buy_no = pgb.group_buy_no
                 LEFT JOIN
-            QUANTITY_GROUP_BUYS qgb ON gb.group_buy_no = qgb.group_buy_no
+            quantity_group_buys qgb ON gb.group_buy_no = qgb.group_buy_no
         <where>
             <if test="status != null and status != ''">
                 gb.status = #{status}
