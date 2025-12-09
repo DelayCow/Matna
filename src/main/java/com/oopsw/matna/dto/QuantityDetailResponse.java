@@ -1,6 +1,6 @@
 package com.oopsw.matna.dto;
 
-import com.oopsw.matna.vo.PeriodGroupBuyDetailVO;
+import com.oopsw.matna.vo.QuantityGroupBuyDetailVO;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
@@ -11,9 +11,9 @@ import java.util.List;
 @Builder
 @Data
 @ToString
-public class PeriodDetailResponse {
-    private PeriodGroupBuyDetailVO groupBuyDetail;
-    private List<ParticipantInfo> participants;
+public class QuantityDetailResponse {
+    private QuantityGroupBuyDetailVO groupBuyDetail;
+    private List<ParticipantInfo> participant;
     private List<RecipeInfo> recipes;
 
     @Data
@@ -22,6 +22,7 @@ public class PeriodDetailResponse {
         private String nickname;
         private String profileUrl;
         private LocalDateTime participatedDate;
+        private Integer myQuantity;
     }
 
     @Data
@@ -33,4 +34,5 @@ public class PeriodDetailResponse {
         private String authorNickname;
         private LocalDateTime inDate;
     }
+
 }

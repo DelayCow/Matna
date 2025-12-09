@@ -56,7 +56,7 @@ const api = {
     }
 };
 
-// === 데이터 변환 함수 ===
+// === 데이터 변환(유틸리티) 함수 ===
 const utils = {
     // 주소를 구 단위로 축약
     formatAddress: (fullAddress) => {
@@ -372,7 +372,7 @@ function setupEventHandlers() {
             if (sortType) {
                 currentOrderBy = sortType;
                 // 활성화된 탭에 따라 로드 함수 호출
-                const activeTab = document.querySelector('.nav-link.active');
+                const activeTab = document.querySelector('.gb-nav-link.active');
                 if (activeTab && activeTab.id === 'quantity-tab') {
                     loadQuantityGroupBuyList();
                 } else {
