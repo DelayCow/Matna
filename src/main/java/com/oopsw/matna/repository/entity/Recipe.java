@@ -73,15 +73,15 @@ public class Recipe {
 //    }
 
     // ★ 2. 후기 삭제 시 평점 갱신
-    public void removeRating(float deletedRating) {
-        if (this.reviewCount <= 1) {
-            // 마지막 후기 삭제면 초기화
-            this.reviewCount = 0;
-            this.averageRating = 0.0f;
-        } else {
-            float totalScore = this.averageRating * this.reviewCount; // 기존 총점
-            this.reviewCount--; // 개수 감소
-            this.averageRating = (totalScore - deletedRating) / this.reviewCount; // 새 평균
-        }
-    }
+//    public void removeRating(float deletedRating) {
+//        if (this.reviewCount <= 1) {
+//            // 마지막 후기 삭제면 초기화
+//            this.reviewCount = 0;
+//            this.averageRating = 0.0f;
+//        } else {
+//            float totalScore = this.averageRating * this.reviewCount; // 기존 총점
+//            this.reviewCount--; // 개수 감소
+//            this.averageRating = (totalScore - deletedRating) / this.reviewCount; // 새 평균
+//        }
+//    }
 }

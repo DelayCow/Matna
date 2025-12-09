@@ -13,6 +13,7 @@ import com.oopsw.matna.vo.ReviewsRegisterVO;
 import com.oopsw.matna.vo.ReviewsVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -99,9 +100,10 @@ public class ReviewService {
 
     }
 
-    public Integer addReview(ReviewsRegisterVO vo, MultipartFile reviewImage) throws IOException {
-        Member writer = memberRepository.findById(vo.getWriterNo())
-                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다. (memberNo: " + vo.getWriterNo() + ")"));
+    @Transactional
+    public Integer addReview(Integer writerNo, ReviewsRegisterVO vo, MultipartFile reviewImage) throws IOException {
+        Member writer = memberRepository.findById(writerNo)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다. (memberNo: " + writerNo + ")"));
         Recipe recipe = recipeRepository.findById(vo.getRecipeNo())
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 레시피번호입니다. (recipeNo: " + vo.getRecipeNo() + ")"));
 
@@ -145,5 +147,31 @@ public class ReviewService {
         recipeRepository.save(recipe);
 
         return newReview.getReviewNo();
+    }
+
+    @Transactional
+    public void removeReview(Integer memberNo, Integer reviewNo) {
+        Reviews review = reviewsRepository.findById(reviewNo).get();
+
+        if(!review.getAuthor().getMemberNo().equals(memberNo)) throw new IllegalArgumentException("후기를 삭제할 권한이 없습니다.");
+
+        if(review.getDelDate() != null) throw new NoSuchElementException("이미 삭제된 리뷰입니다");
+
+        Recipe recipe = review.getRecipe();
+
+        review.setDelDate(LocalDateTime.now());
+        reviewsRepository.save(review);
+
+        float totalScore = recipe.getAverageRating() * recipe.getReviewCount();
+        recipe.setReviewCount(recipe.getReviewCount() - 1);
+
+        if (recipe.getReviewCount() > 0) {
+            recipe.setAverageRating((totalScore - review.getRating()) / recipe.getReviewCount());
+        } else {
+            recipe.setAverageRating(0.0f);
+        }
+
+        recipeRepository.save(recipe);
+
     }
 }

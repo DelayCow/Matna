@@ -33,7 +33,6 @@ public class ReviewServiceTests {
     @Test
     void addReview() throws IOException {
         ReviewsRegisterVO vo = new ReviewsRegisterVO();
-        vo.setWriterNo(23);
         vo.setRecipeNo(15);
         vo.setTitle("리뷰 테스트");
         vo.setContent("테스트!");
@@ -43,7 +42,7 @@ public class ReviewServiceTests {
 
         List<ReviewsRegisterVO.AlternativeRegisterVO> altList = new ArrayList<>();
         ReviewsRegisterVO.AlternativeRegisterVO alt = new ReviewsRegisterVO.AlternativeRegisterVO();
-        alt.setOriginalIngredientName("돼지고기(목살)");
+        alt.setOriginalIngredientName("김치");
         alt.setAlternativeIngredientName("대체재료테스트_3");
         alt.setAmount(100f);
         alt.setUnit("g");
@@ -58,8 +57,18 @@ public class ReviewServiceTests {
                 new FileInputStream(thumbnailPath)
         );
 
-        Integer reviewNo = reviewService.addReview(vo, thumbnailFile);
+        Integer reviewNo = reviewService.addReview(23, vo, thumbnailFile);
         System.out.println("등록된 리뷰 번호: " + reviewNo);
 
+    }
+
+    @Test
+    void removeReview(){
+        //권한x
+//        reviewService.removeReview(22,21);
+        //이미 삭제
+//        reviewService.removeReview(23,20);
+        //성공
+        reviewService.removeReview(23,24);
     }
 }
