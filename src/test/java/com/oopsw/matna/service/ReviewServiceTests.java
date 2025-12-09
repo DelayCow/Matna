@@ -63,6 +63,31 @@ public class ReviewServiceTests {
     }
 
     @Test
+    void editReview() throws IOException {
+        ReviewsRegisterVO vo = new ReviewsRegisterVO();
+        vo.setReviewNo(25);
+        vo.setRecipeNo(15);
+        vo.setTitle("수정 테스트");
+        vo.setContent("테스트중이요");
+        vo.setRating(5.0f);
+        vo.setSpicyLevel(2);
+        vo.setReviewImage("img.jpg");
+
+        //이미지 mock데이터
+        String thumbnailPath = "src/main/resources/static/img/basil.jpg";
+        MultipartFile thumbnailFile = new MockMultipartFile(
+                "thumbnail",
+                "thumbnail.jpg",
+                "image/jpeg",
+                new FileInputStream(thumbnailPath)
+        );
+
+        Integer reviewNo = reviewService.editReview(23, vo, thumbnailFile);
+        System.out.println("수정된 리뷰 번호: " + reviewNo);
+
+    }
+
+    @Test
     void removeReview(){
         //권한x
 //        reviewService.removeReview(22,21);

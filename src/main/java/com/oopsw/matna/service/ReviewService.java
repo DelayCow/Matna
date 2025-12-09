@@ -150,6 +150,48 @@ public class ReviewService {
     }
 
     @Transactional
+    public Integer editReview(Integer writerNo, ReviewsRegisterVO vo, MultipartFile reviewImage) throws IOException {
+        Reviews review = reviewsRepository.findById(vo.getReviewNo())
+                .orElseThrow(()-> new NoSuchElementException("존재하지 않는 리뷰입니다. (reviewNo: " + vo.getReviewNo() + ")"));
+        Recipe recipe = recipeRepository.findById(vo.getRecipeNo())
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 레시피번호입니다. (recipeNo: " + vo.getRecipeNo() + ")"));
+
+        if(!review.getAuthor().getMemberNo().equals(writerNo)) {
+            throw new IllegalArgumentException("리뷰를 수정할 권한이 없습니다.");
+        }
+
+        String reviewImageUrl;
+        String currentReviewImage = review.getImageUrl();
+
+        if (vo.getReviewImage() != null && vo.getReviewImage().equals(currentReviewImage)) {
+            reviewImageUrl = currentReviewImage;
+        } else if (reviewImage != null && !reviewImage.isEmpty()) {
+            if (currentReviewImage != null) {
+                imageStorageService.delete(currentReviewImage);
+            }
+            reviewImageUrl = imageStorageService.save(reviewImage, "review");
+        } else {
+            throw new IllegalArgumentException("리뷰 이미지는 필수입니다.");
+        }
+
+        review.setTitle(vo.getTitle());
+        review.setContent(vo.getContent());
+        review.setRating(vo.getRating());
+        review.setSpicyLevel(vo.getSpicyLevel());
+        review.setImageUrl(reviewImageUrl);
+        review.setUpdateDate(LocalDateTime.now());
+
+        Reviews savedReview = reviewsRepository.save(review);
+
+        float totalScore = recipe.getAverageRating() * recipe.getReviewCount();
+        recipe.setAverageRating((totalScore - review.getRating() + vo.getRating()) / recipe.getReviewCount() );
+
+        recipeRepository.save(recipe);
+
+        return savedReview.getReviewNo();
+    }
+
+    @Transactional
     public void removeReview(Integer memberNo, Integer reviewNo) {
         Reviews review = reviewsRepository.findById(reviewNo).get();
 

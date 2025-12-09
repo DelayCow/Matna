@@ -85,6 +85,18 @@ public class ReviewRestController {
         ));
     }
 
+    @PutMapping("/{recipeNo}")
+    public ResponseEntity<?> editReview(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                       @RequestPart("reviewRequest") String reviewRequestJson,
+                                       @RequestPart(value = "reviewImage", required = false) MultipartFile reviewImage) throws IOException {
+        ReviewsRegisterVO reviewRegister = objectMapper.readValue(reviewRequestJson, ReviewsRegisterVO.class);
+        Integer reviewNo = reviewService.editReview(principalDetails.getMemberNo(), reviewRegister, reviewImage);
+        return ResponseEntity.ok(Map.of(
+                "recipeNo", reviewNo,
+                "message", "리뷰가 수정되었습니다."
+        ));
+    }
+
     @DeleteMapping("/{recipeNo}")
     public ResponseEntity<?> removeReview(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("reviewNo") int reviewNo) {
         reviewService.removeReview(principalDetails.getMemberNo(), reviewNo);
