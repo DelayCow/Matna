@@ -143,7 +143,7 @@ public class RecipeService {
         List<RecipeStep> rSteps = recipeStepRepository.findByRecipeOrderByStepOrderAsc(recipe);
 
         List<RecipeAlternativeIngredient> alternatives =
-                recipeAlternativeIngredientRepository.findByReview_Recipe_RecipeNo(recipeNo);
+                recipeAlternativeIngredientRepository.findByReview_Recipe_RecipeNoAndReview_DelDateIsNull(recipeNo);
 
         RecipeDetailVO vo = new RecipeDetailVO();
 
