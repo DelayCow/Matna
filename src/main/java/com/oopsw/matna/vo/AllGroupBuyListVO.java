@@ -14,5 +14,7 @@ public class AllGroupBuyListVO {
     private String nickname;
     private Integer creatorNo;
     private String title;
+    private Integer quantityGroupBuyNo;
+    private Integer periodGroupBuyNo;
     private String groupBuyCase;
 }
