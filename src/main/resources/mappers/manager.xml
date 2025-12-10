@@ -8,8 +8,10 @@
             gb.status,
             gb.in_date inDate,
             m.nickname,
-            gb.creator_no createorNo,
+            gb.creator_no creatorNo,
             gb.title,
+            qgb.quantity_group_buy_no AS quantityGroupBuyNo,
+            pgb.period_group_buy_no AS periodGroupBuyNo,
             CASE
                 WHEN qgb.group_buy_no IS NOT NULL THEN 'quantity'
                 WHEN pgb.group_buy_no IS NOT NULL THEN 'period'
@@ -43,6 +45,7 @@
             member_no memberNo,
             nickname,
             member_id memberId,
+            image_url imgUrl,
             in_date inDate,
             ban_date banDate,
             CASE
