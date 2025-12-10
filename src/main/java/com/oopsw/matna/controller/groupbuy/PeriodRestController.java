@@ -1,7 +1,9 @@
 package com.oopsw.matna.controller.groupbuy;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.oopsw.matna.auth.PrincipalDetails;
 import com.oopsw.matna.dto.*;
+import com.oopsw.matna.repository.entity.GroupBuyParticipant;
 import com.oopsw.matna.repository.entity.Ingredient;
 import com.oopsw.matna.repository.entity.PeriodGroupBuy;
 import com.oopsw.matna.service.PeriodGroupBuyService;
@@ -12,6 +14,7 @@ import com.oopsw.matna.vo.PeroidGroupBuyCreateVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -136,5 +139,94 @@ public class PeriodRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    @PostMapping("/join")
+    public ResponseEntity<Map<String, Object>> addParticipantToPeriodGroupBuy(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestBody GroupBuyParticipantRequest request) {
+
+        Integer currentMemberNo = principalDetails.getMemberNo();
+        request.setParticipantNo(currentMemberNo);
+        GroupBuyParticipant participant = periodGroupBuyService.addParticipantToPeriodGroupBuy(request);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "기간공구 참여가 성공적으로 완료되었습니다.");
+        response.put("data", Map.of(
+                "groupParticipantNo", participant.getGroupParticipantNo(),
+                "groupBuyNo", participant.getGroupBuy().getGroupBuyNo(),
+                "participantNo", participant.getParticipant().getMemberNo(),
+                "participantDate", participant.getParticipatedDate()
+        ));
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/closedAndRefund/{groupBuyNo}")
+    public ResponseEntity<Map<String, Object>> editGroupBuyStatusAndRefund(
+            @PathVariable Integer groupBuyNo){
+        Map<String, Object> response = new HashMap<>();
+
+        try {
+            periodGroupBuyService.editGroupBuyStatusAndRefund(groupBuyNo);
+
+            response.put("success", true);
+            response.put("message", groupBuyNo + "번 기간공구가 성공적으로 마감되었으며, 정산 및 환불 처리가 완료되었습니다.");
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+
+        } catch (IllegalStateException e) {
+            response.put("success", false);
+            response.put("message", "상태 오류: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "공동구매 마감 및 환불 처리 중 예상치 못한 서버 오류가 발생했습니다: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+
+    }
+
+    @PutMapping("/cancelParticipant/{groupBuyParticipantNo}")
+    public ResponseEntity<Map<String, Object>> editCancelParticipantGroupBuy(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @PathVariable Integer groupBuyParticipantNo) {
+
+        Integer currentMemberNo = principalDetails.getMemberNo();
+        periodGroupBuyService.editCancelParticipantGroupBuy(groupBuyParticipantNo, currentMemberNo);
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "공동구매 참여가 성공적으로 취소되었습니다."
+        ));
+    }
+
+    @PutMapping("/cancelCreator/{groupBuyNo}")
+    public ResponseEntity<Map<String, Object>> editPeriodCreatorCancelAndRefund(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @PathVariable Integer groupBuyNo,
+            @RequestBody Map<String, String> request) {
+
+        Integer currentMemberNo = principalDetails.getMemberNo();
+        String cancelReason = request.get("cancelReason");
+
+        if (cancelReason == null || cancelReason.trim().isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("success", false, "message", "취소 사유를 입력해주세요."));
+        }
+
+        periodGroupBuyService.editPeriodCreatorCancelAndRefund(groupBuyNo, currentMemberNo, cancelReason);
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "공동구매가 취소되고 모든 참여자에게 환불이 완료되었습니다."
+        ));
+    }
+
+
 
 }

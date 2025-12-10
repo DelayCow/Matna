@@ -32,4 +32,10 @@ public class GroupBuyController {
         return "/addPeriodGroupBuy";
     }
 
+    @GetMapping("/quantityGroupBuy/register")
+    public String quantityGroupBuyRegister(@AuthenticationPrincipal PrincipalDetails principalDetails, Model model) {
+        model.addAttribute("creatorNo", principalDetails.getMemberNo());
+        return "/addQuantityGroupBuy";
+    }
+
 }

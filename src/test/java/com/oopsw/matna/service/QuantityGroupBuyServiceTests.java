@@ -1,5 +1,6 @@
 package com.oopsw.matna.service;
 
+import com.oopsw.matna.controller.groupbuy.QuantityRegisterRequest;
 import com.oopsw.matna.repository.*;
 import com.oopsw.matna.repository.entity.GroupBuy;
 import com.oopsw.matna.repository.entity.GroupBuyParticipant;
@@ -9,7 +10,12 @@ import com.oopsw.matna.vo.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.transaction.annotation.Transactional;
+
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.IOException;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
@@ -31,7 +37,8 @@ public class QuantityGroupBuyServiceTests {
     private GroupBuyParticipantRepository groupBuyParticipantRepository;
 
     @Test
-    void addQuantityGroupBuyTest() {
+    @Transactional
+    void addQuantityGroupBuyTest() throws IOException {
         Integer ingredientNo = 45;
         Integer creatorNo = 16;
         // 재료 존재 여부 확인
@@ -42,7 +49,7 @@ public class QuantityGroupBuyServiceTests {
                 .orElseThrow(() -> new AssertionError("테스트용 회원(memberNo: " + creatorNo + ")이 존재하지 않습니다."));
 
         // VO 생성
-        QuantityGroupBuyCreateVO vo = QuantityGroupBuyCreateVO.builder()
+        QuantityRegisterRequest request = QuantityRegisterRequest.builder()
                 .ingredientNo(ingredientNo)
                 .creatorNo(creatorNo)
                 .title("양배추 4통 같이 나눌분")
@@ -62,10 +69,18 @@ public class QuantityGroupBuyServiceTests {
                 .shareAmount(1)
                 .build();
 
-        // 예상 단위당 가격 계산
-        int expectedPricePerUnit = (int) Math.round((vo.getPrice() * (1.0 + (vo.getFeeRate() / 100.0))) / vo.getQuantity());
+        // Mock 이미지 파일 생성
+        MockMultipartFile mockFile = new MockMultipartFile(
+                "thumbnailFile",
+                "goguma.jpg",
+                "image/jpeg",
+                "test image content".getBytes()
+        );
 
-        QuantityGroupBuy result = quantityGroupBuyService.addQuantityGroupBuy(vo);
+        // 예상 단위당 가격 계산
+        int expectedPricePerUnit = (int) Math.round((request.getPrice() * (1.0 + (request.getFeeRate() / 100.0))) / request.getQuantity());
+
+        QuantityGroupBuy result = quantityGroupBuyService.addQuantityGroupBuy(request, mockFile);
         assertNotNull(result);
         assertNotNull(result.getQuantityGroupBuyNo());
         assertNotNull(result.getGroupBuy());
