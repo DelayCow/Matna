@@ -54,4 +54,8 @@ document.addEventListener('DOMContentLoaded', function(){
         const writerNo = this.getAttribute('data-no');
         location.href=`/mypage/${writerNo}`;
     })
+
+    document.getElementById('addReviewBtn').addEventListener('click', function (){
+        location.href = `/review/add?recipeNo=${this.getAttribute('data-recipeNo')}`
+    })
 })

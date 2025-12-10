@@ -76,7 +76,7 @@ public class ReviewRestController {
     @PostMapping("/{recipeNo}")
     public ResponseEntity<?> addReview(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                        @RequestPart("reviewRequest") String reviewRequestJson,
-                                       @RequestPart(value = "reviewImage", required = false) MultipartFile reviewImage) throws IOException {
+                                       @RequestPart(value = "reviewImage") MultipartFile reviewImage) throws IOException {
         ReviewsRegisterVO reviewRegister = objectMapper.readValue(reviewRequestJson, ReviewsRegisterVO.class);
         Integer reviewNo = reviewService.addReview(principalDetails.getMemberNo(), reviewRegister, reviewImage);
         return ResponseEntity.ok(Map.of(

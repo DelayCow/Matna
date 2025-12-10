@@ -69,7 +69,7 @@ public class ReviewServiceTests {
         vo.setRecipeNo(15);
         vo.setTitle("수정 테스트");
         vo.setContent("테스트중이요");
-        vo.setRating(5.0f);
+        vo.setRating(4.0f);
         vo.setSpicyLevel(2);
         vo.setReviewImage("img.jpg");
 
