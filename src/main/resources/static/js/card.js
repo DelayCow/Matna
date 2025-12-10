@@ -161,11 +161,12 @@ const translateReviewData = function (review){
     return translatedReview;
 }
 const createReviewCard = function (r){
+    const writerImageUrl = r.writerProfileImage || '/img/user.png';
     return `<div class="card card-custom card-wide" data-type="review" data-no="${r.reviewNo}">
             <img src="${r.reviewImage}" class="card-img-top" alt="${r.reviewImage}">
             <div class="card-body px-0 py-2">
               <div class="d-flex align-items-center mb-1">
-                <img src="${r.writerProfileImage}" class="profile-img" alt="User">
+                <img src="${writerImageUrl}" class="profile-img" alt="User">
                 <div class="overflow-hidden w-100">
                   <div class="d-flex overflow-hidden w-100">
                     <small class="fw-bold text-nowrap">${r.writerNickname}</small>

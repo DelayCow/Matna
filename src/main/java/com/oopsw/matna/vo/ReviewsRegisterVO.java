@@ -14,7 +14,7 @@ import java.util.List;
 //.등록용임
 public class ReviewsRegisterVO {
 
-
+        private Integer reviewNo;
         private Integer recipeNo;
         private Integer writerNo;
         private String title;

@@ -1,7 +1,5 @@
-package com.oopsw.matna.controller.recipe;
+package com.oopsw.matna.vo;
 
-import com.oopsw.matna.vo.IngredientVO;
-import com.oopsw.matna.vo.RecipeStepVO;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +9,7 @@ import java.util.List;
 @Builder
 @Getter
 @Setter
-public class RecipeRequest {
+public class RecipeRegisterVO {
     private Integer recipeNo;
     private String title;
     private String summary;
