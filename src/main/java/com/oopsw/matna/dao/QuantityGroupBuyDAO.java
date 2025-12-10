@@ -12,4 +12,5 @@ import java.util.Map;
 public interface QuantityGroupBuyDAO {
     List<QuantityGroupBuyHomeVO> selectQuantityGroupBuyHomeList(Map<String, Object> params);
     QuantityGroupBuyDetailVO selectQuantityGroupBuyDetail(Integer quantityGroupBuyNo);
+
 }

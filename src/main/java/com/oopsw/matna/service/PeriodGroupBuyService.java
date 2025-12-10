@@ -263,7 +263,7 @@ public class PeriodGroupBuyService {
 
         Integer groupBuyNo = detailVO.getGroupBuyNo();
         if (groupBuyNo == null) {
-            throw new IllegalStateException("공동구매 기본 번호(GroupBuyNo)를 찾을 수 없습니다.");
+            throw new IllegalStateException("공동구매를 찾을 수 없습니다.");
         }
         GroupBuy groupBuy = groupBuyRepository.findById(groupBuyNo)
                 .orElseThrow(() -> new IllegalStateException("GroupBuy 엔티티를 찾을 수 없습니다. 번호: " + groupBuyNo));
@@ -304,6 +304,7 @@ public class PeriodGroupBuyService {
                     Member author = recipe.getAuthor();
 
                     Map<String, Object> recipeInfo = new HashMap<>();
+                    recipeInfo.put("recipeNo", recipe.getRecipeNo());
                     recipeInfo.put("title", recipe.getTitle() != null ? recipe.getTitle() : "제목 없음");
                     recipeInfo.put("imageUrl", recipe.getImageUrl() != null ? recipe.getImageUrl() : "");
                     recipeInfo.put("authorNickname", author != null && author.getNickname() != null ? author.getNickname() : "익명");
