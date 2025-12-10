@@ -71,6 +71,11 @@ public class ManagerServiceTests {
         System.out.println(ingredient);
     }
 
+    @Test
+    public void changeIngredient() {
+        managerService.changeIngredient(51, 48);
+    }
+
     //공구 관리
     @Test
     public void getAllGroupBuyList() {
@@ -93,12 +98,32 @@ public class ManagerServiceTests {
                 ""
         ));
     }
+    @Test
+    public void getReportById() {
+        System.out.println(managerService.getReportById(1));
+    }
 
     @Test
     public void editReport(){
-        Report report = reportRepository.findWithReporterByReportNo(1)
+        Report report = reportRepository.findWithReporterByReportNo(11)
                 .orElseThrow(() -> new RuntimeException("report 없습니다."));;
-        managerService.editReportStatus(1);
+        managerService.editReportStatus(11, "complete");
         System.out.println(report);
     }
+
+    //유저 관리
+    @Test
+    public void getMembers(){
+        System.out.println(managerService.getMemberList(
+                "",
+                "",
+                "주기"
+        ));
+    }
+
+    @Test
+    public void updateBanDate(){
+        managerService.updateBanDate(12, 3);
+    }
+
 }

@@ -4,15 +4,14 @@ import com.oopsw.matna.dao.ManagerDAO;
 import com.oopsw.matna.dao.ReportDAO;
 import com.oopsw.matna.dto.ManagerGroupBuyResponse;
 import com.oopsw.matna.dto.ManagerIngredientResponse;
+import com.oopsw.matna.dto.ManagerMemberResponse;
 import com.oopsw.matna.dto.ManagerReportResponse;
-import com.oopsw.matna.repository.IngredientRepository;
-import com.oopsw.matna.repository.MemberRepository;
-import com.oopsw.matna.repository.ReportRepository;
-import com.oopsw.matna.repository.entity.Ingredient;
-import com.oopsw.matna.repository.entity.Member;
-import com.oopsw.matna.repository.entity.Report;
+import com.oopsw.matna.repository.*;
+import com.oopsw.matna.repository.entity.*;
 import com.oopsw.matna.vo.AllGroupBuyListVO;
+import com.oopsw.matna.vo.AllMemberListVO;
 import com.oopsw.matna.vo.AllReportVO;
+import com.oopsw.matna.vo.MemberVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +28,8 @@ public class ManagerService {
     private final ManagerDAO managerDAO;
     private final ReportDAO reportDAO;
     private final ReportRepository reportRepository;
+    private final GroupBuyRepository groupBuyRepository;
+    private final RecipeIngredientRepository recipeIngredientRepository;
 
     //재료 관리
     private ManagerIngredientResponse toManagerIngredientResponse(Ingredient ingredient) {
@@ -42,7 +43,8 @@ public class ManagerService {
     }
 
     public List<ManagerIngredientResponse> getIngredients() {
-        return ingredientRepository.findAllByApproveDateIsNotNullAndDelDateIsNullOrderByIngredientNoDesc().stream()
+        return ingredientRepository.findAllByApproveDateIsNotNullAndDelDateIsNullOrderByIngredientNoDesc()
+                .stream()
                 .map(this::toManagerIngredientResponse)
                 .toList();
     }
@@ -63,6 +65,7 @@ public class ManagerService {
                 .toList();
     }
 
+    @Transactional
     public ManagerIngredientResponse addIngredient(Integer creatorId, String ingredientName) {
         // creator 정보 조회
         Member creator = memberRepository.findByMemberNo(creatorId);
@@ -95,6 +98,19 @@ public class ManagerService {
         ingredientRepository.save(ingredient);
     }
 
+    @Transactional
+    public void changeIngredient(Integer ingredientId, Integer newIngredientId) {
+        Integer ingredientNo = 51;
+        Integer newIngredientNo = 48;
+        Ingredient ingredient = ingredientRepository.findById(ingredientNo).get();
+        Ingredient newIngredient = ingredientRepository.findById(newIngredientNo).get();
+        List<GroupBuy> groupBuyList = groupBuyRepository.findByIngredient_IngredientNo(ingredientNo);
+        List<RecipeIngredient> recipeList = recipeIngredientRepository.findByIngredient_IngredientNo(ingredientNo);
+        groupBuyList.forEach(groupBuy -> {groupBuy.setIngredient(newIngredient);});
+        recipeList.forEach(recipe -> {recipe.setIngredient(newIngredient);});
+        ingredient.setDelDate(LocalDateTime.now());
+    }
+
     //공구 관리
     private ManagerGroupBuyResponse toManagerGroupBuyResponse(AllGroupBuyListVO vo) {
         return ManagerGroupBuyResponse.builder()
@@ -103,6 +119,9 @@ public class ManagerService {
                 .inDate(vo.getInDate())
                 .creatorName(vo.getNickname())
                 .title(vo.getTitle())
+                .groupBuyCase(vo.getGroupBuyCase())
+                .quantityGroupBuyNo(vo.getQuantityGroupBuyNo())
+                .periodGroupBuyNo(vo.getPeriodGroupBuyNo())
                 .build();
     }
 
@@ -114,7 +133,7 @@ public class ManagerService {
     }
 
     //신고 관리
-    private ManagerReportResponse toManagerReportManagementResponse(AllReportVO vo) {
+    private ManagerReportResponse toManagerReportResponse(AllReportVO vo) {
         Member reporter = memberRepository.findById(vo.getReporterNo()).get();
         String type = (vo.getTargetNo() != null) ? "회원 신고" : "공동구매 신고";
         return ManagerReportResponse.builder()
@@ -130,18 +149,47 @@ public class ManagerService {
     public List<ManagerReportResponse> getReportList(LocalDate startDate, LocalDate endDate, String status, String reportCase, String keyword){
         return reportDAO.getReports(startDate, endDate, status, reportCase, keyword)
                 .stream()
-                .map(this::toManagerReportManagementResponse)
+                .map(this::toManagerReportResponse)
                 .toList();
     }
 
     public Report getReportById(Integer reportId) {
-        return reportRepository.findById(reportId)
-                .orElseThrow(() -> new RuntimeException("Report 조회 실패"));
+        return reportRepository.findWithReporterByReportNo(reportId)
+                .orElseThrow(() -> new RuntimeException("Report가 없습니다."));
     }
 
-    public void editReportStatus(Integer reportNo) {
+    @Transactional
+    public void editReportStatus(Integer reportNo, String status) {
         Report report = reportRepository.findWithReporterByReportNo(reportNo)
                 .orElseThrow(() -> new RuntimeException("Report가 없습니다."));
-        report.setStatus("complete");
+        report.setStatus(status);
+        reportRepository.save(report);
     }
+
+    //유저 관리
+    private ManagerMemberResponse toManagerMemberResponse(AllMemberListVO member) {
+        return ManagerMemberResponse.builder()
+                .memberNo(member.getMemberNo())
+                .memberId(member.getMemberId())
+                .nickname(member.getNickname())
+                .banDate(member.getBanDate())
+                .imageUrl(member.getImageUrl())
+                .accountStatus(member.getAccountStatus())
+                .build();
+    }
+
+    public List<ManagerMemberResponse> getMemberList(String startDate, String endDate, String keyword) {
+        return managerDAO.getAllMemberList(startDate, endDate, keyword)
+                .stream()
+                .map(this::toManagerMemberResponse)
+                .toList();
+    }
+
+    @Transactional
+    public void updateBanDate(Integer memberNo, Integer days) {
+        Member member = memberRepository.findByMemberNo(memberNo);
+        LocalDateTime banDate = LocalDateTime.now().plusDays(days);
+        member.setBanDate(banDate);
+    }
+
 }
