@@ -181,7 +181,7 @@
           <div class="d-flex justify-content-between align-items-center mb-3">
               <h6 class="fw-bold m-0">다른 회원의 후기 <span class="text-warning ms-1"><i class="bi bi-star-fill"></i> <span th:text="${recipeDetail.rating}"></span></span> (<span th:text="${recipeDetail.reviewCount}"></span>)</h6>
               <a th:if="${recipeDetail.reviews != null and not recipeDetail.reviews.isEmpty()}"
-                 th:href="@{'/recipe/reviews/' + ${recipeDetail.recipeNo}}" class="text-dark text-decoration-none fw-bold">전체 보기 <i class="bi bi-chevron-right"></i></a>
+                 th:href="@{'/review/recipe/' + ${recipeDetail.recipeNo}}" class="text-dark text-decoration-none fw-bold">전체 보기 <i class="bi bi-chevron-right"></i></a>
           </div>
           <div th:if="${recipeDetail.reviews != null and not recipeDetail.reviews.isEmpty()}" class="d-flex gap-2">
               <img th:each="review : ${recipeDetail.reviews}"

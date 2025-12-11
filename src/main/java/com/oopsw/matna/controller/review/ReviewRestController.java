@@ -26,7 +26,7 @@ public class ReviewRestController {
     private final ObjectMapper objectMapper;
 
     @GetMapping("/recipe/{recipeNo}")
-    public List<ReviewResponse> getRecipeReviews(@PathVariable Integer recipeNo){
+    public List<ReviewResponse> getRecipeReviews(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable Integer recipeNo){
         List<ReviewsVO> reviews = reviewService.getRecipeReviews(recipeNo);
         return reviews.stream().map(reviewsVO -> ReviewResponse.builder()
                 .reviewNo(reviewsVO.getReviewNo())
@@ -38,6 +38,8 @@ public class ReviewRestController {
                 .inDate(reviewsVO.getInDate())
                 .rating(reviewsVO.getRating())
                 .spicyLevel(reviewsVO.getSpicyLevel())
+                .alternatives(reviewsVO.getAlternatives())
+                .writer(principalDetails.getMemberNo().equals(reviewsVO.getWriterNo()))
                 .build()).collect(Collectors.toList());
     }
 

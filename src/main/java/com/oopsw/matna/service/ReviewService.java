@@ -49,9 +49,22 @@ public class ReviewService {
 
 
             if (r.getAuthor() != null) {
+                vo.setWriterNo(r.getAuthor().getMemberNo());
                 vo.setWriterNickname(r.getAuthor().getNickname());
                 vo.setWriterProfileImage(r.getAuthor().getImageUrl());
             }
+            List<RecipeAlternativeIngredient> alternativeIngredients = recipeAlternativeIngredientRepository.findByReview_ReviewNo(r.getReviewNo());
+            List<ReviewsRegisterVO.AlternativeRegisterVO> alternativeVoList = new ArrayList<>();
+
+            for (RecipeAlternativeIngredient a : alternativeIngredients) {
+                ReviewsRegisterVO.AlternativeRegisterVO altVo = new ReviewsRegisterVO.AlternativeRegisterVO();
+                altVo.setOriginalIngredientName(a.getOriginalIngredientName());
+                altVo.setAlternativeIngredientName(a.getAlternativeIngredientName());
+                altVo.setAmount(a.getAmount());
+                altVo.setUnit(a.getUnit());
+                alternativeVoList.add(altVo);
+            }
+            vo.setAlternatives(alternativeVoList);
 
             voList.add(vo);
         }
