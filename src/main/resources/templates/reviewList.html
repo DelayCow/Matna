@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>layout</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="../static/css/layout.css">
+    <link rel="stylesheet" href="../static/css/reviewList.css">
+</head>
+<body>
+<div class="mobile-container position-relative">
+    <header class="d-flex justify-content-between align-items-center p-3 bg-white sticky-top" style="z-index: 1020;">
+        <a href="#" class="text-dark"><i class="bi bi-chevron-left fs-4"></i></a>
+        <h4 class="m-0 fw-bold">XXX레시피의 후기</h4>
+        <a href="#" class="text-dark"><i class="bi bi-bell fs-4"></i></a>
+    </header>
+    <div class="container-custom">
+        <div class="rating-summary">
+            <span class="text-warning"><i class="bi bi-star-fill"></i></span>
+            <span style="font-weight: 600;">4.0</span>
+            <span style="color: #6c757d;">(1,498)</span>
+            <button class="write-review-btn">
+                <i class="bi bi-pencil"></i> 후기 작성하기
+            </button>
+        </div>
+
+        <div class="review-card">
+            <div class="d-flex justify-content-between align-items-start">
+                <div class="review-info">
+                    <div>
+                        <img src="../static/img/user.png" alt="햄난이" class="review-avatar">
+                        <div class="review-author">햄난이</div>
+                    </div>
+                    <div>
+                        <div class="review-title mb-2">🍔 마찬다.. 저 방금 인생 버거 만들었어요! (이 레시피 꼭 저장해세요)</div>
+                        <div class="review-meta">
+                            <span class="review-rating"><span class="text-warning"><i class="bi bi-star-fill"></i></span> 4.5</span>
+                            <span>2025.10.15</span>
+                            <span class="review-badge"><img src="../static/img/spicy.png"> 안 매워요</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="edit-box" class="position-relative">
+                    <i class="bi bi-three-dots-vertical text-dark"></i>
+                    <div class="edit-box text-center bg-white">
+                        <a class="mb-2">수정</a>
+                        <a class="mt-2" id="removeReview">삭제</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="review-content">
+                어리는 첫 시작 너무 중요해서 손 떨려요... ㄷㄷ 주말이라 코빗 먹어버지 해서거 보면 막 인물엔다니, 와... 이게 집에서 가능하다고? 진짜 앗! 완전 신세계에요!!<br>
+                제가 따라 한 솔직수감티칩니다! 거의 가까이요!<br>
+                제가 따라 한 신대께서 1대로 칼솔라 주는 레데로 힌다면 레티는 갈택숙책 제쳐고요, 소스 배합이 진짜 미쳤어요... 단대헤냇의 킹소고 어저귀 어서거 수대서끄칭넬더라 진전<br>
+                술직히 어저귀언 수대서거찐넬더더 1001원 없었죠. (진자)<br>
+                술찬에 새로 조절 팬 알... 고급 시컴 하쉽여... 10할 웰웠었죠 크크크 킨랄 영에러건처 근 설겨 씨 시작저숩니더다.<br>
+                어거 민느브러고 오늘 와중 중생 쓴 저 가도 안 어거세요..가족틀도 다 어더너 시 촉 자고 너려 자이어잉네요.<br>
+                이 레시피 공곤헤 주신 쑤 분... 정말 빵수느릎 조 자이 돈자이 티톨시가근 긴니더. 더를 짱해요세요!
+            </div>
+
+            <div class="review-alternative-ing">
+                <div class="alternative-ing-title">대체한 재료</div>
+                <div class="alternative-ing-item">
+                    <span class="alternative-ing-label">슈퍼드 치즈</span>
+                    <span class="mx-2">→</span>
+                    <span class="alternative-ing-value">모짜렐라 치즈</span>
+                </div>
+                <div class="alternative-ing-item">
+                    <span class="alternative-ing-label">양상추</span>
+                    <span class="mx-2">→</span>
+                    <span class="alternative-ing-value">케일</span>
+                </div>
+            </div>
+
+            <img src="../static/img/hambugi.jpg" alt="버거 이미지" class="review-image">
+        </div>
+    </div>
+
+    <nav th:fragment="menuBar" class="navbar fixed-bottom bg-white bottom-nav p-0">
+        <div class="container-fluid p-0">
+            <ul class="nav w-100 justify-content-between py-2 px-5">
+                <li class="nav-item">
+                    <a class="nav-link p-1" href="/">
+                        <i class="bi bi-house-door-fill"></i>
+                        홈
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link p-1" href="/recipe">
+                        <i class="bi bi-book"></i>
+                        레시피
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link p-1" href="/groupBuy">
+                        <i class="bi bi-basket"></i>
+                        공동 구매
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link p-1" href="/mypage">
+                        <i class="bi bi-person"></i>
+                        MY
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../static/js/layout.js"></script>
+<script src="../static/js/editBox.js"></script>
+</body>
+</html>

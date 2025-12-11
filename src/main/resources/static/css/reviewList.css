@@ -1,0 +1,123 @@
+.rating-summary {
+    padding: 16px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+}
+.write-review-btn {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+    border: 1px solid #dee2e6;
+    background: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+.review-card {
+    background-color: white;
+    padding: 20px;
+    margin-bottom: 8px;
+}
+.review-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.review-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: #e9ecef;
+}
+.review-author {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+.review-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #6c757d;
+}
+.review-badge {
+    background-color: #FFB0B0;
+    color: red;
+    border: 1px solid red;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+}
+#edit-box{
+    cursor: pointer;
+}
+.edit-box {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right:0;
+    width: 60px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 5px 10px;
+    z-index: 1000;
+    font-size: 0.75rem;
+    color: #495057;
+}
+.edit-box.show {
+    display: block !important;
+}
+.edit-box a {
+    display: block;
+    padding: 3px 0;
+    text-decoration: none;
+    color: #343a40;
+}
+.edit-box a:hover {
+    color: red;
+}
+.review-badge img{
+    width: 18px;
+}
+.review-content {
+    line-height: 1.6;
+    margin-bottom: 12px;
+    color: #333;
+}
+.review-alternative-ing {
+    background-color: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+.alternative-ing-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+.alternative-ing-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+.alternative-ing-label {
+    min-width: 80px;
+    color: #6c757d;
+}
+.alternative-ing-value {
+    font-weight: 500;
+}
+.review-image {
+    width: 100%;
+    max-width: 200px;
+    border-radius: 8px;
+    margin-top: 8px;
+}
