@@ -2,6 +2,7 @@ package com.oopsw.matna.repository;
 
 import com.oopsw.matna.repository.entity.GroupBuy;
 import com.oopsw.matna.repository.entity.GroupBuyParticipant;
+import com.oopsw.matna.repository.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -16,4 +17,8 @@ public interface GroupBuyParticipantRepository extends JpaRepository<GroupBuyPar
     List<GroupBuyParticipant> findByGroupBuyAndCancelDateIsNullOrderByParticipatedDateAsc(GroupBuy groupBuy);
 
     Optional<Object> findByGroupBuy_GroupBuyNoAndParticipant_MemberNoAndCancelDateIsNull(Integer groupBuyNo, Integer participantNo);
+
+    boolean existsByGroupBuyAndParticipantAndCancelDateIsNull(GroupBuy groupBuy, Member participant);
+
+    List<GroupBuyParticipant> findByGroupBuyAndCancelDateIsNull(GroupBuy groupBuy);
 }

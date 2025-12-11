@@ -1,5 +1,6 @@
 package com.oopsw.matna.service;
 
+import com.oopsw.matna.controller.groupbuy.GroupBuyParticipantRequest;
 import com.oopsw.matna.controller.groupbuy.QuantityRegisterRequest;
 import com.oopsw.matna.dao.QuantityGroupBuyDAO;
 import com.oopsw.matna.repository.*;
@@ -107,55 +108,89 @@ public class QuantityGroupBuyService {
     }
 
     @Transactional
-    public GroupBuyParticipant addParticipantToQuantityGroupBuy(GroupBuyParticipantVO vo) {
-        Member participantMember = memberRepository.findById(vo.getParticipantNo())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. 회원번호: " + vo.getParticipantNo()));
-        GroupBuy groupBuy = groupBuyRepository.findById(vo.getGroupBuyNo())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공동구매입니다. 공구번호: " + vo.getGroupBuyNo()));
+    public GroupBuyParticipant addParticipantToQuantityGroupBuy(GroupBuyParticipantRequest request) {
+
+        Member participantMember = memberRepository.findById(request.getParticipantNo())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. 회원번호: " + request.getParticipantNo()));
+
+        GroupBuy groupBuy = groupBuyRepository.findById(request.getGroupBuyNo())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공동구매입니다. 공구번호: " + request.getGroupBuyNo()));
+
         QuantityGroupBuy quantityGroupBuy = quantityGroupBuyRepository.findByGroupBuy(groupBuy);
         if (quantityGroupBuy == null) {
-            throw new IllegalArgumentException("수량 공동구매 정보를 찾을 수 없습니다.");
+            throw new IllegalArgumentException("수량공구 정보를 찾을 수 없습니다.");
         }
 
-        // 초기 결제 포인트 계산
-        Integer price = groupBuy.getPrice();
-        Integer feeRate = groupBuy.getFeeRate();
-        int initialPaymentPoint = (int) Math.round((price * (1.0 + (feeRate / 100.0))) / 2.0);
+        if (groupBuy.getCreator().getMemberNo().equals(participantMember.getMemberNo())) {
+            throw new IllegalArgumentException("공동구매 개설자는 본인의 공구에 참여할 수 없습니다.");
+        }
 
-        // 포인트 차감 처리
+        boolean alreadyParticipated = groupBuyParticipantRepository
+                .findByGroupBuy_GroupBuyNoAndParticipant_MemberNoAndCancelDateIsNull(
+                        request.getGroupBuyNo(), request.getParticipantNo())
+                .isPresent();
+
+        if (alreadyParticipated) {
+            throw new IllegalArgumentException("이미 해당 공동구매에 참여하셨습니다.");
+        }
+
+        if ("closed".equals(groupBuy.getStatus())) {
+            throw new IllegalArgumentException("마감된 공동구매에는 참여할 수 없습니다.");
+        }
+        if ("canceled".equals(groupBuy.getStatus())) {
+            throw new IllegalArgumentException("취소된 공동구매에는 참여할 수 없습니다.");
+        }
+
+        int shareAmount = quantityGroupBuy.getShareAmount();
+        Integer participantQuantity = request.getMyQuantity();
+
+        if (participantQuantity == null || participantQuantity <= 0) {
+            throw new IllegalArgumentException("참여 수량을 입력해주세요.");
+        }
+
+        if (participantQuantity % shareAmount != 0) {
+            throw new IllegalArgumentException(
+                    "참여 수량은 " + shareAmount + "개/g 단위로만 선택 가능합니다. 입력한 수량: " + participantQuantity);
+        }
+
+        // 초기 결제 금액 계산: (참여 수량 / shareAmount) * pricePerUnit
+        int pricePerUnit = quantityGroupBuy.getPricePerUnit();
+        int shareUnits = participantQuantity / shareAmount;
+        int initialPaymentPoint = shareUnits * pricePerUnit;
+
+        // 포인트 잔액 확인
         int updatePoint = -initialPaymentPoint;
         if (participantMember.getPoint() + updatePoint < 0) {
             throw new IllegalArgumentException("포인트가 부족합니다. 현재 포인트: " + participantMember.getPoint()
                     + "원, 필요 포인트: " + initialPaymentPoint + "원");
         }
 
+        // 포인트 차감
         participantMember.setPoint(participantMember.getPoint() + updatePoint);
         memberRepository.save(participantMember);
+
         GroupBuyParticipant joinQuantityGroupBuy = groupBuyParticipantRepository.save(
                 GroupBuyParticipant.builder()
                         .participant(participantMember)
                         .groupBuy(groupBuy)
                         .participatedDate(LocalDateTime.now())
+                        .myQuantity(participantQuantity)
                         .initialPaymentPoint(initialPaymentPoint)
                         .build()
         );
 
-        // 수량 충족 여부 확인 및 상태 업데이트
-        List<GroupBuyParticipant> allParticipants = groupBuyParticipantRepository.findByGroupBuy(groupBuy);
-        int currentSharedQuantity = 0;
-        for (GroupBuyParticipant participant : allParticipants) {
-            // 취소되지 않은 참여자만 카운트
-            if (participant.getCancelDate() == null && participant.getMyQuantity() != null) {
-                currentSharedQuantity += participant.getMyQuantity();
-            }
-        }
-        // 개설자 부담 수량
-        int initialMyQuantity = quantityGroupBuy.getMyQuantity();
-        // 총 필요 수량
+        // ===== 수량 충족 확인 및 자동 마감 로직 =====
+
         int totalQuantity = groupBuy.getQuantity();
-        // 수량 충족 확인
-        boolean isQuantitySatisfied = (currentSharedQuantity + initialMyQuantity >= totalQuantity);
-        if (isQuantitySatisfied) {
+        int creatorQuantity = quantityGroupBuy.getMyQuantity();
+        List<GroupBuyParticipant> allParticipants = groupBuyParticipantRepository.findByGroupBuy(groupBuy);
+        int totalSharedQuantity = allParticipants.stream()
+                .filter(p -> p.getCancelDate() == null)
+                .mapToInt(GroupBuyParticipant::getMyQuantity)
+                .sum();
+
+        boolean isQuantityMet = (creatorQuantity + totalSharedQuantity >= totalQuantity);
+        if (isQuantityMet) {
             groupBuy.setStatus("closed");
             groupBuyRepository.save(groupBuy);
         }
@@ -163,13 +198,83 @@ public class QuantityGroupBuyService {
         return joinQuantityGroupBuy;
     }
 
+
     @Transactional
-    public void editCancelParticipantGroupBuy(Integer groupBuyParticipantNo){
+    public void editModifyMyQuantity(Integer groupBuyParticipantNo, Integer currentMemberNo, Integer newQuantity) {
+
         GroupBuyParticipant groupBuyParticipant = groupBuyParticipantRepository.findById(groupBuyParticipantNo)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 참여 정보입니다. 참여자번호: " + groupBuyParticipantNo));
+
+        if (!groupBuyParticipant.getParticipant().getMemberNo().equals(currentMemberNo)) {
+            throw new IllegalArgumentException("본인의 참여 내역만 수정할 수 있습니다.");
+        }
+
+        if (groupBuyParticipant.getCancelDate() != null) {
+            throw new IllegalArgumentException("취소된 참여는 수정할 수 없습니다. 취소일: " + groupBuyParticipant.getCancelDate());
+        }
+
+        GroupBuy groupBuy = groupBuyParticipant.getGroupBuy();
+        if ("closed".equals(groupBuy.getStatus())) {
+            throw new IllegalArgumentException("마감된 공동구매는 수정할 수 없습니다.");
+        }
+        if ("canceled".equals(groupBuy.getStatus())) {
+            throw new IllegalArgumentException("취소된 공동구매는 수정할 수 없습니다.");
+        }
+
+        QuantityGroupBuy quantityGroupBuy = quantityGroupBuyRepository.findByGroupBuy(groupBuy);
+        if (quantityGroupBuy == null) {
+            throw new IllegalArgumentException("수량공구 정보를 찾을 수 없습니다.");
+        }
+
+        if (newQuantity == null || newQuantity <= 0) {
+            throw new IllegalArgumentException("수정할 수량을 입력해주세요.");
+        }
+
+        int shareAmount = quantityGroupBuy.getShareAmount();
+        if (newQuantity % shareAmount != 0) {
+            throw new IllegalArgumentException(
+                    "수정 수량은 " + shareAmount + "개/g 단위로만 선택 가능합니다. 입력한 수량: " + newQuantity);
+        }
+
+        // 수정 전 데이터
+        int beforeInitialPayment = groupBuyParticipant.getInitialPaymentPoint();
+        Member participantMember = groupBuyParticipant.getParticipant();
+        int beforePoint = participantMember.getPoint();
+
+        // 새로운 결제 금액 계산
+        int pricePerUnit = quantityGroupBuy.getPricePerUnit();
+        int shareUnits = newQuantity / shareAmount;
+        int newPayment = shareUnits * pricePerUnit;
+        int modifyPoint = newPayment - beforeInitialPayment; // 양수: 추가 지불, 음수: 환불
+
+        // 포인트 계산 및 잔액 확인
+        int newPoint = beforePoint - modifyPoint;
+        if (newPoint < 0) {
+            throw new IllegalArgumentException(
+                    "포인트가 부족합니다. 현재 포인트: " + beforePoint + "P, 필요 포인트: " + modifyPoint + "P");
+        }
+
+        groupBuyParticipant.setMyQuantity(newQuantity);
+        groupBuyParticipant.setInitialPaymentPoint(newPayment);
+        groupBuyParticipantRepository.save(groupBuyParticipant);
+
+        participantMember.setPoint(newPoint);
+        memberRepository.save(participantMember);
+    }
+
+    @Transactional
+    public void editCancelParticipantGroupBuy(Integer groupBuyParticipantNo, Integer currentMemberNo){
+        GroupBuyParticipant groupBuyParticipant = groupBuyParticipantRepository.findById(groupBuyParticipantNo)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 참여 정보입니다. 참여자번호: " + groupBuyParticipantNo));
+
+        if (!groupBuyParticipant.getParticipant().getMemberNo().equals(currentMemberNo)) {
+            throw new IllegalStateException("본인의 참여 내역만 취소할 수 있습니다.");
+        }
+
         if (groupBuyParticipant.getCancelDate() != null) {
             throw new IllegalStateException("이미 취소된 참여입니다. 취소일: " + groupBuyParticipant.getCancelDate());
         }
+
         GroupBuy groupBuy = groupBuyParticipant.getGroupBuy();
         if ("closed".equals(groupBuy.getStatus())) {
             throw new IllegalStateException("마감된 공동구매는 취소할 수 없습니다.");
@@ -178,6 +283,7 @@ public class QuantityGroupBuyService {
         groupBuyParticipant.setCancelDate(LocalDateTime.now());
         groupBuyParticipantRepository.save(groupBuyParticipant);
 
+        // 포인트 환불
         Member participant = groupBuyParticipant.getParticipant();
         int initialPaymentPoint = groupBuyParticipant.getInitialPaymentPoint();
         int currentPoint = participant.getPoint();
@@ -188,49 +294,94 @@ public class QuantityGroupBuyService {
     }
 
     @Transactional
-    public QuantityGroupBuy editForceCloseQuantityGroupBuy(Integer groupBuyNo, Integer creatorNo) {
+    public QuantityGroupBuy editForcedCreatorAndStatusToClosed(Integer groupBuyNo, Integer currentMemberNo) {
         GroupBuy groupBuy = groupBuyRepository.findById(groupBuyNo)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공동구매입니다. 공구번호: " + groupBuyNo));
-        if (!groupBuy.getCreator().getMemberNo().equals(creatorNo)) {
-            throw new IllegalArgumentException("개설자만 강제 마감할 수 있습니다.");
-        }
-        if ("closed".equals(groupBuy.getStatus())) {
-            throw new IllegalStateException("이미 마감된 공동구매입니다.");
-        }
-        // QuantityGroupBuy 조회
+
         QuantityGroupBuy quantityGroupBuy = quantityGroupBuyRepository.findByGroupBuy(groupBuy);
+
         if (quantityGroupBuy == null) {
-            throw new IllegalArgumentException("수량 공동구매 정보를 찾을 수 없습니다.");
+            throw new IllegalArgumentException("수량 공동구매 상세 정보를 찾을 수 없습니다. 공구번호: " + groupBuyNo);
+        }
+        if (!groupBuy.getCreator().getMemberNo().equals(currentMemberNo)) {
+            throw new IllegalStateException("공동구매 개설자만 중단할 수 있습니다.");
         }
 
-        // 현재 수량 계산
+        if ("closed".equals(groupBuy.getStatus())) {
+            throw new IllegalStateException("이미 마감된 공동구매는 취소할 수 없습니다.");
+        }
+        if ("canceled".equals(groupBuy.getStatus())) {
+            throw new IllegalStateException("이미 취소된 공동구매입니다.");
+        }
+
         List<GroupBuyParticipant> participants = groupBuyParticipantRepository.findByGroupBuy(groupBuy);
         int currentSharedQuantity = 0;
         for (GroupBuyParticipant participant : participants) {
+            // 참여 취소되지 않았고, 수량이 null이 아닌 경우만 합산
             if (participant.getCancelDate() == null && participant.getMyQuantity() != null) {
                 currentSharedQuantity += participant.getMyQuantity();
             }
         }
 
-        // 현재 개설자 부담 수량
-        int initialMyQuantity = quantityGroupBuy.getMyQuantity();
+        // 현재 개설자 부담 수량 (이제 quantityGroupBuy가 초기화되어 사용 가능)
+        int creatorCurrentQuantity = quantityGroupBuy.getMyQuantity();
         // 총 필요 수량
         int totalQuantity = groupBuy.getQuantity();
         // 남은 수량 계산
-        int remainingQuantity = totalQuantity - (currentSharedQuantity + initialMyQuantity);
-        // 수량이 이미 충족된 경우
+        int remainingQuantity = totalQuantity - (currentSharedQuantity + creatorCurrentQuantity);
+
         if (remainingQuantity <= 0) {
             throw new IllegalStateException("이미 수량이 충족되었습니다. 강제 마감이 필요하지 않습니다.");
         }
+        int newCreatorQuantity = creatorCurrentQuantity + remainingQuantity;
 
-        // 개설자가 남은 수량 추가 부담
-        quantityGroupBuy.setMyQuantity(initialMyQuantity + remainingQuantity);
+
+        quantityGroupBuy.setMyQuantity(newCreatorQuantity);
         quantityGroupBuyRepository.save(quantityGroupBuy);
         groupBuy.setStatus("closed");
         groupBuyRepository.save(groupBuy);
 
         return quantityGroupBuy;
     }
+
+    @Transactional
+    public void editQuantityCreatorCancelAndRefund(Integer groupBuyNo, Integer currentMemberNo, String cancelReason) {
+        GroupBuy groupBuy = groupBuyRepository.findById(groupBuyNo)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공동구매입니다. 공구번호: " + groupBuyNo));
+
+        // 개설자 확인
+        if (!groupBuy.getCreator().getMemberNo().equals(currentMemberNo)) {
+            throw new IllegalStateException("공동구매 개설자만 중단할 수 있습니다.");
+        }
+
+        if ("closed".equals(groupBuy.getStatus())) {
+            throw new IllegalStateException("이미 마감된 공동구매는 취소할 수 없습니다.");
+        }
+        if ("canceled".equals(groupBuy.getStatus())) {
+            throw new IllegalStateException("이미 취소된 공동구매입니다.");
+        }
+
+        groupBuy.setStatus("canceled");
+        groupBuy.setCancelReason(cancelReason);
+        groupBuyRepository.save(groupBuy);
+
+        List<GroupBuyParticipant> participants = groupBuyParticipantRepository.findByGroupBuy(groupBuy);
+
+        for (GroupBuyParticipant participant : participants) {
+            if (participant.getCancelDate() != null) {
+                continue;
+            }
+            Member member = participant.getParticipant();
+            int initialPaymentPoint = participant.getInitialPaymentPoint();
+            int currentPoint = member.getPoint();
+            member.setPoint(currentPoint + initialPaymentPoint);
+            memberRepository.save(member);
+
+            participant.setCancelDate(LocalDateTime.now());
+            groupBuyParticipantRepository.save(participant);
+        }
+    }
+
 
 
     public List<QuantityGroupBuyHomeVO> getQuantityGroupBuyHome(Map<String, Object> params) {

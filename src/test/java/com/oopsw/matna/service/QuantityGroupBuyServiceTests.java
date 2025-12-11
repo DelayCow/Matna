@@ -1,5 +1,6 @@
 package com.oopsw.matna.service;
 
+import com.oopsw.matna.controller.groupbuy.GroupBuyParticipantRequest;
 import com.oopsw.matna.controller.groupbuy.QuantityRegisterRequest;
 import com.oopsw.matna.repository.*;
 import com.oopsw.matna.repository.entity.GroupBuy;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 @SpringBootTest
+@Transactional
 public class QuantityGroupBuyServiceTests {
     @Autowired
     private QuantityGroupBuyService quantityGroupBuyService;
@@ -112,68 +114,121 @@ public class QuantityGroupBuyServiceTests {
 
     @Test
     void addParticipantToQuantityGroupBuyTest() {
+        // 테스트 데이터
         Integer participantNo = 12;
-        Integer groupBuyNo = 32;
-        // 참여자 존재 여부 확인
-        Member member = memberRepository.findById(participantNo)
-                .orElseThrow(() -> new AssertionError("테스트용 회원(memberNo: " + participantNo + ")이 존재하지 않습니다."));
-        // 공동구매 존재 여부 확인
-        GroupBuy groupBuy = groupBuyRepository.findById(groupBuyNo)
-                .orElseThrow(() -> new AssertionError("테스트용 공동구매(groupBuyNo: " + groupBuyNo + ")가 존재하지 않습니다."));
-        // QuantityGroupBuy 조회
+        Integer groupBuyNo = 20;
+        Integer participantQuantity = 1000; // shareAmount의 배수여야 함
+
+        // 참여 전 회원 포인트
+        Member participantMember = memberRepository.findById(participantNo).get();
+        int beforePoint = participantMember.getPoint();
+
+        // 공동구매 및 수량공구 정보
+        GroupBuy groupBuy = groupBuyRepository.findById(groupBuyNo).get();
         QuantityGroupBuy quantityGroupBuy = quantityGroupBuyRepository.findByGroupBuy(groupBuy);
-        assertNotNull(quantityGroupBuy, "QuantityGroupBuy가 존재해야 합니다.");
 
-        // 포인트 부족 확인
-        Integer price = groupBuy.getPrice();
-        Integer feeRate = groupBuy.getFeeRate();
-        int expectedPayment = (int) Math.round((price * (1.0 + (feeRate / 100.0))) / 2.0);
-
-        if (member.getPoint() < expectedPayment) {
-            System.out.println("포인트 부족: 현재 " + member.getPoint() + "원, 필요 " + expectedPayment + "원");
-            return;
-        }
-
-        // VO 생성
-        GroupBuyParticipantVO vo = GroupBuyParticipantVO.builder()
+        // Request 생성
+        GroupBuyParticipantRequest request = GroupBuyParticipantRequest.builder()
                 .participantNo(participantNo)
                 .groupBuyNo(groupBuyNo)
+                .myQuantity(participantQuantity)
                 .build();
 
-        GroupBuyParticipant result = quantityGroupBuyService.addParticipantToQuantityGroupBuy(vo);
+        // 예상 결제 금액 계산
+        int shareAmount = quantityGroupBuy.getShareAmount();
+        int pricePerUnit = quantityGroupBuy.getPricePerUnit();
+        int shareUnits = participantQuantity / shareAmount;
+        int expectedPayment = shareUnits * pricePerUnit;
+
+        // 서비스 호출
+        GroupBuyParticipant result = quantityGroupBuyService.addParticipantToQuantityGroupBuy(request);
+
+        // 검증
         assertNotNull(result);
+        assertEquals(participantNo, result.getParticipant().getMemberNo());
+        assertEquals(groupBuyNo, result.getGroupBuy().getGroupBuyNo());
+        assertEquals(participantQuantity, result.getMyQuantity());
+        assertEquals(expectedPayment, result.getInitialPaymentPoint());
+        assertNotNull(result.getParticipatedDate());
 
-        // 수량 충족 여부 확인
-        GroupBuy updatedGroupBuy = groupBuyRepository.findById(groupBuyNo).get();
+        // 포인트 차감 확인
+        Member updatedMember = memberRepository.findById(participantNo).get();
+        assertEquals(beforePoint - expectedPayment, updatedMember.getPoint());
 
-        List<GroupBuyParticipant> participants = groupBuyParticipantRepository.findByGroupBuy(updatedGroupBuy);
-        int sharedQuantity = 0;
-        for (GroupBuyParticipant p : participants) {
-            if (p.getCancelDate() == null && p.getMyQuantity() != null) {
-                sharedQuantity += p.getMyQuantity();
-            }
-        }
-
-        int totalQuantity = groupBuy.getQuantity();
-        int myQuantity = quantityGroupBuy.getMyQuantity();
-        boolean isQuantitySatisfied = (sharedQuantity + myQuantity >= totalQuantity);
-
-        System.out.println("총 필요 수량: " + totalQuantity + groupBuy.getUnit());
-        System.out.println("총 확보 수량: " + (sharedQuantity + myQuantity) + groupBuy.getUnit());
-        System.out.println("수량 충족: " + isQuantitySatisfied);
-        System.out.println("공동구매 상태: " + updatedGroupBuy.getStatus());
-
-        if (isQuantitySatisfied) {
-            assertEquals("closed", updatedGroupBuy.getStatus(), "수량 충족 시 상태가 'closed'여야 합니다.");
-        } else {
-            assertEquals("open", updatedGroupBuy.getStatus(), "수량 미충족 시 상태가 'open'이어야 합니다.");
-        }
+        System.out.println("=== 수량공구 참여 성공 ===");
+        System.out.println("참여자 번호: " + result.getParticipant().getMemberNo());
+        System.out.println("공구 번호: " + result.getGroupBuy().getGroupBuyNo());
+        System.out.println("참여 수량: " + result.getMyQuantity() + "개/g");
+        System.out.println("나눔 단위: " + shareAmount + "개/g");
+        System.out.println("단위 수: " + shareUnits);
+        System.out.println("단위당 가격: " + pricePerUnit + "원");
+        System.out.println("결제 금액: " + result.getInitialPaymentPoint() + "원");
+        System.out.println("참여 전 포인트: " + beforePoint + "P");
+        System.out.println("참여 후 포인트: " + updatedMember.getPoint() + "P");
     }
 
     @Test
-    void forceCloseQuantityGroupBuyTest() {
-        Integer groupBuyNo = 32;
-        Integer creatorNo = 16;
+    void editModifyMyQuantityTest() {
+        // 테스트 데이터
+        Integer participantNo = 19;
+        Integer groupBuyParticipantNo = 59;
+        int newQuantity = 1000; // 수정할 새로운 수량
+
+        // 참여자 및 참여 정보 조회
+        Member participantMember = memberRepository.findById(participantNo).get();
+        GroupBuyParticipant groupBuyParticipant = groupBuyParticipantRepository.findById(groupBuyParticipantNo).get();
+
+        // 수정 전 데이터
+        int initialMyQuantity = groupBuyParticipant.getMyQuantity();
+        int beforePoint = participantMember.getPoint();
+        int beforeInitialPayment = groupBuyParticipant.getInitialPaymentPoint();
+
+        // 공동구매 및 수량공구 정보
+        GroupBuy groupBuy = groupBuyParticipant.getGroupBuy();
+        QuantityGroupBuy quantityGroupBuy = quantityGroupBuyRepository.findByGroupBuy(groupBuy);
+        int pricePerUnit = quantityGroupBuy.getPricePerUnit();
+        int shareAmount = quantityGroupBuy.getShareAmount();
+
+        // 새로운 지불 금액 계산
+        int shareUnits = newQuantity / shareAmount;
+        int newPayment = shareUnits * pricePerUnit;
+        int modifyPoint = newPayment - beforeInitialPayment; // 양수: 추가 지불, 음수: 환불
+
+        // 포인트 계산
+        int expectedNewPoint = beforePoint - modifyPoint; // 추가 지불 시 차감, 환불 시 증가
+
+        // 서비스 호출
+        quantityGroupBuyService.editModifyMyQuantity(groupBuyParticipantNo, participantNo, newQuantity);
+
+        // 검증
+        GroupBuyParticipant updatedParticipant = groupBuyParticipantRepository.findById(groupBuyParticipantNo).get();
+        Member updatedMember = memberRepository.findById(participantNo).get();
+
+        assertEquals(newQuantity, updatedParticipant.getMyQuantity(), "수량이 올바르게 수정되어야 합니다.");
+        assertEquals(newPayment, updatedParticipant.getInitialPaymentPoint(), "결제 금액이 올바르게 수정되어야 합니다.");
+        assertEquals(expectedNewPoint, updatedMember.getPoint(), "포인트가 올바르게 계산되어야 합니다.");
+
+        // 결과 출력
+        System.out.println("=== 수량 수정 결과 ===");
+        System.out.println("기존 구매 수량: " + initialMyQuantity + "개/g");
+        System.out.println("수정 구매 수량: " + newQuantity + "개/g");
+        System.out.println("수량 차이: " + (newQuantity - initialMyQuantity) + "개/g");
+        System.out.println("나눔 단위: " + shareAmount + "개/g");
+        System.out.println("단위당 가격: " + pricePerUnit + "원");
+        System.out.println("기존 결제 금액: " + beforeInitialPayment + "P");
+        System.out.println("새로운 결제 금액: " + newPayment + "P");
+        System.out.println("차액 (추가지불/환불): " + modifyPoint + "P" +
+                (modifyPoint > 0 ? " (추가 지불)" : modifyPoint < 0 ? " (환불)" : " (변동 없음)"));
+        System.out.println("수정 전 포인트: " + beforePoint + "P");
+        System.out.println("수정 후 포인트: " + updatedMember.getPoint() + "P");
+        System.out.println("포인트 변동: " + (updatedMember.getPoint() - beforePoint) + "P");
+    }
+
+
+    @Test
+    void editForceCloseQuantityGroupBuyTest() {
+        Integer groupBuyNo = 20;
+        Integer creatorNo = 17;
         // 공동구매 존재 여부 확인
         GroupBuy groupBuy = groupBuyRepository.findById(groupBuyNo)
                 .orElseThrow(() -> new AssertionError("테스트용 공동구매(groupBuyNo: " + groupBuyNo + ")가 존재하지 않습니다."));
@@ -212,7 +267,7 @@ public class QuantityGroupBuyServiceTests {
         System.out.println("남은 수량: " + remainingQuantity + groupBuy.getUnit());
         System.out.println("공동구매 상태: " + groupBuy.getStatus());
 
-        QuantityGroupBuy result = quantityGroupBuyService.editForceCloseQuantityGroupBuy(groupBuyNo, creatorNo);
+        QuantityGroupBuy result = quantityGroupBuyService.editForcedCreatorAndStatusToClosed(groupBuyNo, creatorNo);
         assertNotNull(result);
 
         // 개설자 부담 수량 확인
@@ -235,6 +290,103 @@ public class QuantityGroupBuyServiceTests {
                 "최종 확보 수량이 총 필요 수량과 같아야 합니다.");
 
         System.out.println("개설자가 남은 수량(" + remainingQuantity + groupBuy.getUnit() + ")을 부담하여 공동구매가 마감되었습니다.");
+    }
+
+    @Test
+    void editQuantityCreatorCancelAndRefundTest() {
+        Integer creatorMemberNo = 17;
+        Integer groupBuyNo = 20;
+        String cancelReason = "가격변동";
+        // 공동구매 존재 여부 확인
+        GroupBuy groupBuy = groupBuyRepository.findById(groupBuyNo)
+                .orElseThrow(() -> new AssertionError("groupBuyNo: " + groupBuyNo + "가 존재하지 않습니다."));
+        // 이미 취소된 경우 테스트 스킵
+        if ("canceled".equals(groupBuy.getStatus())) {
+            System.out.println("이미 취소된 공동구매입니다. 상태: " + groupBuy.getStatus());
+            return;
+        }
+        // 공동구매 상태 확인
+        boolean isClosed = "closed".equals(groupBuy.getStatus());
+
+            if (isClosed) {
+                //예외 케이스: 이미 마감된 공동구매
+                System.out.println("공동구매 ID: " + groupBuyNo);
+                System.out.println("공동구매 상태: " + groupBuy.getStatus());
+
+                IllegalStateException exception = assertThrows(
+                        IllegalStateException.class,
+                        () -> quantityGroupBuyService.editQuantityCreatorCancelAndRefund(groupBuyNo, creatorMemberNo, cancelReason)
+            );
+            assertTrue(exception.getMessage().contains("이미 마감된 공동구매는 취소할 수 없습니다"),
+                    "마감된 공동구매 예외 메시지가 포함되어야 합니다.");
+            System.out.println("예외 발생 확인: " + exception.getMessage());
+
+        } else {
+            // 정상 케이스: 공동구매 중단 및 환불
+            System.out.println("공동구매 ID: " + groupBuyNo);
+            System.out.println("공동구매 상태: " + groupBuy.getStatus());
+            // 참여자 목록 조회
+            List<GroupBuyParticipant> participants = groupBuyParticipantRepository.findByGroupBuy(groupBuy);
+
+            if (participants.isEmpty()) {
+                System.out.println("참여자가 없어 환불 테스트를 진행할 수 없습니다.");
+                return;
+            }
+            // 취소 전 각 참여자의 포인트 저장
+            Map<Integer, Integer> beforePoints = new HashMap<>();
+            Map<Integer, Integer> refundAmounts = new HashMap<>();
+
+            for (GroupBuyParticipant participant : participants) {
+                if (participant.getCancelDate() != null) {
+                    continue;
+                }
+                Member member = participant.getParticipant();
+                beforePoints.put(member.getMemberNo(), member.getPoint());
+                refundAmounts.put(member.getMemberNo(), participant.getInitialPaymentPoint());
+            }
+            System.out.println("참여자 수: " + participants.size());
+            System.out.println("환불 대상 참여자 수: " + beforePoints.size());
+
+
+            quantityGroupBuyService.editQuantityCreatorCancelAndRefund(groupBuyNo, creatorMemberNo, cancelReason);
+            // 1. GroupBuy 상태 및 취소 사유 확인
+            GroupBuy updatedGroupBuy = groupBuyRepository.findById(groupBuyNo).get();
+            assertEquals("canceled", updatedGroupBuy.getStatus(), "GroupBuy 상태가 'canceled'여야 합니다.");
+            assertEquals(cancelReason, updatedGroupBuy.getCancelReason(), "취소 사유가 저장되어야 합니다.");
+
+            System.out.println("공동구매 상태: " + updatedGroupBuy.getStatus());
+            System.out.println("취소 사유: " + updatedGroupBuy.getCancelReason());
+
+            // 2. 각 참여자의 환불 확인
+            List<GroupBuyParticipant> updatedParticipants = groupBuyParticipantRepository.findByGroupBuy(groupBuy);
+
+            for (GroupBuyParticipant participant : updatedParticipants) {
+                Member member = participant.getParticipant();
+                Integer memberNo = member.getMemberNo();
+                // 환불 대상이 아닌 참여자는 스킵
+                if (!beforePoints.containsKey(memberNo)) {
+                    continue;
+                }
+                // 취소 일시 확인
+                assertNotNull(participant.getCancelDate(), "참여자의 취소 일시가 설정되어야 합니다.");
+                // 포인트 환불 확인
+                Member updatedMember = memberRepository.findById(memberNo).get();
+                int beforePoint = beforePoints.get(memberNo);
+                int refundAmount = refundAmounts.get(memberNo);
+                int expectedPoint = beforePoint + refundAmount;
+
+                assertEquals(expectedPoint, updatedMember.getPoint(),
+                        "회원의 포인트가 초기 결제 금액만큼 환불되어야 합니다.");
+
+                System.out.println("\n 참여자 ID: " + participant.getGroupParticipantNo());
+                System.out.println("회원 번호: " + memberNo);
+                System.out.println("환불 금액: " + refundAmount);
+                System.out.println("환불 전 포인트: " + beforePoint);
+                System.out.println("환불 후 포인트: " + updatedMember.getPoint());
+                System.out.println("취소 일시: " + participant.getCancelDate());
+            }
+            System.out.println("총 환불 참여자 수: " + beforePoints.size());
+        }
     }
 
     @Test

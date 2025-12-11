@@ -1,10 +1,10 @@
 package com.oopsw.matna.controller.groupbuy;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.oopsw.matna.dto.PeriodDetailResponse;
-import com.oopsw.matna.dto.QuantityDetailInfo;
+import com.oopsw.matna.auth.PrincipalDetails;
 import com.oopsw.matna.dto.QuantityDetailResponse;
 import com.oopsw.matna.dto.QuantityListResponse;
+import com.oopsw.matna.repository.entity.GroupBuyParticipant;
 import com.oopsw.matna.repository.entity.QuantityGroupBuy;
 import com.oopsw.matna.service.QuantityGroupBuyService;
 import com.oopsw.matna.vo.QuantityGroupBuyDetailVO;
@@ -12,6 +12,7 @@ import com.oopsw.matna.vo.QuantityGroupBuyHomeVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,7 +39,7 @@ public class QuantityRestController {
         if (orderBy != null && !orderBy.isEmpty()) {
             params.put("orderBy", orderBy);
         }
-        
+
         List<QuantityGroupBuyHomeVO> voList = quantityGroupBuyService.getQuantityGroupBuyHome(params);
         List<QuantityListResponse> responseList = voList.stream()
                 .map(vo -> QuantityListResponse.builder()
@@ -132,5 +133,95 @@ public class QuantityRestController {
             response.put("message", "공동구매 등록 중 오류가 발생했습니다: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
+    }
+
+    @PostMapping("/join")
+    public ResponseEntity<Map<String, Object>> addParticipantToPeriodGroupBuy(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestBody GroupBuyParticipantRequest request){
+
+        Integer currentMemberNo = principalDetails.getMemberNo();
+        request.setParticipantNo(currentMemberNo);
+
+        GroupBuyParticipant participant = quantityGroupBuyService.addParticipantToQuantityGroupBuy(request);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "수량공구 참여가 완료되었습니다.");
+        response.put("data", Map.of("groupParticipantNo", participant.getGroupParticipantNo(),
+                "groupBuyNo", participant.getGroupBuy().getGroupBuyNo(),
+                "participantNo", participant.getParticipant().getMemberNo(),
+                "myQuantity", participant.getMyQuantity(),
+                "initialPaymentPoint", participant.getInitialPaymentPoint(),
+                "participatedDate", participant.getParticipatedDate()
+        ));
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/quantityModify/{groupBuyParticipantNo}")
+    public ResponseEntity<Map<String, Object>> editModifyMyQuantity(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @PathVariable Integer groupBuyParticipantNo,
+            @RequestBody Map<String, Integer> request) {
+
+        Integer currentMemberNo = principalDetails.getMemberNo();
+        Integer newQuantity = request.get("newQuantity");
+
+        quantityGroupBuyService.editModifyMyQuantity(groupBuyParticipantNo, currentMemberNo, newQuantity);
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "참여 수량이 성공적으로 수정되었습니다."
+        ));
+    }
+
+    @PutMapping("/cancelParticipant/{groupBuyParticipantNo}")
+    public ResponseEntity<Map<String, Object>> editCancelParticipantGroupBuy(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @PathVariable Integer groupBuyParticipantNo) {
+
+        Integer currentMemberNo = principalDetails.getMemberNo();
+        quantityGroupBuyService.editCancelParticipantGroupBuy(groupBuyParticipantNo, currentMemberNo);
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "공동구매 참여가 성공적으로 취소되었습니다."
+        ));
+    }
+
+    @PutMapping("/cancelCreator/{groupBuyNo}")
+    public ResponseEntity<Map<String, Object>> editQuantityCreatorCancelAndRefund(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @PathVariable Integer groupBuyNo,
+            @RequestBody Map<String, String> request) {
+
+        Integer currentMemberNo = principalDetails.getMemberNo();
+        String cancelReason = request.get("cancelReason");
+
+        if (cancelReason == null || cancelReason.trim().isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("success", false, "message", "취소 사유를 입력해주세요."));
+        } //삭제해야되나?
+
+        quantityGroupBuyService.editQuantityCreatorCancelAndRefund(groupBuyNo, currentMemberNo, cancelReason);
+
+        return ResponseEntity.ok(Map.of(
+                "success", true,
+                "message", "공동구매가 취소되고 모든 참여자에게 환불이 완료되었습니다."
+        ));
+    }
+
+    @PutMapping("/forcedCreator/{groupBuyNo}")
+    public ResponseEntity<Map<String, Object>> editForcedCreatorAndStatusToClosed(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @PathVariable Integer groupBuyNo) {
+
+        Integer currentMemberNo = principalDetails.getMemberNo();
+
+        quantityGroupBuyService.editForcedCreatorAndStatusToClosed(groupBuyNo, currentMemberNo);
+
+        return ResponseEntity.ok(Map.of(
+                "succest", true,
+                "message", "개설자에 의해 공동구매가 진행되었습니다."
+        ));
     }
 }
