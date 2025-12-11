@@ -63,8 +63,13 @@ public class ManagerRestController {
         return managerService.getReportList(startDate, endDate, status, reportCase, keyword);
     }
 
-    @PutMapping("/reportManagement/edit")
-    public void editReport(@RequestParam Integer reportId) {
-        managerService.editReportStatus(reportId);
+    @PutMapping("/reportManagement/complete?reportNo={reportNo}")
+    public void editReportComplete(@PathVariable Integer reportNo) {
+        managerService.editReportStatus(reportNo, "complete");
+    }
+
+    @PutMapping("/reportManagement/rejection?reportNo={reportNo}")
+    public void editReportRejection(@PathVariable Integer reportNo) {
+        managerService.editReportStatus(reportNo, "rejection");
     }
 }
