@@ -1,102 +1,189 @@
-// 테이블 데이터 수집
-const tableBody = document.querySelector("table tbody");
-let originalRows = Array.from(tableBody.querySelectorAll("tr")); // 원본 보관
 
-// 상태 필터 버튼 클릭 이벤트
-document.querySelectorAll(".search-box .btn-outline-secondary, .search-box .btn-outline-danger")
-    .forEach(btn => {
-        btn.addEventListener("click", () => {
-            const filterText = btn.textContent.trim();
-            filterByStatus(filterText);
+const tableBody = document.getElementById("groupBuyManagement");
+const statusButtons = document.querySelectorAll(".search-box .btn-outline-secondary, .search-box .btn-outline-danger");
+const titleInput = document.querySelector('.search-box input[type="text"]');
+const dateInputs = document.querySelectorAll('.search-box input[type="date"]');
+const caseInput = document.querySelector(".form-select")
+
+let originalData = [];  // 원본 데이터 저장
+
+
+// ==========================
+// 1) Row 렌더링 (HTML 문자열)
+// ==========================
+function renderRow(item) {
+    const badgeClass = item.status === "canceled" ? "bg-danger" : "bg-secondary";
+
+    return `
+        <tr data-id="${item.groupBuyNo}" data-qty="${item.quantityGroupBuyNo}" data-period="${item.periodGroupBuyNo}">
+            <td>${item.groupBuyNo}</td>
+            <td><span class="badge ${badgeClass}">${item.status}</span></td>
+            <td>${item.inDate ?? ""}</td>
+            <td>${item.creatorName ?? ""}</td>
+            <td>${item.title ?? ""}</td>
+            <td>${item.groupBuyCase ?? ""}</td>
+            <td>
+                <button class="btn btn-primary btn-detail btn-sm">상세보기</button>
+                <button class="btn btn-danger btn-stop btn-sm">중단</button>
+            </td>
+        </tr>
+    `;
+}
+
+// 2) HTML → DOM 변환
+function createRow(item) {
+    const template = document.createElement("template");
+    template.innerHTML = renderRow(item).trim();
+    return template.content.firstElementChild;
+}
+
+// 3) 렌더링 함수
+function renderRows(list) {
+    tableBody.innerHTML = "";
+    list.forEach(item => tableBody.appendChild(createRow(item)));
+}
+
+// 4) 데이터 로드
+async function loadGroupBuyList() {
+    try {
+        const params = new URLSearchParams({
+            startDate: dateInputs[0].value || "",
+            endDate: dateInputs[1].value || "",
+            status: "",
+            title: titleInput.value || ""
         });
-    });
 
-function filterByStatus(status) {
-    const filtered = originalRows.filter(row => {
-        const badge = row.querySelector(".badge-status");
-        return badge && badge.textContent.trim() === status;
-    });
+        const res = await fetch(`/api/manager/groupBuyManagement`);
+        if (!res.ok) throw new Error("데이터 조회 실패");
 
+        const data = await res.json();
+        originalData = data;
+        renderRows(data);
+    } catch (err) {
+        console.error("loadGroupBuyList 오류:", err);
+    }
+}
+
+// 5) 필터 기능
+//유형 필터
+function filterByCase(caseValue){
+    const filtered = originalData.filter(item => item.groupBuyCase === caseValue)
     renderRows(filtered);
 }
 
-// 제목 검색 (검색명 입력 후 버튼 클릭)
-document.querySelector(".search-box .btn-primary").addEventListener("click", () => {
-    const keyword = document.querySelector('.search-box input[type="text"]').value.trim();
-    const filtered = originalRows.filter(row => {
-        const title = row.children[4].textContent.trim();
-        return title.includes(keyword);
-    });
-
+// 상태 필터
+function filterByStatus(status) {
+    const filtered = originalData.filter(item => item.status === status);
     renderRows(filtered);
-});
+}
 
-// 날짜 검색 (between date1, date2)
-const dateInputs = document.querySelectorAll('.search-box input[type="date"]');
+// 제목 필터
+function filterByTitle(keyword) {
+    const filtered = originalData.filter(item =>
+        item.title?.includes(keyword)
+    );
+    renderRows(filtered);
+}
 
-dateInputs.forEach(input => {
-    input.addEventListener("change", filterByDate);
-});
-
+// 날짜 필터
 function filterByDate() {
     const [start, end] = Array.from(dateInputs).map(i => i.value ? new Date(i.value) : null);
 
-    let filtered = originalRows;
+    let filtered = originalData;
 
     if (start) {
-        filtered = filtered.filter(row => {
-            const dateText = row.children[2].textContent.replace(/\./g, "-");
-            const rowDate = new Date(dateText);
-            return rowDate >= start;
-        });
+        filtered = filtered.filter(item => new Date(item.inDate) >= start);
     }
-
     if (end) {
-        filtered = filtered.filter(row => {
-            const dateText = row.children[2].textContent.replace(/\./g, "-");
-            const rowDate = new Date(dateText);
-            return rowDate <= end;
-        });
+        filtered = filtered.filter(item => new Date(item.inDate) <= end);
     }
 
     renderRows(filtered);
 }
 
-// 상세보기 버튼 이벤트
-function attachDetailEvent(btn) {
-    btn.addEventListener("click", () => {
-        alert("상세보기 페이지로 이동합니다.");
-        // 필요 시 location.href = "/detail?id=xxx";
-    });
-}
+// 6) 이벤트 위임 (상세보기 / 중단)
+tableBody.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
 
-// 중단하기 버튼 이벤트
-function attachStopEvent(btn) {
-    btn.addEventListener("click", () => {
-        if (confirm("정말 중단하시겠습니까?")) {
-            const row = btn.closest("tr");
-            row.querySelector(".badge-status").textContent = "중단";
-            row.querySelector(".badge-status").classList.remove("bg-secondary");
-            row.querySelector(".badge-status").classList.add("bg-danger");
-            alert("중단되었습니다.");
+    const tr = btn.closest("tr");
+    const qtyNo = tr.dataset.qty;
+    const periodNo = tr.dataset.period;
+
+    // 상세보기 이동
+    if (btn.classList.contains("btn-detail")) {
+
+        if (periodNo && periodNo !== "0" && periodNo !== "" && periodNo !== "null") {
+            // 기간 공구
+            location.href = `/periodGroupBuy/detail/${periodNo}`;
         }
+        else if (qtyNo && qtyNo !== "0" && qtyNo !== "" && qtyNo !== "null") {
+            // 수량 공구
+            location.href = `/quantityGroupBuy/detail/${qtyNo}`;
+        }
+        else {
+            alert("상세 정보를 찾을 수 없습니다.");
+        }
+
+        return;
+    }
+
+    // 공구 중단
+    if (btn.classList.contains("btn-stop")) {
+
+        // 공통적으로 groupBuyNo 필요함
+        const groupBuyNo = periodNo || qtyNo;
+
+        if (!confirm("정말 중단하시겠습니까?")) return;
+
+        fetch(`/api/manager/groupBuyManagement?groupBuyNo=${groupBuyNo}`, { method: "PUT" })
+            .then(res => {
+                if (!res.ok) throw new Error("중단 실패");
+
+                tr.querySelector(".badge").textContent = "중단";
+                tr.querySelector(".badge").classList.remove("bg-secondary");
+                tr.querySelector(".badge").classList.add("bg-danger");
+
+                // 원본 데이터 업데이트
+                const target = originalData.find(it =>
+                    it.periodGroupBuyNo == periodNo || it.quantityGroupBuyNo == qtyNo
+                );
+                if (target) target.status = "중단";
+            })
+            .catch(err => alert("중단 실패: " + err.message));
+    }
+});
+
+
+
+// 7) 이벤트 바인딩
+//유형
+caseInput.addEventListener("change", () => {
+    const value = caseInput.value.trim();
+    if (value === "전체") {
+        renderRows(originalData);
+    } else {
+        filterByCase(value);
+    }
+});
+
+// 상태 버튼
+statusButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+        filterByStatus(btn.textContent.trim());
     });
-}
+});
 
-// 렌더링 함수 (공통)
-function renderRows(rows) {
-    tableBody.innerHTML = ""; // 초기화
-    rows.forEach(row => {
-        tableBody.appendChild(row);
-    });
-    rebindButtons(); // 버튼 다시 바인딩
-}
+// 제목 검색
+titleInput.addEventListener("input", () => {
+    filterByTitle(titleInput.value.trim());
+});
 
-// 테이블 버튼 다시 바인딩
-function rebindButtons() {
-    document.querySelectorAll(".btn-primary.btn-sm").forEach(attachDetailEvent);
-    document.querySelectorAll(".btn-danger.btn-sm").forEach(attachStopEvent);
-}
+// 날짜 검색
+dateInputs.forEach(input => input.addEventListener("change", filterByDate));
 
-// 초기 바인딩
-rebindButtons();
+
+// ==========================
+// 8) 페이지 로드 후 실행
+// ==========================
+document.addEventListener("DOMContentLoaded", loadGroupBuyList);
