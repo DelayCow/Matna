@@ -44,7 +44,7 @@ public class ReviewRestController {
     }
 
     @GetMapping("/{reviewNo}")
-    public ReviewResponse getReviewDetail(@PathVariable Integer reviewNo){
+    public ReviewResponse getReviewDetail(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable Integer reviewNo){
         ReviewsVO reviewsVO = reviewService.getReviewDetail(reviewNo);
         return ReviewResponse.builder()
                 .reviewNo(reviewsVO.getReviewNo())
@@ -56,6 +56,8 @@ public class ReviewRestController {
                 .inDate(reviewsVO.getInDate())
                 .rating(reviewsVO.getRating())
                 .spicyLevel(reviewsVO.getSpicyLevel())
+                .alternatives(reviewsVO.getAlternatives())
+                .writer(principalDetails.getMemberNo().equals(reviewsVO.getWriterNo()))
                 .build();
     }
 

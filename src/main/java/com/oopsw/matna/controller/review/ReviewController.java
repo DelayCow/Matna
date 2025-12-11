@@ -1,5 +1,6 @@
 package com.oopsw.matna.controller.review;
 
+import com.oopsw.matna.auth.PrincipalDetails;
 import com.oopsw.matna.service.RecipeService;
 import com.oopsw.matna.vo.RecipeDetailVO;
 import lombok.RequiredArgsConstructor;
@@ -26,5 +27,10 @@ public class ReviewController {
     @GetMapping("/recipe/{recipeNo}")
     public String getReviewList(@PathVariable Integer recipeNo) {
         return "reviewList";
+    }
+
+    @GetMapping("/detail/{reviewNo}")
+    public String getReviewDetail(@PathVariable Integer reviewNo){
+        return "reviewDetail";
     }
 }

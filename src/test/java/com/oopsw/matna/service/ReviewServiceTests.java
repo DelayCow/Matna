@@ -24,7 +24,7 @@ public class ReviewServiceTests {
 
     @Test
     void getReviewDetail(){
-        System.out.println(reviewService.getReviewDetail(1));
+        System.out.println(reviewService.getReviewDetail(2));
     }
 
     @Test

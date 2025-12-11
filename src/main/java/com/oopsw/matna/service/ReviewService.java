@@ -73,6 +73,17 @@ public class ReviewService {
 
     public ReviewsVO getReviewDetail(Integer reviewNo) {
         Reviews reviews = reviewsRepository.findByReviewNoAndDelDateIsNull(reviewNo).get();
+        List<RecipeAlternativeIngredient> alternativeIngredients = recipeAlternativeIngredientRepository.findByReview_ReviewNo(reviews.getReviewNo());
+        List<ReviewsRegisterVO.AlternativeRegisterVO> alternativeVoList = new ArrayList<>();
+
+        for (RecipeAlternativeIngredient a : alternativeIngredients) {
+            ReviewsRegisterVO.AlternativeRegisterVO altVo = new ReviewsRegisterVO.AlternativeRegisterVO();
+            altVo.setOriginalIngredientName(a.getOriginalIngredientName());
+            altVo.setAlternativeIngredientName(a.getAlternativeIngredientName());
+            altVo.setAmount(a.getAmount());
+            altVo.setUnit(a.getUnit());
+            alternativeVoList.add(altVo);
+        }
 
         return ReviewsVO.builder()
                 .reviewNo(reviews.getReviewNo())
@@ -82,8 +93,10 @@ public class ReviewService {
                 .rating(reviews.getRating())
                 .spicyLevel(reviews.getSpicyLevel())
                 .inDate(reviews.getInDate())
+                .writerNo(reviews.getAuthor().getMemberNo())
                 .writerNickname(reviews.getAuthor().getNickname())
                 .writerProfileImage(reviews.getAuthor().getImageUrl())
+                .alternatives(alternativeVoList)
                 .build();
     }
 
