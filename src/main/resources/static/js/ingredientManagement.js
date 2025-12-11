@@ -12,7 +12,7 @@ function renderApprovedRow(item) {
             <td>${item.ingredientId ?? "-"}</td>
             <td>${item.ingredientName ?? ""}</td>
             <td>${item.creatorName ?? ""}</td>
-            <td>${item.inDate ?? ""}</td>
+            <td>${formatDate(item.inDate) ?? ""}</td>
             <td><button class="btn btn-danger btn-delete">삭제</button></td>
         </tr>
     `;
@@ -23,7 +23,7 @@ function renderNotApprovedRow(item) {
             <td>${item.ingredientId ?? "-"}</td>
             <td>${item.ingredientName ?? ""}</td>
             <td>${item.creatorName ?? ""}</td>
-            <td>${item.inDate ?? ""}</td>
+            <td>${formatDate(item.inDate) ?? ""}</td>
             <td>
                 <button class="btn btn-primary btn-approve">승인</button>
                 <button class="btn btn-danger btn-delete">삭제</button>
@@ -38,6 +38,12 @@ function filterTable(tbody, keyword) {
         const name = row.children[1]?.textContent;
         row.style.display = name.includes(keyword) ? "" : "none";
     });
+}
+
+// 날짜 포맷
+function formatDate(dateStr) {
+    if (!dateStr) return "-";
+    return dateStr.replace("T", ".");
 }
 
 // --- 이벤트 위임: 테이블 단위로 클릭 처리 ---
