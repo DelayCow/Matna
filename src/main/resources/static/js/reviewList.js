@@ -7,7 +7,7 @@ const createReviewCard = function (r){
         editBox = `<div class="position-relative edit-box-container" data-no="${r.reviewNo}">
                     <i class="bi bi-three-dots-vertical text-dark"></i>
                     <div class="edit-box text-center bg-white">
-                        <a class="mb-2">수정</a>
+                        <a href="/review/edit" class="mb-2">수정</a>
                         <a class="mt-2 removeReview">삭제</a>
                     </div>
                 </div>`;

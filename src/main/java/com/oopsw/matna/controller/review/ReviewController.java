@@ -33,4 +33,9 @@ public class ReviewController {
     public String getReviewDetail(@PathVariable Integer reviewNo){
         return "reviewDetail";
     }
+
+    @GetMapping("/edit")
+    public String editReview() {
+        return "editReview";
+    }
 }
