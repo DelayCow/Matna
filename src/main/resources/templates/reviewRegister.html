@@ -15,15 +15,7 @@
     <div th:replace="layout :: pageHeader('후기 등록', 'javascript:history.back()')"></div>
 
     <div class="container-fluid p-3">
-        <input id="recipeNo" th:value="${recipeDetail.recipeNo}" type="hidden">
-
-        <div class="recipe-info d-flex align-items-center mb-4 p-3 rounded" style="background-color: #f8f9fa;">
-            <img th:src="${recipeDetail.thumbnailUrl}" alt="레시피 이미지" class="rounded me-3" style="width: 15%; height: 15%; object-fit: cover;">
-            <div>
-                <h6 class="fw-bold mb-3" th:text="${recipeDetail.title}"></h6>
-                <small class="text-muted">작성자 | <span th:text="${recipeDetail.writerNickname}"></span></small>
-            </div>
-        </div>
+        <div class="recipe-info d-flex align-items-center mb-4 p-3 rounded" style="background-color: #f8f9fa;"></div>
 
         <div class="form-check mb-3">
             <input class="form-check-input" type="checkbox" id="useOtherIngredients">
@@ -34,29 +26,7 @@
 
         <div class="rounded ingredient-list">
             <h5 class="fw-bold mb-3">사용 재료</h5>
-            <div id="original-ingredients-list">
-                <!-- 각 재료마다 반복 -->
-                <div th:each="ing: ${recipeDetail.ingredients}"
-                     class="ingredient-item-wrapper mb-2"
-                     th:data-ingredient-name="${ing.ingredientName}">
-                    <div class="d-flex align-items-center">
-                        <span class="ingredient-name me-3" th:text="${ing.ingredientName}"></span>
-                        <span class="ingredient-info me-auto" th:text="|${ing.amount}${ing.unit}|"></span>
-
-                        <i class="bi bi-arrow-right fs-5 ms-2 me-2"></i>
-
-                        <div class="select-input-group">
-                            <input type="text"
-                                   class="form-control form-control-sm"
-                                   th:id="${ing.ingredientName} + '_itemSelect'"
-                                   placeholder="대체재료 검색">
-                            <i class="bi bi-search select-icon"></i>
-                            <div class="dropdown-menu" th:id="${ing.ingredientName} + '_itemDropdownMenu'"></div>
-                        </div>
-                    </div>
-                    <div class="ingredient-input-container"></div>
-                </div>
-            </div>
+            <div id="original-ingredients-list"></div>
         </div>
 
         <div class="mb-4">

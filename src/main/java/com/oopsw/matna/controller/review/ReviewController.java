@@ -1,26 +1,16 @@
 package com.oopsw.matna.controller.review;
 
-import com.oopsw.matna.auth.PrincipalDetails;
-import com.oopsw.matna.service.RecipeService;
-import com.oopsw.matna.vo.RecipeDetailVO;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/review")
-@RequiredArgsConstructor
 public class ReviewController {
-    private final RecipeService recipeService;
 
-    @GetMapping("/add")
-    public String addReview(@RequestParam Integer recipeNo, Model model) {
-        RecipeDetailVO recipeDetailVO = recipeService.getRecipeDetail(recipeNo);
-        model.addAttribute("recipeDetail", recipeDetailVO);
+    @GetMapping("/add/{recipeNo}")
+    public String addReview(@PathVariable Integer recipeNo) {
         return "reviewRegister";
     }
 
@@ -34,8 +24,8 @@ public class ReviewController {
         return "reviewDetail";
     }
 
-    @GetMapping("/edit")
-    public String editReview() {
+    @GetMapping("/edit/{recipeNo}")
+    public String editReview(@PathVariable Integer recipeNo) {
         return "editReview";
     }
 }

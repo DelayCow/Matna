@@ -93,6 +93,6 @@ document.addEventListener('DOMContentLoaded',function (){
     });
 
     document.getElementById('addReviewBtn').addEventListener('click', function (){
-        location.href = `/review/add?recipeNo=${recipeNo}`
+        location.href = `/review/add/${recipeNo}`
     })
 })

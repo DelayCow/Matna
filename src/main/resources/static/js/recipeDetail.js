@@ -56,6 +56,6 @@ document.addEventListener('DOMContentLoaded', function(){
     })
 
     document.getElementById('addReviewBtn').addEventListener('click', function (){
-        location.href = `/review/add?recipeNo=${this.getAttribute('data-recipeNo')}`
+        location.href = `/review/add/${this.getAttribute('data-recipeNo')}`
     })
 })

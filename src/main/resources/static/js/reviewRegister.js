@@ -1,46 +1,34 @@
 import {initializeSpicyIcons} from "./spicyFilter.js";
 import {debounce, fetchSearchResults} from "./searchIngredient.js";
 import {showAlertModal, showValidationModal} from "./modal.js";
+const createRecipeInfo = function (data){
+    return `<img id="recipe-thumbnailUrl" src="${data.thumbnailUrl}" alt="레시피 이미지" class="rounded me-3" style="width: 15%; height: 15%; object-fit: cover;">
+            <div>
+                <h6 class="fw-bold mb-3">${data.title}</h6>
+                <small class="text-muted">작성자 | <span id="recipe-writerNickname">${data.writerNickname}</span></small>
+            </div>`
+}
+const createIngredientPart = function(ing){
+    return `<div class="ingredient-item-wrapper mb-2" data-ingredient-name="${ing.ingredientName}">
+                    <div class="d-flex align-items-center">
+                        <span class="ingredient-name me-3">${ing.ingredientName}</span>
+                        <span class="ingredient-info me-auto">${ing.amount}${ing.unit}</span>
 
-document.addEventListener('DOMContentLoaded', function (){
-    initializeSpicyIcons();
-    const ingredientList = document.querySelector('.ingredient-list');
-    const useOtherIngredientsCheckbox = document.getElementById('useOtherIngredients');
+                        <i class="bi bi-arrow-right fs-5 ms-2 me-2"></i>
 
-    useOtherIngredientsCheckbox.addEventListener('change', function() {
-        if (this.checked) {
-            ingredientList.classList.add('active');
-        } else {
-            ingredientList.classList.remove('active');
-        }
-    });
-
-    function createIngredientFormHtml(ingredientName) {
-        const namePrefix = `unit_${ingredientName.replace(/\s/g, '_')}_${Date.now()}`;
-
-        return `
-        <div class="ingredient-input-form mt-2">
-            <div class="d-flex align-items-center p-2 bg-light rounded">
-                <input type="text" class="form-control form-control-sm me-2 substitute-name" style="width: 35%;" placeholder="대체재료" readonly value="">
-                <input type="text" class="form-control form-control-sm me-2" style="width: 20%;" placeholder="수량" value="0">
-                <div class="d-flex unit-radio-group" style="width: 45%;">
-                    <input type="radio" class="btn-check" name="${namePrefix}" id="${namePrefix}_ml" value="ml" autocomplete="off" checked>
-                    <label class="btn btn-outline-secondary btn-sm me-1" for="${namePrefix}_ml">ml</label>
-
-                    <input type="radio" class="btn-check" name="${namePrefix}" id="${namePrefix}_ea" value="개" autocomplete="off">
-                    <label class="btn btn-outline-secondary btn-sm me-1" for="${namePrefix}_ea">개</label>
-
-                    <input type="radio" class="btn-check" name="${namePrefix}" id="${namePrefix}_sp" value="스푼(T)" autocomplete="off">
-                    <label class="btn btn-outline-secondary btn-sm me-1" for="${namePrefix}_sp">스푼(T)</label>
-
-                    <input type="radio" class="btn-check" name="${namePrefix}" id="${namePrefix}_g" value="g" autocomplete="off">
-                    <label class="btn btn-outline-secondary btn-sm" for="${namePrefix}_g">그램(g)</label>
-                </div>
-            </div>
-        </div>
-    `;
-    }
-
+                        <div class="select-input-group">
+                            <input type="text"
+                                   class="form-control form-control-sm"
+                                   id="${ing.ingredientName}_itemSelect"
+                                   placeholder="대체재료 검색">
+                            <i class="bi bi-search select-icon"></i>
+                            <div class="dropdown-menu" id="${ing.ingredientName}_itemDropdownMenu"></div>
+                        </div>
+                    </div>
+                    <div class="ingredient-input-container"></div>
+                </div>`
+}
+const initializeIngredient = function (){
     document.querySelectorAll('.ingredient-item-wrapper').forEach(wrapper => {
         const arrow = wrapper.querySelector('.bi-arrow-right');
         const ingredientName = wrapper.dataset.ingredientName;
@@ -80,42 +68,96 @@ document.addEventListener('DOMContentLoaded', function (){
             }
         });
     });
+}
+const createIngredientFormHtml = function(ingredientName) {
+    const namePrefix = `unit_${ingredientName.replace(/\s/g, '_')}_${Date.now()}`;
 
-    function updateDropdownMenu(results, dropdownMenu, searchInput, inputContainer, originalIngredientName) {
-        dropdownMenu.innerHTML = '';
+    return `
+        <div class="ingredient-input-form mt-2">
+            <div class="d-flex align-items-center p-2 bg-light rounded">
+                <input type="text" class="form-control form-control-sm me-2 substitute-name" style="width: 35%;" placeholder="대체재료" readonly value="">
+                <input type="text" class="form-control form-control-sm me-2" style="width: 20%;" placeholder="수량" value="0">
+                <div class="d-flex unit-radio-group" style="width: 45%;">
+                    <input type="radio" class="btn-check" name="${namePrefix}" id="${namePrefix}_ml" value="ml" autocomplete="off" checked>
+                    <label class="btn btn-outline-secondary btn-sm me-1" for="${namePrefix}_ml">ml</label>
 
-        if (results && results.length > 0) {
-            results.forEach(item => {
-                const a = document.createElement('a');
-                a.classList.add('dropdown-item');
-                a.href = '#';
-                a.textContent = item.ingredientName;
+                    <input type="radio" class="btn-check" name="${namePrefix}" id="${namePrefix}_ea" value="개" autocomplete="off">
+                    <label class="btn btn-outline-secondary btn-sm me-1" for="${namePrefix}_ea">개</label>
 
-                a.addEventListener('click', (e) => {
-                    e.preventDefault();
+                    <input type="radio" class="btn-check" name="${namePrefix}" id="${namePrefix}_sp" value="스푼(T)" autocomplete="off">
+                    <label class="btn btn-outline-secondary btn-sm me-1" for="${namePrefix}_sp">스푼(T)</label>
 
-                    if (inputContainer.innerHTML.trim() === '') {
-                        inputContainer.innerHTML = createIngredientFormHtml(originalIngredientName);
-                    }
+                    <input type="radio" class="btn-check" name="${namePrefix}" id="${namePrefix}_g" value="g" autocomplete="off">
+                    <label class="btn btn-outline-secondary btn-sm" for="${namePrefix}_g">그램(g)</label>
+                </div>
+            </div>
+        </div>
+    `;
+}
+const updateDropdownMenu = function (results, dropdownMenu, searchInput, inputContainer, originalIngredientName) {
+    dropdownMenu.innerHTML = '';
 
-                    const substituteInput = inputContainer.querySelector('.substitute-name');
-                    substituteInput.value = item.ingredientName;
+    if (results && results.length > 0) {
+        results.forEach(item => {
+            const a = document.createElement('a');
+            a.classList.add('dropdown-item');
+            a.href = '#';
+            a.textContent = item.ingredientName;
 
-                    searchInput.value = '';
-                    dropdownMenu.classList.remove('show');
-                    searchInput.parentElement.style.display = 'none';
+            a.addEventListener('click', (e) => {
+                e.preventDefault();
 
-                    inputContainer.closest('.ingredient-item-wrapper').dataset.formVisible = 'true';
-                });
+                if (inputContainer.innerHTML.trim() === '') {
+                    inputContainer.innerHTML = createIngredientFormHtml(originalIngredientName);
+                }
 
-                dropdownMenu.appendChild(a);
+                const substituteInput = inputContainer.querySelector('.substitute-name');
+                substituteInput.value = item.ingredientName;
+
+                searchInput.value = '';
+                dropdownMenu.classList.remove('show');
+                searchInput.parentElement.style.display = 'none';
+
+                inputContainer.closest('.ingredient-item-wrapper').dataset.formVisible = 'true';
             });
-            dropdownMenu.classList.add('show');
-        } else {
-            dropdownMenu.classList.remove('show');
-        }
-    }
 
+            dropdownMenu.appendChild(a);
+        });
+        dropdownMenu.classList.add('show');
+    } else {
+        dropdownMenu.classList.remove('show');
+    }
+}
+const fetchRecipeData = function(recipeNo){
+    const ingredientPart = document.getElementById('original-ingredients-list')
+    const recipeInfo = document.querySelector('.recipe-info');
+    let ingredientData = '';
+    fetch(`/api/recipes/detail/${recipeNo}`)
+        .then(response => {
+            return response.json();
+        }).then(data => {
+        console.log(data)
+        ingredientData += data.ingredients.map(i => createIngredientPart(i)).join('')
+        recipeInfo.insertAdjacentHTML('beforeend', createRecipeInfo(data))
+        ingredientPart.insertAdjacentHTML('beforeend', ingredientData)
+        initializeIngredient();
+    })
+}
+document.addEventListener('DOMContentLoaded', function (){
+    const recipeNo = window.location.href.split('/').at(-1)
+    initializeSpicyIcons();
+    fetchRecipeData(recipeNo);
+
+    const ingredientList = document.querySelector('.ingredient-list');
+    const useOtherIngredientsCheckbox = document.getElementById('useOtherIngredients');
+
+    useOtherIngredientsCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            ingredientList.classList.add('active');
+        } else {
+            ingredientList.classList.remove('active');
+        }
+    });
 
     const stars = document.querySelectorAll('.star-rating i');
     stars.forEach(star => {
@@ -133,7 +175,6 @@ document.addEventListener('DOMContentLoaded', function (){
             });
         });
     });
-
 
     const fileUpload = document.getElementById('file-upload');
     const photoPlaceholder = document.querySelector('.photo-placeholder');
@@ -160,7 +201,6 @@ document.addEventListener('DOMContentLoaded', function (){
         const reviewData = {};
         const errors = [];
 
-        const recipeNo = document.querySelector('#recipeNo').value;
         const title = document.querySelector('input[placeholder="제목"]').value.trim();
         const content = document.querySelector('textarea[placeholder="후기 내용을 입력해주세요"]').value.trim();
 
@@ -239,9 +279,6 @@ document.addEventListener('DOMContentLoaded', function (){
         })
             .then(response => {
                 if (!response.ok) {
-                    const errorData = response.json();
-                    const errorMessage = errorData.message || '서버 오류가 발생했습니다.';
-
                     showAlertModal(
                         '등록 실패',
                         `리뷰 등록에 실패했습니다.`,
