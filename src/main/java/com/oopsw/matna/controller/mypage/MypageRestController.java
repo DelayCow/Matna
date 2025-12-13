@@ -5,7 +5,6 @@ import com.oopsw.matna.dto.MemberProfileListResponse;
 import com.oopsw.matna.dto.RecipeListResponse;
 import com.oopsw.matna.service.MypageService;
 import com.oopsw.matna.vo.*;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -83,7 +82,7 @@ public class MypageRestController {
     @PostMapping("/payment")
     public void registerPayment(@RequestBody GroupBuyVO paymentData) {
 
-        mypageService.editPayment(paymentData);
+        mypageService.addPayment(paymentData);
     }
 
     @PostMapping("/groupbuy/arrival")
@@ -182,6 +181,7 @@ public class MypageRestController {
     ) {
         return mypageService.getHostedGroupBuyList(memberNo, filter);
     }
+
 
 
 }

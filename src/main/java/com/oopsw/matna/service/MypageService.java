@@ -111,25 +111,22 @@ public class MypageService {
 
     public void editShareGroupBuy(GroupBuyParticipantVO sharedData) {
 
+        if (sharedData.getGroupParticipantNo() == null) {
+            throw new RuntimeException("참여 번호(PK)가 전달되지 않았습니다.");
+        }
 
         LocalDateTime receiveDate = sharedData.getReceiveDate();
 
-
+        // 2. .get() 대신 orElseThrow 사용 (데이터가 없어도 안전하게 예외 처리)
         GroupBuyParticipant participant = groupBuyParticipantRepository
-                .findByGroupBuy_GroupBuyNoAndParticipant_MemberNo(
-                        sharedData.getGroupBuyNo(),
-                        sharedData.getParticipantNo()
-                );
-
-        if (participant == null) {
-            throw new RuntimeException("참여 정보를 찾을 수 없습니다.");
-        }
+                .findById(sharedData.getGroupParticipantNo())
+                .orElseThrow(() -> new RuntimeException("참여 정보를 찾을 수 없습니다."));
 
         participant.setReceiveDate(receiveDate);
         groupBuyParticipantRepository.save(participant);
     }
 
-    public void editPayment(GroupBuyVO paymentData) {
+    public void addPayment(GroupBuyVO paymentData) {
 
 
         GroupBuy groupBuy = groupBuyRepository.findById(paymentData.getGroupBuyNo())

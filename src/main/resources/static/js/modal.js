@@ -46,3 +46,68 @@ export function showValidationModal(errors) {
 
     modal.show();
 }
+
+// 나눔 확정 모달
+export function showShareConfirmModal(item, onConfirm) {
+    const modalElement = document.getElementById('shareConfirmModal');
+    const modal = new bootstrap.Modal(modalElement);
+
+
+    const titleInput = document.getElementById('shareModalTitle');
+    const amountInput = document.getElementById('shareModalAmount');
+    const priceInput = document.getElementById('shareModalPrice');
+    const dateInput = document.getElementById('shareModalDate');
+    const confirmBtn = document.getElementById('shareConfirmBtn');
+
+    // 제목
+    if (titleInput) {
+        titleInput.value = item.title || "";
+    }
+
+    // 수량
+    if (amountInput) {
+        const quantity = item.amount || item.myQuantity || 0;
+        const unit = item.unit || '';
+        amountInput.value = `${quantity}${unit}`;
+    }
+
+
+    if (priceInput) {
+
+        const price = (item.price !== undefined && item.price !== null) ? item.price : 0;
+
+
+        priceInput.value = typeof price === 'number' ? price.toLocaleString() + "원" : price + "원";
+    }
+
+    // 2. 날짜 기본값 설정 (오늘)
+    const today = new Date().toISOString().split('T')[0];
+    if (dateInput) dateInput.value = today;
+
+
+    const errorMsg = document.getElementById('shareDateError');
+    if(errorMsg) errorMsg.classList.add('d-none');
+
+    // 3. 확정 버튼 이벤트 연결
+    if (confirmBtn) {
+        const newConfirmBtn = confirmBtn.cloneNode(true);
+        confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+
+        newConfirmBtn.addEventListener('click', () => {
+            const selectedDate = dateInput.value;
+            if (!selectedDate) {
+                if(errorMsg) errorMsg.classList.remove('d-none');
+                return;
+            }
+            modal.hide();
+            if (onConfirm) onConfirm(selectedDate);
+        });
+    }
+
+    // 4. 모달 띄우기
+    modal.show();
+}
+
+
+
+

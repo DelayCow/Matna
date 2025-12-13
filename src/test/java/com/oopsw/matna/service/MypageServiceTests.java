@@ -101,7 +101,7 @@ public class MypageServiceTests {
                 .paymentNote("테스트 결제 메모입니다.")
                 .build();
 
-        mypageService.editPayment(paymentData);
+        mypageService.addPayment(paymentData);
 
         GroupBuy result = groupBuyRepository.findById(targetGroupBuyNo).orElse(null);
 
@@ -286,6 +286,34 @@ public class MypageServiceTests {
         System.out.println("충전 후: " + afterPoint);
 
     }
+
+    @Test
+    @Transactional
+    public void getGroupBuyParticipateListTest(){
+
+        int memberNo = 9;
+        String filterStatus = "";
+        List<GroupBuyListVO> list = mypageService.getParticipatedGroupBuyList(memberNo, filterStatus);
+
+        System.out.println(list);
+
+
+    }
+
+    @Test
+    @Transactional
+    public void getGroupBuyPeroidListTest(){
+
+        int memberNo = 9;
+        String filterStatus = "";
+        List<GroupBuyListVO> list = mypageService.getHostedGroupBuyList(memberNo, filterStatus);
+
+        System.out.println(list);
+
+
+    }
+
+
 
 
 }

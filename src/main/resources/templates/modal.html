@@ -44,5 +44,56 @@
         </div>
     </div>
 </div>
+
+<!-- 나눔 확정 모달 -->
+<div th:fragment="shareConfirmModal" class="modal fade" id="shareConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold">나눔 수령 확정</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body pb-0">
+                <div class="mb-3">
+                    <label class="form-label text-muted small mb-1">공동구매명</label>
+                    <input type="text" class="form-control bg-light" id="shareModalTitle" readonly>
+                </div>
+
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label class="form-label text-muted small mb-1">나눔 받은 양</label>
+                        <input type="text" class="form-control bg-light" id="shareModalAmount" readonly>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label class="form-label text-muted small mb-1">결제 금액</label>
+                        <input type="text" class="form-control bg-light" id="shareModalPrice" readonly>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">나눔 날짜</label>
+                    <input type="date" class="form-control" id="shareModalDate">
+                    <div class="form-text text-danger d-none" id="shareDateError">
+                        <i class="bi bi-exclamation-circle"></i> 날짜를 선택해주세요.
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer border-top-0 d-flex justify-content-between align-items-center pt-2">
+                <button type="button" class="btn btn-link text-danger text-decoration-none p-0">
+                    <i class="bi bi-exclamation-circle me-1"></i>신고하기
+                </button>
+
+                <div>
+                    <button type="button" class="btn btn-success px-4" id="shareConfirmBtn">확정</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

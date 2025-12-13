@@ -1,4 +1,4 @@
-import {showAlertModal} from "./modal.js";
+import { showAlertModal, showShareConfirmModal } from "./modal.js";
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -40,33 +40,62 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    const getButtonConfig = (status) => {
+    const getButtonConfig = (status, groupBuyId) => {
         const s = String(status).trim().toUpperCase();
 
+        // 1. 모집중: 참여 취소 (모달)
         if (s === 'OPEN' || s === 'RECRUITING') {
-            return { text: "참여 취소", cls: "btn-outline-danger" };
+            return {
+                text: "참여 취소",
+                cls: "btn-outline-danger",
+                type: "modal",
+                target: "#cancelModal"
+            };
         }
 
-        // ★ [핵심] CLOSED 상태면 null 반환 (버튼 숨김 신호)
+
         if (s === 'CLOSED' || s === 'PAYMENT_WAIT') {
             return null;
         }
 
+
         if (s === 'PAID') {
-            return { text: "결제정보 확인", cls: "btn-outline-primary" };
+            return {
+                text: "결제정보 확인",
+                cls: "btn-outline-primary",
+                type: "link",                        // ★ 추가됨
+                target: `/payment/info?no=${groupBuyId}` // ★ 추가됨
+            };
         }
+
 
         if (s === 'DELIVERED') {
-            return { text: "도착정보 확인", cls: "btn-success" };
+            return {
+                text: "도착정보 확인",
+                cls: "btn-success",
+                type: "link",
+                target: `/delivery/info?no=${groupBuyId}`
+            };
         }
+
 
         if (s === 'SHARED' || s === 'COMPLETED') {
-            // 'btn-share' 클래스가 CSS에 없다면 btn-success로 대체 추천
-            return { text: "나눔 받았어요!", cls: "btn-success" };
+            return {
+                text: "나눔 받았어요!",
+                cls: "btn-success",
+                type: "custom",
+                action: "share",
+                target: "#shareConfirmModal"
+            };
         }
 
-        // 기본값
-        return { text: "상세 보기", cls: "btn-outline-secondary" };
+
+        return {
+            text: "상세 보기",
+            cls: "btn-outline-secondary",
+            type: "link",
+            target: `/groupBuy/detail?no=${groupBuyId}`
+        };
     };
 
 
@@ -223,6 +252,47 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>`;
     };
 
+    const startCountdown = (timerElement) => {
+        const dueDateString = timerElement.dataset.dueDate;
+        if (!dueDateString) {
+            timerElement.innerHTML = '마감일 정보 없음';
+            return;
+        }
+
+        const targetDate = new Date(dueDateString);
+
+        const updateCountdown = () => {
+            const now = new Date().getTime();
+            const distance = targetDate.getTime() - now;
+
+            if (distance <= 0) {
+                clearInterval(timerInterval);
+                timerElement.innerHTML = '<span class="badge bg-secondary">모집마감</span>';
+                timerElement.classList.remove('text-danger');
+                timerElement.classList.add('text-muted');
+                return;
+            }
+
+            const D_IN_MS = 1000 * 60 * 60 * 24;
+            const H_IN_MS = 1000 * 60 * 60;
+            const M_IN_MS = 1000 * 60;
+
+            const days = Math.floor(distance / D_IN_MS);
+            const hours = Math.floor((distance % D_IN_MS) / H_IN_MS);
+            const minutes = Math.floor((distance % H_IN_MS) / M_IN_MS);
+            const seconds = Math.floor((distance % M_IN_MS) / 1000);
+
+            // 화면 표시 형식
+            timerElement.innerHTML = `
+                <i class="bi bi-clock"></i> 남은 시간 : 
+                ${days}일 ${hours}시간 ${minutes}분 ${seconds}초
+            `;
+        };
+
+        const timerInterval = setInterval(updateCountdown, 1000);
+        updateCountdown(); // 즉시 실행
+    };
+
 
     const createGroupCard = (item) => {
 
@@ -231,7 +301,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const currentStep = getStatusStep(item.status);
 
-        const btnConfig = getButtonConfig(item.status);
+        const btnConfig = getButtonConfig(item.status, item.groupBuyNo);
+
+        console.log("제목:", item.title, " / 수령일:", item.receiveDate);
 
         const steps = ["모집", "상품결제", "상품도착", "나눔진행"];
         let timelineHtml = '<div class="timeline-steps">';
@@ -244,11 +316,65 @@ document.addEventListener('DOMContentLoaded', function() {
             timelineHtml += `<div class="step-item ${activeClass}"><div class="step-circle"></div><span class="step-text">${stepName}</span></div>`;
         });
         timelineHtml += '</div>';
+
+
         if(!isOwner){timelineHtml = '';}
 
-        const buttonHtml = (isOwner && btnConfig)
-            ? `<button class="btn ${btnConfig.cls} btn-sm text-nowrap z-index-front" style="font-size: 0.75rem;">${btnConfig.text}</button>`
-            : '';
+        let buttonHtml = '';
+
+        if (isOwner && btnConfig) {
+
+            // 1. 링크 이동 버튼 (type: link)
+            if (btnConfig.type === 'link') {
+                buttonHtml = `
+                <button class="btn ${btnConfig.cls} btn-sm text-nowrap z-index-front" 
+                        style="font-size: 0.75rem;" 
+                        onclick="event.stopPropagation(); location.href='${btnConfig.target}'">
+                    ${btnConfig.text}
+                </button>`;
+            }
+            // 2. 일반 모달 버튼 (type: modal) - 참여 취소 등
+            else if (btnConfig.type === 'modal') {
+                buttonHtml = `
+                <button class="btn ${btnConfig.cls} btn-sm text-nowrap z-index-front" 
+                        style="font-size: 0.75rem;" 
+                        data-bs-toggle="modal" 
+                        data-bs-target="${btnConfig.target}" 
+                        onclick="event.stopPropagation()">
+                    ${btnConfig.text}
+                </button>`;
+            }
+
+
+            // 3. 커스텀 액션 버튼 (type: custom) - 나눔 완료
+            else if (btnConfig.type === 'custom' && btnConfig.action === 'share') {
+
+
+                const payAmount = item.finalPaymentPoint || 0;
+
+                const dataToSend = {
+                    title: item.title,
+                    price: payAmount,
+                    amount: item.myQuantity,
+                    unit: item.unit || '',
+                    groupBuyNo: item.groupBuyNo,
+                    groupParticipantNo: item.groupParticipantNo
+                };
+
+                const itemData = encodeURIComponent(JSON.stringify(dataToSend));
+
+                buttonHtml = `
+                <button class="btn ${btnConfig.cls} btn-sm text-nowrap z-index-front btn-share-confirm" 
+                        style="font-size: 0.75rem;"
+                        data-item="${itemData}">
+                    ${btnConfig.text}
+                </button>`;
+            }
+        }
+
+        if (item.receiveDate) {
+            buttonHtml = `<button class="btn btn-secondary btn-sm" disabled>수령 완료</button>`;
+        }
 
         // (B) 상세 정보(수량, 가격 등): 주인이 아니면 안 보여줌
         const detailsHtml = isOwner
@@ -264,8 +390,20 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>`
             : '';
 
+        let timerHtml = '';
+        if (item.dueDate) {
+            timerHtml = `
+            <div class="mt-2">
+                <small class="text-danger fw-bold countdown-timer" data-due-date="${item.dueDate}">
+                    <i class="bi bi-clock"></i> 남은 시간 계산 중...
+                </small>
+            </div>
+        `;
+        }
+
+        const detailLinkToThumnail = `/groupBuy/detail?no=${item.groupBuyNo}`;
         return `
-        <div class="group-card mb-3 p-3 border rounded bg-white shadow-sm" onclick="location.href='/groupBuy/detail?no=${item.groupBuyNo}'" style="cursor:pointer;">
+        <div class="group-card mb-3 p-3 border rounded bg-white shadow-sm" style="cursor:default;">
         <div class="d-flex justify-content-between align-items-start mb-2">
             <div class="flex-grow-1 me-3">${timelineHtml}</div>
             
@@ -273,7 +411,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
         </div>
         <div class="d-flex align-items-center gap-3">
-            <div class="rounded overflow-hidden border" style="width: 80px; height: 80px; flex-shrink: 0;">
+            <div class="rounded overflow-hidden border" style="width: 80px; height: 80px; flex-shrink: 0; cursor: pointer;" onclick="location.href='${detailLinkToThumnail}'">
                 <img src="${item.imageUrl || '/img/default_food.jpg'}" alt="${item.title}" class="w-100 h-100 object-fit-cover">
             </div>
             <div class="group-info flex-grow-1">
@@ -344,6 +482,61 @@ document.addEventListener('DOMContentLoaded', function() {
             listEl.innerHTML = '<div class="text-center py-5 text-danger">데이터를 불러오지 못했습니다.</div>';
         }
     };
+
+    const groupListEl = document.getElementById('group-list');
+
+    if (groupListEl) {
+        groupListEl.addEventListener('click', function(e) {
+            // 1. 클릭된 요소가 '나눔 버튼'인지 확인
+            const shareBtn = e.target.closest('.btn-share-confirm');
+
+            if (shareBtn) {
+                // 2. 카드 클릭(상세페이지 이동) 방지
+                e.preventDefault();
+                e.stopPropagation();
+
+                // 3. 버튼에 숨겨둔 데이터 꺼내기
+                const itemDataString = shareBtn.getAttribute('data-item');
+
+                if (itemDataString) {
+                    try {
+                        // ★★★ [핵심 수정] decodeURIComponent로 포장을 뜯어줍니다! ★★★
+                        const item = JSON.parse(decodeURIComponent(itemDataString));
+
+                        // 4. 모달 띄우기 (import한 함수 사용)
+                        showShareConfirmModal(item, (selectedDate) => {
+
+                            const requestBody = {
+                                groupParticipantNo: item.groupParticipantNo,
+                                receiveDate: selectedDate + "T00:00:00"
+                            };
+
+                            fetch(`/api/mypage/groupbuy/shared`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(requestBody)
+                            })
+                                .then(response => {
+                                    if (response.ok) {
+                                        alert("수령이 확정되었습니다!");
+                                        window.location.reload(); // 새로고침
+                                    } else {
+                                        alert("오류가 발생했습니다.");
+                                    }
+                                })
+                                .catch(err => {
+                                    console.error(err);
+                                    alert("서버 통신 실패");
+                                });
+                        });
+                    } catch (err) {
+                        console.error("데이터 오류:", err);
+                    }
+                }
+            }
+        });
+    }
+
 
 
     const statTabRecipe = document.getElementById('statTabRecipe');

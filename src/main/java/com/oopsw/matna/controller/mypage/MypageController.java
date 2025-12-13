@@ -1,6 +1,7 @@
 package com.oopsw.matna.controller.mypage;
 
 import com.oopsw.matna.auth.PrincipalDetails;
+import com.oopsw.matna.repository.GroupBuyRepository;
 import com.oopsw.matna.service.MypageService;
 import com.oopsw.matna.vo.GroupBuyParticipantVO;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,17 @@ public class MypageController {
         model.addAttribute("memberNo", targetMemberNo);
         return "mypage";
     }
+
+    // 공동구매 상세 페이지 매핑 두개로 나눠야 함
+//    @GetMapping({"/groupBuy"})
+//    public String groupBuyDetail(@RequestParam("no") int no, Model model) {
+//
+//        if()
+//
+//        return "groupBuy/detail";
+//    }
+
+
 }
 
 
