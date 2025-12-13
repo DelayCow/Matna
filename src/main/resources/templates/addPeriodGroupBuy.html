@@ -12,6 +12,7 @@
 <div class="mobile-container position-relative">
   <div th:replace="layout :: pageHeader('기간공구 생성', 'javascript:history.back()')"></div>
   <div th:text="${creatorNo}" style="display: none" id="creatorNo"></div>
+
   <main class="p-4 pb-0">
 
     <div class="mb-4">
@@ -128,7 +129,7 @@
 
     <div class="mb-4">
       <label for="itemSaleUrl" class="form-label fw-bold">상품 판매 URL</label>
-      <input type="text" class="form-control" id="itemSaleUrl" placeholder="상품 판매 링크를 입력하세요">
+      <input type="url" class="form-control" id="itemSaleUrl" placeholder="https://example.com/product">
     </div>
 
     <div class="mb-4">
