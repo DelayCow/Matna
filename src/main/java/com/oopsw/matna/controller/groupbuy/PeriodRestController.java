@@ -65,17 +65,17 @@ public class PeriodRestController {
             Map<String, Object> serviceResultMap = periodGroupBuyService.getPeriodGroupBuyDetail(periodGroupBuyNo);
             PeriodGroupBuyDetailVO detailVO = (PeriodGroupBuyDetailVO) serviceResultMap.get("groupBuyDetail");
 
-//            @SuppressWarnings("unchecked")
             List<Map<String, Object>> participantMapList = (List<Map<String, Object>>) serviceResultMap.get("participants");
             List<PeriodDetailResponse.ParticipantInfo> participantList = participantMapList.stream()
                     .map(map -> PeriodDetailResponse.ParticipantInfo.builder()
+                            .groupParticipantNo((Integer) map.get("groupParticipantNo"))
+                            .memberNo((Integer) map.get("memberNo"))
                             .nickname((String) map.get("nickname"))
                             .profileUrl((String) map.get("profileUrl"))
                             .participatedDate((LocalDateTime) map.get("participatedDate"))
                             .build())
                     .collect(Collectors.toList());
 
-//            @SuppressWarnings("unchecked")
             List<Map<String, Object>> recipeMapList = (List<Map<String, Object>>) serviceResultMap.get("recipes");
             List<PeriodDetailResponse.RecipeInfo> recipeList = recipeMapList.stream()
                     .map(map -> PeriodDetailResponse.RecipeInfo.builder()

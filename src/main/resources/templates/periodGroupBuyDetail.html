@@ -11,7 +11,8 @@
   <!-- 서버에서 데이터 주입 (Controller에서 Model에 추가한 데이터) -->
   <script th:inline="javascript">
     const PAGE_CONFIG = {
-      periodGroupBuyNo: /*[[${periodGroupBuyNo}]]*/ 0  // 동적으로 주입됨
+      periodGroupBuyNo: /*[[${periodGroupBuyNo}]]*/ 0,
+      currentMemberNo: /*[[${currentMemberNo}]]*/ null
     };
   </script>
 </head>
@@ -68,15 +69,20 @@
           </div>
         </div>
         <div class="d-flex flex-shrink-0">
-          <button class="btn btn-danger py-2 px-3 fw-bold btn-group-buy-status normal-btn"
+          <!-- normal: 미참여자 -->
+          <button class="btn btn-danger py-2 px-3 fw-bold btn-group-buy-status normal-btn d-none"
                   data-bs-toggle="modal" data-bs-target="#dynamicMainModal" data-bs-status="normal">
             공동구매 참여하기
           </button>
+
+          <!-- participant: 참여자 -->
           <button class="btn btn-danger py-2 px-3 fw-bold btn-group-buy-status participant-btn d-none"
                   data-bs-toggle="modal" data-bs-target="#dynamicMainModal" data-bs-status="participant">
             공동구매 취소하기
           </button>
-          <button class="btn btn-danger py-2 px-3 fw-bold btn-group-buy-status creator-running-btn d-none"
+
+          <!-- creator: 개설자 (중단하기만) -->
+          <button class="btn btn-secondary py-2 px-3 fw-bold btn-group-buy-status creator-running-btn d-none"
                   data-bs-toggle="modal" data-bs-target="#dynamicMainModal" data-bs-status="creator">
             공동구매 중단하기
           </button>
@@ -143,11 +149,12 @@
         <h5 class="fw-bold mb-3" id="dynamicTitle"></h5>
         <p class="small text-muted mb-4" id="dynamicMessage"></p>
 
+        <!-- normal: 참여하기 -->
         <div id="personArea" class="d-none">
           <div class="mb-4">
-            <span class="fs-4 fw-bold" id="personHeader"></span>
+            <span class="fs-4 fw-bold" id="personHeader">현재 참여인원</span>
             <span class="fs-2 fw-bold text-danger ms-2">
-              <span id="personCount">0</span>
+              <span id="personCount">0</span>명
             </span>
           </div>
 
@@ -158,17 +165,31 @@
           </div>
 
           <div class="text-center mb-2">
-            <span class="fs-5 fw-bold me-2" id="amountLabel"></span>
+            <span class="fs-5 fw-bold me-2" id="amountLabel">결제 예정 금액</span>
             <span class="fs-3 fw-bold text-danger">
-              <span id="amountValue">0</span>
+              <span id="amountValue">0</span>원
             </span>
           </div>
-          <p class="small text-danger mb-4" id="refundNotice"></p>
+          <p class="small text-danger mb-4" id="refundNotice">
+            최종 참여인원에 따른 차액은 공동구매 마감기간 이후 3일 이내 환불됩니다.
+          </p>
         </div>
 
+        <!-- participant: 취소 확인 -->
+        <div id="cancelConfirmArea" class="d-none">
+          <div class="text-center mb-4">
+            <span class="fs-5 fw-bold me-2">환불 예정 금액</span>
+            <span class="fs-3 fw-bold text-danger">
+              <span id="refundAmount">0</span>원
+            </span>
+          </div>
+          <p class="small text-muted">포인트가 즉시 환불됩니다.</p>
+        </div>
+
+        <!-- creator: 중단 사유 입력 -->
         <div class="mb-4 text-start d-none" id="reasonInputContainer">
           <span class="d-block small fw-bold mb-1">사유</span>
-          <textarea class="form-control" rows="4" placeholder="중단 사유를 입력해주세요."></textarea>
+          <textarea class="form-control" rows="4" id="cancelReasonTextarea" placeholder="중단 사유를 입력해주세요."></textarea>
         </div>
 
         <div class="d-grid">

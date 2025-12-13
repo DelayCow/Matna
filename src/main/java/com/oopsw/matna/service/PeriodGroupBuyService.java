@@ -304,6 +304,8 @@ public class PeriodGroupBuyService {
                 if (member == null) continue;
 
                 Map<String, Object> participantInfo = new HashMap<>();
+                participantInfo.put("groupParticipantNo", gbp.getGroupParticipantNo());
+                participantInfo.put("memberNo", member.getMemberNo());
                 participantInfo.put("nickname", member.getNickname() != null ? member.getNickname() : "익명");
                 participantInfo.put("profileUrl", member.getImageUrl() != null ? member.getImageUrl() : "");
                 participantInfo.put("participatedDate", gbp.getParticipatedDate());

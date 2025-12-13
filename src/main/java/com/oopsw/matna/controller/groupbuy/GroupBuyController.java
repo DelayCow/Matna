@@ -15,14 +15,30 @@ public class GroupBuyController {
     }
 
     @GetMapping("/periodGroupBuy/detail/{periodGroupBuyNo}")
-    public String getPeriodDetail(@PathVariable Integer periodGroupBuyNo, Model model) {
+    public String getPeriodDetail(
+            @PathVariable Integer periodGroupBuyNo,
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            Model model) {
         model.addAttribute("periodGroupBuyNo", periodGroupBuyNo);
+        if (principalDetails != null) {
+            model.addAttribute("currentMemberNo", principalDetails.getMemberNo());
+        } else {
+            model.addAttribute("currentMemberNo", null);
+        }
         return "/periodGroupBuyDetail";
     }
 
     @GetMapping("/quantityGroupBuy/detail/{quantityGroupBuyNo}")
-    public String getQuantityDetail(@PathVariable Integer quantityGroupBuyNo, Model model) {
+    public String getQuantityDetail(
+            @PathVariable Integer quantityGroupBuyNo,
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            Model model) {
         model.addAttribute("quantityGroupBuyNo", quantityGroupBuyNo);
+        if (principalDetails != null) {
+            model.addAttribute("currentMemberNo", principalDetails.getMemberNo());
+        } else {
+            model.addAttribute("currentMemberNo", null);
+        }
         return "/quantityGroupBuyDetail";
     }
 
