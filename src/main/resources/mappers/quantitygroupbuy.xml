@@ -88,6 +88,8 @@
             gb.item_sale_url AS itemSaleUrl,
 
             qgb.quantity_group_buy_no AS quantityGroupBuyNo,
+            qgb.share_amount AS shareAmount,
+            gb.unit AS unit,
 
             -- VO 필드 9~14번: 날짜/공유 정보
             gb.in_date AS inDate,
@@ -130,4 +132,24 @@
             qgb.quantity_group_buy_no, gb.in_date, gb.share_location, gb.share_detail_address, gb.buy_end_date, gb.share_end_date,
             gb.status, qgb.price_per_unit, gb.quantity, qgb.my_quantity, m.image_url, m.nickname
     </select>
+
+    <select id="selectQuantityGroupBuyParticipants" parameterType="int" resultType="map">
+        SELECT
+            gbp.participant_no AS participantNo,
+            m.nickname AS nickname,
+            m.image_url AS profileUrl,
+            gbp.participated_date AS participatedDate,
+            gbp.my_quantity AS myQuantity
+        FROM
+            group_buy_participant gbp
+                INNER JOIN members m ON gbp.participant_no = m.member_no
+                INNER JOIN group_buys gb ON gbp.group_buy_no = gb.group_buy_no
+                INNER JOIN quantity_group_buys qgb ON qgb.group_buy_no = gb.group_buy_no
+        WHERE
+            qgb.quantity_group_buy_no = #{quantityGroupBuyNo}
+          AND gbp.cancel_date IS NULL
+        ORDER BY
+            gbp.participated_date ASC
+    </select>
+
 </mapper>

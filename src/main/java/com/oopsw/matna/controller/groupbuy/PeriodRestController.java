@@ -79,6 +79,7 @@ public class PeriodRestController {
             List<Map<String, Object>> recipeMapList = (List<Map<String, Object>>) serviceResultMap.get("recipes");
             List<PeriodDetailResponse.RecipeInfo> recipeList = recipeMapList.stream()
                     .map(map -> PeriodDetailResponse.RecipeInfo.builder()
+                            .recipeNo((Integer) map.get("recipeNo"))
                             .title((String) map.get("title"))
                             .imageUrl((String) map.get("imageUrl"))
                             .authorNickname((String) map.get("authorNickname"))

@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @SpringBootTest
@@ -52,24 +53,26 @@ public class ReviewsRepositoryTests {
     @Transactional
     @Rollback(false)
     public void removeReview(){
-        Integer reviewNo = 2;
+        Integer reviewNo = 20;
         Reviews review = reviewsRepository.findById(reviewNo).get();
+        if(review.getDelDate() != null) throw new NoSuchElementException("이미 삭제된 리뷰입니다");
         Recipe recipe = review.getRecipe();
-
-       int recipeReviewCount = recipe.getReviewCount();
-       float recipeAverageRating = recipe.getAverageRating();
 
         review.setDelDate(LocalDateTime.now());
         reviewsRepository.save(review);
 
-        recipe.removeRating(review.getRating());
-        recipe.setUpdateDate(LocalDateTime.now());
+        float totalScore = recipe.getAverageRating() * recipe.getReviewCount();
+        recipe.setReviewCount(recipe.getReviewCount() - 1);
+
+        if (recipe.getReviewCount() > 0) {
+            recipe.setAverageRating((totalScore - review.getRating()) / recipe.getReviewCount());
+        } else {
+            recipe.setAverageRating(0.0f);
+        }
+
         recipeRepository.save(recipe);
 
-
         System.out.println(">>> 후기 삭제 완료 (No." + reviewNo + ")");
-        System.out.println(">>> 레시피 후기 수 변경: " + recipeReviewCount + " -> " + recipe.getReviewCount());
-
 
     }
 
@@ -77,17 +80,16 @@ public class ReviewsRepositoryTests {
     @Transactional
     @Rollback(false)
     void registerReviewTest() {
-
-        Integer writerNo = 11;
-        Integer recipeNo = 1;
+        Integer writerNo = 23;
+        Integer recipeNo = 15;
 
         ReviewsRegisterVO vo = new ReviewsRegisterVO();
         vo.setWriterNo(writerNo);
         vo.setRecipeNo(recipeNo);
         vo.setTitle("리뷰 테스트");
         vo.setContent("테스트!");
-        vo.setRating(5.0f);
-        vo.setSpicyLevel(1);
+        vo.setRating(4.0f);
+        vo.setSpicyLevel(2);
         vo.setReviewImage("img.jpg");
 
 
@@ -100,11 +102,9 @@ public class ReviewsRepositoryTests {
         altList.add(alt);
         vo.setAlternatives(altList);
 
-
         Member writer = memberRepository.findById(vo.getWriterNo()).get();
         Recipe recipe = recipeRepository.findById(vo.getRecipeNo()).get();
 
-        // (1) 후기 저장
         Reviews newReview = Reviews.builder()
                 .author(writer)
                 .recipe(recipe)
@@ -133,12 +133,11 @@ public class ReviewsRepositoryTests {
         }
 
         // 후기 수 상승
-        recipe.addRating(vo.getRating());
-
-        recipe.setUpdateDate(LocalDateTime.now());
+        float totalScore = recipe.getAverageRating() * recipe.getReviewCount();
+        recipe.setReviewCount(recipe.getReviewCount() + 1);
+        recipe.setAverageRating((totalScore + vo.getRating()) / recipe.getReviewCount() );
 
         recipeRepository.save(recipe);
-
 
         System.out.println(">>> 후기 등록 완료. ID: " + newReview.getReviewNo());
         System.out.println(">>> 레시피 후기 수 변경: " + recipe.getReviewCount());

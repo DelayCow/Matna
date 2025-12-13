@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ public class QuantityGroupBuyService {
     private final GroupBuyRepository groupBuyRepository;
     private final GroupBuyParticipantRepository groupBuyParticipantRepository;
     private final QuantityGroupBuyDAO quantityGroupBuyDAO;
+    private final RecipeIngredientRepository recipeIngredientRepository;
 
     public List<Ingredient> getIngredientKeyword(String keyword){
         if (keyword == null || keyword.trim().isEmpty()) {
@@ -227,5 +229,71 @@ public class QuantityGroupBuyService {
         }
         List<QuantityGroupBuyHomeVO> list = quantityGroupBuyDAO.selectQuantityGroupBuyHomeList(params);
         return list;
+    }
+
+    @Transactional
+    public Map<String, Object> getQuantityGroupBuyDetail(Integer quantityGroupBuyNo) {
+        QuantityGroupBuyDetailVO detailVO = quantityGroupBuyDAO.selectQuantityGroupBuyDetail(quantityGroupBuyNo);
+        if (detailVO == null) {
+            throw new IllegalArgumentException("존재하지 않는 수량 공동구매입니다. 번호: " + quantityGroupBuyNo);
+        }
+        Integer groupBuyNo = detailVO.getGroupBuyNo();
+        if (groupBuyNo == null) {
+            throw new IllegalStateException("공동구매를 찾을 수 없습니다.");
+        }
+        GroupBuy groupBuy = groupBuyRepository.findById(groupBuyNo)
+                .orElseThrow(() -> new IllegalStateException("GroupBuy 엔티티를 찾을 수 없습니다. 번호: "+ groupBuyNo));
+
+//        List<Map<String, Object>> participantInfoList = quantityGroupBuyDAO.selectQuantityGroupBuyParticipants(quantityGroupBuyNo);
+        List<Map<String, Object>> participantInfoList = new ArrayList<>();
+        List<GroupBuyParticipant> participants = groupBuyParticipantRepository.findByGroupBuyAndCancelDateIsNullOrderByParticipatedDateAsc(groupBuy);
+        if (participants != null && !participants.isEmpty()) {
+            for (GroupBuyParticipant gbp : participants) {
+                if (gbp == null) continue;
+
+                Member member = gbp.getParticipant();
+                if (member == null) continue;
+
+                Map<String, Object> participantInfo = new HashMap<>();
+                participantInfo.put("nickname", member.getNickname() != null ? member.getNickname() : "익명");
+                participantInfo.put("profileUrl", member.getImageUrl() != null ? member.getImageUrl() : "");
+                participantInfo.put("participatedDate", gbp.getParticipatedDate());
+                participantInfoList.add(participantInfo);
+            }
+        }
+
+        List<Map<String, Object>> recipeInfoList = new ArrayList<>();
+        Integer ingredientNo = detailVO.getIngredientNo();
+        if (ingredientNo != null) {
+            List<RecipeIngredient> recipeIngredients =
+                    recipeIngredientRepository.findByIngredientIngredientNoOrderByRecipeInDateDesc(ingredientNo);
+
+            if (recipeIngredients != null && !recipeIngredients.isEmpty()) {
+                for (RecipeIngredient ri : recipeIngredients) {
+                    if (ri == null) continue;
+
+                    Recipe recipe = ri.getRecipe();
+                    if (recipe == null) continue;
+
+                    Member author = recipe.getAuthor();
+
+                    Map<String, Object> recipeInfo = new HashMap<>();
+                    recipeInfo.put("recipeNo", recipe.getRecipeNo());
+                    recipeInfo.put("title", recipe.getTitle() != null ? recipe.getTitle() : "제목 없음");
+                    recipeInfo.put("imageUrl", recipe.getImageUrl() != null ? recipe.getImageUrl() : "");
+                    recipeInfo.put("authorNickname", author != null && author.getNickname() != null ? author.getNickname() : "익명");
+                    recipeInfo.put("inDate", recipe.getInDate());
+                    recipeInfoList.add(recipeInfo);
+                }
+            }
+        }
+
+        // 4. 통합 Map 생성
+        Map<String, Object> response = new HashMap<>();
+        response.put("groupBuyDetail", detailVO);
+        response.put("participants", participantInfoList);
+        response.put("recipes", recipeInfoList);
+
+        return response;
     }
 }

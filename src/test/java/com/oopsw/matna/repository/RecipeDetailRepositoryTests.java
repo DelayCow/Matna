@@ -45,7 +45,7 @@ public class RecipeDetailRepositoryTests {
         List<RecipeStep> rSteps = recipeStepRepository.findByRecipeOrderByStepOrderAsc(recipe);
 
         List<RecipeAlternativeIngredient> alternatives =
-                recipeAlternativeIngredientRepository.findByReview_Recipe_RecipeNo(targetRecipeNo);
+                recipeAlternativeIngredientRepository.findByReview_Recipe_RecipeNoAndReview_DelDateIsNull(targetRecipeNo);
 
         RecipeDetailVO vo = new RecipeDetailVO();
 

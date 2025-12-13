@@ -89,25 +89,6 @@ public class MypageService {
                 .collect(Collectors.toList());
     }
 
-    public List<ReviewsListVO> removeReviews(Integer reviewsNo){
-
-        Reviews review = reviewsRepository.findById(reviewsNo).get();
-        Recipe recipe = review.getRecipe();
-
-        int recipeReviewCount = recipe.getReviewCount();
-        float recipeAverageRating = recipe.getAverageRating();
-
-        review.setDelDate(LocalDateTime.now());
-        reviewsRepository.save(review);
-
-        recipe.removeRating(review.getRating());
-        recipe.setUpdateDate(LocalDateTime.now());
-        recipeRepository.save(recipe);
-
-
-        return null;
-    }
-
 
     public void editShareGroupBuy(GroupBuyParticipantVO sharedData) {
 

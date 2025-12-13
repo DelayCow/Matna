@@ -1,16 +1,15 @@
-package com.oopsw.matna.vo;
+package com.oopsw.matna.dto;
 
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Builder
 @Data
 @ToString
-public class QuantityGroupBuyDetailVO {
+public class QuantityDetailInfo {
     private Integer groupBuyNo;
     private String title;
     private String content;

@@ -67,11 +67,11 @@ public class MypageRestController {
         return mypageService.getMypageReviewsList(memberNo);
     }
 
-    @PostMapping("/{reviewNo}/review")
-    public List<ReviewsListVO> removeReview(@PathVariable("reviewNo") int reviewNo) {
-
-        return mypageService.removeReviews(reviewNo);
-    }
+//    @PostMapping("/{reviewNo}/review")
+//    public List<ReviewsListVO> removeReview(@PathVariable("reviewNo") int reviewNo) {
+//
+//        return mypageService.removeReviews(reviewNo);
+//    }
 
     @PostMapping("/groupbuy/shared")
     public void confirmShareReceive(@RequestBody GroupBuyParticipantVO sharedData) {
