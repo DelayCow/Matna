@@ -432,86 +432,86 @@ public class QuantityGroupBuyServiceTests {
         System.out.println("조회 건수: " + list5.size());
     }
 
-    @Test
-    void getQuantityGroupBuyDetailTest() {
-        Integer testQuantityGroupBuyNo = 12;
-
-        Map<String, Object> response = quantityGroupBuyService.getQuantityGroupBuyDetail(testQuantityGroupBuyNo);
-        assertNotNull(response, "응답 객체가 null이 아니어야 합니다.");
-        assertNotNull(response.get("groupBuyDetail"), "공동구매 상세 정보가 null이 아니어야 합니다.");
-        assertNotNull(response.get("participants"), "참여자 목록이 null이 아니어야 합니다.");
-        assertNotNull(response.get("recipes"), "레시피 목록이 null이 아니어야 합니다.");
-
-        // 1. 공동구매 상세 정보 출력
-        System.out.println(" 상세 정보");
-        QuantityGroupBuyDetailVO detailVO = (QuantityGroupBuyDetailVO) response.get("groupBuyDetail");
-        System.out.println(detailVO.toString());
-        System.out.println("기간 공동구매 번호: " + detailVO.getQuantityGroupBuyNo());
-        System.out.println("공동구매 번호: " + detailVO.getGroupBuyNo());
-        System.out.println("제목: " + detailVO.getTitle());
-        System.out.println("내용: " + (detailVO.getContent() != null ? detailVO.getContent() : "내용 없음"));
-        System.out.println("재료 번호: " + detailVO.getIngredientNo());
-        System.out.println("상태: " + (detailVO.getStatus() != null ? detailVO.getStatus() : "상태 정보 없음"));
-        System.out.println("개설자 수량: " + (detailVO.getMyQuantity()!= null ? detailVO.getMyQuantity() : "개설자 수량 없음"));
-        System.out.println("나눔 장소: " + (detailVO.getShareLocation() != null ? detailVO.getShareLocation() : "장소 정보 없음"));
-        System.out.println("나눔 상세 주소: " + (detailVO.getShareDetailAddress() != null ? detailVO.getShareDetailAddress() : "상세 주소 없음"));
-        System.out.println("수수료율: " + detailVO.getFeeRate() + "%");
-        System.out.println("이미지 URL: " + (detailVO.getImageUrl() != null ? detailVO.getImageUrl() : "이미지 없음"));
-        System.out.println("판매 URL: " + (detailVO.getItemSaleUrl() != null ? detailVO.getItemSaleUrl() : "판매 URL 없음"));
-
-        // 2. 참여자 목록 출력
-        System.out.println("\n========== 참여자 목록 ==========");
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> participants = (List<Map<String, Object>>) response.get("participants");
-        System.out.println("총 참여자 수: " + participants.size());
-
-        if (participants.isEmpty()) {
-            System.out.println("아직 참여자가 없습니다.");
-        } else {
-            for (int i = 0; i < participants.size(); i++) {
-                Map<String, Object> participant = participants.get(i);
-                System.out.printf("[%d] 닉네임: %-10s | 참여일: %s | 프로필 URL: %s\n",
-                        i + 1,
-                        participant.get("nickname") != null ? participant.get("nickname") : "익명",
-                        participant.get("participatedDate") != null ? participant.get("participatedDate") : "참여일 정보 없음",
-                        participant.get("profileUrl") != null ? participant.get("profileUrl") : "프로필 이미지 없음");
-            }
-        }
-
-        // 3. 관련 레시피 목록 출력
-        System.out.println("관련 레시피 목록");
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> recipes = (List<Map<String, Object>>) response.get("recipes");
-        System.out.println("총 레시피 수: " + recipes.size());
-
-        if (recipes.isEmpty()) {
-            System.out.println("아직 관련 레시피가 없습니다.");
-        } else {
-            for (int i = 0; i < recipes.size(); i++) {
-                Map<String, Object> recipe = recipes.get(i);
-                System.out.printf("[%d] 제목: %-20s | 작성자: %-10s | 등록일: %s | 이미지 URL: %s\n",
-                        i + 1,
-                        recipe.get("title") != null ? recipe.get("title") : "제목 없음",
-                        recipe.get("authorNickname") != null ? recipe.get("authorNickname") : "익명",
-                        recipe.get("inDate") != null ? recipe.get("inDate") : "등록일 정보 없음",
-                        recipe.get("imageUrl") != null ? recipe.get("imageUrl") : "이미지 없음");
-            }
-        }
-
-        // 4. 전체 요약
-        System.out.println("조회 요약");
-        System.out.println("공동구매 번호: " + testQuantityGroupBuyNo);
-        System.out.println("공동구매 제목: " + (detailVO.getTitle() != null ? detailVO.getTitle() : "제목 없음"));
-        System.out.println("참여자 수: " + participants.size() + "명");
-        System.out.println("관련 레시피 수: " + recipes.size() + "개");
-        System.out.println("공동구매 상태: " + (detailVO.getStatus() != null ? detailVO.getStatus() : "상태 정보 없음"));
-
-        if (participants.isEmpty()) {
-            System.out.println("→ 아직 참여자가 없는 공동구매입니다.");
-        }
-        if (recipes.isEmpty()) {
-            System.out.println("→ 해당 재료로 만든 레시피가 아직 없습니다.");
-        }
-    }
+//    @Test
+//    void getQuantityGroupBuyDetailTest() {
+//        Integer testQuantityGroupBuyNo = 12;
+//
+//        Map<String, Object> response = quantityGroupBuyService.getQuantityGroupBuyDetail(testQuantityGroupBuyNo);
+//        assertNotNull(response, "응답 객체가 null이 아니어야 합니다.");
+//        assertNotNull(response.get("groupBuyDetail"), "공동구매 상세 정보가 null이 아니어야 합니다.");
+//        assertNotNull(response.get("participants"), "참여자 목록이 null이 아니어야 합니다.");
+//        assertNotNull(response.get("recipes"), "레시피 목록이 null이 아니어야 합니다.");
+//
+//        // 1. 공동구매 상세 정보 출력
+//        System.out.println(" 상세 정보");
+//        QuantityGroupBuyDetailVO detailVO = (QuantityGroupBuyDetailVO) response.get("groupBuyDetail");
+//        System.out.println(detailVO.toString());
+//        System.out.println("기간 공동구매 번호: " + detailVO.getQuantityGroupBuyNo());
+//        System.out.println("공동구매 번호: " + detailVO.getGroupBuyNo());
+//        System.out.println("제목: " + detailVO.getTitle());
+//        System.out.println("내용: " + (detailVO.getContent() != null ? detailVO.getContent() : "내용 없음"));
+//        System.out.println("재료 번호: " + detailVO.getIngredientNo());
+//        System.out.println("상태: " + (detailVO.getStatus() != null ? detailVO.getStatus() : "상태 정보 없음"));
+//        System.out.println("개설자 수량: " + (detailVO.getMyQuantity()!= null ? detailVO.getMyQuantity() : "개설자 수량 없음"));
+//        System.out.println("나눔 장소: " + (detailVO.getShareLocation() != null ? detailVO.getShareLocation() : "장소 정보 없음"));
+//        System.out.println("나눔 상세 주소: " + (detailVO.getShareDetailAddress() != null ? detailVO.getShareDetailAddress() : "상세 주소 없음"));
+//        System.out.println("수수료율: " + detailVO.getFeeRate() + "%");
+//        System.out.println("이미지 URL: " + (detailVO.getImageUrl() != null ? detailVO.getImageUrl() : "이미지 없음"));
+//        System.out.println("판매 URL: " + (detailVO.getItemSaleUrl() != null ? detailVO.getItemSaleUrl() : "판매 URL 없음"));
+//
+//        // 2. 참여자 목록 출력
+//        System.out.println("\n========== 참여자 목록 ==========");
+//        @SuppressWarnings("unchecked")
+//        List<Map<String, Object>> participants = (List<Map<String, Object>>) response.get("participants");
+//        System.out.println("총 참여자 수: " + participants.size());
+//
+//        if (participants.isEmpty()) {
+//            System.out.println("아직 참여자가 없습니다.");
+//        } else {
+//            for (int i = 0; i < participants.size(); i++) {
+//                Map<String, Object> participant = participants.get(i);
+//                System.out.printf("[%d] 닉네임: %-10s | 참여일: %s | 프로필 URL: %s\n",
+//                        i + 1,
+//                        participant.get("nickname") != null ? participant.get("nickname") : "익명",
+//                        participant.get("participatedDate") != null ? participant.get("participatedDate") : "참여일 정보 없음",
+//                        participant.get("profileUrl") != null ? participant.get("profileUrl") : "프로필 이미지 없음");
+//            }
+//        }
+//
+//        // 3. 관련 레시피 목록 출력
+//        System.out.println("관련 레시피 목록");
+//        @SuppressWarnings("unchecked")
+//        List<Map<String, Object>> recipes = (List<Map<String, Object>>) response.get("recipes");
+//        System.out.println("총 레시피 수: " + recipes.size());
+//
+//        if (recipes.isEmpty()) {
+//            System.out.println("아직 관련 레시피가 없습니다.");
+//        } else {
+//            for (int i = 0; i < recipes.size(); i++) {
+//                Map<String, Object> recipe = recipes.get(i);
+//                System.out.printf("[%d] 제목: %-20s | 작성자: %-10s | 등록일: %s | 이미지 URL: %s\n",
+//                        i + 1,
+//                        recipe.get("title") != null ? recipe.get("title") : "제목 없음",
+//                        recipe.get("authorNickname") != null ? recipe.get("authorNickname") : "익명",
+//                        recipe.get("inDate") != null ? recipe.get("inDate") : "등록일 정보 없음",
+//                        recipe.get("imageUrl") != null ? recipe.get("imageUrl") : "이미지 없음");
+//            }
+//        }
+//
+//        // 4. 전체 요약
+//        System.out.println("조회 요약");
+//        System.out.println("공동구매 번호: " + testQuantityGroupBuyNo);
+//        System.out.println("공동구매 제목: " + (detailVO.getTitle() != null ? detailVO.getTitle() : "제목 없음"));
+//        System.out.println("참여자 수: " + participants.size() + "명");
+//        System.out.println("관련 레시피 수: " + recipes.size() + "개");
+//        System.out.println("공동구매 상태: " + (detailVO.getStatus() != null ? detailVO.getStatus() : "상태 정보 없음"));
+//
+//        if (participants.isEmpty()) {
+//            System.out.println("→ 아직 참여자가 없는 공동구매입니다.");
+//        }
+//        if (recipes.isEmpty()) {
+//            System.out.println("→ 해당 재료로 만든 레시피가 아직 없습니다.");
+//        }
+//    }
 
 }

@@ -10,6 +10,7 @@ import com.oopsw.matna.service.QuantityGroupBuyService;
 import com.oopsw.matna.vo.QuantityGroupBuyDetailVO;
 import com.oopsw.matna.vo.QuantityGroupBuyHomeVO;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/quantityGroupBuy")
@@ -64,15 +66,22 @@ public class QuantityRestController {
     @GetMapping("/detail/{quantityGroupBuyNo}")
     public ResponseEntity<QuantityDetailResponse> getQuantityGroupBuyDetail(@PathVariable Integer quantityGroupBuyNo) {
         try {
+            log.info("=== 상세 조회 시작: quantityGroupBuyNo={} ===", quantityGroupBuyNo);
+
             Map<String, Object> serviceResultMap = quantityGroupBuyService.getQuantityGroupBuyDetail(quantityGroupBuyNo);
             QuantityGroupBuyDetailVO detailVO = (QuantityGroupBuyDetailVO) serviceResultMap.get("groupBuyDetail");
+
+            log.info("DetailVO: {}", detailVO);
 
             List<Map<String, Object>> participantMapList = (List<Map<String, Object>>) serviceResultMap.get("participants");
             List<QuantityDetailResponse.ParticipantInfo> participantList = participantMapList.stream()
                     .map(map -> QuantityDetailResponse.ParticipantInfo.builder()
+                            .groupParticipantNo((Integer) map.get("groupParticipantNo"))
+                            .memberNo((Integer) map.get("memberNo"))
                             .nickname((String) map.get("nickname"))
                             .profileUrl((String) map.get("profileUrl"))
                             .participatedDate((LocalDateTime) map.get("participatedDate"))
+                            .myQuantity((Integer) map.get("myQuantity"))
                             .build())
                     .collect(Collectors.toList());
 
@@ -93,10 +102,15 @@ public class QuantityRestController {
                     .recipes(recipeList)
                     .build();
 
+            log.info("Response 생성 완료");
             return ResponseEntity.ok(response);
+
         } catch (IllegalArgumentException e) {
-            System.err.println("Error fetching quantity group buy detail: " + e.getMessage());
+            log.error("상세 조회 중 오류 발생: {}", e.getMessage());
             return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            log.error("상세 조회 중 예외 발생", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

@@ -10,7 +10,8 @@
 
   <script th:inline="javascript">
     const PAGE_CONFIG = {
-      quantityGroupBuyNo: /*[[${quantityGroupBuyNo}]]*/ 0
+      quantityGroupBuyNo: /*[[${quantityGroupBuyNo}]]*/ 0,
+      currentMemberNo: /*[[${currentMemberNo}]]*/ null
     };
     console.log('PAGE_CONFIG:', PAGE_CONFIG);
   </script>
@@ -56,15 +57,28 @@
           </div>
         </div>
 
-        <div class="d-flex flex-shrink-0">
-          <button class="btn btn-danger py-2 px-3 fw-bold btn-group-buy-status normal-btn"
-                  data-bs-toggle="modal" data-bs-target="#participantQuantityModal" data-bs-status="normal">공동구매 참여하기</button>
-          <button class="btn btn-danger py-2 px-3 fw-bold btn-group-buy-status participant-btn"
-                  data-bs-toggle="modal" data-bs-target="#participantQuantityModal" data-bs-status="participant">수량 수정하기</button>
-          <button class="btn btn-danger py-2 px-3 fw-bold btn-group-buy-status creator-stopped-btn"
-                  data-bs-toggle="modal" data-bs-target="#creatorActionModal" data-bs-action="run">공동구매 진행하기</button>
-          <button class="btn btn-danger py-2 px-3 fw-bold btn-group-buy-status creator-running-btn"
-                  data-bs-toggle="modal" data-bs-target="#creatorActionModal" data-bs-action="stop">공동구매 중단하기</button>
+        <div class="d-flex flex-shrink-0 gap-2">
+          <!-- 일반 사용자 버튼 -->
+          <button class="btn btn-danger py-2 px-3 fw-bold btn-group-buy-status normal-btn d-none"
+                  data-bs-toggle="modal" data-bs-target="#participantQuantityModal" data-bs-status="normal">
+            공동구매 참여하기
+          </button>
+
+          <!-- 참여자 버튼 -->
+          <button class="btn btn-danger py-2 px-3 fw-bold btn-group-buy-status participant-btn d-none"
+                  data-bs-toggle="modal" data-bs-target="#participantQuantityModal" data-bs-status="participant">
+            수량 수정하기
+          </button>
+
+          <!-- 개설자 버튼 2개 -->
+          <button class="btn btn-success py-2 px-3 fw-bold btn-group-buy-status creator-running-btn d-none"
+                  data-bs-toggle="modal" data-bs-target="#creatorActionModal" data-bs-action="run">
+            공동구매 진행하기
+          </button>
+          <button class="btn btn-danger py-2 px-3 fw-bold btn-group-buy-status creator-stopped-btn d-none"
+                  data-bs-toggle="modal" data-bs-target="#creatorActionModal" data-bs-action="stop">
+            공동구매 중단하기
+          </button>
         </div>
       </div>
 
@@ -108,17 +122,16 @@
 
     <div class="participants-list p-3">
       <h5 class="fw-bold mb-3" id="data-participants-count-header">참여자 0명</h5>
-
       <div id="data-participants-list">
         <!-- 참여자 목록 동적 생성 -->
       </div>
-
     </div>
   </div>
+
   <div th:replace="layout :: menuBar"></div>
 </div>
 
-
+<!-- 참여/수정 모달 -->
 <div class="modal fade" id="participantQuantityModal" tabindex="-1" aria-labelledby="dynamicQuantityModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" style="max-width: 350px;">
     <div class="modal-content">
@@ -128,12 +141,12 @@
 
         <div class="d-flex justify-content-between align-items-center mb-3 mt-2">
           <span class="fs-5 fw-bold">남은 수량</span>
-          <span class="fs-5 fw-bold text-danger">300g</span>
+          <span class="fs-5 fw-bold text-danger" id="modal-remaining-qty">0g</span>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center mb-2 participant-only d-none">
+        <div class="d-flex justify-content-between align-items-center mb-2 d-none" id="modal-current-qty-row">
           <span class="fs-5 fw-bold">기존 수량</span>
-          <span class="fs-5 fw-bold">200g</span>
+          <span class="fs-5 fw-bold" id="modal-current-qty">0g</span>
         </div>
 
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -146,16 +159,16 @@
 
         <div class="text-center mb-4">
           <span class="fs-5 fw-bold me-2" id="amountLabel">결제 금액</span>
-          <span class="fs-4 fw-bold text-danger">1,100원</span>
+          <span id="modal-amount-value" class="fs-4 fw-bold text-danger">0원</span>
         </div>
 
         <div class="d-grid" id="normalButtonContainer">
-          <button type="button" class="btn btn-danger py-2 fw-bold" style="background-color: #dc3545; border-color: #dc3545;">참여하기</button>
+          <button type="button" class="btn btn-danger py-2 fw-bold" id="normalJoinBtn">참여하기</button>
         </div>
 
         <div class="d-flex justify-content-between gap-2 d-none" id="participantButtonContainer">
-          <button type="button" class="btn btn-danger py-2 fw-bold w-50" style="background-color: #dc3545; border-color: #dc3545;">참여 취소하기</button>
-          <button type="button" class="btn btn-success py-2 fw-bold w-50" style="background-color: #28a745; border-color: #28a745;">수정하기</button>
+          <button type="button" class="btn btn-danger py-2 fw-bold w-50" id="participantCancelBtn">참여 취소하기</button>
+          <button type="button" class="btn btn-success py-2 fw-bold w-50" id="participantModifyBtn">수정하기</button>
         </div>
 
       </div>
@@ -163,7 +176,7 @@
   </div>
 </div>
 
-
+<!-- 개설자 액션 모달 -->
 <div class="modal fade" id="creatorActionModal" tabindex="-1" aria-labelledby="creatorActionModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;">
     <div class="modal-content">
@@ -177,19 +190,17 @@
 
         <div class="mb-4 text-start d-none" id="reasonInputContainer">
           <span class="d-block small fw-bold mb-1">사유</span>
-          <textarea class="form-control" rows="4" placeholder="중단 사유를 입력해주세요."></textarea>
+          <textarea class="form-control" rows="4" id="cancelReasonTextarea" placeholder="중단 사유를 입력해주세요."></textarea>
         </div>
 
         <div class="d-grid">
-          <button type="button" class="btn btn-danger py-2 fw-bold" id="creatorActionButton"
-                  style="background-color: #e54747; border-color: #e54747;"></button>
+          <button type="button" class="btn btn-danger py-2 fw-bold" id="creatorActionButton"></button>
         </div>
 
       </div>
     </div>
   </div>
 </div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/js/quantityGroupBuyDetail.js"></script>

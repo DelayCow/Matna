@@ -6,13 +6,13 @@ let groupBuyNo = null;
 
 const normalBtn = document.querySelector('.normal-btn');
 const participantBtn = document.querySelector('.participant-btn');
-const creatorRunningBtn = document.querySelector('.creator-running-btn');
+const creatorStoppedBtn = document.querySelector('.creator-stopped-btn');
 
 // 상태에 따른 버튼 표시
 function showBtnByStatus(status) {
     console.log('showBtnByStatus called with:', status);
 
-    const allBtns = [normalBtn, participantBtn, creatorRunningBtn];
+    const allBtns = [normalBtn, participantBtn, creatorStoppedBtn];
 
     // 모든 버튼 숨기기
     allBtns.forEach(btn => {
@@ -36,8 +36,8 @@ function showBtnByStatus(status) {
             }
             break;
         case 'creator':
-            if (creatorRunningBtn) {
-                creatorRunningBtn.classList.remove('d-none');
+            if (creatorStoppedBtn) {
+                creatorStoppedBtn.classList.remove('d-none');
                 console.log('Creator button shown');
             }
             break;

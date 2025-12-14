@@ -405,9 +405,10 @@ public class QuantityGroupBuyService {
         GroupBuy groupBuy = groupBuyRepository.findById(groupBuyNo)
                 .orElseThrow(() -> new IllegalStateException("GroupBuy 엔티티를 찾을 수 없습니다. 번호: "+ groupBuyNo));
 
-//        List<Map<String, Object>> participantInfoList = quantityGroupBuyDAO.selectQuantityGroupBuyParticipants(quantityGroupBuyNo);
         List<Map<String, Object>> participantInfoList = new ArrayList<>();
-        List<GroupBuyParticipant> participants = groupBuyParticipantRepository.findByGroupBuyAndCancelDateIsNullOrderByParticipatedDateAsc(groupBuy);
+        List<GroupBuyParticipant> participants = groupBuyParticipantRepository
+                .findByGroupBuyAndCancelDateIsNullOrderByParticipatedDateAsc(groupBuy);
+
         if (participants != null && !participants.isEmpty()) {
             for (GroupBuyParticipant gbp : participants) {
                 if (gbp == null) continue;
@@ -416,18 +417,23 @@ public class QuantityGroupBuyService {
                 if (member == null) continue;
 
                 Map<String, Object> participantInfo = new HashMap<>();
+                participantInfo.put("groupParticipantNo", gbp.getGroupParticipantNo());
+                participantInfo.put("memberNo", member.getMemberNo());
                 participantInfo.put("nickname", member.getNickname() != null ? member.getNickname() : "익명");
                 participantInfo.put("profileUrl", member.getImageUrl() != null ? member.getImageUrl() : "");
+                participantInfo.put("myQuantity", gbp.getMyQuantity());
                 participantInfo.put("participatedDate", gbp.getParticipatedDate());
                 participantInfoList.add(participantInfo);
             }
         }
 
+        // 3. JPA로 레시피 정보 조회
         List<Map<String, Object>> recipeInfoList = new ArrayList<>();
         Integer ingredientNo = detailVO.getIngredientNo();
+
         if (ingredientNo != null) {
-            List<RecipeIngredient> recipeIngredients =
-                    recipeIngredientRepository.findByIngredientIngredientNoOrderByRecipeInDateDesc(ingredientNo);
+            List<RecipeIngredient> recipeIngredients = recipeIngredientRepository
+                    .findByIngredientIngredientNoOrderByRecipeInDateDesc(ingredientNo);
 
             if (recipeIngredients != null && !recipeIngredients.isEmpty()) {
                 for (RecipeIngredient ri : recipeIngredients) {
