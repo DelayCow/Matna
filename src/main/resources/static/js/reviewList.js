@@ -1,4 +1,7 @@
 import {translateReviewData, createAlternativePart} from "./reviewDetailCard.js";
+import {removeReview} from "./reviewUtil.js";
+import {showAlertModal} from "./modal.js";
+const recipeNo = window.location.pathname.split('/').at(-1);
 const createReviewCard = function (r, recipeNo){
     const alternativeIngs = createAlternativePart(r.alternatives);
     const writerImageUrl = r.writerProfileImage || '/img/user.png';
@@ -8,7 +11,7 @@ const createReviewCard = function (r, recipeNo){
                     <i class="bi bi-three-dots-vertical text-dark"></i>
                     <div class="edit-box text-center bg-white">
                         <a href="/review/edit/${r.reviewNo}/${recipeNo}" class="mb-2">수정</a>
-                        <a class="mt-2 removeReview">삭제</a>
+                        <a class="mt-2 removeReview" data-reviewNo="${r.reviewNo}">삭제</a>
                     </div>
                 </div>`;
     }
@@ -46,6 +49,7 @@ const fetchReviewData = async function(recipeNo){
             const cardHtml = createReviewCard(translatedFormatReview, recipeNo);
             reviewList.insertAdjacentHTML('beforeend', cardHtml)
         })
+        bindRemoveEvents();
     }catch(error){
         console.error('리뷰 데이터 가져오는 중 오류 발생: ', error);
     }
@@ -68,9 +72,25 @@ const closeAllEditBoxes = function() {
         box.classList.remove('show');
     });
 };
+const bindRemoveEvents = function() {
+    const removeButtons = document.querySelectorAll('.removeReview');
+    removeButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
 
+            const reviewNo = this.getAttribute('data-reviewNo');
+
+            showAlertModal(
+                '리뷰 삭제',
+                '리뷰를 삭제하시겠습니까?',
+                'error',
+                () => removeReview(reviewNo, recipeNo)
+            );
+        });
+    });
+};
 document.addEventListener('DOMContentLoaded',function (){
-    const recipeNo = window.location.pathname.split('/').at(-1);
     fetchReviewData(recipeNo);
     fetchRecipeData(recipeNo);
     const reviewList = document.getElementById('review-list');

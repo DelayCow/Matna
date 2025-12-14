@@ -102,8 +102,8 @@ public class ReviewRestController {
         ));
     }
 
-    @DeleteMapping("/{recipeNo}")
-    public ResponseEntity<?> removeReview(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("reviewNo") int reviewNo) {
+    @DeleteMapping("/{reviewNo}")
+    public ResponseEntity<?> removeReview(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable Integer reviewNo) {
         reviewService.removeReview(principalDetails.getMemberNo(), reviewNo);
         return ResponseEntity.ok(Map.of(
                 "reviewNo", reviewNo,

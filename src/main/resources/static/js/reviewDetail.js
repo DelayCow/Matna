@@ -1,5 +1,6 @@
 import {translateReviewData, createAlternativePart} from "./reviewDetailCard.js";
-
+import {showAlertModal} from "./modal.js";
+import {removeReview} from "./reviewUtil.js";
 const createReviewCard = function (r){
     const alternativeIngs = createAlternativePart(r.alternatives);
     const writerImageUrl = r.writerProfileImage || '/img/user.png';
@@ -47,6 +48,7 @@ const fetchReviewData = async function(reviewNo){
         reviewArea.insertAdjacentHTML('beforeend', cardHtml)
 
         bindEditBoxEvents();
+        bindRemoveEvents(reviewNo, reviewData.recipeNo);
     }catch(error){
         console.error('리뷰 데이터 가져오는 중 오류 발생: ', error);
     }
@@ -69,6 +71,20 @@ const bindEditBoxEvents = function() {
     }
 };
 
+const bindRemoveEvents = function (reviewNo, recipeNo){
+    const remove = document.querySelector('#removeReview');
+
+    if(remove){
+        remove.addEventListener('click', function(){
+            showAlertModal(
+                '레시피 삭제',
+                '레시피를 삭제하시겠습니까?',
+                'error',
+                () => removeReview(reviewNo, recipeNo)
+            )
+        })
+    }
+}
 document.addEventListener('DOMContentLoaded',function (){
     const reviewNo = window.location.pathname.split('/').at(-1);
     fetchReviewData(reviewNo);
