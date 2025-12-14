@@ -18,7 +18,7 @@ const createReviewCard = function (r, recipeNo){
     return `<div class="review-card">
             <div class="d-flex justify-content-between align-items-start">
                 <div class="review-info">
-                    <div class="d-flex flex-column align-items-center">
+                    <div class="d-flex flex-column align-items-center writer-profile" data-no="${r.writerNo}">
                         <img src="${writerImageUrl}" alt="프로필사진" class="review-avatar">
                         <div class="review-author">${r.writerNickname}</div>
                     </div>
@@ -49,7 +49,9 @@ const fetchReviewData = async function(recipeNo){
             const cardHtml = createReviewCard(translatedFormatReview, recipeNo);
             reviewList.insertAdjacentHTML('beforeend', cardHtml)
         })
+        console.log(reviewData)
         bindRemoveEvents();
+        bindMoveWriterPage();
     }catch(error){
         console.error('리뷰 데이터 가져오는 중 오류 발생: ', error);
     }
@@ -90,6 +92,15 @@ const bindRemoveEvents = function() {
         });
     });
 };
+const bindMoveWriterPage = function (){
+    const writerInfos = document.querySelectorAll('.writer-profile');
+    writerInfos.forEach(button => {
+        button.addEventListener('click', function (){
+            const writerNo = this.getAttribute('data-no');
+            location.href=`/mypage/${writerNo}`;
+        })
+    })
+}
 document.addEventListener('DOMContentLoaded',function (){
     fetchReviewData(recipeNo);
     fetchRecipeData(recipeNo);

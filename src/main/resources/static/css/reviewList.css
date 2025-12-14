@@ -85,6 +85,9 @@
 .edit-box a:hover {
     color: red;
 }
+.writer-profile{
+    cursor: pointer;
+}
 .review-badge img{
     width: 18px;
 }

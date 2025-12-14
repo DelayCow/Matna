@@ -14,6 +14,7 @@ import java.util.List;
 public class ReviewResponse {
     private Integer recipeNo;
     private Integer reviewNo;
+    private Integer writerNo;
     private String writerNickname;
     private String writerProfileImage;
     private String title;

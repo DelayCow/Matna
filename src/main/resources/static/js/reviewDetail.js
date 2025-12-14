@@ -18,7 +18,7 @@ const createReviewCard = function (r){
             <img src="${r.reviewImage}" alt="리뷰 이미지" class="review-detail-image">
             <div class="d-flex justify-content-between align-items-start">
                 <div class="review-info">
-                    <div class="d-flex flex-column align-items-center">
+                    <div class="d-flex flex-column align-items-center writer-profile" data-no="${r.writerNo}">
                         <img src="${writerImageUrl}" alt="프로필사진" class="review-avatar">
                         <div class="review-author">${r.writerNickname}</div>
                     </div>
@@ -49,6 +49,7 @@ const fetchReviewData = async function(reviewNo){
 
         bindEditBoxEvents();
         bindRemoveEvents(reviewNo, reviewData.recipeNo);
+        bindMoveWriterPage();
     }catch(error){
         console.error('리뷰 데이터 가져오는 중 오류 발생: ', error);
     }
@@ -84,6 +85,13 @@ const bindRemoveEvents = function (reviewNo, recipeNo){
             )
         })
     }
+}
+const bindMoveWriterPage = function (){
+    const writerInfos = document.querySelector('.writer-profile');
+    writerInfos.addEventListener('click', function (){
+        const writerNo = this.getAttribute('data-no');
+        location.href=`/mypage/${writerNo}`;
+    })
 }
 document.addEventListener('DOMContentLoaded',function (){
     const reviewNo = window.location.pathname.split('/').at(-1);
