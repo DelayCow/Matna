@@ -8,9 +8,13 @@ import com.oopsw.matna.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +38,8 @@ public class MypageService {
 
     private final GroupBuyListDAO groupBuyListDAO;
     private final PeriodGroupBuyRepository periodGroupBuyRepository;
+
+    private final ImageStorageService imageStorageService;
 
 
     public List<RecipeVO> getMypageRecipeList(Integer memberNo) {
@@ -107,34 +113,78 @@ public class MypageService {
         groupBuyParticipantRepository.save(participant);
     }
 
-    public void addPayment(GroupBuyVO paymentData) {
+    @Transactional
+    public void addPayment(int groupBuyNo, MultipartFile file, String buyDateStr, String description) {
 
 
-        GroupBuy groupBuy = groupBuyRepository.findById(paymentData.getGroupBuyNo())
-                .get();
+        try {
+            String savedFileUrl = null;
+            if (file != null && !file.isEmpty()) {
 
-        groupBuy.setStatus("paid");
-        groupBuy.setReceiptImageUrl(paymentData.getReceiptImageUrl());
-        groupBuy.setBuyDate(paymentData.getBuyDate());
-        groupBuy.setPaymentNote(paymentData.getPaymentNote());
+                savedFileUrl = imageStorageService.save(file, "receipt");
+            }
 
-        groupBuyRepository.save(groupBuy);
+
+            String cleanDate = buyDateStr.replace("T", " ");
+            if (cleanDate.length() == 16) cleanDate += ":00";
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime buyDate = LocalDateTime.parse(cleanDate, formatter);
+
+
+            GroupBuy groupBuy = groupBuyRepository.findById(groupBuyNo)
+                    .orElseThrow(() -> new RuntimeException("공동구매 정보를 찾을 수 없습니다."));
+
+            groupBuy.setStatus("PAID");
+
+
+            groupBuy.setReceiptImageUrl(savedFileUrl);
+
+            groupBuy.setBuyDate(buyDate);
+
+            if (description != null) {
+                groupBuy.setPaymentNote(description);
+            }
+
+            groupBuyRepository.save(groupBuy);
+
+        } catch (Exception e) {
+            throw new RuntimeException("결제 등록 중 오류 발생: " + e.getMessage());
+        }
+
     }
 
 
-    public void addArrival(GroupBuyVO deliveryData) {
+    @Transactional
+    public void addArrival(int groupBuyNo, MultipartFile file, String arrivalDateString) {
+
+        try {
+            
+            String savedFileUrl = null;
+            if (file != null && !file.isEmpty()) {
+                savedFileUrl = imageStorageService.save(file, "arrival");
+            }
 
 
-        GroupBuy groupBuy = groupBuyRepository.findById(deliveryData.getGroupBuyNo())
-                .get();
+            String cleanDate = arrivalDateString.replace("T", " ");
+            if (cleanDate.length() == 16) cleanDate += ":00";
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime arrivalDate = LocalDateTime.parse(cleanDate, formatter);
 
-        groupBuy.setStatus("delivered");
 
-        groupBuy.setArrivalImageUrl(deliveryData.getArrivalImageUrl());
-        groupBuy.setArrivalDate(deliveryData.getArrivalDate());
+            GroupBuy groupBuy = groupBuyRepository.findById(groupBuyNo)
+                    .orElseThrow(() -> new RuntimeException("공동구매 정보를 찾을 수 없습니다."));
 
-        groupBuyRepository.save(groupBuy);
+            groupBuy.setArrivalImageUrl(savedFileUrl);
+            groupBuy.setArrivalDate(arrivalDate);
+            groupBuy.setStatus("DELIVERED");
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("도착 정보 등록 중 오류 발생: " + e.getMessage());
+        }
     }
+
 
     public LocalDateTime removeMember(Integer memberNo) {
 

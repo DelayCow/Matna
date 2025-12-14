@@ -16,6 +16,7 @@
         gb.buy_date              AS buyDate,
         gb.arrival_date          AS arrivalDate,
         gbp.receive_date         AS receiveDate,
+        gb.payment_note          AS paymentNote,
 
         /* VO에 추가된 이미지 필드 매핑 */
         gb.arrival_image_url     AS arrivalImageUrl,
@@ -85,6 +86,7 @@
         gb.share_end_date        AS shareEndDate,
         gb.buy_date              AS buyDate,
         gb.arrival_date          AS arrivalDate,
+        gb.payment_note          AS paymentNote,
 
         /* VO에 추가된 이미지 필드 매핑 */
         gb.arrival_image_url     AS arrivalImageUrl,

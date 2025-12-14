@@ -12,8 +12,11 @@ import com.oopsw.matna.vo.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -84,55 +87,39 @@ public class MypageServiceTests {
     }
 
     @Test
+    @Transactional
     public void editPaymentTest() {
 
-
         int targetGroupBuyNo = 11;
-
-
         String dateStr = "2025-11-11 15:30:00";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime buyDate = LocalDateTime.parse(dateStr, formatter);
-
-        GroupBuyVO paymentData = GroupBuyVO.builder()
-                .groupBuyNo(targetGroupBuyNo)
-                .receiptImageUrl("image.jpg") // 가짜 이미지 경로
-                .buyDate(buyDate)
-                .paymentNote("테스트 결제 메모입니다.")
-                .build();
-
-        mypageService.addPayment(paymentData);
-
-        GroupBuy result = groupBuyRepository.findById(targetGroupBuyNo).orElse(null);
-
-        System.out.println(result.getBuyDate());
-
-    }
-
-    @Test
-    public void addDeliveryDataTest() {
-
-        int targetGroupBuyNo = 11;
-
-        String dateString = "2025-11-12 14:00:00";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime arrivalDate = LocalDateTime.parse(dateString, formatter);
-
-        GroupBuyVO deliveryData = GroupBuyVO.builder()
-                .groupBuyNo(targetGroupBuyNo)
-                .arrivalImageUrl("arrival_test.jpg")
-                .arrivalDate(arrivalDate)
-                .build();
+        String description = "테스트.";
 
 
-        mypageService.addArrival(deliveryData);
+        MockMultipartFile mockFile = new MockMultipartFile(
+                "receiptImage",
+                "test_receipt.jpg",
+                "image/jpeg",
+                "fake image content".getBytes(StandardCharsets.UTF_8)
+        );
+
+
+        mypageService.addPayment(targetGroupBuyNo, mockFile, dateStr, description);
 
 
         GroupBuy result = groupBuyRepository.findById(targetGroupBuyNo).orElse(null);
 
 
-        System.out.println(result.getStatus());
-        System.out.println(result.getArrivalDate());
+        if (result != null) {
+            System.out.println("========================================");
+            System.out.println("결제 상태: " + result.getStatus());
+            System.out.println("구매 날짜: " + result.getBuyDate());
+            System.out.println("저장된 이미지 경로: " + result.getReceiptImageUrl());
+            System.out.println("결제 메모: " + result.getPaymentNote());
+            System.out.println("========================================");
+        } else {
+            System.out.println("테스트 실패: 해당 공구가 없습니다.");
+        }
+
     }
 
     @Test
@@ -311,6 +298,25 @@ public class MypageServiceTests {
         System.out.println(list);
 
 
+    }
+
+    @Test
+    @Transactional
+    public void addArrivalTest() {
+
+        int targetGroupBuyNo = 11;
+        String dateString = "2025-11-12 14:00:00";
+
+
+        MultipartFile testFile = null;
+
+
+        mypageService.addArrival(targetGroupBuyNo, testFile, dateString);
+
+        GroupBuy result = groupBuyRepository.findById(targetGroupBuyNo).orElse(null);
+
+
+        System.out.println(result.getStatus());
     }
 
 

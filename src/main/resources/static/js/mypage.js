@@ -1,6 +1,5 @@
-import { showAlertModal, showShareConfirmModal, showPaymentInfoModal } from "./modal.js";
 
-
+import { showShareConfirmModal, showPaymentInfoModal, showArrivalInfoModal, showPaymentRegisterModal } from "./modal.js";
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -31,19 +30,57 @@ document.addEventListener('DOMContentLoaded', function() {
     const getButtonConfig = (status, groupBuyId) => {
         const s = String(status).trim().toUpperCase();
         if (s === 'OPEN' || s === 'RECRUITING') {
-            return { text: "참여 취소", cls: "btn-outline-danger", type: "modal", target: "#cancelModal" };
+            return {
+                text: "참여 취소",
+                cls: "btn-outline-danger",
+                type: "modal",
+                target: "#cancelModal" };
         }
-        if (s === 'CLOSED' || s === 'PAYMENT_WAIT') return null;
+        if (s === 'CLOSED') {
+            return {
+                text: "결제정보 등록",
+                cls: "btn-danger",
+                type: "custom",
+                action: "registerPayment",
+                target: "#paymentRegisterModal"
+            };
+        }
+
+        // 3. 입금 대기
+        if (s === 'PAYMENT_WAIT') {
+            return null;
+        }
+
         if (s === 'PAID') {
-            return { text: "결제정보 확인", cls: "btn-outline-primary", type: "custom", action: "checkPayment", target: "#paymentInfoModal" };
+            return {
+                text: "결제정보 확인",
+                cls: "btn-outline-primary",
+                type: "custom",
+                action: "checkPayment",
+                target: "#paymentInfoModal" };
         }
         if (s === 'DELIVERED') {
-            return { text: "도착정보 확인", cls: "btn-success", type: "link", target: `/delivery/info?no=${groupBuyId}` };
+            return {
+                text: "도착정보 확인",
+                cls: "btn-success",
+                type: "custom",
+                action: "checkArrival",
+                target: "#arrivalInfoModal"
+            };
         }
         if (s === 'SHARED' || s === 'COMPLETED') {
-            return { text: "나눔 받았어요!", cls: "btn-success", type: "custom", action: "share", target: "#shareConfirmModal" };
+            return {
+                text: "나눔 받았어요!",
+                cls: "btn-success",
+                type: "custom",
+                action: "share",
+                target: "#shareConfirmModal" };
         }
-        return { text: "상세 보기", cls: "btn-outline-secondary", type: "link", target: `/groupBuy/detail?no=${groupBuyId}` };
+        return {
+            text: "상세 보기",
+            cls: "btn-outline-secondary",
+            type: "link",
+            target: `/groupBuy/detail?no=${groupBuyId}` };
     };
 
     const renderCommonArea = (data) => {
@@ -83,9 +120,25 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     const createGroupCard = (item) => {
+
         const unit = item.unit || '';
         const currentStep = getStatusStep(item.status);
+
+        console.log(`%c[카드생성] No.${item.groupBuyNo} ${item.title}`);
+        console.log(`   ㄴ 현재 DB 상태값: ${item.status}`);
+
         const btnConfig = getButtonConfig(item.status, item.groupBuyNo);
+
+
+
+        if (btnConfig) {
+            console.log(`   👉 생성될 버튼: [${btnConfig.text}] (Action: ${btnConfig.action || 'link/modal'})`);
+        } else {
+            console.log(`   👉 버튼 없음 (null)`);
+        }
+        console.log('--------------------------------------------------');
+
+
         const steps = ["모집", "상품결제", "상품도착", "나눔진행"];
 
         let timelineHtml = '<div class="timeline-steps">';
@@ -109,10 +162,44 @@ document.addEventListener('DOMContentLoaded', function() {
                     const itemData = encodeURIComponent(JSON.stringify(dataToSend));
                     buttonHtml = `<button class="btn ${btnConfig.cls} btn-sm btn-share-confirm" data-item="${itemData}">${btnConfig.text}</button>`;
                 } else if (btnConfig.action === 'checkPayment') {
-                    const dataToSend = { groupBuyNo: item.groupBuyNo, receiptImageUrl: item.receiptImageUrl, buyDate: item.buyDate };
+                    const dataToSend = {
+                        groupBuyNo: item.groupBuyNo,
+                        receiptImageUrl: item.receiptImageUrl,
+                        buyDate: item.buyDate,
+                        paymentNote: item.paymentNote};
                     const itemData = encodeURIComponent(JSON.stringify(dataToSend));
                     buttonHtml = `<button class="btn ${btnConfig.cls} btn-sm btn-payment-info" data-item="${itemData}">${btnConfig.text}</button>`;
+                }else if (btnConfig.action === 'checkArrival') {
+                    const dataToSend = {
+                        groupBuyNo: item.groupBuyNo,
+                        arrivalImageUrl: item.arrivalImageUrl || item.deliveryImageUrl,
+                        arrivalDate: item.arrivalDate || item.deliveryDate
+                    };
+
+                    const itemData = encodeURIComponent(JSON.stringify(dataToSend));
+
+                    buttonHtml = `
+                <button class="btn ${btnConfig.cls} btn-sm text-nowrap z-index-front btn-arrival-info" 
+                        style="font-size: 0.75rem;"
+                        data-item="${itemData}">
+                    ${btnConfig.text}
+                </button>`;
                 }
+
+
+                else if (btnConfig.action === 'registerPayment') {
+                    // 등록할 때는 글 번호(PK)만 있으면 됨
+                    const dataToSend = { groupBuyNo: item.groupBuyNo };
+                    const itemData = encodeURIComponent(JSON.stringify(dataToSend));
+
+                    buttonHtml = `
+            <button class="btn ${btnConfig.cls} btn-sm text-nowrap z-index-front btn-payment-register" 
+                    style="font-size: 0.75rem;"
+                    data-item="${itemData}">
+                ${btnConfig.text}
+            </button>`;
+                }
+
             }
         }
         if (item.receiveDate) buttonHtml = `<button class="btn btn-secondary btn-sm" disabled>수령 완료</button>`;
@@ -199,6 +286,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 showPaymentInfoModal(item);
             }
+
+            const arrivalBtn = e.target.closest('.btn-arrival-info');
+            if (arrivalBtn) {
+                e.preventDefault(); e.stopPropagation();
+                const itemDataString = arrivalBtn.getAttribute('data-item');
+                if (itemDataString) {
+                    try {
+                        const item = JSON.parse(decodeURIComponent(itemDataString));
+                        showArrivalInfoModal(item);
+                    } catch (err) {
+                        console.error("데이터 파싱 오류:", err);
+                    }
+                }
+            }
+
+            const regPaymentBtn = e.target.closest('.btn-payment-register');
+            if (regPaymentBtn) {
+                e.preventDefault(); e.stopPropagation();
+                const itemDataString = regPaymentBtn.getAttribute('data-item');
+                if (itemDataString) {
+                    const item = JSON.parse(decodeURIComponent(itemDataString));
+
+                    // 모달 띄우기 (성공 시 새로고침)
+                    showPaymentRegisterModal(item, () => {
+                        window.location.reload();
+                    });
+                }
+            }
+
         });
     }
 
