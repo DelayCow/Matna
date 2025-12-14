@@ -108,6 +108,44 @@ export function showShareConfirmModal(item, onConfirm) {
     modal.show();
 }
 
+// 결제 정보 모달
+export function showPaymentInfoModal(item) {
+    const modalEl = document.getElementById('paymentInfoModal');
+    const modal = new bootstrap.Modal(modalEl);
+
+
+    const imgEl = document.getElementById('modalPaymentImg');
+    const noImgEl = document.getElementById('modalPaymentNoImg');
+    const dateEl = document.getElementById('modalPaymentDate');
+    const descEl = document.getElementById('modalPaymentDesc');
+
+
+    if (item.receiptImageUrl) {
+        imgEl.src = item.receiptImageUrl;
+        imgEl.style.display = 'block';
+        noImgEl.style.display = 'none';
+    } else {
+        imgEl.src = '';
+        imgEl.style.display = 'none';
+        noImgEl.style.display = 'block';
+    }
+
+
+    let displayDate = item.buyDate || "-";
+    if (displayDate.includes('T')) {
+        displayDate = displayDate.split('T')[0].replace(/-/g, '.'); // 2025-11-16 -> 2025.11.16
+    }
+    dateEl.value = displayDate;
+
+
+    const reportBtn = document.getElementById('btnReportPayment');
+    reportBtn.onclick = () => {
+        // alert("공구 번호: " + item.groupBuyNo + ")");
+    };
+
+    modal.show();
+}
+
 
 
 

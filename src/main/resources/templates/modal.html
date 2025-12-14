@@ -95,5 +95,42 @@
     </div>
 </div>
 
+<div th:fragment="paymentInfoModal" class="modal fade" id="paymentInfoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body pt-0">
+                <h5 class="fw-bold text-center mb-4">결제 정보 확인</h5>
+
+                <div class="mb-4 text-center">
+                    <label class="form-label fw-bold d-block text-start">결제 영수증</label>
+                    <div class="border rounded p-2 d-flex justify-content-center align-items-center" style="min-height: 150px; background-color: #f8f9fa;">
+                        <img id="modalPaymentImg" src="" alt="영수증" class="img-fluid" style="max-height: 200px; display: none;">
+                        <span id="modalPaymentNoImg" class="text-muted small">영수증 이미지가 없습니다.</span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">구매날짜</label>
+                    <input type="text" class="form-control bg-light" id="modalPaymentDate" readonly>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">추가설명 <small class="text-muted fw-normal">(선택)</small></label>
+                    <input type="text" class="form-control bg-light" id="modalPaymentDesc" value="문제사항 없음" readonly>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="button" class="btn btn-danger text-white" id="btnReportPayment">신고하기</button>
+                    <button type="button" class="btn btn-danger text-white px-4" data-bs-dismiss="modal" style="background-color: #e63946; border: none;">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
