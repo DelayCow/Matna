@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class ReviewsVO {
-
+    private Integer recipeNo;
     private Integer reviewNo;
     private String title;
     private String content;

@@ -12,6 +12,7 @@ import java.util.List;
 @Getter
 @ToString
 public class ReviewResponse {
+    private Integer recipeNo;
     private Integer reviewNo;
     private String writerNickname;
     private String writerProfileImage;

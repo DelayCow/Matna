@@ -24,8 +24,8 @@ public class ReviewController {
         return "reviewDetail";
     }
 
-    @GetMapping("/edit/{recipeNo}")
-    public String editReview(@PathVariable Integer recipeNo) {
+    @GetMapping("/edit/{reviewNo}/{recipeNo}")
+    public String editReview(@PathVariable Integer reviewNo, @PathVariable Integer recipeNo) {
         return "editReview";
     }
 }

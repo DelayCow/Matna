@@ -47,6 +47,7 @@ public class ReviewRestController {
     public ReviewResponse getReviewDetail(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable Integer reviewNo){
         ReviewsVO reviewsVO = reviewService.getReviewDetail(reviewNo);
         return ReviewResponse.builder()
+                .recipeNo(reviewsVO.getRecipeNo())
                 .reviewNo(reviewsVO.getReviewNo())
                 .title(reviewsVO.getTitle())
                 .content(reviewsVO.getContent())
@@ -84,7 +85,7 @@ public class ReviewRestController {
         ReviewsRegisterVO reviewRegister = objectMapper.readValue(reviewRequestJson, ReviewsRegisterVO.class);
         Integer reviewNo = reviewService.addReview(principalDetails.getMemberNo(), reviewRegister, reviewImage);
         return ResponseEntity.ok(Map.of(
-                "recipeNo", reviewNo,
+                "reviewNo", reviewNo,
                 "message", "리뷰를 등록했습니다."
         ));
     }
@@ -96,7 +97,7 @@ public class ReviewRestController {
         ReviewsRegisterVO reviewRegister = objectMapper.readValue(reviewRequestJson, ReviewsRegisterVO.class);
         Integer reviewNo = reviewService.editReview(principalDetails.getMemberNo(), reviewRegister, reviewImage);
         return ResponseEntity.ok(Map.of(
-                "recipeNo", reviewNo,
+                "reviewNo", reviewNo,
                 "message", "리뷰가 수정되었습니다."
         ));
     }

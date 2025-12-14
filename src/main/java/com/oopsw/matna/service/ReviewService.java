@@ -86,6 +86,7 @@ public class ReviewService {
         }
 
         return ReviewsVO.builder()
+                .recipeNo(reviews.getRecipe().getRecipeNo())
                 .reviewNo(reviews.getReviewNo())
                 .reviewImage(reviews.getImageUrl())
                 .title(reviews.getTitle())
@@ -187,17 +188,15 @@ public class ReviewService {
         }
 
         String reviewImageUrl;
-        String currentReviewImage = review.getImageUrl();
 
-        if (vo.getReviewImage() != null && vo.getReviewImage().equals(currentReviewImage)) {
-            reviewImageUrl = currentReviewImage;
-        } else if (reviewImage != null && !reviewImage.isEmpty()) {
+        if (reviewImage != null && !reviewImage.isEmpty()) {
+            String currentReviewImage = review.getImageUrl();
             if (currentReviewImage != null) {
                 imageStorageService.delete(currentReviewImage);
             }
             reviewImageUrl = imageStorageService.save(reviewImage, "review");
         } else {
-            throw new IllegalArgumentException("리뷰 이미지는 필수입니다.");
+            reviewImageUrl = review.getImageUrl();
         }
 
         review.setTitle(vo.getTitle());

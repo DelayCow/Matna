@@ -1,5 +1,5 @@
 import {translateReviewData, createAlternativePart} from "./reviewDetailCard.js";
-const createReviewCard = function (r){
+const createReviewCard = function (r, recipeNo){
     const alternativeIngs = createAlternativePart(r.alternatives);
     const writerImageUrl = r.writerProfileImage || '/img/user.png';
     let editBox = '';
@@ -7,7 +7,7 @@ const createReviewCard = function (r){
         editBox = `<div class="position-relative edit-box-container" data-no="${r.reviewNo}">
                     <i class="bi bi-three-dots-vertical text-dark"></i>
                     <div class="edit-box text-center bg-white">
-                        <a href="/review/edit" class="mb-2">수정</a>
+                        <a href="/review/edit/${r.reviewNo}/${recipeNo}" class="mb-2">수정</a>
                         <a class="mt-2 removeReview">삭제</a>
                     </div>
                 </div>`;
@@ -43,7 +43,7 @@ const fetchReviewData = async function(recipeNo){
         const reviewData = await response.json();
         reviewData.forEach(review => {
             const translatedFormatReview = translateReviewData(review);
-            const cardHtml = createReviewCard(translatedFormatReview);
+            const cardHtml = createReviewCard(translatedFormatReview, recipeNo);
             reviewList.insertAdjacentHTML('beforeend', cardHtml)
         })
     }catch(error){
