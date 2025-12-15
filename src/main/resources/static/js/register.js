@@ -105,3 +105,27 @@ document.addEventListener('DOMContentLoaded', function(){
     })
 
 })
+
+// 다음 우편번호 API 실행 함수
+function execDaumPostcode() {
+    new daum.Postcode({
+        oncomplete: function(data) {
+            const addr = data.address; // 최종 주소 변수
+
+            // 주소 정보를 해당 필드에 넣는다.
+            document.getElementById("address").value = addr;
+
+        }
+    }).open();
+}
+// 주소 검색 버튼 클릭 이벤트
+const searchBtn = document.getElementById('addressSearchBtn');
+if (searchBtn) {
+    searchBtn.addEventListener('click', execDaumPostcode);
+}
+
+// 주소 입력창 클릭 시에도 검색 창 열기
+const addressInput = document.getElementById('address');
+if (addressInput) {
+    addressInput.addEventListener('click', execDaumPostcode);
+}
