@@ -27,12 +27,15 @@
     </div>
 
     <div class="group-buy-product p-3">
-      <div class="d-flex align-items-center mb-3">
-        <img id="data-author-profile" src="/img/user.png" class="rounded-circle me-2" alt="작성자 프로필" style="width:36px; height:36px;">
-        <div class="d-flex flex-column lh-sm">
-          <span id="data-author-nickname" class="fw-bold">작성자</span>
+      <a id="data-author-link" href="#" style="text-decoration: none; color: inherit;">
+        <div class="d-flex align-items-center">
+          <img id="data-author-profile" src="/img/user.png" class="rounded-circle me-2"
+               alt="작성자 프로필" style="width:36px; height:36px; cursor: pointer;">
+          <div class="d-flex flex-column lh-sm">
+            <span id="data-author-nickname" class="fw-bold">작성자</span>
+          </div>
         </div>
-      </div>
+      </a>
 
       <h2 id="data-product-title" class="fw-bold mb-1 product-title">제품명</h2>
       <a id="data-item-sale-url" href="#" class="text-primary small d-inline-block text-decoration-none mb-3">상품판매페이지</a>

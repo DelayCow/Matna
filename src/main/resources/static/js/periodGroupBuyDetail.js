@@ -126,7 +126,10 @@ const render = {
             productImage.src = detail.imageUrl;
             productImage.alt = detail.title || '공동구매 이미지';
         }
-
+        const authorLink = document.getElementById('data-author-link');
+        if (authorLink && detail.creatorNo) {
+            authorLink.href = `/mypage/${detail.creatorNo}`;
+        }
         const authorProfile = document.getElementById('data-author-profile');
         if (authorProfile && detail.profileImageUrl) {
             authorProfile.src = detail.profileImageUrl;
@@ -261,12 +264,15 @@ const render = {
 
                 const profileUrl = p.profileUrl || '/img/user.png';
                 const nickname = p.nickname || '익명';
+                const memberNo = p.memberNo || '';
 
                 const item = `
           <div class="d-flex align-items-center mb-3">
-            <img src="${profileUrl}" class="rounded-circle me-3" alt="참여자 프로필" 
-                 style="width:50px; height:50px;" 
-                 onerror="this.onerror=null; this.src='/img/user.png';">
+            <a href="/mypage/${memberNo}" style="text-decoration: none; color: inherit;">
+              <img src="${profileUrl}" class="rounded-circle me-3" alt="참여자 프로필" 
+                   style="width:50px; height:50px; cursor: pointer;" 
+                   onerror="this.onerror=null; this.src='/img/user.png';">
+            </a>
             <div class="d-flex flex-column">
               <span class="fw-bold fs-6">${nickname}</span>
               <span class="small text-muted">${date}</span>
