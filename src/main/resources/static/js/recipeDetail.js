@@ -1,4 +1,4 @@
-import {showAlertModal, showValidationModal} from "./modal.js";
+import {showAlertModal} from "./modal.js";
 
 document.addEventListener('DOMContentLoaded', function(){
     const remove = document.querySelector('#removeRecipe');
@@ -53,5 +53,9 @@ document.addEventListener('DOMContentLoaded', function(){
     document.getElementById('writer-profile').addEventListener('click', function (){
         const writerNo = this.getAttribute('data-no');
         location.href=`/mypage/${writerNo}`;
+    })
+
+    document.getElementById('addReviewBtn').addEventListener('click', function (){
+        location.href = `/review/add/${this.getAttribute('data-recipeNo')}`
     })
 })

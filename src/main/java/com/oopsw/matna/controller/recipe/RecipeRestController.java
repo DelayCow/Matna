@@ -6,6 +6,8 @@ import com.oopsw.matna.auth.PrincipalDetails;
 import com.oopsw.matna.dto.RecipeResponse;
 import com.oopsw.matna.service.ImageStorageService;
 import com.oopsw.matna.service.RecipeService;
+import com.oopsw.matna.vo.RecipeDetailVO;
+import com.oopsw.matna.vo.RecipeRegisterVO;
 import com.oopsw.matna.vo.RecipeVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -62,8 +64,8 @@ public class RecipeRestController {
             @RequestPart("recipeRequest") String recipeRequestJson,
             @RequestPart(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
             @RequestParam Map<String, MultipartFile> stepImages) throws IOException {
-        RecipeRequest recipeRequest = objectMapper.readValue(recipeRequestJson, RecipeRequest.class);
-        Integer recipeNo = recipeService.addRecipe(recipeRequest, thumbnailFile, stepImages, principalDetails.getMemberNo());
+        RecipeRegisterVO recipeRegister = objectMapper.readValue(recipeRequestJson, RecipeRegisterVO.class);
+        Integer recipeNo = recipeService.addRecipe(recipeRegister, thumbnailFile, stepImages, principalDetails.getMemberNo());
 
         return ResponseEntity.ok(Map.of(
                 "recipeNo", recipeNo,
@@ -76,8 +78,8 @@ public class RecipeRestController {
             @RequestPart("recipeRequest") String recipeRequestJson,
             @RequestPart(value = "thumbnailFile", required = false) MultipartFile thumbnailFile,
             @RequestParam Map<String, MultipartFile> stepImages) throws IOException {
-        RecipeRequest recipeRequest = objectMapper.readValue(recipeRequestJson, RecipeRequest.class);
-        Integer recipeNo = recipeService.editRecipe(recipeRequest, thumbnailFile, stepImages, principalDetails.getMemberNo());
+        RecipeRegisterVO recipeRegister = objectMapper.readValue(recipeRequestJson, RecipeRegisterVO.class);
+        Integer recipeNo = recipeService.editRecipe(recipeRegister, thumbnailFile, stepImages, principalDetails.getMemberNo());
 
         return ResponseEntity.ok(Map.of(
                 "recipeNo", recipeNo,
@@ -93,16 +95,10 @@ public class RecipeRestController {
                 "message", "레시피를 삭제했습니다."
         ));
     }
-//    @PostMapping("/images") //이미지 업로드 테스트 컨트롤러
-//    public ResponseEntity<?> addRecipeImage(
-//            @RequestPart(value="image") MultipartFile imageFile
-//    ) throws IOException {
-//        String imageUrl = null;
-//        if (imageFile == null || imageFile.isEmpty()) {
-//            throw new IllegalArgumentException("썸네일 이미지는 필수입니다.");
-//        }
-//        imageUrl = imageStorageService.save(imageFile, "/recipe/thumbnails");
-//        return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("imageUrl", imageUrl));
-//    }
+
+    @GetMapping("/recipes/detail/{recipeNo}")
+    public ResponseEntity<RecipeDetailVO> getRecipeDetail(@PathVariable Integer recipeNo) {
+        return ResponseEntity.ok().body(recipeService.getRecipeDetail(recipeNo));
+    }
 
 }

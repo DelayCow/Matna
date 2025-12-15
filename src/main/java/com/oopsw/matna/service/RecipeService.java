@@ -1,6 +1,5 @@
 package com.oopsw.matna.service;
 
-import com.oopsw.matna.controller.recipe.RecipeRequest;
 import com.oopsw.matna.repository.*;
 import com.oopsw.matna.repository.entity.*;
 import com.oopsw.matna.vo.*;
@@ -51,7 +50,7 @@ public class RecipeService {
     }
 
     @Transactional
-    public Integer addRecipe(RecipeRequest dto, MultipartFile thumbnailFile,
+    public Integer addRecipe(RecipeRegisterVO vo, MultipartFile thumbnailFile,
                              Map<String, MultipartFile> stepImages, Integer memberNo) throws IOException {
         Member author = memberRepository.findById(memberNo)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 회원입니다. (memberNo: " + memberNo + ")"));
@@ -64,14 +63,14 @@ public class RecipeService {
 
         Recipe recipe = Recipe.builder()
                 .author(author)
-                .title(dto.getTitle())
-                .summary(dto.getSummary())
-                .category(dto.getCategory())
+                .title(vo.getTitle())
+                .summary(vo.getSummary())
+                .category(vo.getCategory())
                 .imageUrl(thumbnailUrl)
-                .spicyLevel(dto.getSpicyLevel())
-                .prepTime(dto.getPrepTime())
-                .servings(dto.getServings())
-                .difficulty(dto.getDifficulty())
+                .spicyLevel(vo.getSpicyLevel())
+                .prepTime(vo.getPrepTime())
+                .servings(vo.getServings())
+                .difficulty(vo.getDifficulty())
                 .inDate(LocalDateTime.now())
                 .scrapCount(0)
                 .reviewCount(0)
@@ -80,11 +79,11 @@ public class RecipeService {
 
         Recipe savedRecipe = recipeRepository.save(recipe);
 
-        if (dto.getIngredient() == null || dto.getIngredient().isEmpty()) {
+        if (vo.getIngredient() == null || vo.getIngredient().isEmpty()) {
             throw new IllegalArgumentException("재료는 최소 1개 이상 필요합니다.");
         }
 
-        for (IngredientVO ingredient : dto.getIngredient()) {
+        for (IngredientVO ingredient : vo.getIngredient()) {
             Ingredient recipeIngredient = ingredientRepository.findByIngredientNameAndDelDateIsNull(ingredient.getIngredientName())
                     .orElseGet(() -> {
                         Ingredient newIngredient = Ingredient.builder()
@@ -104,11 +103,11 @@ public class RecipeService {
             recipeIngredientRepository.save(recipeIngredients);
         }
 
-        if (dto.getStep() == null || dto.getStep().isEmpty()) {
+        if (vo.getStep() == null || vo.getStep().isEmpty()) {
             throw new IllegalArgumentException("레시피 단계는 최소 1개 이상 필요합니다.");
         }
 
-        for (RecipeStepVO step : dto.getStep()) {
+        for (RecipeStepVO step : vo.getStep()) {
             String stepImageUrl = null;
 
             String imageKey = step.getImageUrl();
@@ -144,7 +143,7 @@ public class RecipeService {
         List<RecipeStep> rSteps = recipeStepRepository.findByRecipeOrderByStepOrderAsc(recipe);
 
         List<RecipeAlternativeIngredient> alternatives =
-                recipeAlternativeIngredientRepository.findByReview_Recipe_RecipeNo(recipeNo);
+                recipeAlternativeIngredientRepository.findByReview_Recipe_RecipeNoAndReview_DelDateIsNull(recipeNo);
 
         RecipeDetailVO vo = new RecipeDetailVO();
 
@@ -259,9 +258,9 @@ public class RecipeService {
     }
 
     @Transactional
-    public Integer editRecipe(RecipeRequest dto, MultipartFile thumbnailFile,
+    public Integer editRecipe(RecipeRegisterVO vo, MultipartFile thumbnailFile,
                               Map<String, MultipartFile> stepImages, Integer memberNo) throws IOException {
-        Recipe recipe = recipeRepository.findById(dto.getRecipeNo()).get();
+        Recipe recipe = recipeRepository.findById(vo.getRecipeNo()).get();
 
         if (!recipe.getAuthor().getMemberNo().equals(memberNo)) {
             throw new IllegalArgumentException("레시피를 수정할 권한이 없습니다.");
@@ -270,7 +269,7 @@ public class RecipeService {
         String thumbnailUrl;
         String currentThumbnail = recipe.getImageUrl();
 
-        if (dto.getThumnailUrl() != null && dto.getThumnailUrl().equals(currentThumbnail)) {
+        if (vo.getThumnailUrl() != null && vo.getThumnailUrl().equals(currentThumbnail)) {
             thumbnailUrl = currentThumbnail;
         } else if (thumbnailFile != null && !thumbnailFile.isEmpty()) {
             if (currentThumbnail != null) {
@@ -281,30 +280,30 @@ public class RecipeService {
             throw new IllegalArgumentException("썸네일 이미지는 필수입니다.");
         }
 
-        recipe.setTitle(dto.getTitle());
-        recipe.setSummary(dto.getSummary());
-        recipe.setCategory(dto.getCategory());
+        recipe.setTitle(vo.getTitle());
+        recipe.setSummary(vo.getSummary());
+        recipe.setCategory(vo.getCategory());
         recipe.setImageUrl(thumbnailUrl);
-        recipe.setSpicyLevel(dto.getSpicyLevel());
-        recipe.setDifficulty(dto.getDifficulty());
-        recipe.setCategory(dto.getCategory());
-        recipe.setServings(dto.getServings());
+        recipe.setSpicyLevel(vo.getSpicyLevel());
+        recipe.setDifficulty(vo.getDifficulty());
+        recipe.setCategory(vo.getCategory());
+        recipe.setServings(vo.getServings());
 
         Recipe savedRecipe = recipeRepository.save(recipe);
 
         List<RecipeIngredient> existingIngredients = recipeIngredientRepository.findByRecipe(recipe);
 
-        if (dto.getIngredient() == null || dto.getIngredient().isEmpty()) {
+        if (vo.getIngredient() == null || vo.getIngredient().isEmpty()) {
             throw new IllegalArgumentException("재료는 최소 1개 이상 필요합니다.");
         }
 
-        if (existingIngredients.size() != dto.getIngredient().size()) {
+        if (existingIngredients.size() != vo.getIngredient().size()) {
             throw new IllegalArgumentException("재료 개수가 일치하지 않습니다.");
         }
 
         for (int i = 0; i < existingIngredients.size(); i++) {
             RecipeIngredient recipeIngredient = existingIngredients.get(i);
-            IngredientVO newData = dto.getIngredient().get(i);
+            IngredientVO newData = vo.getIngredient().get(i);
 
             if (!recipeIngredient.getIngredient().getIngredientName().equals(newData.getIngredientName())) {
                 Ingredient ingredient = ingredientRepository.findByIngredientNameAndDelDateIsNull(newData.getIngredientName())
@@ -325,17 +324,17 @@ public class RecipeService {
 
         List<RecipeStep> existingSteps = recipeStepRepository.findByRecipeOrderByStepOrderAsc(recipe);
 
-        if (dto.getStep() == null || dto.getStep().isEmpty()) {
+        if (vo.getStep() == null || vo.getStep().isEmpty()) {
             throw new IllegalArgumentException("레시피 단계는 최소 1개 이상 필요합니다.");
         }
 
-        if (existingSteps.size() != dto.getStep().size()) {
+        if (existingSteps.size() != vo.getStep().size()) {
             throw new IllegalArgumentException("레시피 단계 개수가 일치하지 않습니다.");
         }
 
         for (int i = 0; i < existingSteps.size(); i++) {
             RecipeStep recipeStep = existingSteps.get(i);
-            RecipeStepVO newData = dto.getStep().get(i);
+            RecipeStepVO newData = vo.getStep().get(i);
             String oldImageUrl = recipeStep.getImageUrl();
             String stepImageUrl = null;
 
