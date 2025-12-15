@@ -514,3 +514,94 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+
+// 다음 우편번호 API + 카카오맵 주소 검색 기능
+// 카카오맵 API 로드 대기 및 초기화
+window.addEventListener('load', function() {
+    // kakao 객체가 로드될 때까지 대기
+    const checkKakaoLoaded = setInterval(function() {
+        if (typeof kakao !== 'undefined' && kakao.maps) {
+            clearInterval(checkKakaoLoaded);
+            initKakaoMap();
+        }
+    }, 100);
+});
+
+// 카카오맵 초기화 및 이벤트 설정
+function initKakaoMap() {
+    console.log('Kakao Map initialized');
+
+    const mapContainer = document.getElementById('map');
+    const mapOption = {
+        center: new kakao.maps.LatLng(37.537187, 127.005476), // 지도의 중심좌표
+        level: 5 // 지도의 확대 레벨
+    };
+
+    // 지도를 미리 생성
+    const map = new kakao.maps.Map(mapContainer, mapOption);
+
+    // 주소-좌표 변환 객체를 생성
+    const geocoder = new kakao.maps.services.Geocoder();
+
+    // 마커를 미리 생성
+    const marker = new kakao.maps.Marker({
+        position: new kakao.maps.LatLng(37.537187, 127.005476),
+        map: map
+    });
+
+    // 다음 우편번호 API 실행 함수
+    function execDaumPostcode() {
+        new daum.Postcode({
+            oncomplete: function(data) {
+                const addr = data.address; // 최종 주소 변수
+
+                // 주소 정보를 해당 필드에 넣는다.
+                document.getElementById("addressSearch").value = addr;
+
+                // 주소로 상세 정보를 검색
+                geocoder.addressSearch(data.address, function(results, status) {
+                    // 정상적으로 검색이 완료됐으면
+                    if (status === kakao.maps.services.Status.OK) {
+                        const result = results[0]; // 첫번째 결과의 값을 활용
+
+                        // 해당 주소에 대한 좌표를 받아서
+                        const coords = new kakao.maps.LatLng(result.y, result.x);
+
+                        // 좌표 정보 저장
+                        document.getElementById('latitude').value = result.y;
+                        document.getElementById('longitude').value = result.x;
+
+                        console.log('Selected address:', addr);
+                        console.log('Coordinates:', result.y, result.x);
+
+                        // 지도를 보여준다.
+                        mapContainer.style.display = "block";
+                        map.relayout();
+
+                        // 지도 중심을 변경한다.
+                        map.setCenter(coords);
+
+                        // 마커를 결과값으로 받은 위치로 옮긴다.
+                        marker.setPosition(coords);
+
+                        // 상세주소 입력란으로 포커스 이동
+                        document.getElementById('detailAddress').focus();
+                    }
+                });
+            }
+        }).open();
+    }
+
+    // 주소 검색 버튼 클릭 이벤트
+    const searchBtn = document.getElementById('addressSearchBtn');
+    if (searchBtn) {
+        searchBtn.addEventListener('click', execDaumPostcode);
+    }
+
+    // 주소 입력창 클릭 시에도 검색 창 열기
+    const addressInput = document.getElementById('addressSearch');
+    if (addressInput) {
+        addressInput.addEventListener('click', execDaumPostcode);
+    }
+}

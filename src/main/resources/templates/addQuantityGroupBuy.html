@@ -14,9 +14,9 @@
   <div th:replace="layout :: pageHeader('수량공구 생성', 'javascript:history.back()')"></div>
   <div th:text="${creatorNo}" style="display: none" id="creatorNo"></div>
 
-  <!-- creatorNo hidden input -->
-  <input type="hidden" id="creatorNo" th:value="${creatorNo}">
-  <input type="hidden" id="ingredientNo" value="">
+<!--  &lt;!&ndash; creatorNo hidden input &ndash;&gt;-->
+<!--  <input type="hidden" id="creatorNo" th:value="${creatorNo}">-->
+<!--  <input type="hidden" id="ingredientNo" value="">-->
 
   <main class="p-4 pb-0">
 
@@ -66,12 +66,28 @@
     <div class="mb-4">
       <label for="addressSearch" class="form-label fw-bold">나눔 장소</label>
       <div class="input-group">
-        <input type="text" class="form-control me-2" id="addressSearch" placeholder="주소 검색">
-        <button class="btn btn-outline-secondary" type="button" style="border-top-left-radius: 0; border-bottom-left-radius: 0; border-radius: 8px; width: 44px;">
+        <input type="text" class="form-control" id="addressSearch"
+               placeholder="검색으로 주소를 입력하세요" readonly>
+        <button class="btn btn-outline-secondary" id="addressSearchBtn" type="button"
+                style="border-top-left-radius: 0; border-bottom-left-radius: 0; border-radius: 8px; width: 44px;">
           <i class="bi bi-search"></i>
         </button>
       </div>
-      <input type="text" class="form-control mt-2" id="detailAddress" placeholder="상세 주소">
+
+      <!-- 검색 결과 정보 표시 -->
+      <div class="search-result-info" id="searchResultInfo">
+        <i class="bi bi-geo-alt-fill me-2"></i>
+        <strong>검색된 주소:</strong> <span id="resultAddress"></span>
+      </div>
+
+      <!-- 지도 표시 영역 -->
+      <div id="map"></div>
+
+      <input type="text" class="form-control mt-2" id="detailAddress" placeholder="상세 주소 (동, 호수 등)">
+
+      <!-- 숨겨진 좌표 정보 저장용 -->
+      <input type="hidden" id="latitude">
+      <input type="hidden" id="longitude">
     </div>
 
     <div class="mb-4">
@@ -162,6 +178,8 @@
   <div th:replace="layout :: menuBar"></div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=8b4e9ae91a71924d413261bbd23d68d2&libraries=services"></script>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script src="/js/addQuantityGroupBuy.js"></script>
 </body>
 </html>
