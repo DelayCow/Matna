@@ -15,7 +15,7 @@
     <header th:fragment="pageHeader(pageName, backUrl)" class="d-flex justify-content-between align-items-center p-3 bg-white sticky-top" style="z-index: 1020;">
         <a th:href="${backUrl}" class="text-dark"><i class="bi bi-chevron-left fs-4"></i></a>
         <h4 class="m-0 fw-bold" th:text="${pageName}">페이지명</h4>
-        <a href="#" class="text-dark"><i class="bi bi-bell fs-4"></i></a>
+        <div class="text-white"><i class="bi bi-bell fs-4"></i></div>
     </header>
     <!--헤더-->
     <header th:fragment="mainHeader" class="d-flex justify-content-between align-items-center p-3 bg-white sticky-top" style="z-index: 1020;">
