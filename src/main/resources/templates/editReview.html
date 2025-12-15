@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ReviewRegister</title>
+    <title>EditReview</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/css/layout.css">
@@ -13,7 +13,7 @@
 </head>
 <body>
 <div class="mobile-container position-relative">
-    <div th:replace="layout :: pageHeader('후기 등록', 'javascript:history.back()')"></div>
+    <div th:replace="layout :: pageHeader('후기 수정', 'javascript:history.back()')"></div>
 
     <div class="container-fluid p-3">
         <div class="recipe-info d-flex align-items-center mb-4 p-3 rounded" style="background-color: #f8f9fa;"></div>
@@ -89,7 +89,7 @@
         </div>
 
 
-        <button id="handleAddReview" class="btn btn-warning w-100 py-2 fw-bold">등록</button>
+        <button id="handleEditReview" class="btn btn-warning w-100 py-2 fw-bold">수정</button>
 
     </div>
 
@@ -98,6 +98,6 @@
 <div th:replace="modal :: modal"></div>
 <div th:replace="modal :: multiModal"></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script type="module" src="/js/reviewRegister.js"></script>
+<script type="module" src="/js/editReview.js"></script>
 </body>
 </html>

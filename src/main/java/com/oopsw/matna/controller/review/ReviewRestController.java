@@ -26,34 +26,41 @@ public class ReviewRestController {
     private final ObjectMapper objectMapper;
 
     @GetMapping("/recipe/{recipeNo}")
-    public List<ReviewResponse> getRecipeReviews(@PathVariable Integer recipeNo){
+    public List<ReviewResponse> getRecipeReviews(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable Integer recipeNo){
         List<ReviewsVO> reviews = reviewService.getRecipeReviews(recipeNo);
         return reviews.stream().map(reviewsVO -> ReviewResponse.builder()
                 .reviewNo(reviewsVO.getReviewNo())
                 .title(reviewsVO.getTitle())
                 .content(reviewsVO.getContent())
                 .reviewImage(reviewsVO.getReviewImage())
+                .writerNo(reviewsVO.getWriterNo())
                 .writerNickname(reviewsVO.getWriterNickname())
                 .writerProfileImage(reviewsVO.getWriterProfileImage())
                 .inDate(reviewsVO.getInDate())
                 .rating(reviewsVO.getRating())
                 .spicyLevel(reviewsVO.getSpicyLevel())
+                .alternatives(reviewsVO.getAlternatives())
+                .writer(principalDetails.getMemberNo().equals(reviewsVO.getWriterNo()))
                 .build()).collect(Collectors.toList());
     }
 
     @GetMapping("/{reviewNo}")
-    public ReviewResponse getReviewDetail(@PathVariable Integer reviewNo){
+    public ReviewResponse getReviewDetail(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable Integer reviewNo){
         ReviewsVO reviewsVO = reviewService.getReviewDetail(reviewNo);
         return ReviewResponse.builder()
+                .recipeNo(reviewsVO.getRecipeNo())
                 .reviewNo(reviewsVO.getReviewNo())
                 .title(reviewsVO.getTitle())
                 .content(reviewsVO.getContent())
                 .reviewImage(reviewsVO.getReviewImage())
+                .writerNo(reviewsVO.getWriterNo())
                 .writerNickname(reviewsVO.getWriterNickname())
                 .writerProfileImage(reviewsVO.getWriterProfileImage())
                 .inDate(reviewsVO.getInDate())
                 .rating(reviewsVO.getRating())
                 .spicyLevel(reviewsVO.getSpicyLevel())
+                .alternatives(reviewsVO.getAlternatives())
+                .writer(principalDetails.getMemberNo().equals(reviewsVO.getWriterNo()))
                 .build();
     }
 
@@ -76,11 +83,11 @@ public class ReviewRestController {
     @PostMapping("/{recipeNo}")
     public ResponseEntity<?> addReview(@AuthenticationPrincipal PrincipalDetails principalDetails,
                                        @RequestPart("reviewRequest") String reviewRequestJson,
-                                       @RequestPart(value = "reviewImage", required = false) MultipartFile reviewImage) throws IOException {
+                                       @RequestPart(value = "reviewImage") MultipartFile reviewImage) throws IOException {
         ReviewsRegisterVO reviewRegister = objectMapper.readValue(reviewRequestJson, ReviewsRegisterVO.class);
         Integer reviewNo = reviewService.addReview(principalDetails.getMemberNo(), reviewRegister, reviewImage);
         return ResponseEntity.ok(Map.of(
-                "recipeNo", reviewNo,
+                "reviewNo", reviewNo,
                 "message", "리뷰를 등록했습니다."
         ));
     }
@@ -92,13 +99,13 @@ public class ReviewRestController {
         ReviewsRegisterVO reviewRegister = objectMapper.readValue(reviewRequestJson, ReviewsRegisterVO.class);
         Integer reviewNo = reviewService.editReview(principalDetails.getMemberNo(), reviewRegister, reviewImage);
         return ResponseEntity.ok(Map.of(
-                "recipeNo", reviewNo,
+                "reviewNo", reviewNo,
                 "message", "리뷰가 수정되었습니다."
         ));
     }
 
-    @DeleteMapping("/{recipeNo}")
-    public ResponseEntity<?> removeReview(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("reviewNo") int reviewNo) {
+    @DeleteMapping("/{reviewNo}")
+    public ResponseEntity<?> removeReview(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable Integer reviewNo) {
         reviewService.removeReview(principalDetails.getMemberNo(), reviewNo);
         return ResponseEntity.ok(Map.of(
                 "reviewNo", reviewNo,

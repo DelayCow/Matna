@@ -49,9 +49,22 @@ public class ReviewService {
 
 
             if (r.getAuthor() != null) {
+                vo.setWriterNo(r.getAuthor().getMemberNo());
                 vo.setWriterNickname(r.getAuthor().getNickname());
                 vo.setWriterProfileImage(r.getAuthor().getImageUrl());
             }
+            List<RecipeAlternativeIngredient> alternativeIngredients = recipeAlternativeIngredientRepository.findByReview_ReviewNo(r.getReviewNo());
+            List<ReviewsRegisterVO.AlternativeRegisterVO> alternativeVoList = new ArrayList<>();
+
+            for (RecipeAlternativeIngredient a : alternativeIngredients) {
+                ReviewsRegisterVO.AlternativeRegisterVO altVo = new ReviewsRegisterVO.AlternativeRegisterVO();
+                altVo.setOriginalIngredientName(a.getOriginalIngredientName());
+                altVo.setAlternativeIngredientName(a.getAlternativeIngredientName());
+                altVo.setAmount(a.getAmount());
+                altVo.setUnit(a.getUnit());
+                alternativeVoList.add(altVo);
+            }
+            vo.setAlternatives(alternativeVoList);
 
             voList.add(vo);
         }
@@ -60,8 +73,20 @@ public class ReviewService {
 
     public ReviewsVO getReviewDetail(Integer reviewNo) {
         Reviews reviews = reviewsRepository.findByReviewNoAndDelDateIsNull(reviewNo).get();
+        List<RecipeAlternativeIngredient> alternativeIngredients = recipeAlternativeIngredientRepository.findByReview_ReviewNo(reviews.getReviewNo());
+        List<ReviewsRegisterVO.AlternativeRegisterVO> alternativeVoList = new ArrayList<>();
+
+        for (RecipeAlternativeIngredient a : alternativeIngredients) {
+            ReviewsRegisterVO.AlternativeRegisterVO altVo = new ReviewsRegisterVO.AlternativeRegisterVO();
+            altVo.setOriginalIngredientName(a.getOriginalIngredientName());
+            altVo.setAlternativeIngredientName(a.getAlternativeIngredientName());
+            altVo.setAmount(a.getAmount());
+            altVo.setUnit(a.getUnit());
+            alternativeVoList.add(altVo);
+        }
 
         return ReviewsVO.builder()
+                .recipeNo(reviews.getRecipe().getRecipeNo())
                 .reviewNo(reviews.getReviewNo())
                 .reviewImage(reviews.getImageUrl())
                 .title(reviews.getTitle())
@@ -69,8 +94,10 @@ public class ReviewService {
                 .rating(reviews.getRating())
                 .spicyLevel(reviews.getSpicyLevel())
                 .inDate(reviews.getInDate())
+                .writerNo(reviews.getAuthor().getMemberNo())
                 .writerNickname(reviews.getAuthor().getNickname())
                 .writerProfileImage(reviews.getAuthor().getImageUrl())
+                .alternatives(alternativeVoList)
                 .build();
     }
 
@@ -161,17 +188,15 @@ public class ReviewService {
         }
 
         String reviewImageUrl;
-        String currentReviewImage = review.getImageUrl();
 
-        if (vo.getReviewImage() != null && vo.getReviewImage().equals(currentReviewImage)) {
-            reviewImageUrl = currentReviewImage;
-        } else if (reviewImage != null && !reviewImage.isEmpty()) {
+        if (reviewImage != null && !reviewImage.isEmpty()) {
+            String currentReviewImage = review.getImageUrl();
             if (currentReviewImage != null) {
                 imageStorageService.delete(currentReviewImage);
             }
             reviewImageUrl = imageStorageService.save(reviewImage, "review");
         } else {
-            throw new IllegalArgumentException("리뷰 이미지는 필수입니다.");
+            reviewImageUrl = review.getImageUrl();
         }
 
         review.setTitle(vo.getTitle());

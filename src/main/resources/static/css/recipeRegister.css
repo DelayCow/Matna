@@ -55,38 +55,6 @@
 }
 
 /* ------------------------------------------- */
-/* 3. 품목 검색 (Select) 드롭다운 스타일 */
-/* ------------------------------------------- */
-.select-input-group {
-    position: relative;
-}
-
-.select-input-group .form-control {
-    padding-right: 40px;
-}
-
-.select-icon {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 5;
-    color: #495057;
-    cursor: pointer;
-}
-
-#itemDropdownMenu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* ------------------------------------------- */
 /* 4. 기타/고정 영역 스타일 */
 /* ------------------------------------------- */
 
