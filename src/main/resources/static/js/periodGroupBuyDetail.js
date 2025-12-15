@@ -159,7 +159,7 @@ const render = {
         const totalWithFee = totalPrice * (1 + feeRate / 100);
 
         const minPrice = Math.round(totalWithFee / maxParticipants);
-        const maxPrice = Math.round(totalWithFee / Math.max(currentParticipants + 1 || 2, 2));
+        const maxPrice = Math.round(totalWithFee / 2);
 
         const minPriceEl = document.getElementById('data-min-price');
         if (minPriceEl) {
@@ -226,6 +226,14 @@ const render = {
         const shareAddressEl = document.getElementById('data-share-address');
         if (shareAddressEl && detail.shareDetailAddress) {
             shareAddressEl.textContent = ' ' + detail.shareDetailAddress;
+        }
+        // 지도 아이콘 클릭 이벤트 설정
+        const mapIcon = document.getElementById('address-map');
+        if (mapIcon && detail.shareLocation) {
+            mapIcon.style.cursor = 'pointer';
+            mapIcon.addEventListener('click', function() {
+                openKakaoMap(detail.shareLocation);
+            });
         }
 
         const shareDateEl = document.getElementById('data-buy-date');
@@ -316,6 +324,20 @@ const render = {
         }
     }
 };
+
+// 카카오맵에서 주소 검색 (새 창 열기)
+function openKakaoMap(address) {
+    if (!address) {
+        alert('주소 정보가 없습니다.');
+        return;
+    }
+
+    // 카카오맵 검색 URL (주소로 검색)
+    const kakaoMapUrl = `https://map.kakao.com/link/search/${encodeURIComponent(address)}`;
+
+    // 새 창으로 열기
+    window.open(kakaoMapUrl, '_blank', 'width=900,height=700');
+}
 
 // 사용자 상태 결정
 function determineUserStatus(detail, participants) {
@@ -607,6 +629,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
 
 // === 초기화 ===
 document.addEventListener('DOMContentLoaded', async function () {

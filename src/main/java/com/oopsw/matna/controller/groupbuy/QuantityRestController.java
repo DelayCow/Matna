@@ -1,5 +1,6 @@
 package com.oopsw.matna.controller.groupbuy;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.oopsw.matna.auth.PrincipalDetails;
 import com.oopsw.matna.dto.QuantityDetailResponse;
@@ -17,6 +18,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -65,13 +67,8 @@ public class QuantityRestController {
 
     @GetMapping("/detail/{quantityGroupBuyNo}")
     public ResponseEntity<QuantityDetailResponse> getQuantityGroupBuyDetail(@PathVariable Integer quantityGroupBuyNo) {
-        try {
-            log.info("=== 상세 조회 시작: quantityGroupBuyNo={} ===", quantityGroupBuyNo);
-
             Map<String, Object> serviceResultMap = quantityGroupBuyService.getQuantityGroupBuyDetail(quantityGroupBuyNo);
             QuantityGroupBuyDetailVO detailVO = (QuantityGroupBuyDetailVO) serviceResultMap.get("groupBuyDetail");
-
-            log.info("DetailVO: {}", detailVO);
 
             List<Map<String, Object>> participantMapList = (List<Map<String, Object>>) serviceResultMap.get("participants");
             List<QuantityDetailResponse.ParticipantInfo> participantList = participantMapList.stream()
@@ -102,24 +99,16 @@ public class QuantityRestController {
                     .recipes(recipeList)
                     .build();
 
-            log.info("Response 생성 완료");
             return ResponseEntity.ok(response);
 
-        } catch (IllegalArgumentException e) {
-            log.error("상세 조회 중 오류 발생: {}", e.getMessage());
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            log.error("상세 조회 중 예외 발생", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
     }
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> addQuantityGroupBuy(
             @RequestPart("quantityRegisterRequest") String registerRequestJson,
-            @RequestPart(value = "thumbnailFile") MultipartFile thumbnailFile) {
+            @RequestPart(value = "thumbnailFile") MultipartFile thumbnailFile) throws IOException {
         Map<String, Object> response = new HashMap<>();
-        try {
+
             QuantityRegisterRequest request = objectMapper.readValue(
                     registerRequestJson,
                     QuantityRegisterRequest.class
@@ -137,16 +126,6 @@ public class QuantityRestController {
             ));
 
             return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            response.put("success", false);
-            response.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.put("success", false);
-            response.put("message", "공동구매 등록 중 오류가 발생했습니다: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
     }
 
     @PostMapping("/join")
@@ -214,7 +193,7 @@ public class QuantityRestController {
         if (cancelReason == null || cancelReason.trim().isEmpty()) {
             return ResponseEntity.badRequest()
                     .body(Map.of("success", false, "message", "취소 사유를 입력해주세요."));
-        } //삭제해야되나?
+        }
 
         quantityGroupBuyService.editQuantityCreatorCancelAndRefund(groupBuyNo, currentMemberNo, cancelReason);
 

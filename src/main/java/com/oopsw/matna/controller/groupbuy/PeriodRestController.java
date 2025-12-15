@@ -15,6 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -61,7 +62,7 @@ public class PeriodRestController {
 
     @GetMapping("/detail/{periodGroupBuyNo}")
     public ResponseEntity<PeriodDetailResponse> getPeriodGroupBuyDetail(@PathVariable Integer periodGroupBuyNo) {
-        try {
+
             Map<String, Object> serviceResultMap = periodGroupBuyService.getPeriodGroupBuyDetail(periodGroupBuyNo);
             PeriodGroupBuyDetailVO detailVO = (PeriodGroupBuyDetailVO) serviceResultMap.get("groupBuyDetail");
 
@@ -94,47 +95,32 @@ public class PeriodRestController {
                     .build();
 
             return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            System.err.println("Error fetching group buy detail: " + e.getMessage());
-            return ResponseEntity.notFound().build();
-        }
     }
 
     @PostMapping("/register")
     public ResponseEntity<Map<String, Object>> addPeriodGroupBuy(
             @RequestPart("periodRegisterRequest") String registerRequestJson,
-            @RequestPart(value = "thumbnailFile") MultipartFile thumbnailFile) {
+            @RequestPart(value = "thumbnailFile") MultipartFile thumbnailFile) throws IOException {
         Map<String, Object> response = new HashMap<>();
-        try {
-            // JSON 문자열을 Request 객체로 변환
-            PeriodRegisterRequest request = objectMapper.readValue(
-                    registerRequestJson,
-                    PeriodRegisterRequest.class
-            );
 
-            // Service 호출 (이미지 파일과 함께 전달)
-            PeriodGroupBuy periodGroupBuy = periodGroupBuyService.addPeriodGroupBuy(request, thumbnailFile);
+        PeriodRegisterRequest request = objectMapper.readValue(
+                registerRequestJson,
+                PeriodRegisterRequest.class
+        );
 
-            response.put("success", true);
-            response.put("message", "공동구매가 성공적으로 등록되었습니다.");
-            response.put("data", Map.of(
-                    "periodGroupBuyNo", periodGroupBuy.getPeriodGroupBuyNo(),
-                    "groupBuyNo", periodGroupBuy.getGroupBuy().getGroupBuyNo(),
-                    "title", periodGroupBuy.getGroupBuy().getTitle(),
-                    "imageUrl", periodGroupBuy.getGroupBuy().getImageUrl()
-            ));
+        // Service 호출 (이미지 파일과 함께 전달)
+        PeriodGroupBuy periodGroupBuy = periodGroupBuyService.addPeriodGroupBuy(request, thumbnailFile);
 
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            response.put("success", false);
-            response.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.put("success", false);
-            response.put("message", "공동구매 등록 중 오류가 발생했습니다: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
+        response.put("success", true);
+        response.put("message", "공동구매가 성공적으로 등록되었습니다.");
+        response.put("data", Map.of(
+                "periodGroupBuyNo", periodGroupBuy.getPeriodGroupBuyNo(),
+                "groupBuyNo", periodGroupBuy.getGroupBuy().getGroupBuyNo(),
+                "title", periodGroupBuy.getGroupBuy().getTitle(),
+                "imageUrl", periodGroupBuy.getGroupBuy().getImageUrl()
+        ));
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/join")
@@ -163,28 +149,12 @@ public class PeriodRestController {
             @PathVariable Integer groupBuyNo){
         Map<String, Object> response = new HashMap<>();
 
-        try {
-            periodGroupBuyService.editGroupBuyStatusAndRefund(groupBuyNo);
+        periodGroupBuyService.editGroupBuyStatusAndRefund(groupBuyNo);
 
-            response.put("success", true);
-            response.put("message", groupBuyNo + "번 기간공구가 성공적으로 마감되었으며, 정산 및 환불 처리가 완료되었습니다.");
-            return ResponseEntity.ok(response);
+        response.put("success", true);
+        response.put("message", groupBuyNo + "번 기간공구가 성공적으로 마감되었으며, 정산 및 환불 처리가 완료되었습니다.");
+        return ResponseEntity.ok(response);
 
-        } catch (IllegalArgumentException e) {
-            response.put("success", false);
-            response.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-
-        } catch (IllegalStateException e) {
-            response.put("success", false);
-            response.put("message", "상태 오류: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.put("success", false);
-            response.put("message", "공동구매 마감 및 환불 처리 중 예상치 못한 서버 오류가 발생했습니다: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
 
     }
 

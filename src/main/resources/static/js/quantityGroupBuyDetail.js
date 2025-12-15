@@ -238,6 +238,15 @@ const render = {
             shareAddressEl.textContent = ' ' + detail.shareDetailAddress;
         }
 
+        // 지도 아이콘 클릭 이벤트 설정
+        const mapIcon = document.getElementById('address-map');
+        if (mapIcon && detail.shareLocation) {
+            mapIcon.style.cursor = 'pointer';
+            mapIcon.addEventListener('click', function() {
+                openKakaoMap(detail.shareLocation);
+            });
+        }
+
         // 상품 구매/나눔 날짜 정보
         const shareDateEl = document.getElementById('data-share-date');
         if (shareDateEl && detail.shareEndDate) {
@@ -330,6 +339,20 @@ const render = {
         }
     }
 };
+
+// 카카오맵에서 주소 검색 (새 창 열기)
+function openKakaoMap(address) {
+    if (!address) {
+        alert('주소 정보가 없습니다.');
+        return;
+    }
+
+    // 카카오맵 검색 URL (주소로 검색)
+    const kakaoMapUrl = `https://map.kakao.com/link/search/${encodeURIComponent(address)}`;
+
+    // 새 창으로 열기
+    window.open(kakaoMapUrl, '_blank', 'width=900,height=700');
+}
 
 // 사용자 상태 결정 (normal, participant, creator)
 function determineUserStatus(detail, participants) {
