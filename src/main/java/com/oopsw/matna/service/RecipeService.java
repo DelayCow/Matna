@@ -176,8 +176,10 @@ public class RecipeService {
             ingVO.setAmount(ri.getAmount());
             ingVO.setUnit(ri.getUnit());
 
+            Integer actualIngredientNo = ri.getIngredient().getIngredientNo();
+
             boolean hasActiveGroupBuy = groupBuyRepository
-                    .existsByIngredient_IngredientNoAndStatus(ri.getRecipeIngredientNo(), "OPEN");
+                    .existsByIngredient_IngredientNoAndStatus(actualIngredientNo, "open");
 
             ingVO.setIsGroupBuying(hasActiveGroupBuy);
 
