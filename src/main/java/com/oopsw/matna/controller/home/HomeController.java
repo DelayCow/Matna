@@ -25,15 +25,6 @@ public class HomeController {
         return "recipeList";
     }
 
-//    @GetMapping("/groupBuy")
-//    public String groupBuy() {
-//        return "groupBuyList";
-//    }
-//
-//    @GetMapping("/mypage")
-//    public String mypage() {
-//        return "mypage";
-//    }
     @GetMapping("/login")
     public String login() {
         return "login";
@@ -44,19 +35,4 @@ public class HomeController {
         return "register";
     }
 
-    @PostMapping("/member")
-    public String addMember(@ModelAttribute MemberRequset memberRequest) {
-        if(memberService.addMember(MemberVO.builder()
-                .memberId(memberRequest.getMemberId())
-                .password(memberRequest.getPassword())
-                .nickname(memberRequest.getNickname())
-                .accountName(memberRequest.getAccountName())
-                .accountNumber(memberRequest.getAccountNumber())
-                .address(memberRequest.getAddress())
-                .bank(memberRequest.getBank())
-                .build())){
-            return "redirect:/login";
-        };
-        return "redirect:/register";
-    };
 }
