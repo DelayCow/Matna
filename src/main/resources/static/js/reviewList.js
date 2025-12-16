@@ -49,7 +49,6 @@ const fetchReviewData = async function(recipeNo){
             const cardHtml = createReviewCard(translatedFormatReview, recipeNo);
             reviewList.insertAdjacentHTML('beforeend', cardHtml)
         })
-        console.log(reviewData)
         bindRemoveEvents();
         bindMoveWriterPage();
     }catch(error){
