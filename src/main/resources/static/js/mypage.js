@@ -1,5 +1,5 @@
 
-import { showShareConfirmModal, showPaymentInfoModal, showArrivalInfoModal, showPaymentRegisterModal } from "./modal.js";
+import { showShareConfirmModal, showPaymentInfoModal, showArrivalInfoModal, showPaymentRegisterModal, showPasswordCheckModal } from "./modal.js";
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -94,8 +94,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const money = data.points || 0;
 
         if (isOwner && headerArea) {
-            headerArea.innerHTML = `<button class="btn p-0 border-0" id="headerMenuBtn"><i class="bi bi-three-dots-vertical fs-4 text-dark"></i></button>
-            <ul class="custom-dropdown" id="headerDropdown"><li><a href="#">정보 수정</a></li><li><a href="/logout">로그아웃</a></li><li><a href="#" class="text-danger">탈퇴</a></li></ul>`;
+            headerArea.innerHTML = `
+        <button class="btn p-0 border-0" id="headerMenuBtn">
+            <i class="bi bi-three-dots-vertical fs-4 text-dark"></i>
+        </button>
+        <ul class="custom-dropdown" id="headerDropdown">
+            <li><a href="#" class="btn-check-password">정보 수정</a></li>
+            <li><a href="/logout">로그아웃</a></li>
+            <li><a href="#" class="text-danger">탈퇴</a></li>
+        </ul>`;
         } else if (headerArea) { headerArea.innerHTML = ''; }
 
         let subInfo = isOwner
@@ -362,5 +369,40 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     fetchGroupData();
+
+    document.addEventListener('click', function(e) {
+        // 1. 점 3개 버튼(또는 그 안의 아이콘)을 눌렀는지 확인
+        const btn = e.target.closest('#headerMenuBtn');
+
+        if (btn) {
+            // 버튼을 눌렀다면 드롭다운을 껐다 켰다(toggle) 함
+            const dropdown = document.getElementById('headerDropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        }
+        // 2. 버튼이 아닌 다른 곳을 눌렀다면? (드롭다운 닫기)
+        else {
+            if (!e.target.closest('#headerDropdown')) {
+                const dropdown = document.getElementById('headerDropdown');
+                if (dropdown && dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
+            }
+        }
+    });
+
+    document.addEventListener('click', function(e) {
+        const editBtn = e.target.closest('.btn-check-password');
+
+        if (editBtn) {
+            e.preventDefault(); // 링크 이동 막기
+
+            // HTML에 숨겨진 회원번호 가져오기
+            const memberNo = document.getElementById('memberNo').textContent;
+
+            showPasswordCheckModal(memberNo);
+        }
+    });
 
 });

@@ -47,6 +47,16 @@ public class MypageController {
         return "mypagePoint";
     }
 
+    @GetMapping("/mypage/{memberNo}/myinfoEdit")
+    public String myInfoEditPage(@PathVariable("memberNo") Integer memberNo, Model model) {
+
+
+         MemberVO member = mypageService.getMemberInfo(memberNo);
+         model.addAttribute("member", member);
+
+        return "myinfoEdit";
+    }
+
 }
 
 

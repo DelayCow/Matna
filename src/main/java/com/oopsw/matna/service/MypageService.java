@@ -6,6 +6,7 @@ import com.oopsw.matna.repository.*;
 import com.oopsw.matna.repository.entity.*;
 import com.oopsw.matna.vo.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,6 +41,8 @@ public class MypageService {
     private final PeriodGroupBuyRepository periodGroupBuyRepository;
 
     private final ImageStorageService imageStorageService;
+
+    private final PasswordEncoder passwordEncoder;
 
 
     public List<RecipeVO> getMypageRecipeList(Integer memberNo) {
@@ -204,7 +207,11 @@ public class MypageService {
         Member member = memberRepository.findById(memberNo)
                 .get();
 
-        return member.getPassword().equals(inputPassword);
+        if (passwordEncoder.matches(inputPassword, member.getPassword())) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public MemberVO getMemberInfo(Integer memberNo) {

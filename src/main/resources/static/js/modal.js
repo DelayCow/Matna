@@ -348,6 +348,98 @@ export function showArrivalRegisterModal(item, onSuccess) {
     modal.show();
 }
 
+export function showPasswordCheckModal(memberNo) {
+
+    const existingModal = document.getElementById('passwordCheckModal');
+    if (existingModal) {
+        existingModal.remove(); // 있으면 지우고 새로 만듦 (깔끔하게)
+    }
+
+
+    const modalHtml = `
+    <div class="modal fade" id="passwordCheckModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">비밀번호 확인</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-secondary small mb-3">정보 수정을 위해 비밀번호를 입력해주세요.</p>
+                    <input type="password" class="form-control" id="modalPasswordInput" placeholder="비밀번호 입력">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-main-action" id="btnCheckPassword">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>`;
+
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+
+    const modalEl = document.getElementById('passwordCheckModal');
+    const inputEl = document.getElementById('modalPasswordInput');
+    const btnCheck = document.getElementById('btnCheckPassword');
+    const bsModal = new bootstrap.Modal(modalEl);
+
+
+    const handleCheck = () => {
+        const password = inputEl.value;
+        if (!password) {
+            alert("비밀번호를 입력해주세요.");
+            return;
+        }
+
+
+        fetch('/api/mypage/checkModal/checkPassword', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                memberNo: parseInt(memberNo),
+                password: password
+            })
+        })
+            .then(res => {
+                if (res.ok) return res.json(); // boolean (true/false) 반환
+                else throw new Error("서버 오류");
+            })
+            .then(isCorrect => {
+                if (isCorrect) {
+                    bsModal.hide(); // 모달 닫기
+                    // 맞으면 페이지 이동!
+                    location.href = `/mypage/${memberNo}/myinfoEdit`;
+                } else {
+                    alert("비밀번호가 일치하지 않습니다.");
+                    inputEl.value = ''; // 비번 지우기
+                    inputEl.focus();
+                }
+            })
+            .catch(err => {
+                alert("오류 발생: " + err.message);
+            });
+    };
+
+
+    btnCheck.onclick = handleCheck;
+    inputEl.onkeyup = (e) => {
+        if (e.key === 'Enter') handleCheck();
+    };
+
+
+    modalEl.addEventListener('hidden.bs.modal', () => {
+        modalEl.remove();
+    });
+
+    bsModal.show();
+
+    modalEl.addEventListener('shown.bs.modal', () => {
+        inputEl.focus();
+    });
+}
+
 
 
 
