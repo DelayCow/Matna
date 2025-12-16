@@ -98,7 +98,7 @@ public class RecipeServiceTests {
 
     @Test
     public void getRecipeDetail(){
-        System.out.println(recipeService.getRecipeDetail(1));
+        System.out.println(recipeService.getRecipeDetail(7));
     }
 
     @Test
