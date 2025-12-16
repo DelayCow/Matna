@@ -84,6 +84,8 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     const renderCommonArea = (data) => {
+
+
         const headerArea = document.getElementById('header-right-area');
         const profileArea = document.getElementById('profile-main-area');
         if (!data) data = {};
@@ -97,8 +99,14 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (headerArea) { headerArea.innerHTML = ''; }
 
         let subInfo = isOwner
-            ? `<small class="text-muted">내 맛나머니 : ${money.toLocaleString()} 원</small>`
-            : `<button class="btn btn-outline-secondary btn-sm rounded-pill px-2 py-0 mt-1"><i class="bi bi-exclamation-circle me-1"></i>신고하기</button>`;
+            ? `<small class="text-muted" 
+              style="cursor: pointer; text-decoration: underline;" 
+              onclick="location.href='/mypage/point/charge'">
+         내 맛나머니 : ${money.toLocaleString()} 원
+       </small>`
+            : `<button class="btn btn-outline-secondary btn-sm rounded-pill px-2 py-0 mt-1">
+         <i class="bi bi-exclamation-circle me-1"></i>신고하기
+       </button>`;
 
         if(profileArea) {
             profileArea.innerHTML = `<img src="${image}" class="rounded-circle border me-3" width="60" height="60"><div><h5 class="fw-bold mb-1">${nickname}</h5><div>${subInfo}</div></div>`;
@@ -124,19 +132,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const unit = item.unit || '';
         const currentStep = getStatusStep(item.status);
 
-        console.log(`%c[카드생성] No.${item.groupBuyNo} ${item.title}`);
-        console.log(`   ㄴ 현재 DB 상태값: ${item.status}`);
 
         const btnConfig = getButtonConfig(item.status, item.groupBuyNo);
-
-
-
-        if (btnConfig) {
-            console.log(`   👉 생성될 버튼: [${btnConfig.text}] (Action: ${btnConfig.action || 'link/modal'})`);
-        } else {
-            console.log(`   👉 버튼 없음 (null)`);
-        }
-        console.log('--------------------------------------------------');
 
 
         const steps = ["모집", "상품결제", "상품도착", "나눔진행"];

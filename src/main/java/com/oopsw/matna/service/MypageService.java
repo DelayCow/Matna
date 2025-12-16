@@ -158,7 +158,7 @@ public class MypageService {
     public void addArrival(int groupBuyNo, MultipartFile file, String arrivalDateString) {
 
         try {
-            
+
             String savedFileUrl = null;
             if (file != null && !file.isEmpty()) {
                 savedFileUrl = imageStorageService.save(file, "arrival");
@@ -253,7 +253,7 @@ public class MypageService {
 
     }
 
-
+    @Transactional
     public int refundPoint(Integer memberNo, int refundAmount) {
 
 
@@ -328,7 +328,7 @@ public class MypageService {
         Member member = memberRepository.findById(memberNo)
                 .orElseThrow(() -> new RuntimeException("회원 정보를 찾을 수 없습니다."));
 
-        if (amount <= 1000) {
+        if (amount < 1000) {
             throw new RuntimeException("최소 충전 금액은 1000원 입니다.");
         }
 
