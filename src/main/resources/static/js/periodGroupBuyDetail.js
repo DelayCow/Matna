@@ -1,26 +1,48 @@
-// normal, participant, creator
-const status = 'normal'
+// 전역 변수
+let currentStatus = 'normal'; // normal, participant, creator
+let currentData = null;
+let myGroupBuyParticipantNo = null;
+let groupBuyNo = null;
+
 const normalBtn = document.querySelector('.normal-btn');
 const participantBtn = document.querySelector('.participant-btn');
-const creatorRunningBtn = document.querySelector('.creator-running-btn');
+const creatorStoppedBtn = document.querySelector('.creator-stopped-btn');
 
-function showBtnByStatus(status){
-    const allBtns = [normalBtn, participantBtn, creatorRunningBtn];
-    allBtns.forEach(btn => btn.classList.remove('show'));
+// 상태에 따른 버튼 표시
+function showBtnByStatus(status) {
+    console.log('showBtnByStatus called with:', status);
 
-    switch (status){
+    const allBtns = [normalBtn, participantBtn, creatorStoppedBtn];
+
+    // 모든 버튼 숨기기
+    allBtns.forEach(btn => {
+        if (btn) {
+            btn.classList.add('d-none');
+        }
+    });
+
+    // 상태에 맞는 버튼 보이기
+    switch(status) {
         case 'normal':
-            normalBtn.classList.add('show');
+            if (normalBtn) {
+                normalBtn.classList.remove('d-none');
+                console.log('Normal button shown');
+            }
             break;
         case 'participant':
-            participantBtn.classList.add('show');
+            if (participantBtn) {
+                participantBtn.classList.remove('d-none');
+                console.log('Participant button shown');
+            }
             break;
         case 'creator':
-            creatorRunningBtn.classList.add('show');
+            if (creatorStoppedBtn) {
+                creatorStoppedBtn.classList.remove('d-none');
+                console.log('Creator button shown');
+            }
             break;
     }
 }
-showBtnByStatus(status);
 
 // === API 호출 ===
 const api = {
@@ -36,30 +58,78 @@ const api = {
                     throw new Error(`HTTP error! status: ${res.status}`);
                 }
                 return res.json();
-            })
+            }),
+
+    // 참여하기 API (일반 참여)
+    joinGroupBuy: (groupBuyNo) =>
+        fetch(`/api/periodGroupBuy/join`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ groupBuyNo: groupBuyNo })
+        })
+            .then(res => res.json()),
+
+    // 마지막 참여자 (마감 처리)
+    joinAndClose: (groupBuyNo) =>
+        fetch(`/api/periodGroupBuy/closedAndRefund/${groupBuyNo}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(res => res.json()),
+
+    // 참여 취소 API
+    cancelParticipation: (groupBuyParticipantNo) =>
+        fetch(`/api/periodGroupBuy/cancelParticipant/${groupBuyParticipantNo}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+            .then(res => res.json()),
+
+    // 개설자 중단 API
+    stopGroupBuy: (groupBuyNo, reason) =>
+        fetch(`/api/periodGroupBuy/cancelCreator/${groupBuyNo}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ cancelReason: reason })
+        })
+            .then(res => res.json())
 };
 
 // === 렌더링 함수 ===
 const render = {
     // 전체 상세 페이지 렌더링
     detail: (data) => {
+        console.log('API Response:', data);
         const { groupBuyDetail, participants, recipes } = data;
+        currentData = data;
 
         render.groupBuyInfo(groupBuyDetail, participants);
         render.participants(participants);
         render.recipes(recipes);
+
+        // 사용자 상태 결정
+        determineUserStatus(groupBuyDetail, participants);
     },
 
     // 공동구매 기본 정보 렌더링
     groupBuyInfo: (detail, participants) => {
-        // 상품 이미지
         const productImage = document.getElementById('data-product-image');
         if (productImage && detail.imageUrl) {
             productImage.src = detail.imageUrl;
             productImage.alt = detail.title || '공동구매 이미지';
         }
-
-        // 작성자 정보
+        const authorLink = document.getElementById('data-author-link');
+        if (authorLink && detail.creatorNo) {
+            authorLink.href = `/mypage/${detail.creatorNo}`;
+        }
         const authorProfile = document.getElementById('data-author-profile');
         if (authorProfile && detail.profileImageUrl) {
             authorProfile.src = detail.profileImageUrl;
@@ -69,7 +139,6 @@ const render = {
             authorNickname.textContent = detail.nickname || '익명';
         }
 
-        // 상품 정보
         const productTitle = document.getElementById('data-product-title');
         if (productTitle) {
             productTitle.textContent = detail.title || '제목 없음';
@@ -83,18 +152,15 @@ const render = {
             }
         }
 
-        // 가격 정보 계산
         const currentParticipants = participants ? participants.length : 0;
         const maxParticipants = detail.maxParticipants || 1;
         const totalPrice = detail.price || 0;
         const feeRate = detail.feeRate || 0;
         const totalWithFee = totalPrice * (1 + feeRate / 100);
 
-        // 최소/최대 가격
         const minPrice = Math.round(totalWithFee / maxParticipants);
-        const maxPrice = Math.round(totalWithFee / Math.max(currentParticipants || 2, 2));
+        const maxPrice = Math.round(totalWithFee / 2);
 
-        // 가격 정보 업데이트 (숫자만 업데이트)
         const minPriceEl = document.getElementById('data-min-price');
         if (minPriceEl) {
             minPriceEl.textContent = minPrice.toLocaleString();
@@ -109,71 +175,50 @@ const render = {
             feeRateEl.textContent = feeRate.toFixed(0);
         }
 
-        // 참여 인원
         const currentParticipantsEl = document.getElementById('data-current-participants');
         if (currentParticipantsEl) {
-            currentParticipantsEl.textContent = currentParticipants+1 + '명';
+            currentParticipantsEl.textContent = (currentParticipants + 1);
         }
         const maxParticipantsEl = document.getElementById('data-max-participants');
         if (maxParticipantsEl) {
-            maxParticipantsEl.textContent = maxParticipants + '명';
+            maxParticipantsEl.textContent = maxParticipants;
         }
 
-        // 남은 시간
         const remainingTimeEl = document.getElementById('data-remaining-time');
         const dueDate = detail.dueDate;
 
         if (remainingTimeEl && dueDate) {
-            // dueDate를 밀리초 타임스탬프로 변환
             const targetTimeMs = new Date(dueDate).getTime();
             const now = new Date().getTime();
             const initialRemainingMs = targetTimeMs - now;
 
             if (initialRemainingMs > 0) {
-                // 마감 시간이 남았으면 카운트다운 시작
                 utils.startCountdown(remainingTimeEl, targetTimeMs);
             } else {
-                // 이미 마감된 경우
                 remainingTimeEl.innerHTML = '모집마감';
                 remainingTimeEl.classList.remove('text-danger');
                 remainingTimeEl.classList.add('text-muted');
             }
-        } else if (remainingTimeEl) {
-            // dueDate 정보가 없는 경우
-            remainingTimeEl.innerHTML = '모집마감 정보 없음';
-            remainingTimeEl.classList.remove('text-danger');
-            remainingTimeEl.classList.add('text-muted');
         }
 
-        // 예상 금액
         const estimatedPriceEl = document.getElementById('data-estimated-price');
         if (estimatedPriceEl) {
-            // const pricePerPerson = currentParticipants > 0
-            //     ? Math.round(totalWithFee / currentParticipants)
-            //     : maxPrice;
             const pricePerPerson = currentParticipants > 0
                 ? (totalWithFee / detail.quantity).toFixed(1)
                 : maxPrice;
-            // const quantityPerPerson = currentParticipants > 0
-            //     ? Math.round((detail.quantity || 0) / currentParticipants)
-            //     : Math.round((detail.quantity || 0) / maxParticipants);
-
-            estimatedPriceEl.innerHTML = `<span class="text-danger">( 1${detail.unit || 'g'} 당 ${pricePerPerson.toLocaleString()}원 )</span>`;
+            estimatedPriceEl.innerHTML = `<span class="text-danger">( 1${detail.unit || 'g'} 당 ${parseFloat(pricePerPerson).toLocaleString()}원 )</span>`;
         }
 
-        // 가격 테이블
         const priceTableEl = document.getElementById('data-price-table');
         if (priceTableEl) {
             priceTableEl.innerHTML = utils.generatePriceTable(detail);
         }
 
-        // 상세 내용
         const productContentEl = document.getElementById('data-product-content');
         if (productContentEl) {
             productContentEl.textContent = detail.content || '공동구매에 대한 상세 설명이 없습니다.';
         }
 
-        // 나눔 장소
         const shareLocationEl = document.getElementById('data-share-location');
         if (shareLocationEl) {
             shareLocationEl.textContent = detail.shareLocation || '장소 정보 없음';
@@ -182,8 +227,15 @@ const render = {
         if (shareAddressEl && detail.shareDetailAddress) {
             shareAddressEl.textContent = ' ' + detail.shareDetailAddress;
         }
+        // 지도 아이콘 클릭 이벤트 설정
+        const mapIcon = document.getElementById('address-map');
+        if (mapIcon && detail.shareLocation) {
+            mapIcon.style.cursor = 'pointer';
+            mapIcon.addEventListener('click', function() {
+                openKakaoMap(detail.shareLocation);
+            });
+        }
 
-        // 상품 구매/나눔 날짜 정보
         const shareDateEl = document.getElementById('data-buy-date');
         if (shareDateEl) {
             shareDateEl.textContent = `상품 수령 후 수령일포함 ${detail.shareEndDate || '?'}일 뒤 ${detail.shareTime || ''}`;
@@ -194,15 +246,16 @@ const render = {
         }
     },
 
-    // 참여자 목록 렌더링
     participants: (participants) => {
-        const countHeader = document.getElementById('data-participants-count-header');
         const participantListEl = document.getElementById('data-participants-list');
 
-        if (!countHeader || !participantListEl) return;
+        if (!participantListEl) return;
 
         const participantCount = participants ? participants.length : 0;
-        countHeader.textContent = `참여자 ${participantCount}명`;
+        const countElement = document.getElementById('data-participants-count');
+        if (countElement) {
+            countElement.textContent = participantCount;
+        }
 
         participantListEl.innerHTML = '';
 
@@ -219,12 +272,15 @@ const render = {
 
                 const profileUrl = p.profileUrl || '/img/user.png';
                 const nickname = p.nickname || '익명';
+                const memberNo = p.memberNo || '';
 
                 const item = `
           <div class="d-flex align-items-center mb-3">
-            <img src="${profileUrl}" class="rounded-circle me-3" alt="참여자 프로필" 
-                 style="width:50px; height:50px;" 
-                 onerror="this.onerror=null; this.src='/img/user.png';">
+            <a href="/mypage/${memberNo}" style="text-decoration: none; color: inherit;">
+              <img src="${profileUrl}" class="rounded-circle me-3" alt="참여자 프로필" 
+                   style="width:50px; height:50px; cursor: pointer;" 
+                   onerror="this.onerror=null; this.src='/img/user.png';">
+            </a>
             <div class="d-flex flex-column">
               <span class="fw-bold fs-6">${nickname}</span>
               <span class="small text-muted">${date}</span>
@@ -238,7 +294,6 @@ const render = {
         }
     },
 
-    // 레시피 목록 렌더링
     recipes: (recipes) => {
         const recipeListEl = document.getElementById('data-recipe-list');
         if (!recipeListEl) return;
@@ -270,12 +325,69 @@ const render = {
     }
 };
 
+// 카카오맵에서 주소 검색 (새 창 열기)
+function openKakaoMap(address) {
+    if (!address) {
+        alert('주소 정보가 없습니다.');
+        return;
+    }
+
+    // 카카오맵 검색 URL (주소로 검색)
+    const kakaoMapUrl = `https://map.kakao.com/link/search/${encodeURIComponent(address)}`;
+
+    // 새 창으로 열기
+    window.open(kakaoMapUrl, '_blank', 'width=900,height=700');
+}
+
+// 사용자 상태 결정
+function determineUserStatus(detail, participants) {
+    console.log('=== determineUserStatus ===');
+    console.log('currentMemberNo:', PAGE_CONFIG.currentMemberNo);
+    console.log('creatorNo:', detail.creatorNo);
+    console.log('participants:', participants);
+
+    const currentMemberNo = PAGE_CONFIG.currentMemberNo;
+    const creatorNo = detail.creatorNo;
+    groupBuyNo = detail.groupBuyNo;
+
+    // 로그인하지 않은 사용자
+    if (!currentMemberNo || currentMemberNo === null) {
+        console.log('Not logged in');
+        currentStatus = 'normal';
+        showBtnByStatus(currentStatus);
+        return;
+    }
+
+    // 개설자인 경우
+    if (currentMemberNo === creatorNo) {
+        console.log('User is creator');
+        currentStatus = 'creator';
+    } else {
+        // 참여자 목록에서 현재 사용자 찾기
+        const myParticipation = participants.find(p => {
+            console.log('Checking participant:', p.memberNo, 'vs', currentMemberNo);
+            return p.memberNo === currentMemberNo;
+        });
+
+        if (myParticipation) {
+            console.log('User is participant');
+            currentStatus = 'participant';
+            myGroupBuyParticipantNo = myParticipation.groupParticipantNo;
+        } else {
+            console.log('User is normal');
+            currentStatus = 'normal';
+        }
+    }
+
+    console.log('Final status:', currentStatus);
+    showBtnByStatus(currentStatus);
+}
+
 // === 유틸리티 함수 ===
 const utils = {
     startCountdown: (timerElement, targetTimestampMs) => {
         const targetTime = targetTimestampMs;
 
-        // 이전에 설정된 interval이 있다면 제거 (중복 실행 방지)
         if (timerElement.dataset.timerIntervalId) {
             clearInterval(parseInt(timerElement.dataset.timerIntervalId));
         }
@@ -284,15 +396,13 @@ const utils = {
 
         const updateCountdown = () => {
             const now = new Date().getTime();
-            let distance = targetTime - now; // 남은 시간 (ms)
+            let distance = targetTime - now;
 
             if (distance <= 0) {
                 clearInterval(timerInterval);
-                // 카운트다운 종료 시점에는 순수 텍스트를 사용해도 되므로 textContent 사용
                 timerElement.textContent = '모집마감';
                 timerElement.classList.remove('text-danger');
                 timerElement.classList.add('text-muted');
-                // 데이터 속성에서 interval ID 제거
                 delete timerElement.dataset.timerIntervalId;
                 return;
             }
@@ -306,7 +416,6 @@ const utils = {
             const minutes = Math.floor((distance % H_IN_MS) / M_IN_MS);
             const seconds = Math.floor((distance % M_IN_MS) / 1000);
 
-            // HTML 태그(<span>)를 포함하여 스타일을 적용해야 하므로 반드시 innerHTML을 사용합니다.
             timerElement.innerHTML = `
                 <span class="font-bold text-lg">${days}</span>일 
                 <span class="font-bold text-lg">${String(hours).padStart(2, '0')}</span> :
@@ -317,10 +426,9 @@ const utils = {
 
         timerInterval = setInterval(updateCountdown, 1000);
         timerElement.dataset.timerIntervalId = timerInterval.toString();
-        updateCountdown(); // 즉시 실행하여 지연 없이 표시
+        updateCountdown();
     },
 
-    // 가격 테이블 생성
     generatePriceTable: (detail) => {
         const maxParticipants = detail.maxParticipants || 5;
         const totalPrice = detail.price || 0;
@@ -356,68 +464,178 @@ const utils = {
     }
 };
 
-// === 버튼 상태 관리 (normal 고정) ===
-function showNormalButton() {
-    const normalBtn = document.querySelector('.normal-btn');
-    if (normalBtn) {
-        normalBtn.classList.remove('d-none');
-    }
-}
-
-// === 모달 동적 콘텐츠 설정 ===
-function setupModal() {
+// === 모달 설정 ===
+document.addEventListener('DOMContentLoaded', function () {
     const dynamicMainModal = document.getElementById('dynamicMainModal');
     if (!dynamicMainModal) return;
 
     dynamicMainModal.addEventListener('show.bs.modal', function (event) {
         const button = event.relatedTarget;
-        const modalStatus = button.getAttribute('data-bs-status');
+        const modalStatus = button?.getAttribute('data-bs-status');
 
         const titleElement = document.getElementById('dynamicTitle');
         const messageElement = document.getElementById('dynamicMessage');
         const personArea = document.getElementById('personArea');
-        const personHeader = document.getElementById('personHeader');
-        const personCount = document.getElementById('personCount');
+        const cancelConfirmArea = document.getElementById('cancelConfirmArea');
         const reasonContainer = document.getElementById('reasonInputContainer');
         const mainActionButton = document.getElementById('mainActionButton');
-        const amountLabel = document.getElementById('amountLabel');
-        const amountValue = document.getElementById('amountValue');
-        const refundNotice = document.getElementById('refundNotice');
 
-        // 초기화
-        if (titleElement) titleElement.textContent = '';
-        if (messageElement) messageElement.textContent = '';
-        if (personArea) personArea.classList.add('d-none');
-        if (reasonContainer) reasonContainer.classList.add('d-none');
+        personArea?.classList.add('d-none');
+        cancelConfirmArea?.classList.add('d-none');
+        reasonContainer?.classList.add('d-none');
 
-        // normal 상태만 처리
         if (modalStatus === 'normal') {
-            if (personArea) personArea.classList.remove('d-none');
-            if (personHeader) personHeader.textContent = '현재 참여인원';
-            if (personCount) personCount.textContent = '2명'; // 실제 데이터로 대체 가능
-            if (amountLabel) amountLabel.textContent = '결제 예정 금액';
-            if (amountValue) amountValue.textContent = '6,000원'; // 실제 계산된 값으로 대체 가능
-            if (refundNotice) {
-                refundNotice.textContent = '최종 참여인원에 따른 차액은 공동구매 마감기간 이후 3일 이내 환불됩니다.';
-                refundNotice.classList.remove('d-none');
+            titleElement.textContent = '공동구매 참여하기';
+            messageElement.textContent = '아래 금액으로 참여하시겠습니까?';
+            personArea?.classList.remove('d-none');
+            mainActionButton.textContent = '참여하기';
+            mainActionButton.className = 'btn btn-danger py-2 fw-bold';
+
+            if (currentData) {
+                const participants = currentData.participants || [];
+                const detail = currentData.groupBuyDetail;
+                const currentCount = participants.length + 1;
+                const totalPrice = detail.price || 0;
+                const feeRate = detail.feeRate || 0;
+                const totalWithFee = Math.round((totalPrice * (1 + feeRate / 100))/2);
+                const estimatedAmount = Math.round(totalWithFee / (currentCount + 1));
+
+                document.getElementById('personCount').textContent = currentCount;
+                document.getElementById('amountValue').textContent = totalWithFee;
+
+                const modalPriceTable = document.getElementById('modal-price-table');
+                if (modalPriceTable) {
+                    modalPriceTable.innerHTML = utils.generatePriceTable(detail);
+                }
             }
-            if (mainActionButton) mainActionButton.textContent = '참여하기';
+        } else if (modalStatus === 'participant') {
+            titleElement.textContent = '공동구매 참여 취소';
+            messageElement.textContent = '정말 참여를 취소하시겠습니까?';
+            cancelConfirmArea?.classList.remove('d-none');
+            mainActionButton.textContent = '취소하기';
+            mainActionButton.className = 'btn btn-danger py-2 fw-bold';
+
+            if (currentData) {
+                const detail = currentData.groupBuyDetail;
+                const participants = currentData.participants || [];
+                const currentCount = participants.length + 1;
+                const totalPrice = detail.price || 0;
+                const feeRate = detail.feeRate || 0;
+                const totalWithFee = totalPrice * (1 + feeRate / 100);
+                const refundAmount = Math.round(totalWithFee / currentCount);
+
+                document.getElementById('refundAmount').textContent = refundAmount.toLocaleString();
+            }
+        } else if (modalStatus === 'creator') {
+            titleElement.innerHTML = '공동구매를 정말 <span class="text-danger">중단</span>하시겠습니까?';
+            messageElement.textContent = '모든 참여자에게 포인트가 환불됩니다.';
+            reasonContainer?.classList.remove('d-none');
+            mainActionButton.textContent = '중단하기';
+            mainActionButton.className = 'btn btn-danger py-2 fw-bold';
         }
     });
-}
+});
+
+// 모달 액션 버튼
+document.addEventListener('DOMContentLoaded', function() {
+    const mainActionButton = document.getElementById('mainActionButton');
+    if (!mainActionButton) return;
+
+    mainActionButton.addEventListener('click', async function() {
+        if (currentStatus === 'normal') {
+            // 참여하기
+            if (!PAGE_CONFIG.currentMemberNo) {
+                alert('로그인이 필요합니다.');
+                return;
+            }
+
+            if (confirm('공동구매에 참여하시겠습니까?')) {
+                try {
+                    // 마지막 참여자인지 확인
+                    const detail = currentData.groupBuyDetail;
+                    const participants = currentData.participants || [];
+                    const currentCount = participants.length + 1; // 개설자 포함
+                    const maxParticipants = detail.maxParticipants;
+
+                    let response;
+                    if (currentCount + 1 >= maxParticipants) {
+                        // 마지막 참여자 - 마감 처리
+                        console.log('Last participant - closing group buy');
+                        response = await api.joinAndClose(groupBuyNo);
+                    } else {
+                        // 일반 참여
+                        console.log('Normal participant join');
+                        response = await api.joinGroupBuy(groupBuyNo);
+                    }
+
+                    if (response.success) {
+                        alert(response.message);
+                        location.reload();
+                    } else {
+                        alert(response.message || '참여에 실패했습니다.');
+                    }
+                } catch (error) {
+                    console.error('참여 오류:', error);
+                    alert('참여 중 오류가 발생했습니다.');
+                }
+            }
+        } else if (currentStatus === 'participant') {
+            // 취소하기
+            if (!myGroupBuyParticipantNo) {
+                alert('참여 정보를 찾을 수 없습니다.');
+                return;
+            }
+
+            if (confirm('정말 참여를 취소하시겠습니까?')) {
+                try {
+                    const response = await api.cancelParticipation(myGroupBuyParticipantNo);
+
+                    if (response.success) {
+                        alert(response.message);
+                        location.reload();
+                    } else {
+                        alert(response.message || '취소에 실패했습니다.');
+                    }
+                } catch (error) {
+                    console.error('취소 오류:', error);
+                    alert('취소 중 오류가 발생했습니다.');
+                }
+            }
+        } else if (currentStatus === 'creator') {
+            // 중단하기
+            const reasonTextarea = document.getElementById('cancelReasonTextarea');
+            const reason = reasonTextarea?.value.trim();
+
+            if (!reason) {
+                alert('중단 사유를 입력해주세요.');
+                return;
+            }
+
+            if (confirm('공동구매를 중단하시겠습니까?')) {
+                try {
+                    const response = await api.stopGroupBuy(groupBuyNo, reason);
+
+                    if (response.success) {
+                        alert(response.message);
+                        location.reload();
+                    } else {
+                        alert(response.message || '중단에 실패했습니다.');
+                    }
+                } catch (error) {
+                    console.error('중단 오류:', error);
+                    alert('중단 중 오류가 발생했습니다.');
+                }
+            }
+        }
+    });
+});
+
 
 // === 초기화 ===
 document.addEventListener('DOMContentLoaded', async function () {
     try {
-        // 데이터 로드 및 렌더링
         const data = await api.getDetail();
         render.detail(data);
-
-        // 버튼 표시 (normal 상태)
-        showNormalButton();
-
-        // 모달 설정
-        setupModal();
     } catch (error) {
         console.error('데이터 로드 중 오류 발생:', error);
 

@@ -105,6 +105,7 @@
     <select id="selectPeriodGroupBuyDetail" parameterType="int" resultType="com.oopsw.matna.vo.PeriodGroupBuyDetailVO">
         SELECT
             gb.group_buy_no AS groupBuyNo,
+            gb.creator_no as creatorNo,
             gb.title,
             gb.content,
             gb.image_url AS imageUrl,

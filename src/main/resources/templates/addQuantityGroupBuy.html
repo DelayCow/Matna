@@ -1,16 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>AddQuantityGroupbuy</title>
+  <title>수량공구 생성</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="../static/css/layout.css">
-  <link rel="stylesheet" href="../static/css/addGroupBuy.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/addGroupBuy.css">
+
 </head>
 <body>
 <div class="mobile-container position-relative">
   <div th:replace="layout :: pageHeader('수량공구 생성', 'javascript:history.back()')"></div>
+  <div th:text="${creatorNo}" style="display: none" id="creatorNo"></div>
+
+<!--  &lt;!&ndash; creatorNo hidden input &ndash;&gt;-->
+<!--  <input type="hidden" id="creatorNo" th:value="${creatorNo}">-->
+<!--  <input type="hidden" id="ingredientNo" value="">-->
+
   <main class="p-4 pb-0">
 
     <div class="mb-4">
@@ -59,12 +66,28 @@
     <div class="mb-4">
       <label for="addressSearch" class="form-label fw-bold">나눔 장소</label>
       <div class="input-group">
-        <input type="text" class="form-control me-2" id="addressSearch" placeholder="주소 검색">
-        <button class="btn btn-outline-secondary" type="button" style="border-top-left-radius: 0; border-bottom-left-radius: 0; border-radius: 8px; width: 44px;">
+        <input type="text" class="form-control" id="addressSearch"
+               placeholder="검색으로 주소를 입력하세요" readonly>
+        <button class="btn btn-outline-secondary" id="addressSearchBtn" type="button"
+                style="border-top-left-radius: 0; border-bottom-left-radius: 0; border-radius: 8px; width: 44px;">
           <i class="bi bi-search"></i>
         </button>
       </div>
-      <input type="text" class="form-control mt-2" placeholder="상세 주소">
+
+      <!-- 검색 결과 정보 표시 -->
+      <div class="search-result-info" id="searchResultInfo">
+        <i class="bi bi-geo-alt-fill me-2"></i>
+        <strong>검색된 주소:</strong> <span id="resultAddress"></span>
+      </div>
+
+      <!-- 지도 표시 영역 -->
+      <div id="map"></div>
+
+      <input type="text" class="form-control mt-2" id="detailAddress" placeholder="상세 주소 (동, 호수 등)">
+
+      <!-- 숨겨진 좌표 정보 저장용 -->
+      <input type="hidden" id="latitude">
+      <input type="hidden" id="longitude">
     </div>
 
     <div class="mb-4">
@@ -89,14 +112,14 @@
           <label class="form-label fw-bold">상품 총량</label>
           <div class="input-group">
             <input type="text" class="form-control text-center" placeholder="0" value="" id="quantity">
-            <span class="input-group-text unit-label"></span>
+            <span class="input-group-text unit-label">g</span>
           </div>
         </div>
         <div class="col-3">
           <label class="form-label fw-bold">내가 쓸 양</label>
           <div class="input-group">
             <input type="text" class="form-control text-center" placeholder="0" value="" id="myQuantity">
-            <span class="input-group-text unit-label"></span>
+            <span class="input-group-text unit-label">g</span>
           </div>
         </div>
         <div class="col-3">
@@ -110,7 +133,7 @@
           <label class="form-label fw-bold">나눔 단위</label>
           <div class="input-group">
             <input type="text" class="form-control text-center" placeholder="0" value="" id="share_amount">
-            <span class="input-group-text unit-label"></span>
+            <span class="input-group-text unit-label">g</span>
           </div>
         </div>
       </div>
@@ -125,6 +148,11 @@
     </div>
 
     <div class="mb-4">
+      <label for="itemSaleUrl" class="form-label fw-bold">상품 판매 URL</label>
+      <input type="url" class="form-control" id="itemSaleUrl" placeholder="https://example.com/product">
+    </div>
+
+    <div class="mb-4">
       <button class="btn btn-light border w-100 fw-bold py-2 rounded-3" id="attachPhotoButton">
         사진 첨부하기
       </button>
@@ -136,8 +164,7 @@
 
     <div class="mb-5">
       <label for="content" class="form-label fw-bold">내용</label>
-      <textarea class="form-control" id="content">혼자 먹기에는 양이 너무 많아서요~
-같이 나눠 드실 분 구해요~~~</textarea>
+      <textarea class="form-control" id="content" rows="5"></textarea>
     </div>
 
   </main>
@@ -151,10 +178,8 @@
   <div th:replace="layout :: menuBar"></div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../static/js/groupBuyList.js"></script>
-<script src="../static/js/calculatePricePerUnit.js"></script>
-<script src="../static/js/groupBuyDate.js"></script>
-<script src="../static/js/searchIngredient.js"></script>
-<script src="../static/js/addFile.js"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=8b4e9ae91a71924d413261bbd23d68d2&libraries=services"></script>
+<script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="/js/addQuantityGroupBuy.js"></script>
 </body>
 </html>

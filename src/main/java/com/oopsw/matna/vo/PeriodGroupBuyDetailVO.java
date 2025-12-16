@@ -10,6 +10,7 @@ import java.time.LocalTime;
 @ToString
 public class PeriodGroupBuyDetailVO {
     private Integer groupBuyNo;
+    private Integer creatorNo;
     private String title;
     private String content;
     private String imageUrl;

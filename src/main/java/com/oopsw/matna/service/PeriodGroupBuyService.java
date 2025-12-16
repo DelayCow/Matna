@@ -1,5 +1,6 @@
 package com.oopsw.matna.service;
 
+import com.oopsw.matna.controller.groupbuy.GroupBuyParticipantRequest;
 import com.oopsw.matna.controller.groupbuy.PeriodRegisterRequest;
 import com.oopsw.matna.dao.PeriodGroupBuyDAO;
 import com.oopsw.matna.repository.*;
@@ -14,10 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -100,15 +98,33 @@ public class PeriodGroupBuyService {
     }
 
     @Transactional
-    public GroupBuyParticipant addParticipantToPeriodGroupBuy(GroupBuyParticipantVO vo) {
-        Member participantMember = memberRepository.findById(vo.getParticipantNo())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. 회원번호: " + vo.getParticipantNo()));
-        GroupBuy groupBuy = groupBuyRepository.findById(vo.getGroupBuyNo())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공동구매입니다. 공구번호: " + vo.getGroupBuyNo()));
+    public GroupBuyParticipant addParticipantToPeriodGroupBuy(GroupBuyParticipantRequest request) {
+        Member participantMember = memberRepository.findById(request.getParticipantNo())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. 회원번호: " + request.getParticipantNo()));
+        GroupBuy groupBuy = groupBuyRepository.findById(request.getGroupBuyNo())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공동구매입니다. 공구번호: " + request.getGroupBuyNo()));
+
+        // 공구 개설자 참여 불가
+        if (groupBuy.getCreator().getMemberNo().equals(participantMember.getMemberNo())) {
+            throw new IllegalArgumentException("공동구매 개설자는 본인의 공구에 참여할 수 없습니다.");
+        }
+
+        // 이미 참여한 회원 중복 참여 불가
+        // 해당 공동구매 번호(groupBuyNo)와 참여자 번호(participantNo)로 참여 기록이 있는지 확인
+        // 참여 취소일(cancelDate)이 NULL인 경우에만 유효한 참여
+        boolean alreadyParticipated = groupBuyParticipantRepository
+                .findByGroupBuy_GroupBuyNoAndParticipant_MemberNoAndCancelDateIsNull(
+                        request.getGroupBuyNo(), request.getParticipantNo())
+                .isPresent();
+
+        if (alreadyParticipated) {
+            throw new IllegalArgumentException("이미 해당 공동구매에 참여하셨습니다.");
+        }
 
         Integer price = groupBuy.getPrice();
         Integer feeRate = groupBuy.getFeeRate();
         int initialPaymentPoint = (int) Math.round((price * (1.0 + (feeRate / 100.0))) / 2.0);
+
 
         int updatePoint = -initialPaymentPoint;
         if (participantMember.getPoint() + updatePoint < 0) {
@@ -183,13 +199,18 @@ public class PeriodGroupBuyService {
     }
 
     @Transactional
-    public void editCancelParticipantGroupBuy(Integer groupBuyParticipantNo){
+    public void editCancelParticipantGroupBuy(Integer groupBuyParticipantNo, Integer currentMemberNo) {
         GroupBuyParticipant groupBuyParticipant = groupBuyParticipantRepository.findById(groupBuyParticipantNo)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 참여 정보입니다. 참여자번호: " + groupBuyParticipantNo));
+
+        if (!groupBuyParticipant.getParticipant().getMemberNo().equals(currentMemberNo)) {
+            throw new IllegalStateException("본인의 참여 내역만 취소할 수 있습니다.");
+        }
+
         if (groupBuyParticipant.getCancelDate() != null) {
             throw new IllegalStateException("이미 취소된 참여입니다. 취소일: " + groupBuyParticipant.getCancelDate());
         }
-        // 공동구매 상태 확인
+
         GroupBuy groupBuy = groupBuyParticipant.getGroupBuy();
         if ("closed".equals(groupBuy.getStatus())) {
             throw new IllegalStateException("마감된 공동구매는 취소할 수 없습니다.");
@@ -198,6 +219,7 @@ public class PeriodGroupBuyService {
         groupBuyParticipant.setCancelDate(LocalDateTime.now());
         groupBuyParticipantRepository.save(groupBuyParticipant);
 
+        // 포인트 환불
         Member participant = groupBuyParticipant.getParticipant();
         int initialPaymentPoint = groupBuyParticipant.getInitialPaymentPoint();
         int currentPoint = participant.getPoint();
@@ -208,9 +230,15 @@ public class PeriodGroupBuyService {
     }
 
     @Transactional
-    public void editPeriodCreatorCancelAndRefund(Integer groupBuyNo, String cancelReason) {
+    public void editPeriodCreatorCancelAndRefund(Integer groupBuyNo, Integer currentMemberNo, String cancelReason) {
         GroupBuy groupBuy = groupBuyRepository.findById(groupBuyNo)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공동구매입니다. 공구번호: " + groupBuyNo));
+
+        // 개설자 확인
+        if (!groupBuy.getCreator().getMemberNo().equals(currentMemberNo)) {
+            throw new IllegalStateException("공동구매 개설자만 중단할 수 있습니다.");
+        }
+
         if ("closed".equals(groupBuy.getStatus())) {
             throw new IllegalStateException("이미 마감된 공동구매는 취소할 수 없습니다.");
         }
@@ -218,21 +246,16 @@ public class PeriodGroupBuyService {
             throw new IllegalStateException("이미 취소된 공동구매입니다.");
         }
 
-        // 1. GroupBuy 상태 변경 및 취소 사유
         groupBuy.setStatus("canceled");
         groupBuy.setCancelReason(cancelReason);
         groupBuyRepository.save(groupBuy);
 
-        // 2. 모든 참여자 조회
         List<GroupBuyParticipant> participants = groupBuyParticipantRepository.findByGroupBuy(groupBuy);
 
-        // 3. 각 참여자에게 전액 환불 및 취소 일시 설정
         for (GroupBuyParticipant participant : participants) {
-            // 이미 취소된 참여자는 스킵
             if (participant.getCancelDate() != null) {
                 continue;
             }
-            // 환불 처리
             Member member = participant.getParticipant();
             int initialPaymentPoint = participant.getInitialPaymentPoint();
             int currentPoint = member.getPoint();
@@ -281,6 +304,8 @@ public class PeriodGroupBuyService {
                 if (member == null) continue;
 
                 Map<String, Object> participantInfo = new HashMap<>();
+                participantInfo.put("groupParticipantNo", gbp.getGroupParticipantNo());
+                participantInfo.put("memberNo", member.getMemberNo());
                 participantInfo.put("nickname", member.getNickname() != null ? member.getNickname() : "익명");
                 participantInfo.put("profileUrl", member.getImageUrl() != null ? member.getImageUrl() : "");
                 participantInfo.put("participatedDate", gbp.getParticipatedDate());
