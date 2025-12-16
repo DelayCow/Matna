@@ -19,12 +19,12 @@ public class ReviewServiceTests {
 
     @Test
     void getRecipeReviewsTest(){
-        System.out.println(reviewService.getRecipeReviews(1));
+        System.out.println(reviewService.getRecipeReviews(15));
     }
 
     @Test
     void getReviewDetail(){
-        System.out.println(reviewService.getReviewDetail(1));
+        System.out.println(reviewService.getReviewDetail(2));
     }
 
     @Test
@@ -42,11 +42,19 @@ public class ReviewServiceTests {
 
         List<ReviewsRegisterVO.AlternativeRegisterVO> altList = new ArrayList<>();
         ReviewsRegisterVO.AlternativeRegisterVO alt = new ReviewsRegisterVO.AlternativeRegisterVO();
-        alt.setOriginalIngredientName("김치");
-        alt.setAlternativeIngredientName("대체재료테스트_3");
-        alt.setAmount(100f);
-        alt.setUnit("g");
+            alt.setOriginalIngredientName("김치");
+            alt.setAlternativeIngredientName("대체재료테스트_1");
+            alt.setAmount(100f);
+            alt.setUnit("g");
+
+        ReviewsRegisterVO.AlternativeRegisterVO alt2 = new ReviewsRegisterVO.AlternativeRegisterVO();
+            alt2.setOriginalIngredientName("대파");
+            alt2.setAlternativeIngredientName("대체재료테스트_2");
+            alt2.setAmount(100f);
+            alt2.setUnit("g");
+
         altList.add(alt);
+        altList.add(alt2);
         vo.setAlternatives(altList);
         //이미지 mock데이터
         String thumbnailPath = "src/main/resources/static/img/basil.jpg";
@@ -69,7 +77,7 @@ public class ReviewServiceTests {
         vo.setRecipeNo(15);
         vo.setTitle("수정 테스트");
         vo.setContent("테스트중이요");
-        vo.setRating(5.0f);
+        vo.setRating(4.0f);
         vo.setSpicyLevel(2);
         vo.setReviewImage("img.jpg");
 

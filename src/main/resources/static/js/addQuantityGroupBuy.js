@@ -14,18 +14,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const fileInput = document.getElementById('fileInput');
     const previewContainer = document.getElementById('previewContainer');
 
-    const submitBtn = document.getElementById('submitBtn');
+    const calculateButton = document.getElementById('calculateButton');
+    const pricePerUnitDisplay = document.getElementById('price_per_unit');
+
+    const submitBtn = document.querySelector('.btn-post');
 
     let isItemClicked = false;
     let selectedIngredientNo = null;
     const creatorNo = document.getElementById('creatorNo').textContent;
+
     // ========== 초기화 ==========
     init();
 
     function init() {
         createDayOptions(daySelects, 7, 1);
         createTimeOptions(hourSelects);
-        createDateOptions();
         updateUnits();
         setupEventListeners();
     }
@@ -76,109 +79,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
-    }
-
-    // ========== 날짜 옵션 생성 ==========
-    function createDateOptions() {
-        const joinYearSelect = document.getElementById('joinYear');
-        const joinMonthSelect = document.getElementById('joinMonth');
-        const joinDaySelect = document.getElementById('joinDay');
-
-        const today = new Date();
-        const currentYear = today.getFullYear();
-        const currentMonth = today.getMonth() + 1;
-
-        // 년도 옵션
-        joinYearSelect.innerHTML = '';
-        const futureYears = 1;
-        for (let y = currentYear; y <= currentYear + futureYears; y++) {
-            const option = document.createElement('option');
-            option.value = y;
-            option.textContent = y;
-            if (y === currentYear) {
-                option.selected = true;
-            }
-            joinYearSelect.appendChild(option);
-        }
-
-        // 월 옵션
-        createMonthOptions();
-
-        // 일 옵션
-        updateDayOptions();
-
-        // 이벤트 리스너
-        joinYearSelect.addEventListener('change', function() {
-            createMonthOptions();
-            updateDayOptions();
-        });
-
-        joinMonthSelect.addEventListener('change', updateDayOptions);
-    }
-
-    function createMonthOptions() {
-        const joinYearSelect = document.getElementById('joinYear');
-        const joinMonthSelect = document.getElementById('joinMonth');
-
-        const today = new Date();
-        const currentYear = today.getFullYear();
-        const currentMonth = today.getMonth() + 1;
-        const selectedYear = parseInt(joinYearSelect.value);
-
-        joinMonthSelect.innerHTML = '';
-
-        const startMonth = (selectedYear === currentYear) ? currentMonth : 1;
-
-        for (let m = 1; m <= 12; m++) {
-            if (m < startMonth) {
-                continue;
-            }
-
-            const option = document.createElement('option');
-            option.value = m;
-            option.textContent = m;
-
-            if (m === startMonth) {
-                option.selected = true;
-            }
-            joinMonthSelect.appendChild(option);
-        }
-    }
-
-    function updateDayOptions() {
-        const joinYearSelect = document.getElementById('joinYear');
-        const joinMonthSelect = document.getElementById('joinMonth');
-        const joinDaySelect = document.getElementById('joinDay');
-
-        const today = new Date();
-        const currentMonth = today.getMonth() + 1;
-        const currentDay = today.getDate();
-
-        const year = parseInt(joinYearSelect.value);
-        const month = parseInt(joinMonthSelect.value);
-
-        const isCurrentMonth = (month === currentMonth);
-        const lastDay = new Date(year, month, 0).getDate();
-        const selectedDay = parseInt(joinDaySelect.value) || 1;
-
-        joinDaySelect.innerHTML = '';
-        for (let d = 1; d <= lastDay; d++) {
-            if (isCurrentMonth && d < currentDay) {
-                continue;
-            }
-
-            const option = document.createElement('option');
-            option.value = d;
-            option.textContent = d;
-
-            if (isCurrentMonth && d === currentDay) {
-                option.selected = true;
-            } else if (!isCurrentMonth && d === selectedDay) {
-                option.selected = true;
-            }
-
-            joinDaySelect.appendChild(option);
-        }
     }
 
     // ========== 재료 검색 ==========
@@ -237,6 +137,28 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // ========== 가격 계산 ==========
+    function calculatePricePerUnit() {
+        const price = parseFloat(document.getElementById('price').value) || 0;
+        const quantity = parseFloat(document.getElementById('quantity').value) || 0;
+        const feeRate = parseFloat(document.getElementById('fee_rate').value) || 0;
+        const shareAmount = parseFloat(document.getElementById('share_amount').value) || 0;
+
+        if (price <= 0 || quantity <= 0 || shareAmount <= 0) {
+            alert('상품 가격, 상품 이량, 나눔 단위를 모두 입력해주세요.');
+            return;
+        }
+
+        // 총 가격 (수수료 포함)
+        const totalWithFee = price * (1 + feeRate / 100);
+
+        // 나눔 단위당 가격: (총 가격 * (1 + 수수료율/100)) / (총 수량 / 나눔 단위)
+        const shareUnits = quantity / shareAmount;
+        const pricePerUnit = Math.round(totalWithFee / shareUnits);
+
+        pricePerUnitDisplay.textContent = pricePerUnit.toLocaleString();
+    }
+
     // ========== 파일 업로드 ==========
     function removeFileAndReset() {
         fileInput.value = '';
@@ -292,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // ========== 폼 제출 ==========
     async function submitForm() {
         const formData = new FormData();
-        const periodData = {};
+        const quantityData = {};
         const errors = [];
 
         // 썸네일 이미지 검증 (필수)
@@ -307,93 +229,91 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!title) {
             errors.push('제목을 입력해주세요');
         }
-        periodData.title = title;
+        quantityData.title = title;
 
         // 재료 검증
         const ingredientNo = selectedIngredientNo || ingredientNoInput.value;
         if (!ingredientNo) {
             errors.push('품목을 선택해주세요');
         }
-        periodData.ingredientNo = parseInt(ingredientNo);
-        periodData.ingredientName = searchInput.value;
+        quantityData.ingredientNo = parseInt(ingredientNo);
 
         // 작성자
-        periodData.creatorNo = creatorNo;
-
-        // 모집기간 (마감일)
-        const joinYear = document.getElementById('joinYear').value;
-        const joinMonth = document.getElementById('joinMonth').value;
-        const joinDay = document.getElementById('joinDay').value;
-        const joinTime = document.getElementById('joinTime').value;
-        const dueDate = `${joinYear}-${String(joinMonth).padStart(2, '0')}-${String(joinDay).padStart(2, '0')}T${joinTime}:00`;
-        periodData.dueDate = dueDate;
+        quantityData.creatorNo = parseInt(creatorNo);
 
         // 구매 기간
         const buyEndDate = parseInt(document.getElementById('deadline').value);
         if (!buyEndDate || buyEndDate <= 0) {
             errors.push('구매 기간을 선택해주세요');
         }
-        periodData.buyEndDate = buyEndDate;
+        quantityData.buyEndDate = buyEndDate;
 
         // 나눔 기간
         const shareEndDate = parseInt(document.getElementById('sharingTimeWeek').value);
         if (!shareEndDate || shareEndDate <= 0) {
             errors.push('나눔 기간을 선택해주세요');
         }
-        periodData.shareEndDate = shareEndDate;
+        quantityData.shareEndDate = shareEndDate;
 
         const shareTime = document.getElementById('sharingTimeHour').value;
-        periodData.shareTime = shareTime;
+        quantityData.shareTime = shareTime;
 
         // 나눔 장소
         const shareLocation = document.getElementById('addressSearch').value.trim();
         if (!shareLocation) {
             errors.push('나눔 장소를 입력해주세요');
         }
-        periodData.shareLocation = shareLocation;
+        quantityData.shareLocation = shareLocation;
 
         const shareDetailAddress = document.getElementById('detailAddress').value.trim();
-        periodData.shareDetailAddress = shareDetailAddress;
+        quantityData.shareDetailAddress = shareDetailAddress;
 
         // 상품 가격
         const price = parseInt(document.getElementById('price').value);
         if (!price || price <= 0) {
             errors.push('상품 가격을 입력해주세요');
         }
-        periodData.price = price;
+        quantityData.price = price;
 
         // 상품 이량
         const quantity = parseInt(document.getElementById('quantity').value);
         if (!quantity || quantity <= 0) {
             errors.push('상품 이량을 입력해주세요');
         }
-        periodData.quantity = quantity;
+        quantityData.quantity = quantity;
+
+        // 내가 쓸 양
+        const myQuantity = parseInt(document.getElementById('myQuantity').value);
+        if (!myQuantity || myQuantity <= 0) {
+            errors.push('내가 쓸 양을 입력해주세요');
+        }
+        quantityData.myQuantity = myQuantity;
+
+        // 나눔 단위
+        const shareAmount = parseInt(document.getElementById('share_amount').value);
+        if (!shareAmount || shareAmount <= 0) {
+            errors.push('나눔 단위를 입력해주세요');
+        }
+        quantityData.shareAmount = shareAmount;
 
         // 단위
         const unit = weightRadio.checked ? 'g' : '개';
-        periodData.unit = unit;
+        quantityData.unit = unit;
 
         // 수수료
         const feeRate = parseInt(document.getElementById('fee_rate').value) || 0;
-        periodData.feeRate = feeRate;
-
-        // 최대 인원수
-        const maxParticipants = parseInt(document.getElementById('maxParticipants').value);
-        if (!maxParticipants || maxParticipants <= 0) {
-            errors.push('최대 인원수를 입력해주세요');
-        }
-        periodData.maxParticipants = maxParticipants;
+        quantityData.feeRate = feeRate;
 
         // 내용
         const content = document.getElementById('content').value.trim();
         if (!content) {
             errors.push('내용을 입력해주세요');
         }
-        periodData.content = content;
+        quantityData.content = content;
 
         // 상품 판매 URL
-        const itemSaleUrl = document.getElementById('itemSaleUrl').value.trim();
-        periodData.itemSaleUrl = itemSaleUrl || null;
+        const itemSaleUrl = document.getElementById('itemSaleUrl')?.value.trim();
+        quantityData.itemSaleUrl = itemSaleUrl || null;
 
         // 에러가 있으면 중단
         if (errors.length > 0) {
@@ -401,11 +321,22 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // JSON 문자열로 변환하여 FormData에 추가
-        const periodJsonString = JSON.stringify(periodData);
-        formData.append('periodRegisterRequest', periodJsonString);
+        // 나눔 단위 검증
+        if (quantity % shareAmount !== 0) {
+            alert(`상품 이량은 나눔 단위(${shareAmount}${unit})의 배수여야 합니다.`);
+            return;
+        }
 
-        console.log('제출 데이터:', periodData);
+        if (myQuantity % shareAmount !== 0) {
+            alert(`내가 쓸 양은 나눔 단위(${shareAmount}${unit})의 배수여야 합니다.`);
+            return;
+        }
+
+        // JSON 문자열로 변환하여 FormData에 추가
+        const quantityJsonString = JSON.stringify(quantityData);
+        formData.append('quantityRegisterRequest', quantityJsonString);
+
+        console.log('제출 데이터:', quantityData);
         console.log('첨부 파일:', fileInput.files[0]?.name);
 
         // 로딩 표시
@@ -413,7 +344,7 @@ document.addEventListener('DOMContentLoaded', function() {
         submitBtn.textContent = '등록 중...';
 
         try {
-            const response = await fetch('/api/periodGroupBuy/register', {
+            const response = await fetch('/api/quantityGroupBuy/register', {
                 method: 'POST',
                 body: formData
             });
@@ -421,7 +352,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const result = await response.json();
 
             if (response.ok && result.success) {
-                alert(result.message || '기간 공동구매가 성공적으로 등록되었습니다!');
+                alert(result.message || '수량 공동구매가 성공적으로 등록되었습니다!');
                 console.log('등록 결과:', result);
                 window.location.href = '/groupBuy';
             } else {
@@ -466,37 +397,43 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // 기타 품목 추가 버튼
-        document.getElementById('addOtherItemBtn').addEventListener('click', function() {
-            const otherItem = document.getElementById('otherItem').value.trim();
-            if (otherItem) {
-                fetch(`/api/ingredients/add?creatorNo=${creatorNo}&ingredientName=${encodeURIComponent(otherItem)}`, {
-                    method: 'POST'
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.json().then(data => {
-                                throw new Error(data.message || '재료 추가에 실패했습니다.');
-                            });
-                        }
-                        return response.json();
+        const addOtherItemBtn = document.querySelector('.btn-outline-secondary');
+        if (addOtherItemBtn) {
+            addOtherItemBtn.addEventListener('click', function() {
+                const otherItem = document.getElementById('otherItem').value.trim();
+                if (otherItem) {
+                    fetch(`/api/ingredients/add?creatorNo=${creatorNo}&ingredientName=${encodeURIComponent(otherItem)}`, {
+                        method: 'POST'
                     })
-                    .then(data => {
-                        if (data.success) {
-                            searchInput.value = data.data.ingredientName;
-                            ingredientNoInput.value = data.data.ingredientNo;
-                            selectedIngredientNo = data.data.ingredientNo;
-                            alert(data.message);
-                            document.getElementById('otherItem').value = '';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert(error.message);
-                    });
-            } else {
-                alert('품목명을 입력해주세요.');
-            }
-        });
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(data => {
+                                    throw new Error(data.message || '재료 추가에 실패했습니다.');
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                searchInput.value = data.data.ingredientName;
+                                ingredientNoInput.value = data.data.ingredientNo;
+                                selectedIngredientNo = data.data.ingredientNo;
+                                alert(data.message);
+                                document.getElementById('otherItem').value = '';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert(error.message);
+                        });
+                } else {
+                    alert('품목명을 입력해주세요.');
+                }
+            });
+        }
+
+        // 가격 계산 버튼
+        calculateButton.addEventListener('click', calculatePricePerUnit);
 
         // 파일 첨부
         attachPhotoButton.addEventListener('click', function() {
@@ -514,7 +451,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
-
 
 // 다음 우편번호 API + 카카오맵 주소 검색 기능
 // 카카오맵 API 로드 대기 및 초기화

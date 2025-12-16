@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface QuantityGroupBuyRepository extends JpaRepository<QuantityGroupBuy,Integer> {
     QuantityGroupBuy findByGroupBuy(GroupBuy groupBuy);
+
 }

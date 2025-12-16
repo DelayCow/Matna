@@ -256,4 +256,10 @@ public class ReviewsRepositoryTests {
 
 
     }
+
+    @Test
+    @Transactional
+    void getAlternativeIngredientTest(){
+        System.out.println(recipeAlternativeIngredientRepository.findByReview_ReviewNo(2));
+    }
 }

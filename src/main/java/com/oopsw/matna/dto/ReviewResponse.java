@@ -1,16 +1,20 @@
 package com.oopsw.matna.dto;
 
+import com.oopsw.matna.vo.ReviewsRegisterVO;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Builder
 @Getter
 @ToString
 public class ReviewResponse {
+    private Integer recipeNo;
     private Integer reviewNo;
+    private Integer writerNo;
     private String writerNickname;
     private String writerProfileImage;
     private String title;
@@ -19,5 +23,6 @@ public class ReviewResponse {
     private Float rating;
     private Integer spicyLevel;
     private LocalDateTime inDate;
-
+    private List<ReviewsRegisterVO.AlternativeRegisterVO> alternatives;
+    private boolean writer;
 }
