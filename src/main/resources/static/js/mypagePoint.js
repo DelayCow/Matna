@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // 텍스트 변경
             if(pageTitle) pageTitle.innerText = "환급 신청 맛나머니";
-            if(minAmountText) minAmountText.innerText = "* 최소 환급금액은 1,000원입니다.";
+            if(minAmountText) minAmountText.innerText = "* 최대 환급금액은 보유금액을 넘길 수 없습니다.";
 
             // 버튼 변경
             if(btnAction) {
