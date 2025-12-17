@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GroupBuyListVO {
+    private Integer periodGroupBuyNo;
+    private Integer quantityGroupBuyNo;
     private Integer groupBuyNo;
     private String title;
     private String status;

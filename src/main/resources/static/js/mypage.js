@@ -27,7 +27,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    const getButtonConfig = (status, groupBuyId) => {
+    const getButtonConfig = (status) => {
+
         const s = String(status).trim().toUpperCase();
         if (s === 'OPEN' || s === 'RECRUITING') {
             return {
@@ -76,11 +77,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 action: "share",
                 target: "#shareConfirmModal" };
         }
-        return {
-            text: "상세 보기",
-            cls: "btn-outline-secondary",
-            type: "link",
-            target: `/groupBuy/detail?no=${groupBuyId}` };
+        return
+
     };
 
     const renderCommonArea = (data) => {
@@ -114,14 +112,100 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     const createRecipeCard = (item) => {
+
         const imgUrl = item.image ? item.image : '/img/default_food.jpg';
+
+
+        let difficultyKor = item.difficulty;
+        if (item.difficulty === 'easy' || item.difficulty === '쉬움') difficultyKor = '쉬움';
+        else if (item.difficulty === 'normal' || item.difficulty === '보통') difficultyKor = '보통';
+        else if (item.difficulty === 'hard' || item.difficulty === '어려움') difficultyKor = '어려움';
+
+
+        let spicyText = '';
+
+        switch(item.spicy){
+            case 0: spicyText = '안매워요'; break;
+            case 1: spicyText = '약간매워요'; break;
+            case 2: spicyText = '신라면맵기'; break;
+            case 3: spicyText = '열라면맵기'; break;
+            case 4: spicyText = '불닭맵기'; break;
+            case 5: spicyText = '불닭보다매워요'; break;
+            default: spicyText = '';
+        }
+
+
         const editUrl = `/recipe/edit/${item.id}`;
+
         const detailUrl = `/recipe/detail/${item.id}`;
-        return `<div class="recipe-card mb-4 col-12" onclick="location.href='${detailUrl}'"><div class="card-img-wrap"><img src="${imgUrl}"></div><div class="card-info mt-2 p-2"><h5 class="card-title">${item.title}</h5></div></div>`;
+
+        const kebabMenuHtml = (typeof isOwner !== 'undefined' && isOwner) ? `
+        <div class="dropdown ms-auto">
+            <button class="btn btn-link text-secondary p-0 border-0" type="button" data-bs-toggle="dropdown"><i class="bi bi-three-dots-vertical"></i></button>
+            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                <li><a class="dropdown-item small" href="${editUrl}">수정</a></li>
+                <li><hr class="dropdown-divider my-1"></li>
+                <li><button id="removeRecipe" class="dropdown-item small text-danger btn-delete" data-id="${item.id}">삭제</button></li>
+            </ul>
+        </div>` : '';
+
+        return `
+    <div class="recipe-card mb-4 col-12" data-id="${item.id}">
+        <div class="card-img-wrap" onclick="location.href='${detailUrl}'">
+            <img src="${imgUrl}" alt="${item.title}" onerror="this.src='/img/default_food.jpg'">
+        </div>
+        <div class="card-info mt-2 p-2">
+            <h5 class="card-title">${item.title}</h5>
+            <div class="d-flex align-items-center mb-2">
+                <span class="text-warning me-1"><i class="bi bi-star-fill"></i></span>
+                <span class="fw-bold me-1">${item.rating}</span>
+                <span class="text-muted small">(${item.reviewCount || 0})</span>
+                ${kebabMenuHtml}
+            </div>
+            <div class="d-flex flex-wrap gap-2 text-secondary" style="font-size: 0.8rem;">
+                <span class="bg-light px-2 py-1 rounded-pill border"><i class="bi bi-clock me-1"></i>${item.time}</span>
+                <span class="bg-light px-2 py-1 rounded-pill border"><i class="bi bi-bar-chart me-1"></i>${difficultyKor}</span>
+                ${ spicyText ? `<span class="bg-danger-subtle text-danger px-2 py-1 rounded-pill border border-danger-subtle"><i class="bi bi-fire me-1"></i>${spicyText}</span>` : '' }
+            </div>
+        </div>
+    </div>`
     };
 
-    const removeRecipe = async function(recipeNo){ /* ...생략(기존 동일)... */ };
+    const removeRecipe = async function(recipeNo){
+        try{
+            const response = await fetch(`/api/recipes/${recipeNo}`,{
+                method: 'DELETE'
+            });
 
+            if(response.ok) {
+                showAlertModal(
+                    '삭제 완료',
+                    '레시피가 성공적으로 삭제되었습니다!',
+                    'success',
+                    () => {
+                        window.location.href = '/recipe';
+                    }
+                );
+            }else{
+                const errorData = await response.json();
+                const errorMessage = errorData.message || '서버 오류가 발생했습니다.';
+
+                showAlertModal(
+                    '삭제 실패',
+                    `레시피 삭제에 실패했습니다.<br><br><small class="text-muted">${errorMessage}</small>`,
+                    'error'
+                );
+            }
+
+        }catch(error){
+            console.error('네트워크 오류:', error);
+            showAlertModal(
+                '네트워크 오류',
+                '서버와 통신할 수 없습니다.<br>잠시 후 다시 시도해주세요.',
+                'error'
+            );
+        }
+    }
     const createReviewCard = (item) => {
         const imgUrl = item.imageUrl ? item.imageUrl : '/img/default_profile.jpg';
         return `<div class="review-card mb-4 col-12"><div class="card-img-wrap"><img src="${imgUrl}"></div><div class="card-info mt-2 p-2"><h5 class="card-title">${item.title}</h5></div></div>`;
@@ -133,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentStep = getStatusStep(item.status);
 
 
-        const btnConfig = getButtonConfig(item.status, item.groupBuyNo);
+        const btnConfig = getButtonConfig(item.status);
 
 
         const steps = ["모집", "상품결제", "상품도착", "나눔진행"];
@@ -201,7 +285,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         if (item.receiveDate) buttonHtml = `<button class="btn btn-secondary btn-sm" disabled>수령 완료</button>`;
 
-        const detailLink = `/groupBuy/detail?no=${item.groupBuyNo}`;
+        let detailLink = `/periodGroupBuy/detail/${item.periodGroupBuyNo}`;
+
+        if (item.periodGroupBuyNo == null) {
+            detailLink = `/quantityGroupBuy/detail/${item.quantityGroupBuyNo}`;
+        }
+
+
         return `<div class="group-card mb-3 p-3 border rounded bg-white shadow-sm">
             <div class="d-flex justify-content-between align-items-start mb-2"><div class="flex-grow-1 me-3">${timelineHtml}</div>${buttonHtml}</div>
             <div class="d-flex align-items-center gap-3">

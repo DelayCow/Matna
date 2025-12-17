@@ -4,6 +4,8 @@
 <mapper namespace="com.oopsw.matna.dao.GroupBuyListDAO">
     <select id="getParticipantList" parameterType="java.lang.Integer" resultType="com.oopsw.matna.vo.GroupBuyListVO">
         SELECT
+        pgb.period_group_buy_no         AS periodGroupBuyNo,
+        qgb.quantity_group_buy_no         AS quantityGroupBuyNo,
         gb.group_buy_no          AS groupBuyNo,
         gbp.group_participant_no AS groupParticipantNo,
         gb.title,
@@ -76,6 +78,8 @@
 
     <select id="getHostList" parameterType="java.lang.Integer" resultType="com.oopsw.matna.vo.GroupBuyListVO">
         SELECT
+        pgb.period_group_buy_no         AS periodGroupBuyNo,
+        qgb.quantity_group_buy_no         AS quantityGroupBuyNo,
         gb.group_buy_no          AS groupBuyNo,
         gb.title,
         gb.status,

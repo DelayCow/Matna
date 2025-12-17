@@ -1,6 +1,7 @@
 package com.oopsw.matna.repository;
 
 import com.oopsw.matna.repository.entity.GroupBuy;
+import com.oopsw.matna.repository.entity.PeriodGroupBuy;
 import com.oopsw.matna.vo.GroupBuyListVO;
 import com.oopsw.matna.vo.GroupBuyVO;
 import org.junit.jupiter.api.Test;
@@ -17,12 +18,20 @@ public class GroupBuyRepositoryTests {
     @Autowired
     GroupBuyRepository groupBuyRepository;
 
+    @Autowired
+    QuantityGroupBuyRepository quantityGroupBuyRepository;
+
+    @Autowired
+    PeriodGroupBuyRepository periodGroupBuyRepository;
+
     @Test
     public void getMyPageGroupBuyListTest(){
         Integer memberNo = 5;
         List<GroupBuy> groupBuys = groupBuyRepository.findByCreator_MemberNo(memberNo);
+        PeriodGroupBuy periodGroupBuy = periodGroupBuyRepository.findByGroupBuy((GroupBuy) groupBuys);
         List<GroupBuyListVO> groupBuyList = groupBuys.stream().map(groupBuy -> GroupBuyListVO.builder()
                 .groupBuyNo(groupBuy.getGroupBuyNo())
+                .periodGroupBuyNo(periodGroupBuy.getPeriodGroupBuyNo())
                 .title(groupBuy.getTitle())
                 .imageUrl(groupBuy.getImageUrl())
                 .status(groupBuy.getStatus()).build()).collect(Collectors.toList());
