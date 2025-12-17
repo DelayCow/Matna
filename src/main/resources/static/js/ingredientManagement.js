@@ -27,6 +27,8 @@ function renderNotApprovedRow(item) {
             <td>
                 <button class="btn btn-primary btn-approve">승인</button>
                 <button class="btn btn-danger btn-delete">삭제</button>
+                <button class="btn btn-warning btn-update">업데이트</button>
+
             </td>
         </tr>
     `;
@@ -151,4 +153,94 @@ async function loadNotApprovedIngredients() {
 
 document.addEventListener('DOMContentLoaded', async () => {
     await Promise.all([loadApprovedIngredients(), loadNotApprovedIngredients()]);
+});
+
+//모달
+let selectedIngredientId = null;
+let selectedIngredientName = null;
+let changeIngredientId = null;
+let changeIngredientName = null;
+
+const modal = new bootstrap.Modal(document.getElementById("ingredientChangeModal"));
+const modalSearchInput = document.getElementById("modalSearchInput");
+const modalIngredientList = document.getElementById("modalIngredientList");
+
+newIngredientTable.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+
+    const tr = btn.closest("tr");
+
+    if (btn.classList.contains("btn-update")) {
+        selectedIngredientId = tr.dataset.id;
+        selectedIngredientName = tr.children[1].textContent;
+
+        document.getElementById("selectedIngredientText").textContent =
+            `선택된 재료: ${selectedIngredientName}`;
+
+        document.getElementById("changeIngredientText").textContent = "-";
+        document.getElementById("approvedMark").classList.add("d-none");
+
+        modalIngredientList.innerHTML = "";
+        modalSearchInput.value = "";
+
+        modal.show();
+    }
+});
+
+modalSearchInput.addEventListener("input", () => {
+    const keyword = modalSearchInput.value.trim();
+    modalIngredientList.innerHTML = "";
+
+    if (!keyword) return;
+
+    ingredientTable.querySelectorAll("tr").forEach(tr => {
+        const name = tr.children[1].textContent;
+        if (name.includes(keyword)) {
+            const id = tr.dataset.id;
+
+            const li = document.createElement("li");
+            li.className = "list-group-item list-group-item-action";
+            li.textContent = name;
+
+            li.addEventListener("click", () => {
+                changeIngredientId = id;
+                changeIngredientName = name;
+
+                document.getElementById("changeIngredientText").textContent = name;
+                document.getElementById("approvedMark").classList.remove("d-none");
+            });
+
+            modalIngredientList.appendChild(li);
+        }
+    });
+});
+
+document.getElementById("confirmChangeBtn").addEventListener("click", async () => {
+    if (!selectedIngredientId || !changeIngredientId) {
+        alert("변경할 재료를 선택해주세요.");
+        return;
+    }
+
+    if (!confirm("정말 재료를 변경하시겠습니까?")) return;
+
+    try {
+        const res = await fetch(
+            `/api/manager/ingredientManagement/change?ingredientNo=${selectedIngredientId}&newIngredientNo=${changeIngredientId}`,
+            { method: "PUT" }
+        );
+
+        if (!res.ok) throw new Error("변경 실패");
+
+        alert("재료가 변경되었습니다.");
+        modal.hide();
+
+        await Promise.all([
+            loadApprovedIngredients(),
+            loadNotApprovedIngredients()
+        ]);
+
+    } catch (err) {
+        alert(err.message);
+    }
 });
