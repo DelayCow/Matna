@@ -131,27 +131,34 @@ tableBody.addEventListener("click", (e) => {
     // 공구 중단
     if (btn.classList.contains("btn-stop")) {
 
-        // 공통적으로 groupBuyNo 필요함
-        const groupBuyNo = periodNo || qtyNo;
+        const groupBuyNo = tr.dataset.id;
 
         if (!confirm("정말 중단하시겠습니까?")) return;
 
-        fetch(`/api/manager/groupBuyManagement?groupBuyNo=${groupBuyNo}`, { method: "PUT" })
+        fetch(`/api/manager/groupBuyManagement?groupBuyNo=${groupBuyNo}`, {
+            method: "PUT"
+        })
             .then(res => {
                 if (!res.ok) throw new Error("중단 실패");
 
-                tr.querySelector(".badge").textContent = "중단";
-                tr.querySelector(".badge").classList.remove("bg-secondary");
-                tr.querySelector(".badge").classList.add("bg-danger");
+                // 화면 상태 업데이트
+                const badge = tr.querySelector(".badge");
+                badge.textContent = "canceled";
+                badge.classList.remove("bg-secondary");
+                badge.classList.add("bg-danger");
 
                 // 원본 데이터 업데이트
                 const target = originalData.find(it =>
                     it.periodGroupBuyNo == periodNo || it.quantityGroupBuyNo == qtyNo
                 );
-                if (target) target.status = "중단";
+
+                if (target) {
+                    target.status = "canceled";
+                }
             })
             .catch(err => alert("중단 실패: " + err.message));
     }
+
 });
 
 

@@ -131,6 +131,13 @@ public class ManagerService {
                 .toList();
     }
 
+    @Transactional
+    public void cancelGroupBuy(Integer groupBuyNo) {
+        GroupBuy groupBuy = groupBuyRepository.findByGroupBuyNo(groupBuyNo);
+        groupBuy.setStatus("canceled");
+        groupBuyRepository.save(groupBuy);
+    }
+
     //신고 관리
     private ManagerReportResponse toManagerReportResponse(AllReportVO vo) {
         Member reporter = memberRepository.findById(vo.getReporterNo()).get();
