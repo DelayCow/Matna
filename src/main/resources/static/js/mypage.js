@@ -1,5 +1,5 @@
 
-import { showShareConfirmModal, showPaymentInfoModal, showArrivalInfoModal, showPaymentRegisterModal, showPasswordCheckModal, showReportModal } from "./modal.js";
+import { showShareConfirmModal, showPaymentInfoModal, showArrivalInfoModal, showPaymentRegisterModal } from "./modal.js";
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-    let currentGroupTab = isOwner ? 'participate' : 'host';
+    let currentGroupTab = 'participate';
     let currentFilterStatus = 'ALL';
 
     const getStatusStep = (status) => {
@@ -76,19 +76,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 action: "share",
                 target: "#shareConfirmModal" };
         }
-
-        const targetUrl = dueDate
-            ? `/periodGroupBuy/detail/${groupBuyId}`
-            : `/quantityGroupBuy/detail/${groupBuyId}`;
-
-
         return {
             text: "상세 보기",
             cls: "btn-outline-secondary",
             type: "link",
-            target: targetUrl
-    };
-
+            target: `/groupBuy/detail?no=${groupBuyId}` };
     };
 
     const renderCommonArea = (data) => {
@@ -101,20 +93,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const image = data.imageUrl || "/img/user.png";
         const money = data.points || 0;
 
-
-        const targetMemberNo = data.memberNo || memberNo;
-
-
         if (isOwner && headerArea) {
-            headerArea.innerHTML = `
-        <button class="btn p-0 border-0" id="headerMenuBtn">
-            <i class="bi bi-three-dots-vertical fs-4 text-dark"></i>
-        </button>
-        <ul class="custom-dropdown" id="headerDropdown">
-            <li><a href="#" class="btn-check-password">정보 수정</a></li>
-            <li><a href="/logout">로그아웃</a></li>
-            <li><a href="#" class="text-danger">탈퇴</a></li>
-        </ul>`;
+            headerArea.innerHTML = `<button class="btn p-0 border-0" id="headerMenuBtn"><i class="bi bi-three-dots-vertical fs-4 text-dark"></i></button>
+            <ul class="custom-dropdown" id="headerDropdown"><li><a href="#">정보 수정</a></li><li><a href="/logout">로그아웃</a></li><li><a href="#" class="text-danger">탈퇴</a></li></ul>`;
         } else if (headerArea) { headerArea.innerHTML = ''; }
 
         let subInfo = isOwner
@@ -123,10 +104,9 @@ document.addEventListener('DOMContentLoaded', function() {
               onclick="location.href='/mypage/point/charge'">
          내 맛나머니 : ${money.toLocaleString()} 원
        </small>`
-            : `<button class="btn btn-outline-secondary btn-sm rounded-pill px-2 py-0 mt-1 btn-report-member"
-                       data-id="${targetMemberNo}" data-name="${nickname}">
-                 <i class="bi bi-exclamation-circle me-1"></i>신고하기
-               </button>`;
+            : `<button class="btn btn-outline-secondary btn-sm rounded-pill px-2 py-0 mt-1">
+         <i class="bi bi-exclamation-circle me-1"></i>신고하기
+       </button>`;
 
         if(profileArea) {
             profileArea.innerHTML = `<img src="${image}" class="rounded-circle border me-3" width="60" height="60"><div><h5 class="fw-bold mb-1">${nickname}</h5><div>${subInfo}</div></div>`;
@@ -153,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentStep = getStatusStep(item.status);
 
 
-        const btnConfig = getButtonConfig(item.status, item.groupBuyNo, item.dueDate);
+        const btnConfig = getButtonConfig(item.status, item.groupBuyNo);
 
 
         const steps = ["모집", "상품결제", "상품도착", "나눔진행"];
@@ -221,13 +201,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         if (item.receiveDate) buttonHtml = `<button class="btn btn-secondary btn-sm" disabled>수령 완료</button>`;
 
-        let detailLink;
-        if (item.dueDate) {
-            detailLink = `/periodGroupBuy/detail/${item.groupBuyNo}`;
-        } else {
-            detailLink = `/quantityGroupBuy/detail/${item.groupBuyNo}`;
-        }
-
+        const detailLink = `/groupBuy/detail?no=${item.groupBuyNo}`;
         return `<div class="group-card mb-3 p-3 border rounded bg-white shadow-sm">
             <div class="d-flex justify-content-between align-items-start mb-2"><div class="flex-grow-1 me-3">${timelineHtml}</div>${buttonHtml}</div>
             <div class="d-flex align-items-center gap-3">
@@ -386,61 +360,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    if (!isOwner) {
-        currentGroupTab = 'host';
-        if (btnOpen) btnOpen.checked = true;
-
-    }
 
     fetchGroupData();
-
-    document.addEventListener('click', function(e) {
-
-        const btn = e.target.closest('#headerMenuBtn');
-
-        if (btn) {
-
-            const dropdown = document.getElementById('headerDropdown');
-            if (dropdown) {
-                dropdown.classList.toggle('show');
-            }
-        }
-
-        else {
-            if (!e.target.closest('#headerDropdown')) {
-                const dropdown = document.getElementById('headerDropdown');
-                if (dropdown && dropdown.classList.contains('show')) {
-                    dropdown.classList.remove('show');
-                }
-            }
-        }
-    });
-
-    document.addEventListener('click', function(e) {
-        const editBtn = e.target.closest('.btn-check-password');
-
-        if (editBtn) {
-            e.preventDefault();
-
-            // HTML에 숨겨진 회원번호 가져오기
-            const memberNo = document.getElementById('memberNo').textContent;
-
-            showPasswordCheckModal(memberNo);
-        }
-    });
-
-    document.addEventListener('click', function(e) {
-        const reportBtn = e.target.closest('.btn-report-member');
-
-        if (reportBtn) {
-            e.preventDefault();
-            // 버튼에 심어둔 데이터 가져오기
-            const targetId = reportBtn.getAttribute('data-id');
-            const targetName = reportBtn.getAttribute('data-name');
-
-            // 모달 띄우기 (타입: MEMBER)
-            showReportModal('MEMBER', targetId, targetName);
-        }
-    });
 
 });
