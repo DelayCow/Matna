@@ -23,11 +23,7 @@ public class RecipeController {
     }
 
     @GetMapping("/detail/{recipeNo}")
-    public String recipeDetail(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("recipeNo") String recipeNo, Model model){
-        Integer recipeNoInt = Integer.parseInt(recipeNo);
-        RecipeDetailVO recipeDetailVO = recipeService.getRecipeDetail(recipeNoInt);
-        model.addAttribute("recipeDetail", recipeDetailVO);
-        model.addAttribute("currentMemberNo", principalDetails.getMemberNo());
+    public String recipeDetail(@PathVariable("recipeNo") String recipeNo, Model model){
         return "recipeDetail";
     }
 
