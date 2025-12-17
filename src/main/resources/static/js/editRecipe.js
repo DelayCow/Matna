@@ -258,19 +258,6 @@ async function submitRecipeData(form, recipeNo) {
 
     formData.append('recipeRequest', recipeJsonString);
 
-    console.log("--- [전송 데이터 확인] ---");
-    console.log("2. FormData Contents:");
-    for (let [key, value] of formData.entries()) {
-        if (value instanceof File) {
-            // 파일인 경우 이름과 크기 출력
-            console.log(`   [File] ${key}:`, value.name, `(${value.size} bytes)`);
-        } else {
-            // 일반 문자열인 경우 값 출력
-            console.log(`   [Text] ${key}:`, value);
-        }
-    }
-
-    console.log("------------------------");
     try {
         const response = await fetch('/api/recipes', {
             method: 'PUT',
