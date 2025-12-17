@@ -14,129 +14,71 @@
 <div class="mobile-container position-relative">
     <div th:replace="layout :: pageHeader('레시피 수정', 'javascript:history.back()')"></div>
 
-    <form class="container-fluid content-area p-3" method="post">
-        <input type="hidden" id="recipeNo" name="recipeNo" th:value="${recipeDetail.recipeNo}"> <div class="mb-4">
-        <h5 class="fw-bold mb-2">썸네일</h5>
-        <div class="img-upload-area thumbnail flex-shrink-0"
-             th:style="${recipeDetail.thumbnailUrl} ? 'background-image: url(' + ${recipeDetail.thumbnailUrl} + '); background-size: cover; background-position: center; background-repeat: no-repeat;' : ''"
-             th:classappend="${recipeDetail.thumbnailUrl} ? 'has-image' : ''"
-             th:data-original-url="${recipeDetail.thumbnailUrl}"> <i class="bi bi-plus fs-1 text-secondary"
-                                                                     th:style="${recipeDetail.thumbnailUrl} ? 'display: none;' : ''"></i>
-            <input type="file" class="img-file-upload" accept="image/*" style="display: none;" />
+    <div id="editForm" class="container-fluid content-area p-3">
+        <input type="hidden" id="recipeNo">
+
+        <div class="mb-4">
+            <h5 class="fw-bold mb-2">썸네일</h5>
+            <div id="thumbnailArea" class="img-upload-area thumbnail flex-shrink-0">
+                <i class="bi bi-plus fs-1 text-secondary"></i>
+                <input type="file" class="img-file-upload" accept="image/*" style="display: none;" />
+            </div>
         </div>
-    </div>
 
         <div class="mb-4">
             <h5 class="fw-bold mb-2">제목</h5>
-            <input type="text" class="form-control" id="recipeTitle" name="title" placeholder="제목" required th:value="${recipeDetail.title}">
+            <input type="text" class="form-control" id="recipeTitle" name="title" placeholder="제목" required>
         </div>
 
         <div class="mb-4">
             <h5 class="fw-bold mb-2">레시피 요약</h5>
-            <textarea class="form-control" id="recipeSummary" rows="3" name="summary" placeholder="레시피 요약을 입력해주세요" th:text="${recipeDetail.summary}"></textarea>
+            <textarea class="form-control" id="recipeSummary" rows="3" name="summary" placeholder="레시피 요약을 입력해주세요"></textarea>
         </div>
 
         <div class="row g-2 mb-4 align-items-end">
             <div class="col-6">
                 <label for="category" class="form-label fw-bold">카테고리</label>
-                <select class="form-select w-75" id="category" name="category" aria-label="카테고리 선택" required>
+                <select class="form-select w-75" id="category" name="category" required>
                     <option value="" disabled selected>선택하세요</option>
-                    <option value="korean" th:selected="${recipeDetail.category == 'korean'}">한식</option>
-                    <option value="japanese" th:selected="${recipeDetail.category == 'japanese'}">일식</option>
-                    <option value="chinese" th:selected="${recipeDetail.category == 'chinese'}">중식</option>
-                    <option value="western" th:selected="${recipeDetail.category == 'western'}">양식</option>
-                    <option value="other" th:selected="${recipeDetail.category == 'other'}">기타</option>
+                    <option value="korean">한식</option>
+                    <option value="japanese">일식</option>
+                    <option value="chinese">중식</option>
+                    <option value="western">양식</option>
+                    <option value="other">기타</option>
                 </select>
             </div>
             <div class="col-6">
                 <div class="d-flex align-items-center">
-                    <input type="number" class="form-control text-end w-25 me-1" placeholder="0" name="prepTime" min="0" th:value="${recipeDetail.prepTime}">
+                    <input type="number" class="form-control text-end w-25 me-1" id="prepTime" name="prepTime" min="0">
                     <span class="me-2">분</span>
-                    <input type="number" class="form-control text-end w-25 ms-auto" placeholder="0" name="servings" min="1" th:value="${recipeDetail.servings}">
+                    <input type="number" class="form-control text-end w-25 ms-auto" id="servings" name="servings" min="1">
                     <span>인분</span>
                 </div>
             </div>
         </div>
 
-        <div class="mb-4" id="ingredientContainer">
+        <div class="mb-4">
             <h5 class="fw-bold mb-3">재료 수정</h5>
-<!--            <div class="mb-4">-->
-<!--                <label for="itemSelect" class="form-label fw-bold">재료 선택</label>-->
-<!--                <div class="select-input-group">-->
-<!--                    <input type="text" class="form-control" id="itemSelect" placeholder="재료선택">-->
-<!--                    <i class="bi bi-search select-icon"></i>-->
-<!--                    <div class="dropdown-menu" id="itemDropdownMenu"></div>-->
-<!--                </div>-->
-<!--            </div>-->
-
-<!--            <div class="mb-4">-->
-<!--                <label for="otherItem" class="form-label fw-bold">기타 재료 선택</label>-->
-<!--                <div class="d-flex align-items-center">-->
-<!--                    <input type="text" class="form-control me-2" id="otherItem" placeholder="선택지에 없는 재료를 추가하세요!">-->
-<!--                    <button class="btn btn-outline-secondary" type="button" id="addOtherItemBtn" style="height: 44px; width: 44px; border-radius: 8px;">-->
-<!--                        <i class="bi bi-plus fs-5"></i>-->
-<!--                    </button>-->
-<!--                </div>-->
-<!--            </div>-->
-
-            <div th:each="ing : ${recipeDetail.ingredients}" class="d-flex align-items-center mt-3 p-2 bg-light rounded ingredient-item justify-content-between flex-wrap" th:id="${ing.ingredientName.replace(' ', '_')} + '_div'">
-                <input type="text" class="form-control form-control-sm me-2" style="width: 30%; flex-shrink: 0;" placeholder="재료명" name="ingredientName" th:value="${ing.ingredientName}" readonly>
-
-                <input type="number" class="form-control form-control-sm text-end me-2" style="width: 20%; flex-shrink: 0;" placeholder="수량" name="amount" min="0" step="0.1" th:value="${ing.amount}">
-
-                <div class="d-flex unit-radio-group flex-wrap" style="width: 40%;">
-                    <input type="radio" class="btn-check" th:name="${ing.ingredientName.replace(' ', '_')} + '_unit'" th:id="${ing.ingredientName.replace(' ', '_')} + '_unit_ml'" value="ml" autocomplete="off" th:checked="${ing.unit == 'ml'}">
-                    <label class="btn btn-outline-secondary btn-sm me-1" style="height: 32px; width: 30px;" th:for="${ing.ingredientName.replace(' ', '_')} + '_unit_ml'">ml</label>
-
-                    <input type="radio" class="btn-check" th:name="${ing.ingredientName.replace(' ', '_')} + '_unit'" th:id="${ing.ingredientName.replace(' ', '_')} + '_unit_ea'" value="개" autocomplete="off" th:checked="${ing.unit == '개'}">
-                    <label class="btn btn-outline-secondary btn-sm me-1" style="height: 32px; width: 30px;" th:for="${ing.ingredientName.replace(' ', '_')} + '_unit_ea'">개</label>
-
-                    <input type="radio" class="btn-check" th:name="${ing.ingredientName.replace(' ', '_')} + '_unit'" th:id="${ing.ingredientName.replace(' ', '_')} + '_unit_sp'" value="T" autocomplete="off" th:checked="${ing.unit == 'T'}">
-                    <label class="btn btn-outline-secondary btn-sm me-1 text-nowrap" style="height: 32px; width: 60px;" th:for="${ing.ingredientName.replace(' ', '_')} + '_unit_sp'">스푼(T)</label>
-
-                    <input type="radio" class="btn-check" th:name="${ing.ingredientName.replace(' ', '_')} + '_unit'" th:id="${ing.ingredientName.replace(' ', '_')} + '_unit_g'" value="g" autocomplete="off" th:checked="${ing.unit == 'g'}">
-                    <label class="btn btn-outline-secondary btn-sm text-nowrap" style="height: 32px; width: 60px;" th:for="${ing.ingredientName.replace(' ', '_')} + '_unit_g'">그램(g)</label>
-                </div>
-<!--                <button class="btn btn-danger ms-4 flex-shrink-0" type="button"-->
-<!--                        style="height: 32px; width: 50px; padding: 0;"-->
-<!--                        th:data-ingredient-id="${ing.ingredientName.replace(' ', '_')} + '_div'"-->
-<!--                        onclick="handleDeleteIngredient(this)">-->
-<!--                    삭제-->
-<!--                </button>-->
+            <div id="ingredientContainer">
             </div>
         </div>
 
         <div class="mb-4">
             <h5 class="fw-bold mb-3">맵기 정도</h5>
-            <div class="spicy-filter-container d-flex flex-row mb-3" >
-                <div class="spicy-level-icon" data-level="0" th:classappend="${recipeDetail.spicyLevel == 0} ? 'active' : ''">
-                    안매워요
-                </div>
-                <div class="spicy-level-icon" data-level="1" th:classappend="${recipeDetail.spicyLevel == 1} ? 'active' : ''">
-                    <div class="icon-container"></div> <span class="spicy-text">약간매워요</span>
-                </div>
-                <div class="spicy-level-icon" data-level="2" th:classappend="${recipeDetail.spicyLevel == 2} ? 'active' : ''">
-                    <div class="icon-container"></div> <span class="spicy-text">신라면맵기</span>
-                </div>
-                <div class="spicy-level-icon" data-level="3" th:classappend="${recipeDetail.spicyLevel == 3} ? 'active' : ''">
-                    <div class="icon-container"></div> <span class="spicy-text">열라면맵기</span>
-                </div>
-                <div class="spicy-level-icon" data-level="4" th:classappend="${recipeDetail.spicyLevel == 4} ? 'active' : ''">
-                    <div class="icon-container"></div> <span class="spicy-text">불닭맵기</span>
-                </div>
-                <div class="spicy-level-icon" data-level="5" th:classappend="${recipeDetail.spicyLevel == 5} ? 'active' : ''">
-                    <div class="icon-container"></div> <span class="spicy-text">불닭보다매워요</span>
-                </div>
+            <div class="spicy-filter-container d-flex flex-row mb-3" id="spicyContainer">
+                <div class="spicy-level-icon" data-level="0">안매워요</div>
+                <div class="spicy-level-icon" data-level="1"><div class="icon-container"></div> <span class="spicy-text">약간매워요</span></div>
+                <div class="spicy-level-icon" data-level="2"><div class="icon-container"></div> <span class="spicy-text">신라면맵기</span></div>
+                <div class="spicy-level-icon" data-level="3"><div class="icon-container"></div> <span class="spicy-text">열라면맵기</span></div>
+                <div class="spicy-level-icon" data-level="4"><div class="icon-container"></div> <span class="spicy-text">불닭맵기</span></div>
+                <div class="spicy-level-icon" data-level="5"><div class="icon-container"></div> <span class="spicy-text">불닭보다매워요</span></div>
             </div>
 
             <h5 class="fw-bold mb-3">난이도</h5>
-            <div class="d-flex flex-wrap gap-2">
-                <input type="radio" class="btn-check" name="difficulty" id="diff1" value="easy" autocomplete="off" th:checked="${recipeDetail.difficulty == 'easy'}">
-                <label class="btn btn-outline-success btn-sm" for="diff1">쉬움</label>
-                <input type="radio" class="btn-check" name="difficulty" id="diff2" value="normal" autocomplete="off" th:checked="${recipeDetail.difficulty == 'normal'}">
-                <label class="btn btn-outline-success btn-sm" for="diff2">보통</label>
-                <input type="radio" class="btn-check" name="difficulty" id="diff3" value="hard" autocomplete="off" th:checked="${recipeDetail.difficulty == 'hard'}">
-                <label class="btn btn-outline-success btn-sm" for="diff3">어려움</label>
+            <div class="d-flex flex-wrap gap-2" id="difficultyContainer">
+                <input type="radio" class="btn-check" name="difficulty" id="diff1" value="easy"><label class="btn btn-outline-success btn-sm" for="diff1">쉬움</label>
+                <input type="radio" class="btn-check" name="difficulty" id="diff2" value="normal"><label class="btn btn-outline-success btn-sm" for="diff2">보통</label>
+                <input type="radio" class="btn-check" name="difficulty" id="diff3" value="hard"><label class="btn btn-outline-success btn-sm" for="diff3">어려움</label>
             </div>
         </div>
 
@@ -144,36 +86,13 @@
 
         <div class="mb-5">
             <h5 class="fw-bold mb-3">레시피 순서</h5>
-
-            <div th:each="step : ${recipeDetail.steps}" class="recipe-step d-flex mb-3">
-                <div class="img-upload-area me-3 flex-shrink-0"
-                     th:style="${step.imageUrl} ? 'background-image: url(' + ${step.imageUrl} + '); background-size: cover; background-position: center; background-repeat: no-repeat;' : ''"
-                     th:classappend="${step.imageUrl} ? 'has-image' : ''"
-                     th:data-original-url="${step.imageUrl}"> <i class="bi bi-plus fs-1 text-secondary"
-                                                                 th:style="${step.imageUrl} ? 'display: none;' : ''"></i>
-                    <input type="file" class="img-file-upload" accept="image/*" style="display: none;" />
-                    <input type="hidden" name="originalStepImage" th:value="${step.imageUrl}"> </div>
-                <textarea class="form-control" rows="3" placeholder="레시피 설명" th:text="${step.content}"></textarea>
+            <div id="stepContainer">
             </div>
-            <div class="recipe-step d-flex mb-3" th:if="${#lists.isEmpty(recipeDetail.steps)}">
-                <div class="img-upload-area me-3 flex-shrink-0">
-                    <i class="bi bi-plus fs-1 text-secondary"></i>
-                    <input type="file" class="img-file-upload" accept="image/*" style="display: none;" />
-                </div>
-                <textarea class="form-control" rows="3" placeholder="레시피 설명"></textarea>
-            </div>
-
-            <div class="text-center">
-<!--                <button class="btn btn-outline-secondary w-100 py-3 mb-5" type="button" id="addStepBtn">-->
-<!--                    <i class="bi bi-plus fs-4"></i>-->
-<!--                </button>-->
+            <div class="text-center mt-4">
                 <button type="submit" class="btn btn-success w-100 py-2 fw-bold">수정 완료</button>
-
             </div>
-
         </div>
-
-    </form>
+    </div>
 
     <div th:replace="layout :: menuBar"></div>
 

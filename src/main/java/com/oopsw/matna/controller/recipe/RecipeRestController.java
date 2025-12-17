@@ -97,8 +97,9 @@ public class RecipeRestController {
     }
 
     @GetMapping("/recipes/detail/{recipeNo}")
-    public ResponseEntity<RecipeDetailVO> getRecipeDetail(@PathVariable Integer recipeNo) {
-        return ResponseEntity.ok().body(recipeService.getRecipeDetail(recipeNo));
+    public ResponseEntity<Map<String, Object>> getRecipeDetail(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable Integer recipeNo) {
+        return ResponseEntity.ok(Map.of("recipeDetail", recipeService.getRecipeDetail(recipeNo),
+                "currentMemberNo", principalDetails.getMemberNo()));
     }
 
 }

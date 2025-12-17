@@ -25,4 +25,20 @@ public class HomeRestController {
         Boolean isDuplicated = memberService.isDuplicatedNickname(nickname);
         return ResponseEntity.ok().body(Map.of("result", isDuplicated));
     }
+
+    @PostMapping("/member")
+    public ResponseEntity<Map<String, Boolean>> addMember(@RequestBody MemberRequset memberRequest) {
+        if(memberService.addMember(MemberVO.builder()
+                .memberId(memberRequest.getMemberId())
+                .password(memberRequest.getPassword())
+                .nickname(memberRequest.getNickname())
+                .accountName(memberRequest.getAccountName())
+                .accountNumber(memberRequest.getAccountNumber())
+                .address(memberRequest.getAddress())
+                .bank(memberRequest.getBank())
+                .build())){
+            return ResponseEntity.ok().body(Map.of("message", true));
+        };
+        return ResponseEntity.badRequest().body(Map.of("message", false));
+    }
 }

@@ -23,24 +23,12 @@ public class RecipeController {
     }
 
     @GetMapping("/detail/{recipeNo}")
-    public String recipeDetail(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("recipeNo") String recipeNo, Model model){
-        Integer recipeNoInt = Integer.parseInt(recipeNo);
-        RecipeDetailVO recipeDetailVO = recipeService.getRecipeDetail(recipeNoInt);
-        model.addAttribute("recipeDetail", recipeDetailVO);
-        model.addAttribute("currentMemberNo", principalDetails.getMemberNo());
+    public String recipeDetail(@PathVariable("recipeNo") String recipeNo){
         return "recipeDetail";
     }
 
     @GetMapping("/edit/{recipeNo}")
-    public String editRecipe(@AuthenticationPrincipal PrincipalDetails principalDetails, @PathVariable("recipeNo") String recipeNo, Model model){
-        Integer memberNo = principalDetails.getMemberNo();
-        Integer recipeNoInt = Integer.parseInt(recipeNo);
-        RecipeDetailVO recipeDetailVO = recipeService.getRecipeDetail(recipeNoInt);
-        if(recipeDetailVO.getWriterNo().equals(memberNo)){
-            model.addAttribute("recipeDetail", recipeDetailVO);
-            model.addAttribute("currentMemberNo", memberNo);
-            return "editRecipe";
-        }
-        return "redirect:/recipe/detail/"+recipeNoInt;
+    public String editRecipe(@PathVariable("recipeNo") String recipeNo){
+        return "editRecipe";
     }
 }

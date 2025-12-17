@@ -15,57 +15,42 @@
     <div th:replace="layout :: pageHeader('레시피 조회', 'javascript:history.back()')"></div>
 
   <div class="w-100">
-    <img th:src="${recipeDetail.thumbnailUrl}" class="img-fluid w-100" style="max-height: 250px; object-fit: cover;">
+    <img id="recipe-thumbnail" src="#" class="img-fluid w-100" style="max-height: 250px; object-fit: cover;">
   </div>
 
   <main class="px-3 py-4">
     <section class="mb-4">
       <div class="d-flex justify-content-between align-items-start mb-2">
         <div class="d-flex align-items-center">
-          <div class="d-flex flex-column align-items-center me-2" id="writer-profile" th:data-no="${recipeDetail.writerNo}">
-            <img th:src="${recipeDetail.writerProfile} ?: '/img/user.png'" class="profile-img-lg me-2" alt="Profile">
-            <small class="mt-1" th:text="${recipeDetail.writerNickname}"></small>
+          <div class="d-flex flex-column align-items-center me-2" id="writer-profile" data-no="">
+            <img id="writer-profile-img" src="/img/user.png" class="profile-img-lg me-2" alt="Profile">
+            <small class="mt-1" id="writer-nickname"></small>
           </div>
           <div>
             <div class="d-flex align-items-center gap-2">
-              <h4 class="fw-bold mb-2" th:text="${recipeDetail.title}"></h4>
+              <h4 class="fw-bold mb-2" id="recipe-title"></h4>
               <div class="d-flex align-items-center text-muted mb-3">
-                <span class="me-2 text-black"><i class="bi bi-star-fill text-warning"></i> <span th:text="${recipeDetail.rating}"></span></span>
-                <span class="me-2"><i class="bi bi-chat-square-text"></i> <span th:text="${recipeDetail.reviewCount}"></span></span>
+                <span class="me-2 text-black"><i class="bi bi-star-fill text-warning"></i> <span id="recipe-rating"></span></span>
+                <span class="me-2"><i class="bi bi-chat-square-text"></i> <span id="recipe-review-count"></span></span>
               </div>
             </div>
-            <p class="mb-2" th:text="${recipeDetail.summary}"></p>
-            <small class="text-muted">작성일자: <span th:text="${#temporals.format(recipeDetail.inDate, 'yyyy.MM.dd')}"></span></small>
+            <p class="mb-2" id="recipe-summary"></p>
+            <small class="text-muted">작성일자: <span id="recipe-inDate"></span></small>
           </div>
         </div>
 
 
-        <div th:if="${recipeDetail.writerNo} == ${currentMemberNo}" id="edit-box" class="position-relative">
-          <i class="bi bi-three-dots-vertical text-dark"></i>
-          <div class="edit-box text-center bg-white">
-            <a th:href="@{'/recipe/edit/' + ${recipeDetail.recipeNo}}" class="mb-2">수정</a>
-            <a class="mt-2" id="removeRecipe" th:data-id="${recipeDetail.recipeNo}">삭제</a>
-          </div>
-        </div>
+        <div id="edit-box" class="position-relative"></div>
 
       </div>
 
-      <div class="d-flex justify-content-between border-top border-bottom py-3 text-center text-secondary">
-        <div class="flex-fill border-end"><i class="bi bi-person fs-5 d-block mb-1"></i> <span th:text="${recipeDetail.servings}"></span>인분</div>
-        <div class="flex-fill border-end"><i class="bi bi-clock fs-5 d-block mb-1"></i> <span th:text="${recipeDetail.prepTime}"></span>분이내</div>
-        <div class="flex-fill border-end"><i class="bi bi-star fs-5 d-block mb-1"></i> <span th:text="${recipeDetail.difficulty == 'easy' ? '쉬움' : (recipeDetail.difficulty == 'normal' ? '보통' : '어려움')}"></span></div>
-        <div class="flex-fill"><img src="/img/spicy.png" class="mx-auto d-block mt-1 mb-2"><span th:text="${recipeDetail.spicyLevel == 0 ? '안매워요' :
-                          (recipeDetail.spicyLevel == 1 ? '약간매워요' :
-                          (recipeDetail.spicyLevel == 2 ? '신라면맵기' :
-                          (recipeDetail.spicyLevel == 3 ? '열라면맵기' :
-                          (recipeDetail.spicyLevel == 4 ? '불닭맵기' : '불닭보다매워요'))))}"></span></div>
-      </div>
+      <div id="summary-info" class="d-flex justify-content-between border-top border-bottom py-3 text-center text-secondary"></div>
     </section>
 
     <section class="mb-5">
       <div class="d-flex justify-content-between align-items-end mb-2 border-bottom pb-1">
         <h5 class="fw-bold m-0">재료</h5>
-          <small class="text-muted">후기 <span th:text="${recipeDetail.reviewCount}"></span>건 통계입니다.</small>
+          <small class="text-muted">후기 <span id="ingredient-review-count"></span>건 통계입니다.</small>
       </div>
 
       <div class="d-flex text-muted mb-2">
@@ -73,131 +58,28 @@
         <div class="col-6 ps-2">대체재료</div>
       </div>
 
-      <div th:each="ing : ${recipeDetail.ingredients}" class="d-flex ingredient-row">
-        <div class="col-6 pe-2">
-          <div class="d-flex justify-content-between align-items-center flex-wrap">
-            <div class="d-flex flex-nowrap me-2">
-              <span class="fw-600 text-nowrap me-1" th:text="${ing.ingredientName}"></span>
-              <span class="text-muted text-nowrap" th:text="|${ing.amount}${ing.unit}|"></span>
-            </div>
-              <span class="badge badge-gonggu"
-                th:classappend="${ing.isGroupBuying} ? 'active' : 'inactive'">
-                <th:block th:if="${ing.isGroupBuying}">진행 중인 공구가 있어요!</th:block>
-                <th:block th:unless="${ing.isGroupBuying}">진행 중인 공구가 없어요</th:block>
-              </span>
-          </div>
-        </div>
-        <div th:if="${ing.alternatives != null and not ing.alternatives.isEmpty()}" class="col-6 ps-2 d-flex align-items-center">
-          <i class="bi bi-arrow-right me-2 text-muted"></i>
-          <div class="w-100">
-            <div th:each="alt : ${ing.alternatives}" class="d-flex justify-content-between flex-wrap mb-1">
-              <div class="d-flex flex-nowrap me-2">
-                <span class="fw-600 text-nowrap me-1" th:text="${alt.ingredientName} "></span>
-                <span class="text-muted text-nowrap" th:text="|${alt.amount}${alt.unit}|"></span>
-              </div>
-                <span class="badge badge-gonggu"
-                      th:classappend="${alt.isGroupBuying} ? 'active' : 'inactive'">
-                    <th:block th:if="${alt.isGroupBuying}">진행 중인 공구가 있어요!</th:block>
-                    <th:block th:unless="${alt.isGroupBuying}">진행 중인 공구가 없어요</th:block>
-                </span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <div id="ingredient-list"></div>
     </section>
 
     <section class="mb-5">
         <h5 class="fw-bold border-bottom pb-2 mb-3">조리 순서</h5>
 
-        <div th:each="step : ${recipeDetail.steps}" class="d-flex mb-4">
-            <div class="step-number" th:text="|${step.stepOrder}.|">1.</div>
-            <div class="d-flex flex-column flex-sm-row w-100">
-                <img th:src="${step.imageUrl}" src="/img/order1.png" class="step-img me-3 mb-2 mb-sm-0" th:alt="|Step ${step.stepOrder}|">
-                <p class="text-secondary m-0 lh-base" th:text="${step.content}"></p>
-            </div>
-        </div>
+        <div id="steps-list"></div>
     </section>
 
     <section class="bg-light p-3 rounded-3 mb-4">
-        <h6 class="fw-bold mb-3">다른 회원의 매운맛 평가(<span th:text="${recipeDetail.reviewCount}"></span>)</h6>
+        <h6 class="fw-bold mb-3">다른 회원의 매운맛 평가(<span id="spicy-review-count"></span>)</h6>
 
-        <div class="progress-wrapper">
-            <span class="fw-bold" style="width: 50px;">0단계</span>
-            <div class="progress progress-custom">
-                <div class="progress-bar progress-bar-custom" role="progressbar"
-                     th:style="|width:${recipeDetail.spicyLevelPercentages[0]}%|"></div>
-            </div>
-            <span class="text-muted" style="width: 30px; text-align: right;"
-                  th:text="|${recipeDetail.spicyLevelPercentages[0]}%|"></span>
-        </div>
-        <div class="progress-wrapper">
-            <span class="fw-bold" style="width: 50px;">1단계</span>
-            <div class="progress progress-custom">
-                <div class="progress-bar progress-bar-custom" role="progressbar"
-                     th:style="|width:${recipeDetail.spicyLevelPercentages[1]}%|"></div>
-            </div>
-            <span class="text-muted" style="width: 30px; text-align: right;"
-                  th:text="|${recipeDetail.spicyLevelPercentages[1]}%|"></span>
-        </div>
-        <div class="progress-wrapper">
-            <span class="fw-bold" style="width: 50px;">2단계</span>
-            <div class="progress progress-custom">
-                <div class="progress-bar progress-bar-custom" role="progressbar"
-                     th:style="|width:${recipeDetail.spicyLevelPercentages[2]}%|"></div>
-            </div>
-            <span class="text-muted" style="width: 30px; text-align: right;"
-                  th:text="|${recipeDetail.spicyLevelPercentages[2]}%|"></span>
-        </div>
-        <div class="progress-wrapper">
-            <span class="fw-bold" style="width: 50px;">3단계</span>
-            <div class="progress progress-custom">
-                <div class="progress-bar progress-bar-custom" role="progressbar"
-                     th:style="|width:${recipeDetail.spicyLevelPercentages[3]}%|"></div>
-            </div>
-            <span class="text-muted" style="width: 30px; text-align: right;"
-                  th:text="|${recipeDetail.spicyLevelPercentages[3]}%|"></span>
-        </div>
-        <div class="progress-wrapper">
-            <span class="fw-bold" style="width: 50px;">4단계</span>
-            <div class="progress progress-custom">
-                <div class="progress-bar progress-bar-custom" role="progressbar"
-                     th:style="|width:${recipeDetail.spicyLevelPercentages[4]}%|"></div>
-            </div>
-            <span class="text-muted" style="width: 30px; text-align: right;"
-                  th:text="|${recipeDetail.spicyLevelPercentages[4]}%|"></span>
-        </div>
-        <div class="progress-wrapper">
-            <span class="fw-bold" style="width: 50px;">5단계</span>
-            <div class="progress progress-custom">
-                <div class="progress-bar progress-bar-custom" role="progressbar"
-                     th:style="|width:${recipeDetail.spicyLevelPercentages[5]}%|"></div>
-            </div>
-            <span class="text-muted" style="width: 30px; text-align: right;"
-                  th:text="|${recipeDetail.spicyLevelPercentages[5]}%|"></span>
-        </div>
+        <div id="spicy-level-progress"></div>
     </section>
 
       <section class="bg-light p-3 rounded-3">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-              <h6 class="fw-bold m-0">다른 회원의 후기 <span class="text-warning ms-1"><i class="bi bi-star-fill"></i> <span th:text="${recipeDetail.rating}"></span></span> (<span th:text="${recipeDetail.reviewCount}"></span>)</h6>
-              <a th:if="${recipeDetail.reviews != null and not recipeDetail.reviews.isEmpty()}"
-                 th:href="@{'/review/recipe/' + ${recipeDetail.recipeNo}}" class="text-dark text-decoration-none fw-bold">전체 보기 <i class="bi bi-chevron-right"></i></a>
-          </div>
-          <div th:if="${recipeDetail.reviews != null and not recipeDetail.reviews.isEmpty()}" class="d-flex gap-2" style="overflow: hidden;">
-              <img th:each="review : ${recipeDetail.reviews}"
-                   th:src="${review.imageUrl}"
-                   th:alt="|review${review.reviewNo}|"
-                   class="review-thumb">
-          </div>
-          <div th:if="${recipeDetail.reviews == null or recipeDetail.reviews.isEmpty()}" class="text-center text-muted py-4">
-              <i class="bi bi-chat-square-text fs-1 d-block mb-2"></i>
-              <p class="mb-0">아직 작성된 후기가 없습니다</p>
-          </div>
+          <div id="review-section"></div>
       </section>
   </main>
 
   <div class="add-review-btn-area">
-    <button id="addReviewBtn" th:data-recipeNo="${recipeDetail.recipeNo}" class="btn btn-primary w-100 fw-bold py-2 rounded-3" style="background-color: #3b82f6; border: none;">
+    <button id="addReviewBtn" class="btn btn-primary w-100 fw-bold py-2 rounded-3" style="background-color: #3b82f6; border: none;">
       레시피 후기 남기기
     </button>
   </div>
@@ -206,7 +88,6 @@
 </div>
 <div th:replace="modal :: modal"></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/js/editBox.js"></script>
 <script type="module" src="/js/recipeDetail.js"></script>
 </body>
 </html>
