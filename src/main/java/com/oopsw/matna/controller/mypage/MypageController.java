@@ -2,6 +2,7 @@ package com.oopsw.matna.controller.mypage;
 
 import com.oopsw.matna.auth.PrincipalDetails;
 import com.oopsw.matna.repository.GroupBuyRepository;
+import com.oopsw.matna.repository.entity.Member;
 import com.oopsw.matna.service.MypageService;
 import com.oopsw.matna.vo.GroupBuyParticipantVO;
 import com.oopsw.matna.vo.MemberVO;
@@ -46,6 +47,17 @@ public class MypageController {
 
         return "mypagePoint";
     }
+
+    @GetMapping("/mypage/{memberNo}/myinfoEdit")
+    public String infoEdit (@PathVariable Integer memberNo, Model model) {
+
+        MemberVO member = mypageService.getMemberInfo(memberNo);
+
+        model.addAttribute("member", member);
+
+        return "myinfoEdit";
+    }
+
 
 }
 

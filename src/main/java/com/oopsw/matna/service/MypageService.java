@@ -6,6 +6,7 @@ import com.oopsw.matna.repository.*;
 import com.oopsw.matna.repository.entity.*;
 import com.oopsw.matna.vo.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,6 +42,7 @@ public class MypageService {
     private final PeriodGroupBuyRepository periodGroupBuyRepository;
 
     private final ImageStorageService imageStorageService;
+    private final PasswordEncoder passwordEncoder;
 
 
     public List<RecipeVO> getMypageRecipeList(Integer memberNo) {
@@ -205,7 +207,12 @@ public class MypageService {
         Member member = memberRepository.findById(memberNo)
                 .get();
 
-        return member.getPassword().equals(inputPassword);
+        String dbPassword = member.getPassword(); // db 비번
+
+        if (passwordEncoder.matches(inputPassword, dbPassword)) {
+            return true;
+        }
+        return false;
     }
 
     public MemberVO getMemberInfo(Integer memberNo) {
@@ -232,24 +239,37 @@ public class MypageService {
     }
 
 
-    public void updateMemberProfile(MemberVO editData) {
+    @Transactional
+    public void updateMemberProfile(MemberVO editData, MultipartFile file) {
 
         Member member = memberRepository.findById(editData.getMemberNo())
-                        .get();
+                .get();
+
 
         member.setNickname(editData.getNickname());
-        member.setImageUrl(editData.getImageUrl());
         member.setAddress(editData.getAddress());
-
-
         member.setBank(editData.getBank());
         member.setAccountNumber(editData.getAccountNumber());
         member.setAccountName(editData.getAccountName());
 
 
-        if (editData.getPassword() != null && !editData.getPassword().isEmpty()) {
+        if (file != null && !file.isEmpty()) {
+            try {
 
-            member.setPassword(editData.getPassword());
+                String savedPath = imageStorageService.save(file, "profile");
+
+
+                member.setImageUrl(savedPath);
+
+            } catch (IOException e) {
+                throw new RuntimeException("프로필 이미지 저장 중 오류 발생", e);
+            }
+        }
+
+
+        if (editData.getPassword() != null && !editData.getPassword().isEmpty()) {
+            String encodedPwd = passwordEncoder.encode(editData.getPassword());
+            member.setPassword(encodedPwd);
         }
 
     }

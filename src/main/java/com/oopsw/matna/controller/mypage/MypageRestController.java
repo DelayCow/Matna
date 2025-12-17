@@ -141,12 +141,16 @@ public class MypageRestController {
     }
 
     @PutMapping("/{memberNo}/infoEdit")
-    public void updateProfile(@PathVariable("memberNo") int memberNo, @RequestBody MemberVO editData) {
-
+    public ResponseEntity<String> updateProfile(
+            @PathVariable("memberNo") int memberNo,
+            @ModelAttribute MemberVO editData,
+            @RequestParam(value = "profileImage", required = false) MultipartFile file) {
 
         editData.setMemberNo(memberNo);
 
-        mypageService.updateMemberProfile(editData);
+        mypageService.updateMemberProfile(editData, file);
+
+        return ResponseEntity.ok("Success");
     }
 
 

@@ -1,5 +1,5 @@
 
-import { showShareConfirmModal, showPaymentInfoModal, showArrivalInfoModal, showPaymentRegisterModal } from "./modal.js";
+import { showShareConfirmModal, showPaymentInfoModal, showArrivalInfoModal, showPaymentRegisterModal,showPasswordCheckModal } from "./modal.js";
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -92,8 +92,42 @@ document.addEventListener('DOMContentLoaded', function() {
         const money = data.points || 0;
 
         if (isOwner && headerArea) {
-            headerArea.innerHTML = `<button class="btn p-0 border-0" id="headerMenuBtn"><i class="bi bi-three-dots-vertical fs-4 text-dark"></i></button>
-            <ul class="custom-dropdown" id="headerDropdown"><li><a href="#">정보 수정</a></li><li><a href="/logout">로그아웃</a></li><li><a href="#" class="text-danger">탈퇴</a></li></ul>`;
+            headerArea.innerHTML = `<div class="position-relative"> <button class="btn p-0 border-0" id="headerMenuBtn">
+                <i class="bi bi-three-dots-vertical fs-4 text-dark"></i>
+            </button>
+            <ul class="custom-dropdown" id="headerDropdown">
+                <li><a href="#" id="btnEditInfo">정보 수정</a></li>
+                <li><a href="/logout">로그아웃</a></li>
+                <li><a href="#" class="text-danger">탈퇴</a></li>
+            </ul>
+        </div>`;
+
+            const btn = document.getElementById('headerMenuBtn');
+            const dropdown = document.getElementById('headerDropdown');
+            const editBtn = document.getElementById('btnEditInfo');
+
+            if (btn && dropdown) {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    dropdown.classList.toggle('show'); });
+
+                if (editBtn) {
+                    editBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        dropdown.classList.remove('show');
+                        showPasswordCheckModal(memberNo); // import한 함수 실행
+                    });
+                }
+            }
+
+            document.addEventListener('click', (e) => {
+                if (dropdown && dropdown.classList.contains('show')) {
+                    if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+                        dropdown.classList.remove('show');
+                    }
+                }
+            });
+
         } else if (headerArea) { headerArea.innerHTML = ''; }
 
         let subInfo = isOwner
