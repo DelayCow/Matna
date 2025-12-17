@@ -1,5 +1,5 @@
 
-import { showShareConfirmModal, showPaymentInfoModal, showArrivalInfoModal, showPaymentRegisterModal, showPasswordCheckModal } from "./modal.js";
+import { showShareConfirmModal, showPaymentInfoModal, showArrivalInfoModal, showPaymentRegisterModal, showPasswordCheckModal, showReportModal } from "./modal.js";
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
-    let currentGroupTab = 'participate';
+    let currentGroupTab = isOwner ? 'participate' : 'host';
     let currentFilterStatus = 'ALL';
 
     const getStatusStep = (status) => {
@@ -76,11 +76,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 action: "share",
                 target: "#shareConfirmModal" };
         }
+
+        const targetUrl = dueDate
+            ? `/periodGroupBuy/detail/${groupBuyId}`
+            : `/quantityGroupBuy/detail/${groupBuyId}`;
+
+
         return {
             text: "상세 보기",
             cls: "btn-outline-secondary",
             type: "link",
-            target: `/groupBuy/detail?no=${groupBuyId}` };
+            target: targetUrl
+    };
+
     };
 
     const renderCommonArea = (data) => {
@@ -92,6 +100,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const nickname = data.nickname || "맛도리 회원님";
         const image = data.imageUrl || "/img/user.png";
         const money = data.points || 0;
+
+
+        const targetMemberNo = data.memberNo || memberNo;
+
 
         if (isOwner && headerArea) {
             headerArea.innerHTML = `
@@ -111,9 +123,10 @@ document.addEventListener('DOMContentLoaded', function() {
               onclick="location.href='/mypage/point/charge'">
          내 맛나머니 : ${money.toLocaleString()} 원
        </small>`
-            : `<button class="btn btn-outline-secondary btn-sm rounded-pill px-2 py-0 mt-1">
-         <i class="bi bi-exclamation-circle me-1"></i>신고하기
-       </button>`;
+            : `<button class="btn btn-outline-secondary btn-sm rounded-pill px-2 py-0 mt-1 btn-report-member"
+                       data-id="${targetMemberNo}" data-name="${nickname}">
+                 <i class="bi bi-exclamation-circle me-1"></i>신고하기
+               </button>`;
 
         if(profileArea) {
             profileArea.innerHTML = `<img src="${image}" class="rounded-circle border me-3" width="60" height="60"><div><h5 class="fw-bold mb-1">${nickname}</h5><div>${subInfo}</div></div>`;
@@ -140,7 +153,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentStep = getStatusStep(item.status);
 
 
-        const btnConfig = getButtonConfig(item.status, item.groupBuyNo);
+        const btnConfig = getButtonConfig(item.status, item.groupBuyNo, item.dueDate);
 
 
         const steps = ["모집", "상품결제", "상품도착", "나눔진행"];
@@ -208,7 +221,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         if (item.receiveDate) buttonHtml = `<button class="btn btn-secondary btn-sm" disabled>수령 완료</button>`;
 
-        const detailLink = `/groupBuy/detail?no=${item.groupBuyNo}`;
+        let detailLink;
+        if (item.dueDate) {
+            detailLink = `/periodGroupBuy/detail/${item.groupBuyNo}`;
+        } else {
+            detailLink = `/quantityGroupBuy/detail/${item.groupBuyNo}`;
+        }
+
         return `<div class="group-card mb-3 p-3 border rounded bg-white shadow-sm">
             <div class="d-flex justify-content-between align-items-start mb-2"><div class="flex-grow-1 me-3">${timelineHtml}</div>${buttonHtml}</div>
             <div class="d-flex align-items-center gap-3">
@@ -367,21 +386,26 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    if (!isOwner) {
+        currentGroupTab = 'host';
+        if (btnOpen) btnOpen.checked = true;
+
+    }
 
     fetchGroupData();
 
     document.addEventListener('click', function(e) {
-        // 1. 점 3개 버튼(또는 그 안의 아이콘)을 눌렀는지 확인
+
         const btn = e.target.closest('#headerMenuBtn');
 
         if (btn) {
-            // 버튼을 눌렀다면 드롭다운을 껐다 켰다(toggle) 함
+
             const dropdown = document.getElementById('headerDropdown');
             if (dropdown) {
                 dropdown.classList.toggle('show');
             }
         }
-        // 2. 버튼이 아닌 다른 곳을 눌렀다면? (드롭다운 닫기)
+
         else {
             if (!e.target.closest('#headerDropdown')) {
                 const dropdown = document.getElementById('headerDropdown');
@@ -396,12 +420,26 @@ document.addEventListener('DOMContentLoaded', function() {
         const editBtn = e.target.closest('.btn-check-password');
 
         if (editBtn) {
-            e.preventDefault(); // 링크 이동 막기
+            e.preventDefault();
 
             // HTML에 숨겨진 회원번호 가져오기
             const memberNo = document.getElementById('memberNo').textContent;
 
             showPasswordCheckModal(memberNo);
+        }
+    });
+
+    document.addEventListener('click', function(e) {
+        const reportBtn = e.target.closest('.btn-report-member');
+
+        if (reportBtn) {
+            e.preventDefault();
+            // 버튼에 심어둔 데이터 가져오기
+            const targetId = reportBtn.getAttribute('data-id');
+            const targetName = reportBtn.getAttribute('data-name');
+
+            // 모달 띄우기 (타입: MEMBER)
+            showReportModal('MEMBER', targetId, targetName);
         }
     });
 

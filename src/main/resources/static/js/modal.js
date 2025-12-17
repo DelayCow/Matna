@@ -352,7 +352,7 @@ export function showPasswordCheckModal(memberNo) {
 
     const existingModal = document.getElementById('passwordCheckModal');
     if (existingModal) {
-        existingModal.remove(); // 있으면 지우고 새로 만듦 (깔끔하게)
+        existingModal.remove();
     }
 
 
@@ -403,17 +403,17 @@ export function showPasswordCheckModal(memberNo) {
             })
         })
             .then(res => {
-                if (res.ok) return res.json(); // boolean (true/false) 반환
+                if (res.ok) return res.json();
                 else throw new Error("서버 오류");
             })
             .then(isCorrect => {
                 if (isCorrect) {
-                    bsModal.hide(); // 모달 닫기
-                    // 맞으면 페이지 이동!
+                    bsModal.hide();
+
                     location.href = `/mypage/${memberNo}/myinfoEdit`;
                 } else {
                     alert("비밀번호가 일치하지 않습니다.");
-                    inputEl.value = ''; // 비번 지우기
+                    inputEl.value = '';
                     inputEl.focus();
                 }
             })
@@ -438,6 +438,134 @@ export function showPasswordCheckModal(memberNo) {
     modalEl.addEventListener('shown.bs.modal', () => {
         inputEl.focus();
     });
+}
+
+export function showReportModal(type, targetId, targetName = '') {
+    // 1. 기존 모달 정리
+    const existingModal = document.getElementById('reportModal');
+    if (existingModal) existingModal.remove();
+
+    // 2. 제목 설정
+    const isMemberReport = (type === 'MEMBER');
+    const title = isMemberReport ? '회원 신고' : '공구 신고';
+
+    // 3. 모달 HTML 생성
+    const modalHtml = `
+    <div class="modal fade" id="reportModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold flex-grow-1 text-center">${title}</h5>
+                    <button type="button" class="btn-close position-absolute end-0 me-3" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small text-center mb-3">신고 대상: ${targetName ? targetName : targetId}</p>
+
+                    <form id="reportForm">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">이미지 첨부</label>
+                            <div id="reportImageArea" class="d-flex align-items-center justify-content-center rounded bg-light border" 
+                                 style="width: 100px; height: 100px; cursor: pointer; overflow: hidden; position: relative;">
+                                <span class="fs-2 text-secondary">+</span>
+                                <img id="reportImagePreview" src="" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                            </div>
+                            <input type="file" id="reportFile" accept="image/*" style="display: none;">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold small">신고 사유</label>
+                            <textarea class="form-control" id="reportReason" rows="5" placeholder="신고 사유를 입력해주세요."></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-0 justify-content-center pb-4">
+                    <button type="button" class="btn btn-danger px-5" id="btnSubmitReport" style="background-color: #ffadad; border: none;">신고하기</button>
+                </div>
+            </div>
+        </div>
+    </div>`;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    // 4. 요소 가져오기
+    const modalEl = document.getElementById('reportModal');
+    const bsModal = new bootstrap.Modal(modalEl);
+    const imgArea = document.getElementById('reportImageArea');
+    const fileInput = document.getElementById('reportFile');
+    const imgPreview = document.getElementById('reportImagePreview');
+    const reasonInput = document.getElementById('reportReason');
+    const submitBtn = document.getElementById('btnSubmitReport');
+
+    // 5. 이미지 미리보기 이벤트
+    imgArea.onclick = () => fileInput.click();
+    fileInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imgPreview.src = e.target.result;
+                imgPreview.style.display = 'block';
+                imgArea.querySelector('span').style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    // 6. 신고 전송 이벤트
+    submitBtn.onclick = () => {
+        const reason = reasonInput.value.trim();
+        if (!reason) {
+            alert("신고 사유를 입력해주세요.");
+            reasonInput.focus();
+            return;
+        }
+
+        if (!confirm(`${title}를 진행하시겠습니까?`)) return;
+
+        const formData = new FormData();
+
+        if (type === 'MEMBER') {
+            formData.append("targetMemberNo", targetId);
+        } else {
+            formData.append("targetGroupBuyNo", targetId);
+        }
+        formData.append("reason", reason);
+
+        const file = fileInput.files[0];
+        if (file) {
+            formData.append("imageFile", file);
+        }
+
+        let url = '';
+        if (type === 'MEMBER') {
+            url = '/api/mypage/report/member';
+        } else {
+            alert("공구 신고 기능 오류");
+            return;
+            // url = '/api/report/groupbuy';
+        }
+
+        // 서버 전송
+        fetch(url, {
+            method: 'POST',
+            body: formData
+        })
+            .then(res => {
+                if (res.ok) {
+                    alert("신고가 정상적으로 접수되었습니다.");
+                    bsModal.hide();
+                } else {
+                    return res.text().then(text => { throw new Error(text) });
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("신고 접수 실패: " + err.message);
+            });
+    };
+
+    modalEl.addEventListener('hidden.bs.modal', () => modalEl.remove());
+    bsModal.show();
 }
 
 

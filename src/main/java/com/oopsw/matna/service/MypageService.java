@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -278,11 +279,20 @@ public class MypageService {
         return newPoint;
     }
 
-    public void addReportMember(AllReportVO vo) {
+    @Transactional
+    public void addReportMember(AllReportVO vo) throws IOException { // IOException 추가 필수
 
 
-        Member reporter = memberRepository.findById(vo.getReporterNo())
-                .get();
+        MultipartFile file = vo.getImageFile();
+
+
+        if (file != null && !file.isEmpty()) {
+            String path = imageStorageService.save(file, "report");
+            vo.setImageUrl(path);
+        }
+
+
+        Member reporter = memberRepository.findById(vo.getReporterNo()).get();
 
         Report report = Report.builder()
                 .reporter(reporter)
@@ -295,13 +305,14 @@ public class MypageService {
         Report savedReport = reportRepository.save(report);
 
         Member target = memberRepository.findById(vo.getTargetMemberNo())
-                .orElseThrow(() -> new RuntimeException("신고 대상 회원이 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("신고 대상 회원이 없습니다."));
 
         memberReportRepository.save(MemberReport.builder()
                 .report(savedReport)
                 .targetMember(target)
                 .build());
     }
+
 
     public void addReportGroupBuy(AllReportVO vo) {
 

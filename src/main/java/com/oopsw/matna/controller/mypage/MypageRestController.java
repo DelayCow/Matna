@@ -1,12 +1,15 @@
 package com.oopsw.matna.controller.mypage;
 
 import java.util.Map;
+
+import com.oopsw.matna.auth.PrincipalDetails;
 import com.oopsw.matna.dto.MemberProfileListResponse;
 import com.oopsw.matna.dto.RecipeListResponse;
 import com.oopsw.matna.service.MypageService;
 import com.oopsw.matna.vo.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -163,9 +166,26 @@ public class MypageRestController {
     }
 
     @PostMapping("/report/member")
-    public void reportMember(@RequestBody AllReportVO reportVO) {
+    public ResponseEntity<String> reportMember(
+            @ModelAttribute AllReportVO allReportVO,
+            @AuthenticationPrincipal PrincipalDetails principal
+    ) {
+        try {
 
-        mypageService.addReportMember(reportVO);
+            if (principal == null) {
+                return ResponseEntity.status(401).body("로그인이 필요합니다.");
+            }
+            allReportVO.setReporterNo(principal.getMember().getMemberNo());
+
+
+            mypageService.addReportMember(allReportVO);
+
+            return ResponseEntity.ok("신고가 정상적으로 접수되었습니다.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("신고 처리 중 오류가 발생했습니다.");
+        }
     }
 
     @PostMapping("/report/group")

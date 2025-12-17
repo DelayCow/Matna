@@ -13,10 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -392,19 +389,51 @@ public class QuantityGroupBuyService {
         return list;
     }
 
+    // [수정] 파라미터에 currentMemberNo 추가
+    // [중요] 파라미터에 Integer currentMemberNo가 반드시 있어야 합니다!
     @Transactional
-    public Map<String, Object> getQuantityGroupBuyDetail(Integer quantityGroupBuyNo) {
+    public Map<String, Object> getQuantityGroupBuyDetail(Integer quantityGroupBuyNo, Integer currentMemberNo) {
+
+        // 1. 기본 상세 정보 조회
         QuantityGroupBuyDetailVO detailVO = quantityGroupBuyDAO.selectQuantityGroupBuyDetail(quantityGroupBuyNo);
         if (detailVO == null) {
             throw new IllegalArgumentException("존재하지 않는 수량 공동구매입니다. 번호: " + quantityGroupBuyNo);
         }
+
         Integer groupBuyNo = detailVO.getGroupBuyNo();
         if (groupBuyNo == null) {
             throw new IllegalStateException("공동구매를 찾을 수 없습니다.");
         }
+
         GroupBuy groupBuy = groupBuyRepository.findById(groupBuyNo)
                 .orElseThrow(() -> new IllegalStateException("GroupBuy 엔티티를 찾을 수 없습니다. 번호: "+ groupBuyNo));
 
+
+
+        if (currentMemberNo != null) {
+
+            Optional<GroupBuyParticipant> myPartOpt = groupBuyParticipantRepository
+                    .findByGroupBuy_GroupBuyNoAndParticipant_MemberNoAndCancelDateIsNull(groupBuyNo, currentMemberNo);
+
+
+            if (myPartOpt.isPresent()) {
+                GroupBuyParticipant myPart = myPartOpt.get(); // 껍질(Optional) 까기
+                detailVO.setMyQuantity(myPart.getMyQuantity());
+                detailVO.setGroupParticipantNo(myPart.getGroupParticipantNo());
+            } else {
+
+                detailVO.setMyQuantity(0);
+                detailVO.setGroupParticipantNo(null);
+            }
+        } else {
+
+            detailVO.setMyQuantity(0);
+            detailVO.setGroupParticipantNo(null);
+        }
+
+
+
+        // 2. 전체 참여자 리스트 조회 (기존 로직 유지)
         List<Map<String, Object>> participantInfoList = new ArrayList<>();
         List<GroupBuyParticipant> participants = groupBuyParticipantRepository
                 .findByGroupBuyAndCancelDateIsNullOrderByParticipatedDateAsc(groupBuy);
@@ -412,7 +441,6 @@ public class QuantityGroupBuyService {
         if (participants != null && !participants.isEmpty()) {
             for (GroupBuyParticipant gbp : participants) {
                 if (gbp == null) continue;
-
                 Member member = gbp.getParticipant();
                 if (member == null) continue;
 
@@ -427,7 +455,7 @@ public class QuantityGroupBuyService {
             }
         }
 
-        // 3. JPA로 레시피 정보 조회
+        // 3. 레시피 정보 조회 (기존 로직 유지)
         List<Map<String, Object>> recipeInfoList = new ArrayList<>();
         Integer ingredientNo = detailVO.getIngredientNo();
 
@@ -438,10 +466,8 @@ public class QuantityGroupBuyService {
             if (recipeIngredients != null && !recipeIngredients.isEmpty()) {
                 for (RecipeIngredient ri : recipeIngredients) {
                     if (ri == null) continue;
-
                     Recipe recipe = ri.getRecipe();
                     if (recipe == null) continue;
-
                     Member author = recipe.getAuthor();
 
                     Map<String, Object> recipeInfo = new HashMap<>();
@@ -455,7 +481,7 @@ public class QuantityGroupBuyService {
             }
         }
 
-        // 4. 통합 Map 생성
+        // 4. 응답 생성
         Map<String, Object> response = new HashMap<>();
         response.put("groupBuyDetail", detailVO);
         response.put("participants", participantInfoList);
