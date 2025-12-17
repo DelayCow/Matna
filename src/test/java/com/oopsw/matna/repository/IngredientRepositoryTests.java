@@ -101,7 +101,7 @@ public class IngredientRepositoryTests {
     @Transactional
     @Test
     public void findAllByApproveDateIsNull() {
-        System.out.println(ingredientRepository.findAllByApproveDateIsNull());
+        System.out.println(ingredientRepository.findAllByApproveDateIsNullAndDelDateIsNull());
     }
 
     @Transactional
