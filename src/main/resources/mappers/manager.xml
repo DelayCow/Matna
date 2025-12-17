@@ -64,5 +64,6 @@
                 AND in_date BETWEEN #{startDate} AND #{endDate}
             </if>
         </where>
+        ORDER BY member_no DESC
     </select>
 </mapper>
