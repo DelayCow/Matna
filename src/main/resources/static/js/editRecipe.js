@@ -1,5 +1,4 @@
 import {initializeSpicyIcons} from "./spicyFilter.js";
-import {debounce, fetchSearchResults} from "./searchIngredient.js";
 import {showAlertModal, showValidationModal} from "./modal.js";
 
 function handleImageUpload(input, target) {
@@ -14,7 +13,6 @@ function handleImageUpload(input, target) {
             target.style.backgroundRepeat = 'no-repeat';
 
             target.removeAttribute('data-original-url');
-            //아이콘만 숨기기
             const icon = target.querySelector('i');
             if (icon) {
                 icon.style.display = 'none';
@@ -26,12 +24,10 @@ function handleImageUpload(input, target) {
     } else {
         target.style.backgroundImage = 'none';
 
-        // 아이콘 다시 보이기
         const icon = target.querySelector('i');
         if (icon) {
             icon.style.display = 'block';
         } else {
-            // 아이콘이 없으면 다시 추가
             target.innerHTML = '<i class="bi bi-plus fs-1 text-secondary"></i>';
         }
 
@@ -75,117 +71,31 @@ document.getElementById('addStepBtn')?.addEventListener('click', function (e) {
     }
 });
 
-const ingredientContainer = document.getElementById('ingredientContainer');
-const other = document.getElementById('otherItem');
-// document.getElementById('addOtherItemBtn').addEventListener('click', (e) => addIngredient(e, other.value))
 let addedIngredients = [];
-
-const searchInput = document.getElementById('itemSelect');
-const itemMenu = document.getElementById('itemDropdownMenu');
-let isItemClicked = false;
-
-searchInput?.addEventListener('input', debounce(function() {
-    if (isItemClicked) {
-        isItemClicked = false;
-        return;
-    }
-    const query = this.value.trim();
-    if (query.length > 0) {
-        fetchSearchResults(query, updateDropdownMenu);
-    } else {
-        itemMenu.classList.remove('show');
-    }
-}, 300));
-
-function updateDropdownMenu(results) {
-    itemMenu.innerHTML = '';
-
-    if (results && results.length > 0) {
-        results.forEach(item => {
-            const a = document.createElement('a');
-            a.classList.add('dropdown-item');
-            a.href = '#';
-            a.textContent = item.ingredientName;
-
-            // a.addEventListener('click', (e) => addIngredient(e, item.ingredientName));
-
-            itemMenu.appendChild(a);
-        });
-        itemMenu.classList.add('show');
-    } else {
-        itemMenu.classList.remove('show');
-    }
-}
-
-const deleteIngredient = function (id) {
-    const elementToRemove = document.getElementById(id);
-    if (elementToRemove) {
-        elementToRemove.remove();
-
-        const ingredientName = id.replace('_div', '');
-        const index = addedIngredients.indexOf(ingredientName);
-        if (index > -1) {
-            addedIngredients.splice(index, 1);
-        }
-    }
-}
-
-// const handleDeleteIngredient = function(button) {
-//     const ingredientId = button.getAttribute('data-ingredient-id');
-//     if (ingredientId) {
-//         deleteIngredient(ingredientId);
-//     }
-// }
-
-window.deleteIngredient = deleteIngredient;
-// window.handleDeleteIngredient = handleDeleteIngredient;
 
 const addIngredientHtml = function (name) {
     const id = name.replace(/[^a-zA-Z0-9가-힣]/g, '_');
     const uniqueUnitName = `${id}_unit`;
 
-    return `<div class="d-flex align-items-center mt-3 p-2 bg-light rounded ingredient-item" id="${id}_div">
+    return `<div class="d-flex align-items-center mt-3 p-2 bg-light rounded ingredient-item justify-content-between flex-wrap" id="${id}_div">
             <input type="text" class="form-control form-control-sm me-2" style="width: 30%; flex-shrink: 0;" placeholder="재료명" name="ingredientName" value="${name}" readonly>
 
             <input type="number" class="form-control form-control-sm text-end me-2" style="width: 20%; flex-shrink: 0;" placeholder="수량" name="amount" min="0" step="0.1">
 
-            <div class="d-flex unit-radio-group" style="width: 40%; flex-shrink: 0;">
+            <div class="d-flex unit-radio-group flex-wrap" style="width: 40%;">
                 <input type="radio" class="btn-check" name="${uniqueUnitName}" id="${id}_unit_ml" value="ml" autocomplete="off" checked>
-                <label class="btn btn-outline-secondary btn-sm me-1" for="${id}_unit_ml">ml</label>
+                <label class="btn btn-outline-secondary btn-sm me-1" style="height: 32px; width: 30px;" for="${id}_unit_ml">ml</label>
 
                 <input type="radio" class="btn-check" name="${uniqueUnitName}" id="${id}_unit_ea" value="개" autocomplete="off">
-                <label class="btn btn-outline-secondary btn-sm me-1" for="${id}_unit_ea">개</label>
+                <label class="btn btn-outline-secondary btn-sm me-1" style="height: 32px; width: 30px;" for="${id}_unit_ea">개</label>
 
                 <input type="radio" class="btn-check" name="${uniqueUnitName}" id="${id}_unit_sp" value="T" autocomplete="off">
-                <label class="btn btn-outline-secondary btn-sm me-1" for="${id}_unit_sp">스푼(T)</label>
+                <label class="btn btn-outline-secondary btn-sm me-1 text-nowrap" style="height: 32px; width: 60px;" for="${id}_unit_sp">스푼(T)</label>
 
                 <input type="radio" class="btn-check" name="${uniqueUnitName}" id="${id}_unit_g" value="g" autocomplete="off">
-                <label class="btn btn-outline-secondary btn-sm" for="${id}_unit_g">그램(g)</label>
+                <label class="btn btn-outline-secondary btn-sm text-nowrap" style="height: 32px; width: 60px;" for="${id}_unit_g">그램(g)</label>
             </div>
-
-            <button class="btn btn-danger ms-4 flex-shrink-0" type="button" style="height: 32px; width: 50px; padding: 0;" onclick="deleteIngredient('${id}_div')">
-                삭제
-            </button>
         </div>`
-}
-
-const addIngredient = function (e, name) {
-    e.preventDefault();
-    if (name.length === 0) {
-        showAlertModal('알림','재료 이름을 입력해야 추가할 수 있습니다.','info');
-        return;
-    }
-    isItemClicked = true;
-    if (addedIngredients.includes(name)) {
-        showAlertModal('알림',`${name}은(는) 이미 추가된 재료입니다.`,'info');
-    } else {
-        ingredientContainer.insertAdjacentHTML('beforeend', addIngredientHtml(name));
-        addedIngredients.push(name);
-    }
-    searchInput.value = '';
-    other.value = '';
-    itemMenu.classList.remove('show');
-    searchInput.blur();
 }
 
 const loadExistingIngredients = function() {
@@ -197,7 +107,8 @@ const loadExistingIngredients = function() {
         }
     });
 }
-function collectIngredients() {
+
+const collectIngredients = function() {
     const ingredients = [];
     const ingredientDivs = document.querySelectorAll('#ingredientContainer > div.ingredient-item');
 
@@ -222,7 +133,7 @@ function collectIngredients() {
     return ingredients;
 }
 
-function collectSteps(formData) {
+const collectSteps = function(formData) {
     const steps = [];
     const stepDivs = document.querySelectorAll('.recipe-step');
 
@@ -230,8 +141,6 @@ function collectSteps(formData) {
         const order = index + 1;
         const contentTextarea = div.querySelector('textarea');
         const imgUploadArea = div.querySelector('.img-upload-area');
-        console.log(`\n--- Step ${order} ---`);
-        console.log('imgUploadArea:', imgUploadArea);
         let fileInput = imgUploadArea?.querySelector('.img-file-upload');
         let imageFileName = null;
 
@@ -241,18 +150,15 @@ function collectSteps(formData) {
 
             formData.append(fieldName, file);
             imageFileName = fieldName;
-            console.log('✅ 새 파일 업로드:', fieldName, file.name);
         }else if (imgUploadArea) {
             const originalUrl = imgUploadArea.getAttribute('data-original-url');
             const backgroundImage = imgUploadArea.style.backgroundImage;
-            console.log('data-original-url:', originalUrl);
             if (originalUrl && originalUrl.trim() !== '') {
                 imageFileName = originalUrl;
             } else if (backgroundImage && backgroundImage !== 'none' && backgroundImage !== '') {
                 imageFileName = 'EXISTING';
             }
         }
-        console.log('최종 imageFileName:', imageFileName);
         steps.push({
             stepOrder: order,
             content: contentTextarea ? contentTextarea.value : '',
@@ -263,11 +169,10 @@ function collectSteps(formData) {
     return steps;
 }
 
-async function submitRecipeData(form) {
+async function submitRecipeData(form, recipeNo) {
     const formData = new FormData();
     const recipeData = {};
     const errors = [];
-    const recipeNo = form.querySelector('#recipeNo').value;
     recipeData.recipeNo = recipeNo;
     const thumbnailInput = document.querySelector('.img-upload-area.thumbnail .img-file-upload');
     const imgUploadArea = document.querySelector('.img-upload-area');
@@ -352,6 +257,20 @@ async function submitRecipeData(form) {
     const recipeJsonString = JSON.stringify(recipeData);
 
     formData.append('recipeRequest', recipeJsonString);
+
+    console.log("--- [전송 데이터 확인] ---");
+    console.log("2. FormData Contents:");
+    for (let [key, value] of formData.entries()) {
+        if (value instanceof File) {
+            // 파일인 경우 이름과 크기 출력
+            console.log(`   [File] ${key}:`, value.name, `(${value.size} bytes)`);
+        } else {
+            // 일반 문자열인 경우 값 출력
+            console.log(`   [Text] ${key}:`, value);
+        }
+    }
+
+    console.log("------------------------");
     try {
         const response = await fetch('/api/recipes', {
             method: 'PUT',
@@ -387,7 +306,81 @@ async function submitRecipeData(form) {
     }
 }
 
+const renderRecipeDetail = function(data) {
+    document.getElementById('recipeNo').value = data.recipeNo;
+    document.getElementById('recipeTitle').value = data.title;
+    document.getElementById('recipeSummary').value = data.summary;
+    document.getElementById('category').value = data.category;
+    document.getElementById('prepTime').value = data.prepTime;
+    document.getElementById('servings').value = data.servings;
+
+    const thumbArea = document.getElementById('thumbnailArea');
+    if (data.thumbnailUrl) {
+        thumbArea.style.backgroundImage = `url(${data.thumbnailUrl})`;
+        thumbArea.style.backgroundSize = 'cover';
+        thumbArea.classList.add('has-image');
+        thumbArea.setAttribute('data-original-url', data.thumbnailUrl);
+        thumbArea.querySelector('i').style.display = 'none';
+    }
+    setupImageUploadListeners(thumbArea);
+
+    const ingContainer = document.getElementById('ingredientContainer');
+    data.ingredients.forEach(ing => {
+        const ingHtml = addIngredientHtml(ing.ingredientName);
+        ingContainer.insertAdjacentHTML('beforeend', ingHtml);
+
+        const div = document.getElementById(`${ing.ingredientName.replace(/[^a-zA-Z0-9가-힣]/g, '_')}_div`);
+        div.querySelector('input[name="amount"]').value = ing.amount;
+        const unitRadio = div.querySelector(`input[value="${ing.unit}"]`);
+        if (unitRadio) unitRadio.checked = true;
+
+        addedIngredients.push(ing.ingredientName);
+    });
+
+    const spicyIcons = document.querySelectorAll('.spicy-level-icon');
+    spicyIcons.forEach(icon => {
+        if (parseInt(icon.dataset.level) === data.spicyLevel) {
+            icon.classList.add('active');
+        }
+    });
+
+    const diffRadio = document.querySelector(`input[name="difficulty"][value="${data.difficulty}"]`);
+    if (diffRadio) diffRadio.checked = true;
+
+    const stepContainer = document.getElementById('stepContainer');
+    data.steps.forEach(step => {
+        const stepDiv = document.createElement('div');
+        stepDiv.className = 'recipe-step d-flex mb-3';
+        stepDiv.innerHTML = `
+            <div class="img-upload-area me-3 flex-shrink-0 ${step.imageUrl ? 'has-image' : ''}" 
+                 data-original-url="${step.imageUrl || ''}"
+                 style="${step.imageUrl ? `background-image: url(${step.imageUrl}); background-size: cover;` : ''}">
+                <i class="bi bi-plus fs-1 text-secondary" style="${step.imageUrl ? 'display: none;' : ''}"></i>
+                <input type="file" class="img-file-upload" accept="image/*" style="display: none;" />
+            </div>
+            <textarea class="form-control" rows="3" placeholder="레시피 설명">${step.content}</textarea>
+        `;
+        stepContainer.appendChild(stepDiv);
+        setupImageUploadListeners(stepDiv.querySelector('.img-upload-area'));
+    });
+};
+
+const fetchRecipeDetail = function(recipeNo){
+    fetch(`/api/recipes/detail/${recipeNo}`)
+        .then(response => {
+            return response.json()
+        }).then(data => {
+        renderRecipeDetail(data.recipeDetail)
+    }).catch(error => {
+        console.error("레시피 데이터 로드 중 오류", errror);
+    })
+
+}
 document.addEventListener('DOMContentLoaded',function (){
+    const recipeNo = document.location.pathname.split("/").at(-1);
+
+    fetchRecipeDetail(recipeNo);
+
     const imgUpload = document.querySelector('.img-upload-area');
     if (imgUpload) {
         setupImageUploadListeners(imgUpload);
@@ -403,12 +396,12 @@ document.addEventListener('DOMContentLoaded',function (){
     initializeSpicyIcons();
     loadExistingIngredients();
 
-    const recipeForm = document.querySelector('form.container-fluid.content-area');
-
-    recipeForm.addEventListener('submit', async function(e) {
+    const editRecipe = document.querySelector('#editForm');
+    const submitBtn = editRecipe.querySelector('button[type="submit"]');
+    submitBtn.addEventListener('click', async function(e) {
         e.preventDefault();
         try {
-            await submitRecipeData(this);
+            await submitRecipeData(editRecipe, recipeNo);
         } catch (error) {
             console.error("레시피 수정 처리 중 최종 오류:", error);
             showAlertModal(

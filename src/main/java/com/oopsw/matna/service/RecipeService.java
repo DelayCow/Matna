@@ -295,14 +295,6 @@ public class RecipeService {
 
         List<RecipeIngredient> existingIngredients = recipeIngredientRepository.findByRecipe(recipe);
 
-        if (vo.getIngredient() == null || vo.getIngredient().isEmpty()) {
-            throw new IllegalArgumentException("재료는 최소 1개 이상 필요합니다.");
-        }
-
-        if (existingIngredients.size() != vo.getIngredient().size()) {
-            throw new IllegalArgumentException("재료 개수가 일치하지 않습니다.");
-        }
-
         for (int i = 0; i < existingIngredients.size(); i++) {
             RecipeIngredient recipeIngredient = existingIngredients.get(i);
             IngredientVO newData = vo.getIngredient().get(i);
@@ -326,35 +318,31 @@ public class RecipeService {
 
         List<RecipeStep> existingSteps = recipeStepRepository.findByRecipeOrderByStepOrderAsc(recipe);
 
-        if (vo.getStep() == null || vo.getStep().isEmpty()) {
-            throw new IllegalArgumentException("레시피 단계는 최소 1개 이상 필요합니다.");
-        }
-
-        if (existingSteps.size() != vo.getStep().size()) {
-            throw new IllegalArgumentException("레시피 단계 개수가 일치하지 않습니다.");
-        }
-
         for (int i = 0; i < existingSteps.size(); i++) {
             RecipeStep recipeStep = existingSteps.get(i);
             RecipeStepVO newData = vo.getStep().get(i);
             String oldImageUrl = recipeStep.getImageUrl();
+            String imageKey = newData.getImageUrl();
             String stepImageUrl = null;
 
-            String imageKey = newData.getImageUrl();
-
-            if (imageKey != null) {
-                if (imageKey.startsWith("http") || imageKey.startsWith("/uploads") || imageKey.startsWith("uploads")) {
-                    stepImageUrl = imageKey;
-                }
-                else if (stepImages != null && stepImages.containsKey(imageKey)) {
-                    MultipartFile stepImage = stepImages.get(imageKey);
-                    if (stepImage != null && !stepImage.isEmpty()) {
-                        if (oldImageUrl != null) {
+            if (imageKey != null && imageKey.equals(oldImageUrl)) {
+                stepImageUrl = oldImageUrl;
+            }
+            else if (imageKey != null && stepImages != null && stepImages.containsKey(imageKey)) {
+                MultipartFile stepImage = stepImages.get(imageKey);
+                if (stepImage != null && !stepImage.isEmpty()) {
+                    if (oldImageUrl != null && !oldImageUrl.startsWith("http")) {
+                        try {
                             imageStorageService.delete(oldImageUrl);
+                        } catch (Exception e) {
+                            System.err.println("삭제 스킵 (경로 에러 등): " + e.getMessage());
                         }
-                        stepImageUrl = imageStorageService.save(stepImage, "recipe/steps");
                     }
+                    stepImageUrl = imageStorageService.save(stepImage, "recipe/steps");
                 }
+            }
+            else if (imageKey != null && imageKey.startsWith("http")) {
+                stepImageUrl = imageKey;
             }
 
             if (stepImageUrl == null) {
