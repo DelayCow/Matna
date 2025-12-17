@@ -59,7 +59,7 @@ public class ManagerService {
 
     public List<ManagerIngredientResponse> getNotApprovedIngredients() {
         return ingredientRepository
-                .findAllByApproveDateIsNull()
+                .findAllByApproveDateIsNullAndDelDateIsNull()
                 .stream()
                 .map(this::toManagerIngredientResponse)
                 .toList();
@@ -99,9 +99,7 @@ public class ManagerService {
     }
 
     @Transactional
-    public void changeIngredient(Integer ingredientId, Integer newIngredientId) {
-        Integer ingredientNo = 51;
-        Integer newIngredientNo = 48;
+    public void changeIngredient(Integer ingredientNo, Integer newIngredientNo) {
         Ingredient ingredient = ingredientRepository.findById(ingredientNo).get();
         Ingredient newIngredient = ingredientRepository.findById(newIngredientNo).get();
         List<GroupBuy> groupBuyList = groupBuyRepository.findByIngredient_IngredientNo(ingredientNo);
@@ -109,6 +107,7 @@ public class ManagerService {
         groupBuyList.forEach(groupBuy -> {groupBuy.setIngredient(newIngredient);});
         recipeList.forEach(recipe -> {recipe.setIngredient(newIngredient);});
         ingredient.setDelDate(LocalDateTime.now());
+        ingredientRepository.save(ingredient);
     }
 
     //공구 관리
@@ -141,7 +140,13 @@ public class ManagerService {
                 .status(vo.getStatus())
                 .reportedDate(vo.getReportedDate())
                 .reporterName(reporter.getNickname())
+                .reporterImageUrl(reporter.getImageUrl())
+                .imageUrl(vo.getImageUrl())
                 .reason(vo.getReason())
+                .targetName(vo.getTargetName())
+                .targetImageUrl(vo.getTargetImageUrl())
+                .groupBuyTitle(vo.getGroupBuyTitle())
+                .groupBuyImageUrl(vo.getGroupBuyImageUrl())
                 .type(type)
                 .build();
     }
@@ -160,8 +165,7 @@ public class ManagerService {
 
     @Transactional
     public void editReportStatus(Integer reportNo, String status) {
-        Report report = reportRepository.findWithReporterByReportNo(reportNo)
-                .orElseThrow(() -> new RuntimeException("Report가 없습니다."));
+        Report report = reportRepository.findById(reportNo).get();
         report.setStatus(status);
         reportRepository.save(report);
     }
@@ -175,6 +179,7 @@ public class ManagerService {
                 .banDate(member.getBanDate())
                 .imageUrl(member.getImageUrl())
                 .accountStatus(member.getAccountStatus())
+                .inDate(member.getInDate())
                 .build();
     }
 
@@ -190,6 +195,7 @@ public class ManagerService {
         Member member = memberRepository.findByMemberNo(memberNo);
         LocalDateTime banDate = LocalDateTime.now().plusDays(days);
         member.setBanDate(banDate);
+        memberRepository.save(member);
     }
 
 }

@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         list.forEach((item) => {
             const row = `
-                <tr data-id="${item.reportId}">
+                <tr data-id="${item.managerReportId}">
                     <td>${item.managerReportId}</td>
                     <td><span class="btn btn-sm ${statusColor(item.status)}">${item.status}</span></td>
                     <td>${formatDate(item.reportedDate)}</td>
@@ -128,6 +128,39 @@ document.addEventListener("DOMContentLoaded", () => {
         renderTable(filtered);
     }
 
+    const reporterImageUrl = document.getElementById("reporterImageUrl");
+    const reporterName = document.getElementById("reporterName");
+    const reporterId = document.getElementById("reporterId");
+
+    const targetImageUrl = document.getElementById("targetImageUrl");
+    const targetName = document.getElementById("targetName");
+    const targetId = document.getElementById("targetId");
+
+    const imageUrl = document.getElementById("imageUrl");
+    const reportReason = document.getElementById("reportReason");
+
+
+    function bindReportDetail(data) {
+
+        reporterImageUrl.src = data.reporterImageUrl ?? "/img/default-profile.png";
+        reporterName.textContent = data.reporterName ?? "-";
+        reporterId.textContent = data.reporterId ?? "";
+
+        if (data.type === "회원 신고") {
+            targetImageUrl.src = data.targetImageUrl ?? "/img/default-profile.png";
+            targetName.textContent = data.targetName ?? "-";
+            targetId.textContent = data.targetId ?? "";
+        } else {
+            targetImageUrl.src = data.groupBuyImageUrl ?? "/img/default-profile.png";
+            targetName.textContent = data.groupBuyTitle ?? "-";
+            targetId.textContent = data.groupBuyNo ?? "";
+        }
+
+        imageUrl.src = data.imageUrl ?? "-";
+        reportReason.value = data.reason ?? "";
+    }
+
+
 
     // ================================
     // 4) 이벤트 바인딩
@@ -149,6 +182,25 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
+    const reportDetailModal = new bootstrap.Modal(
+        document.getElementById("reportDetailModal")
+    );
+
+    function openReportDetail(reportId) {
+        const data = originalData.find(
+            item => item.managerReportId === Number(reportId)
+        );
+
+        if (!data) {
+            console.error("해당 신고 데이터 없음:", reportId);
+            return;
+        }
+
+        bindReportDetail(data);
+        reportDetailModal.show();
+    }
+
+
 
     // ================================
     // 5) 상세보기 이벤트 위임
@@ -160,7 +212,54 @@ document.addEventListener("DOMContentLoaded", () => {
         const tr = btn.closest("tr");
         const reportId = tr.dataset.id;
 
-        location.href = `/manager/reportManagement/detail/${reportId}`;
+        openReportDetail(reportId);
+    });
+
+    let currentReportId = null;
+
+// 상세 열었을 때 id 저장
+    function openReportDetail(reportId) {
+        currentReportId = reportId;
+        const data = originalData.find(item => item.managerReportId === Number(reportId));
+
+        if (!data) return;
+
+        bindReportDetail(data);
+        reportDetailModal.show();
+    }
+
+    document.getElementById("completeBtn").addEventListener("click", async () => {
+        if (!currentReportId) return;
+
+        try {
+            await fetch(`/api/manager/reportManagement/complete?reportNo=${currentReportId}`, {
+                method: "PUT"
+            });
+
+            alert("처리 완료되었습니다.");
+            reportDetailModal.hide();
+            loadReportData(); // 테이블 최신화
+        } catch (e) {
+            console.error(e);
+            alert("처리 실패");
+        }
+    });
+
+    document.getElementById("rejectBtn").addEventListener("click", async () => {
+        if (!currentReportId) return;
+
+        try {
+            await fetch(`/api/manager/reportManagement/rejection?reportNo=${currentReportId}`, {
+                method: "PUT"
+            });
+
+            alert("반려되었습니다.");
+            reportDetailModal.hide();
+            loadReportData();
+        } catch (e) {
+            console.error(e);
+            alert("처리 실패");
+        }
     });
 
 

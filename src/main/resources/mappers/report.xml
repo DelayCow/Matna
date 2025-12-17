@@ -7,10 +7,13 @@
         <result property="reporterNo" column="reporterNo" jdbcType="INTEGER"/>
         <result property="reporterId" column="reporterId" jdbcType="VARCHAR"/>
         <result property="reporterName" column="reporterName" jdbcType="VARCHAR"/>
+        <result property="reporterImageUrl" column="reporterImageUrl" jdbcType="VARCHAR"/>
         <result property="status" column="status" jdbcType="VARCHAR"/>
         <result property="reportedDate" column="reportedDate" jdbcType="TIMESTAMP"/>
+        <result property="imageUrl" column="imageUrl" jdbcType="VARCHAR"/>
         <result property="reason" column="reason" jdbcType="VARCHAR"/>
         <result property="targetNo" column="targetNo" jdbcType="INTEGER"/>
+        <result property="reason" column="reason" jdbcType="VARCHAR"/>
         <result property="groupBuyNo" column="groupBuyNo" jdbcType="INTEGER"/>
         <result property="reportCase" column="reportCase" jdbcType="VARCHAR"/>
     </resultMap>
@@ -19,31 +22,53 @@
         SELECT
         rt.report_no AS reportNo,
         rt.reporter_no AS reporterNo,
+
+        -- 신고자
         m.member_id AS reporterId,
         m.nickname AS reporterName,
-        rt.reported_date AS reportedDate,
+        m.image_url AS reporterImageUrl,
+
         rt.status AS status,
+        rt.reported_date AS reportedDate,
+        rt.image_url AS imageUrl,
         rt.reason AS reason,
+
+        -- 신고 대상 (회원 신고일 때만 값 존재)
         mr.target_no AS targetNo,
+        tm.member_id AS targetId,
+        tm.nickname AS targetName,
+        tm.image_url AS targetImageUrl,
+
+        -- 그룹구매 신고
         gbr.group_buy_no AS groupBuyNo,
+        gb.title AS groupBuyTitle,
+        gb.image_url AS groupBuyImageUrl,
+
         CASE
         WHEN gbr.report_no IS NOT NULL THEN 'group_buys'
         WHEN mr.report_no IS NOT NULL THEN 'members'
         ELSE 'error'
         END AS reportCase
-        FROM
-            reports rt
+
+        FROM reports rt
+
+        -- 신고자
         JOIN members m ON m.member_no = rt.reporter_no
-        LEFT JOIN
-            member_reports mr ON rt.report_no = mr.report_no
-        LEFT JOIN
-            group_buy_reports gbr ON rt.report_no = gbr.report_no
+
+        -- 회원 신고
+        LEFT JOIN member_reports mr ON rt.report_no = mr.report_no
+        LEFT JOIN members tm ON mr.target_no = tm.member_no
+
+        -- 그룹구매 신고
+        LEFT JOIN group_buy_reports gbr ON rt.report_no = gbr.report_no
+        LEFT JOIN group_buys gb ON gbr.group_buy_no = gb.group_buy_no
+
         <where>
             <if test="startDate != null and endDate != null">
-                rt.reported_date between #{startDate} and #{endDate}
+                rt.reported_date BETWEEN #{startDate} AND #{endDate}
             </if>
             <if test="status != null">
-                and rt.status = #{status}
+                AND rt.status = #{status}
             </if>
             <if test="reportCase == 'members'">
                 AND mr.report_no IS NOT NULL
@@ -54,10 +79,10 @@
             <if test="keyword != null and keyword != ''">
                 AND (
                 m.member_id LIKE CONCAT('%', #{keyword}, '%')
-                OR
-                m.nickname LIKE CONCAT('%', #{keyword}, '%')
+                OR m.nickname LIKE CONCAT('%', #{keyword}, '%')
                 )
             </if>
         </where>
     </select>
+
 </mapper>

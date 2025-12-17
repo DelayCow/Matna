@@ -104,10 +104,10 @@ public class ManagerServiceTests {
     }
 
     @Test
+    @Transactional
     public void editReport(){
-        Report report = reportRepository.findWithReporterByReportNo(11)
-                .orElseThrow(() -> new RuntimeException("report 없습니다."));;
-        managerService.editReportStatus(11, "complete");
+        Report report = reportRepository.findById(6).get();
+        managerService.editReportStatus(6, "complete");
         System.out.println(report);
     }
 
