@@ -192,10 +192,28 @@ public class MypageRestController {
         }
     }
 
-    @PostMapping("/report/group")
-    public void reportGroup(@RequestBody AllReportVO reportVO) {
+    @PostMapping("/report/groupbuy")
+    public ResponseEntity<String> reportGroupBuy(
+            @ModelAttribute AllReportVO reportVO,
+            @AuthenticationPrincipal PrincipalDetails principal
+    ) {
 
-        mypageService.addReportGroupBuy(reportVO);
+
+        try {
+            if (principal == null) {
+                return ResponseEntity.status(401).body("로그인이 필요합니다.");
+            }
+
+            reportVO.setReporterNo(principal.getMember().getMemberNo());
+
+            mypageService.addReportGroupBuy(reportVO);
+
+            return ResponseEntity.ok("공구 신고가 정상적으로 접수되었습니다.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("오류 발생: " + e.getMessage());
+        }
     }
 
     @PostMapping("/point/charge")

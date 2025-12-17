@@ -59,6 +59,16 @@ export function showShareConfirmModal(item, onConfirm) {
     const dateInput = document.getElementById('shareModalDate');
     const confirmBtn = document.getElementById('shareConfirmBtn');
 
+    const reportBtn = document.getElementById('btnReportShare'); // 아까 ID 추가했죠?
+    if (reportBtn) {
+        reportBtn.onclick = () => {
+
+            modal.hide();
+
+            showReportModal('GROUPBUY', item.groupBuyNo);
+        };
+    }
+
     // 제목
     if (titleInput) {
         titleInput.value = item.title || "";
@@ -144,9 +154,13 @@ export function showPaymentInfoModal(item) {
 
 
     const reportBtn = document.getElementById('btnReportPayment');
-    reportBtn.onclick = () => {
-        alert("좀다 구현");
-    };
+
+    if (reportBtn) {
+        reportBtn.onclick = () => {
+            modal.hide();
+            showReportModal('GROUPBUY', item.groupBuyNo);
+        };
+    }
 
     modal.show();
 }
@@ -165,6 +179,15 @@ export function showArrivalInfoModal(item) {
     const imgEl = document.getElementById('modalArrivalImg');
     const noImgEl = document.getElementById('modalArrivalNoImg');
     const dateEl = document.getElementById('modalArrivalDate');
+
+
+    const reportBtn = document.getElementById('btnReportArrival');
+    if (reportBtn) {
+        reportBtn.onclick = () => {
+            modal.hide();
+            showReportModal('GROUPBUY', item.groupBuyNo);
+        };
+    }
 
 
     if (item.arrivalImageUrl) {
@@ -438,6 +461,111 @@ export function showPasswordCheckModal(memberNo) {
     modalEl.addEventListener('shown.bs.modal', () => {
         inputEl.focus();
     });
+}
+
+// [통합] 신고 모달 (HTML은 modal.html에 있음)
+export function showReportModal(type, targetId, onSuccess) {
+    const modalEl = document.getElementById('reportModal');
+
+    // HTML이 없으면 에러 (이제 modal.html에 넣었으니 에러 안 남)
+    if (!modalEl) {
+        console.error("오류: 'reportModal'이 HTML에 없습니다.");
+        return;
+    }
+
+    const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+
+    // 1. 요소 가져오기
+    const modalTitle = document.getElementById('reportModalLabel');
+    const imgArea = document.getElementById('uploadTrigger');
+    const fileInput = document.getElementById('reportFile');
+    const previewImg = document.getElementById('previewImage');
+    const plusIcon = document.getElementById('plusIcon');
+    const reasonInput = document.getElementById('reportReason');
+    const form = document.getElementById('reportForm');
+
+    // 2. 초기화
+    form.reset();
+    fileInput.value = '';
+    previewImg.src = '';
+    previewImg.style.display = 'none';
+    plusIcon.style.display = 'block';
+
+    // 3. 타입 설정 (MEMBER / GROUPBUY)
+    let apiUrl = '';
+    let idFieldName = '';
+
+    if (type === 'MEMBER') {
+        modalTitle.textContent = "회원 신고";
+        apiUrl = '/api/mypage/report/member';
+        idFieldName = 'targetMemberNo';
+    } else if (type === 'GROUPBUY') {
+        modalTitle.textContent = "공구 신고";
+        apiUrl = '/api/mypage/report/groupbuy';
+        idFieldName = 'groupBuyNo';
+    } else {
+        console.error("잘못된 신고 유형");
+        return;
+    }
+
+    // 4. 이미지 미리보기 (핸들러 덮어쓰기)
+    imgArea.onclick = () => fileInput.click();
+
+    fileInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                previewImg.style.display = 'block';
+                plusIcon.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            previewImg.src = '';
+            previewImg.style.display = 'none';
+            plusIcon.style.display = 'block';
+        }
+    };
+
+    // 5. 전송 (핸들러 덮어쓰기)
+    form.onsubmit = (e) => {
+        e.preventDefault();
+
+        const reason = reasonInput.value.trim();
+        if (!reason) {
+            alert("신고 사유를 입력해주세요.");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append(idFieldName, targetId);
+        formData.append("reason", reason);
+        if (fileInput.files[0]) {
+            formData.append("imageFile", fileInput.files[0]);
+        }
+
+        fetch(apiUrl, {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => {
+                if (response.ok) {
+                    alert("신고가 접수되었습니다.");
+                    modal.hide();
+                    if (onSuccess) onSuccess();
+                } else {
+                    response.text().then(msg => alert("신고 실패: " + msg));
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("오류 발생");
+            });
+    };
+
+    // 6. 모달 표시
+    modal.show();
 }
 
 

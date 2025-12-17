@@ -327,8 +327,14 @@ public class MypageService {
     }
 
 
-    public void addReportGroupBuy(AllReportVO vo) {
+    public void addReportGroupBuy(AllReportVO vo) throws IOException {
 
+        MultipartFile file = vo.getImageFile();
+
+        if (file != null && !file.isEmpty()) {
+            String path = imageStorageService.save(file, "report");
+            vo.setImageUrl(path); // 저장된 경로를 VO에 셋팅!
+        }
 
         Member reporter = memberRepository.findById(vo.getReporterNo())
                 .orElseThrow(() -> new RuntimeException("신고자 정보가 없습니다."));

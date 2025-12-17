@@ -1,5 +1,5 @@
 
-import { showShareConfirmModal, showPaymentInfoModal, showArrivalInfoModal, showPaymentRegisterModal,showPasswordCheckModal } from "./modal.js";
+import { showShareConfirmModal, showPaymentInfoModal, showArrivalInfoModal, showPaymentRegisterModal,showPasswordCheckModal, showReportModal } from "./modal.js";
 
 document.addEventListener('DOMContentLoaded', function() {
 
@@ -136,7 +136,8 @@ document.addEventListener('DOMContentLoaded', function() {
               onclick="location.href='/mypage/point/charge'">
          내 맛나머니 : ${money.toLocaleString()} 원
        </small>`
-            : `<button class="btn btn-outline-secondary btn-sm rounded-pill px-2 py-0 mt-1">
+            : `<button class="btn btn-outline-secondary btn-sm rounded-pill px-2 py-0 mt-1 btn-report-member"
+         data-member-no= "${memberNo}">
          <i class="bi bi-exclamation-circle me-1"></i>신고하기
        </button>`;
 
@@ -438,6 +439,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         });
     }
+
+    document.body.addEventListener('click', function(e) {
+        const reportBtn = e.target.closest('.btn-report-member');
+
+        if (reportBtn) {
+            e.preventDefault();
+            const targetMemberNo = reportBtn.getAttribute('data-member-no');
+            
+            showReportModal('MEMBER', targetMemberNo);
+        }
+    });
 
     // 나머지 탭/필터 이벤트들...
     const statTabRecipe = document.getElementById('statTabRecipe');
