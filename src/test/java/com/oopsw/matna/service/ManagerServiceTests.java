@@ -123,7 +123,7 @@ public class ManagerServiceTests {
 
     @Test
     public void updateBanDate(){
-        managerService.updateBanDate(12, 3);
+        managerService.updateBanDate(12, "2");
     }
 
 }

@@ -11,7 +11,6 @@ import com.oopsw.matna.repository.entity.*;
 import com.oopsw.matna.vo.AllGroupBuyListVO;
 import com.oopsw.matna.vo.AllMemberListVO;
 import com.oopsw.matna.vo.AllReportVO;
-import com.oopsw.matna.vo.MemberVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static java.lang.Integer.parseInt;
 
 @Service
 @RequiredArgsConstructor
@@ -198,9 +199,9 @@ public class ManagerService {
     }
 
     @Transactional
-    public void updateBanDate(Integer memberNo, Integer days) {
+    public void updateBanDate(Integer memberNo, String days) {
         Member member = memberRepository.findByMemberNo(memberNo);
-        LocalDateTime banDate = LocalDateTime.now().plusDays(days);
+        LocalDateTime banDate = LocalDateTime.now().plusDays(parseInt(days));
         member.setBanDate(banDate);
         memberRepository.save(member);
     }

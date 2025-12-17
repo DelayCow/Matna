@@ -16,4 +16,5 @@ public class ManagerMemberResponse {
     private String imageUrl;
     private LocalDateTime banDate;
     private String accountStatus;
+    private LocalDateTime inDate;
 }

@@ -94,7 +94,7 @@ public class ManagerRestController {
     }
 
     @PutMapping("/memberManagement/ban")
-    public void banMember(@RequestParam Integer memberId, @RequestParam Integer banDate) {
-        managerService.updateBanDate(memberId, banDate);
+    public void banMember(@RequestParam Integer memberNo, @RequestParam String days) {
+        managerService.updateBanDate(memberNo, days);
     }
 }
