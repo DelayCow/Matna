@@ -1,51 +1,27 @@
 // 전역 변수
-let currentStatus = 'normal'; // normal, participant, creator
+let currentStatus = 'normal';
 let currentData = null;
 let myGroupBuyParticipantNo = null;
 let groupBuyNo = null;
 
 const normalBtn = document.querySelector('.normal-btn');
 const participantBtn = document.querySelector('.participant-btn');
-const creatorStoppedBtn = document.querySelector('.creator-stopped-btn');
-
-// 상태에 따른 버튼 표시
-function showBtnByStatus(status) {
-    console.log('showBtnByStatus called with:', status);
-
-    const allBtns = [normalBtn, participantBtn, creatorStoppedBtn];
-
-    // 모든 버튼 숨기기
-    allBtns.forEach(btn => {
-        if (btn) {
-            btn.classList.add('d-none');
-        }
-    });
-
-    // 상태에 맞는 버튼 보이기
-    switch(status) {
-        case 'normal':
-            if (normalBtn) {
-                normalBtn.classList.remove('d-none');
-                console.log('Normal button shown');
-            }
-            break;
-        case 'participant':
-            if (participantBtn) {
-                participantBtn.classList.remove('d-none');
-                console.log('Participant button shown');
-            }
-            break;
-        case 'creator':
-            if (creatorStoppedBtn) {
-                creatorStoppedBtn.classList.remove('d-none');
-                console.log('Creator button shown');
-            }
-            break;
-    }
-}
+const creatorRunningBtn = document.querySelector('.creator-running-btn');
 
 // === API 호출 ===
 const api = {
+    // 현재 사용자 인증 정보 조회
+    getCurrentUser: () =>
+        fetch('/api/auth/currentUser', {
+            method: 'GET',
+            credentials: 'include'  // 쿠키 포함
+        })
+            .then(res => {
+                if (!res.ok) throw new Error('인증 정보 조회 실패');
+                return res.json();
+            }),
+
+    // 공동구매 상세 조회
     getDetail: () =>
         fetch(`/api/periodGroupBuy/detail/${PAGE_CONFIG.periodGroupBuyNo}`, {
             method: 'GET'
@@ -60,7 +36,7 @@ const api = {
                 return res.json();
             }),
 
-    // 참여하기 API (일반 참여)
+    // 참여하기 API
     joinGroupBuy: (groupBuyNo) =>
         fetch(`/api/periodGroupBuy/join`, {
             method: 'POST',
@@ -68,16 +44,6 @@ const api = {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({ groupBuyNo: groupBuyNo })
-        })
-            .then(res => res.json()),
-
-    // 마지막 참여자 (마감 처리)
-    joinAndClose: (groupBuyNo) =>
-        fetch(`/api/periodGroupBuy/closedAndRefund/${groupBuyNo}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            }
         })
             .then(res => res.json()),
 
@@ -103,11 +69,42 @@ const api = {
             .then(res => res.json())
 };
 
+// 상태에 따른 버튼 표시
+function showBtnByStatus(status) {
+    console.log('showBtnByStatus called with:', status);
+
+    const allBtns = [normalBtn, participantBtn, creatorRunningBtn];
+
+    allBtns.forEach(btn => {
+        if (btn) {
+            btn.classList.add('d-none');
+        }
+    });
+
+    switch(status) {
+        case 'normal':
+            if (normalBtn) {
+                normalBtn.classList.remove('d-none');
+            }
+            break;
+        case 'participant':
+            if (participantBtn) {
+                participantBtn.classList.remove('d-none');
+            }
+            break;
+        case 'creator':
+            if (creatorRunningBtn) {
+                creatorRunningBtn.classList.remove('d-none');
+            }
+            break;
+    }
+}
+
 // === 렌더링 함수 ===
 const render = {
-    // 전체 상세 페이지 렌더링
     detail: (data) => {
-        console.log('API Response:', data);
+        console.log('Received data:', data);
+
         const { groupBuyDetail, participants, recipes } = data;
         currentData = data;
 
@@ -115,21 +112,18 @@ const render = {
         render.participants(participants);
         render.recipes(recipes);
 
-        // 사용자 상태 결정
         determineUserStatus(groupBuyDetail, participants);
     },
 
-    // 공동구매 기본 정보 렌더링
     groupBuyInfo: (detail, participants) => {
+        console.log('groupBuyInfo detail:', detail);
+
         const productImage = document.getElementById('data-product-image');
         if (productImage && detail.imageUrl) {
             productImage.src = detail.imageUrl;
             productImage.alt = detail.title || '공동구매 이미지';
         }
-        const authorLink = document.getElementById('data-author-link');
-        if (authorLink && detail.creatorNo) {
-            authorLink.href = `/mypage/${detail.creatorNo}`;
-        }
+
         const authorProfile = document.getElementById('data-author-profile');
         if (authorProfile && detail.profileImageUrl) {
             authorProfile.src = detail.profileImageUrl;
@@ -203,10 +197,10 @@ const render = {
 
         const estimatedPriceEl = document.getElementById('data-estimated-price');
         if (estimatedPriceEl) {
-            const pricePerPerson = currentParticipants > 0
+            const pricePerUnit = currentParticipants > 0
                 ? (totalWithFee / detail.quantity).toFixed(1)
                 : maxPrice;
-            estimatedPriceEl.innerHTML = `<span class="text-danger">( 1${detail.unit || 'g'} 당 ${parseFloat(pricePerPerson).toLocaleString()}원 )</span>`;
+            estimatedPriceEl.innerHTML = `<span class="text-danger">( 1${detail.unit || 'g'} 당 ${parseFloat(pricePerUnit).toLocaleString()}원 )</span>`;
         }
 
         const priceTableEl = document.getElementById('data-price-table');
@@ -227,6 +221,7 @@ const render = {
         if (shareAddressEl && detail.shareDetailAddress) {
             shareAddressEl.textContent = ' ' + detail.shareDetailAddress;
         }
+
         // 지도 아이콘 클릭 이벤트 설정
         const mapIcon = document.getElementById('address-map');
         if (mapIcon && detail.shareLocation) {
@@ -272,15 +267,12 @@ const render = {
 
                 const profileUrl = p.profileUrl || '/img/user.png';
                 const nickname = p.nickname || '익명';
-                const memberNo = p.memberNo || '';
 
                 const item = `
           <div class="d-flex align-items-center mb-3">
-            <a href="/mypage/${memberNo}" style="text-decoration: none; color: inherit;">
-              <img src="${profileUrl}" class="rounded-circle me-3" alt="참여자 프로필" 
-                   style="width:50px; height:50px; cursor: pointer;" 
-                   onerror="this.onerror=null; this.src='/img/user.png';">
-            </a>
+            <img src="${profileUrl}" class="rounded-circle me-3" alt="참여자 프로필" 
+                 style="width:50px; height:50px;" 
+                 onerror="this.onerror=null; this.src='/img/user.png';">
             <div class="d-flex flex-column">
               <span class="fw-bold fs-6">${nickname}</span>
               <span class="small text-muted">${date}</span>
@@ -341,16 +333,16 @@ function openKakaoMap(address) {
 
 // 사용자 상태 결정
 function determineUserStatus(detail, participants) {
-    console.log('=== determineUserStatus ===');
-    console.log('currentMemberNo:', PAGE_CONFIG.currentMemberNo);
-    console.log('creatorNo:', detail.creatorNo);
-    console.log('participants:', participants);
+    console.log('=== determineUserStatus called ===');
+    console.log('Current member no:', PAGE_CONFIG.currentMemberNo);
+    console.log('Creator no:', detail.creatorNo);
+    console.log('GroupBuy no:', detail.groupBuyNo);
+    console.log('Participants:', participants);
 
     const currentMemberNo = PAGE_CONFIG.currentMemberNo;
     const creatorNo = detail.creatorNo;
     groupBuyNo = detail.groupBuyNo;
 
-    // 로그인하지 않은 사용자
     if (!currentMemberNo || currentMemberNo === null) {
         console.log('Not logged in');
         currentStatus = 'normal';
@@ -358,28 +350,30 @@ function determineUserStatus(detail, participants) {
         return;
     }
 
-    // 개설자인 경우
     if (currentMemberNo === creatorNo) {
-        console.log('User is creator');
+        console.log('✓ User is CREATOR');
         currentStatus = 'creator';
-    } else {
-        // 참여자 목록에서 현재 사용자 찾기
-        const myParticipation = participants.find(p => {
-            console.log('Checking participant:', p.memberNo, 'vs', currentMemberNo);
-            return p.memberNo === currentMemberNo;
-        });
-
-        if (myParticipation) {
-            console.log('User is participant');
-            currentStatus = 'participant';
-            myGroupBuyParticipantNo = myParticipation.groupParticipantNo;
-        } else {
-            console.log('User is normal');
-            currentStatus = 'normal';
-        }
+        showBtnByStatus(currentStatus);
+        return;
     }
 
-    console.log('Final status:', currentStatus);
+    const myParticipation = participants.find(p => {
+        console.log(`Checking participant - memberNo: ${p.memberNo}, vs current: ${currentMemberNo}`);
+        return p.memberNo === currentMemberNo;
+    });
+
+    if (myParticipation) {
+        console.log('✓ User is PARTICIPANT');
+        console.log('  - groupParticipantNo:', myParticipation.groupParticipantNo);
+        console.log('  - memberNo:', myParticipation.memberNo);
+        currentStatus = 'participant';
+        myGroupBuyParticipantNo = myParticipation.groupParticipantNo;
+        showBtnByStatus(currentStatus);
+        return;
+    }
+
+    console.log('✓ User is NORMAL (not participant, not creator)');
+    currentStatus = 'normal';
     showBtnByStatus(currentStatus);
 }
 
@@ -464,7 +458,7 @@ const utils = {
     }
 };
 
-// === 모달 설정 ===
+// === 모달 설정 (기존과 동일) ===
 document.addEventListener('DOMContentLoaded', function () {
     const dynamicMainModal = document.getElementById('dynamicMainModal');
     if (!dynamicMainModal) return;
@@ -497,11 +491,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 const currentCount = participants.length + 1;
                 const totalPrice = detail.price || 0;
                 const feeRate = detail.feeRate || 0;
-                const totalWithFee = Math.round((totalPrice * (1 + feeRate / 100))/2);
+                const totalWithFee = totalPrice * (1 + feeRate / 100);
                 const estimatedAmount = Math.round(totalWithFee / (currentCount + 1));
 
                 document.getElementById('personCount').textContent = currentCount;
-                document.getElementById('amountValue').textContent = totalWithFee;
+                document.getElementById('amountValue').textContent = estimatedAmount.toLocaleString();
 
                 const modalPriceTable = document.getElementById('modal-price-table');
                 if (modalPriceTable) {
@@ -536,37 +530,16 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// 모달 액션 버튼
+// 모달 액션 버튼 이벤트
 document.addEventListener('DOMContentLoaded', function() {
     const mainActionButton = document.getElementById('mainActionButton');
     if (!mainActionButton) return;
 
     mainActionButton.addEventListener('click', async function() {
         if (currentStatus === 'normal') {
-            // 참여하기
-            if (!PAGE_CONFIG.currentMemberNo) {
-                alert('로그인이 필요합니다.');
-                return;
-            }
-
             if (confirm('공동구매에 참여하시겠습니까?')) {
                 try {
-                    // 마지막 참여자인지 확인
-                    const detail = currentData.groupBuyDetail;
-                    const participants = currentData.participants || [];
-                    const currentCount = participants.length + 1; // 개설자 포함
-                    const maxParticipants = detail.maxParticipants;
-
-                    let response;
-                    if (currentCount + 1 >= maxParticipants) {
-                        // 마지막 참여자 - 마감 처리
-                        console.log('Last participant - closing group buy');
-                        response = await api.joinAndClose(groupBuyNo);
-                    } else {
-                        // 일반 참여
-                        console.log('Normal participant join');
-                        response = await api.joinGroupBuy(groupBuyNo);
-                    }
+                    const response = await api.joinGroupBuy(groupBuyNo);
 
                     if (response.success) {
                         alert(response.message);
@@ -580,7 +553,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         } else if (currentStatus === 'participant') {
-            // 취소하기
             if (!myGroupBuyParticipantNo) {
                 alert('참여 정보를 찾을 수 없습니다.');
                 return;
@@ -602,7 +574,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         } else if (currentStatus === 'creator') {
-            // 중단하기
             const reasonTextarea = document.getElementById('cancelReasonTextarea');
             const reason = reasonTextarea?.value.trim();
 
@@ -630,10 +601,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-
 // === 초기화 ===
 document.addEventListener('DOMContentLoaded', async function () {
     try {
+        // 1. 인증 정보 먼저 로드
+        const authData = await api.getCurrentUser();
+
+        PAGE_CONFIG.currentMemberNo = authData.memberNo;
+        console.log('Updated PAGE_CONFIG:', PAGE_CONFIG);
+
+        // 2. 공동구매 데이터 로드 및 렌더링
         const data = await api.getDetail();
         render.detail(data);
     } catch (error) {
