@@ -170,8 +170,8 @@ export const fetchRecipeData = function(recipeNo){
         .then(response => {
             return response.json();
         }).then(data => {
-            ingredientData += data.ingredients.map(i => createIngredientPart(i)).join('')
-            recipeInfo.insertAdjacentHTML('beforeend', createRecipeInfo(data))
+            ingredientData += data.recipeDetail.ingredients.map(i => createIngredientPart(i)).join('')
+            recipeInfo.insertAdjacentHTML('beforeend', createRecipeInfo(data.recipeDetail))
             ingredientPart.insertAdjacentHTML('beforeend', ingredientData)
             initializeIngredient();
         }).catch(e => {

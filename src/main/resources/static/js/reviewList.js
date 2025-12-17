@@ -49,7 +49,6 @@ const fetchReviewData = async function(recipeNo){
             const cardHtml = createReviewCard(translatedFormatReview, recipeNo);
             reviewList.insertAdjacentHTML('beforeend', cardHtml)
         })
-        console.log(reviewData)
         bindRemoveEvents();
         bindMoveWriterPage();
     }catch(error){
@@ -60,10 +59,10 @@ const fetchRecipeData = async function(recipeNo){
     const recipeInfo = document.querySelector('.rating-summary');
     try{
         const response = await fetch(`/api/recipes/detail/${recipeNo}`)
-        const recipeData = await response.json();
+        const data = await response.json();
         const infoHtml = `<span class="text-warning"><i class="bi bi-star-fill"></i></span>
-                                <span class="fw-semibold">${recipeData.rating}</span>
-                                <span style="color: #6c757d;">(${recipeData.reviewCount})</span>`
+                                <span class="fw-semibold">${data.recipeDetail.rating}</span>
+                                <span style="color: #6c757d;">(${data.recipeDetail.reviewCount})</span>`
         recipeInfo.insertAdjacentHTML('afterbegin', infoHtml)
     }catch(error){
         console.error('레시피 데이터 가져오는 중 오류 발생: ', error);
