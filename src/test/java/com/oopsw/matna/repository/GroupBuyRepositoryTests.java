@@ -74,4 +74,9 @@ public class GroupBuyRepositoryTests {
         groupBuy.setArrivalDate(deliveryData.getArrivalDate());
         groupBuyRepository.save(groupBuy);
     };
+
+    @Test
+    public void isGroupBuyTest(){
+        System.out.println(groupBuyRepository.existsByIngredient_IngredientNoAndStatus(31, "open"));
+    }
 };
