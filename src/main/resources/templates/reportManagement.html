@@ -22,7 +22,7 @@
     <!-- 메뉴 -->
     <ul class="nav flex-column mb-auto">
         <li class="nav-item mb-2">
-            <a class="nav-link sidebar-link" href="/manager/userManagement">유저 관리</a>
+            <a class="nav-link sidebar-link" href="/manager/memberManagement">유저 관리</a>
         </li>
         <li class="nav-item mb-2">
             <a class="nav-link sidebar-link" href="/manager/groupBuyManagement">공구 관리</a>
@@ -101,6 +101,62 @@
     </div>
     </div>
 </div>
+<!-- 신고 상세 모달 -->
+<div class="modal fade" id="reportDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+
+            <!-- 헤더 -->
+            <div class="modal-header">
+                <h5 class="modal-title">신고</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- 바디 -->
+            <div class="modal-body">
+
+                <!-- 신고자 / 신고 대상 -->
+                <div class="d-flex justify-content-between mb-3">
+                    <div class="p-3 border rounded text-center w-45">
+                        <div class="fw-bold">신고자</div>
+                        <img id="reporterImageUrl" class="rounded-circle my-2" width="60">
+                        <div id="reporterName"></div>
+                        <small id="reporterId" class="text-muted"></small>
+                    </div>
+
+                    <div class="p-3 border rounded text-center w-45">
+                        <div class="fw-bold">신고 대상</div>
+                        <img id="targetImageUrl" class="rounded-circle my-2" width="60">
+                        <div id="targetName"></div>
+                        <small id="targetId" class="text-muted"></small>
+                    </div>
+                </div>
+
+                <!-- 자료 -->
+                <div class="mb-3">
+                    <div class="fw-bold mb-2">자료</div>
+                    <div id="imageUrl" class="p-3 bg-light rounded"></div>
+                </div>
+
+                <!-- 내용 -->
+                <div>
+                    <div class="fw-bold mb-2">내용</div>
+                    <textarea id="reportReason" class="form-control" rows="4" readonly></textarea>
+                </div>
+
+            </div>
+
+            <!-- 푸터 -->
+            <div class="modal-footer">
+                <button class="btn btn-warning" id="rejectBtn">반려</button>
+                <button class="btn btn-success" id="completeBtn">처리완료</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/js/sidebar.js"></script>
 <script src="/js/reportManagement.js"></script>
 </body>

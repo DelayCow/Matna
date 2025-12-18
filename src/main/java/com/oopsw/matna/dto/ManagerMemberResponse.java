@@ -1,18 +1,20 @@
-package com.oopsw.matna.vo;
+package com.oopsw.matna.dto;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @Builder
-@Data
-public class AllMemberListVO {
+@Getter
+@ToString
+public class ManagerMemberResponse {
     private Integer memberNo;
     private String memberId;
     private String nickname;
     private String imageUrl;
-    private LocalDateTime inDate;
     private LocalDateTime banDate;
     private String accountStatus;
+    private LocalDateTime inDate;
 }

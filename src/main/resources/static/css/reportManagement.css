@@ -5,9 +5,6 @@ body {
 .content {
     margin-left: 240px;
 }
-.status-btn {
-    pointer-events: none;
-}
 .table-content {
     background-color: #fff;
 }

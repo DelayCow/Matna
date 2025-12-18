@@ -24,4 +24,9 @@ public class ManagerController {
     public String reportManagement() {
         return "reportManagement";
     }
+
+    @GetMapping("memberManagement")
+    public String memberManagement() {
+        return "memberManagement";
+    }
 }

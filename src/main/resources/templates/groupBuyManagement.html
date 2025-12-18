@@ -23,7 +23,7 @@
     <!-- 메뉴 -->
     <ul class="nav flex-column mb-auto">
         <li class="nav-item mb-2">
-            <a class="nav-link sidebar-link" href="/manager/userManagement">유저 관리</a>
+            <a class="nav-link sidebar-link" href="/manager/memberManagement">유저 관리</a>
         </li>
         <li class="nav-item mb-2">
             <a class="nav-link sidebar-link" href="/manager/groupBuyManagement">공구 관리</a>
@@ -64,12 +64,12 @@
             <div class="col-md-8">
                 <label class="form-label">&nbsp;</label>
                 <div class="d-flex gap-2 flex-wrap">
-                    <button class="btn btn-outline-secondary">모집중</button>
-                    <button class="btn btn-outline-secondary">모집완료</button>
-                    <button class="btn btn-outline-secondary">결제대기</button>
-                    <button class="btn btn-outline-secondary">도착확인</button>
-                    <button class="btn btn-outline-secondary">나눔확정</button>
-                    <button class="btn btn-outline-danger">중단</button>
+                    <button class="btn btn-outline-secondary">open</button>
+                    <button class="btn btn-outline-secondary">closed</button>
+                    <button class="btn btn-outline-secondary">paid</button>
+                    <button class="btn btn-outline-secondary">delivered</button>
+                    <button class="btn btn-outline-secondary">shared</button>
+                    <button class="btn btn-outline-danger">canceled</button>
                 </div>
             </div>
         </div>
@@ -87,8 +87,8 @@
             <div class="col-md-2 ms-auto text-end">
                 <select class="form-select">
                     <option selected>전체</option>
-                    <option>기간</option>
-                    <option>수량</option>
+                    <option>period</option>
+                    <option>quantity</option>
                 </select>
             </div>
         </div>
@@ -107,38 +107,11 @@
                 <th>개설일</th>
                 <th>개설자</th>
                 <th>제목</th>
-                <th>상태</th>
+                <th>유형</th>
                 <th>상세보기</th>
             </tr>
             </thead>
-            <tbody>
-
-            <tr>
-                <td>1</td>
-                <td><span class="badge bg-danger badge-status">중단</span></td>
-                <td>2025.10.15.23.16</td>
-                <td>신혜림(moahd1211)</td>
-                <td>밀키트에서 제공 고추가루 5kg</td>
-                <td>기간</td>
-                <td class="d-flex justify-content-center gap-2">
-                    <button class="btn btn-primary btn-sm">상세보기</button>
-                    <button class="btn btn-danger btn-sm">중단하기</button>
-                </td>
-            </tr>
-
-            <tr>
-                <td>2</td>
-                <td><span class="badge bg-secondary badge-status">나눔확정</span></td>
-                <td>2025.10.20.10.16</td>
-                <td>양현기(ddududtns1010)</td>
-                <td>간편한 휴대 액상커피 리필보틀 500ml 5개</td>
-                <td>수령</td>
-                <td class="d-flex justify-content-center gap-2">
-                    <button class="btn btn-primary btn-sm">상세보기</button>
-                    <button class="btn btn-danger btn-sm">중단하기</button>
-                </td>
-            </tr>
-
+            <tbody id="groupBuyManagement">
             </tbody>
         </table>
     </div>

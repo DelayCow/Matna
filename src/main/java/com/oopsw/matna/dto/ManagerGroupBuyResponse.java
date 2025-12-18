@@ -15,4 +15,7 @@ public class ManagerGroupBuyResponse {
     private LocalDateTime inDate;
     private String creatorName;
     private String title;
+    private Integer quantityGroupBuyNo;
+    private Integer periodGroupBuyNo;
+    private String groupBuyCase;
 }
