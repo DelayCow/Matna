@@ -14,6 +14,7 @@ public class AllGroupBuyListVO {
     private String nickname;
     private Integer creatorNo;
     private String title;
-    private String groupBuyCase; // 기간 수량 공구
-
+    private Integer quantityGroupBuyNo;
+    private Integer periodGroupBuyNo;
+    private String groupBuyCase;
 }

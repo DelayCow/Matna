@@ -21,20 +21,10 @@ public class MypageController {
     private MypageService mypageService;
 
     @GetMapping({"/mypage/{memberNo}", "/mypage"})
-    public String mypage(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                         @PathVariable(required = false) Integer memberNo,
-                         Model model) {
-        Integer targetMemberNo;
-        if (memberNo == null) {
-            targetMemberNo = principalDetails.getMemberNo();
-        } else {
-            targetMemberNo = memberNo;
-        }
-        boolean isOwner = principalDetails.getMemberNo().equals(targetMemberNo);
-        model.addAttribute("isOwner", isOwner);
-        model.addAttribute("memberNo", targetMemberNo);
+    public String mypage(@PathVariable(required = false) Integer memberNo) {
         return "mypage";
     }
+
 
     @GetMapping("/mypage/point/charge")
     public String pointChargePage(@AuthenticationPrincipal PrincipalDetails principalDetails,

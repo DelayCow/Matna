@@ -22,7 +22,7 @@ public class ManagerDAOTests {
         String status = null;
         String title = "아";
         List<AllGroupBuyListVO> list = managerDAO.getAllGroupBuyList(startDate, endDate, title, status);
-        System.out.println(list.size());//4개
+        System.out.println(list);//4개
     }
 
     @Test

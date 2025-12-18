@@ -8,21 +8,23 @@
             gb.status,
             gb.in_date inDate,
             m.nickname,
-            gb.creator_no createorNo,
+            gb.creator_no creatorNo,
             gb.title,
+            qgb.quantity_group_buy_no AS quantityGroupBuyNo,
+            pgb.period_group_buy_no AS periodGroupBuyNo,
             CASE
                 WHEN qgb.group_buy_no IS NOT NULL THEN 'quantity'
                 WHEN pgb.group_buy_no IS NOT NULL THEN 'period'
                 ELSE 'error'
                 END AS groupBuyCase
         FROM
-            GROUP_BUYS gb
+            group_buys gb
                 JOIN
-            MEMBERS m ON m.member_no = gb.creator_no
+            members m ON m.member_no = gb.creator_no
                 LEFT JOIN
-            PERIOD_GROUP_BUYS pgb ON gb.group_buy_no = pgb.group_buy_no
+            period_group_buys pgb ON gb.group_buy_no = pgb.group_buy_no
                 LEFT JOIN
-            QUANTITY_GROUP_BUYS qgb ON gb.group_buy_no = qgb.group_buy_no
+            quantity_group_buys qgb ON gb.group_buy_no = qgb.group_buy_no
         <where>
             <if test="status != null and status != ''">
                 gb.status = #{status}
@@ -43,6 +45,7 @@
             member_no memberNo,
             nickname,
             member_id memberId,
+            image_url imgUrl,
             in_date inDate,
             ban_date banDate,
             CASE
@@ -61,5 +64,6 @@
                 AND in_date BETWEEN #{startDate} AND #{endDate}
             </if>
         </where>
+        ORDER BY member_no DESC
     </select>
 </mapper>

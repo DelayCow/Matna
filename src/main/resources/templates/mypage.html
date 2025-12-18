@@ -22,8 +22,8 @@
         </div>
     </header>
 
-    <div id="memberNo" style="display: none;" th:text="${memberNo}"></div>
-    <div id="isOwner" style="display: none;" th:text="${isOwner}"></div>
+<!--    <div id="memberNo" style="display: none;" th:text="${memberNo}"></div>-->
+<!--    <div id="isOwner" style="display: none;" th:text="${isOwner}"></div>-->
 
     <div class="content-wrapper">
         <section class="profile-section px-3 pb-3">
@@ -65,7 +65,7 @@
         </div>
 
         <div id="group-section-wrapper" style="display: none;">
-            <div th:if="${isOwner?.toString() == 'true'}" class="d-flex justify-content-between align-items-center px-3 mt-3 mb-2">
+            <div id='group-filters-container' class="justify-content-between align-items-center px-3 mt-3 mb-2">
 
                 <div class="btn-group" role="group">
                     <input type="radio" class="btn-check" name="groupFilter" id="btnParticipate" autocomplete="off" checked>
@@ -91,6 +91,7 @@
                 </main>
             </div>
         </div>
+
 
         <div th:fragment="reportModal" class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">

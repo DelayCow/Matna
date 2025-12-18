@@ -1,14 +1,31 @@
 
 import { showShareConfirmModal, showPaymentInfoModal, showArrivalInfoModal, showPaymentRegisterModal,showPasswordCheckModal, showReportModal } from "./modal.js";
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    // URL에서 memberNo 추출
+    const pathParts = window.location.pathname.split('/');
+    const urlMemberNo = pathParts[pathParts.length - 1] === 'mypage' ? null : parseInt(pathParts[pathParts.length - 1]);
 
+    // 현재 로그인한 사용자 정보 가져오기
+    let currentUser = null;
+    let memberNo = null;
+    let isOwner = false;
 
+    try {
+        const authResponse = await fetch('/api/auth/currentUser');
+        if (!authResponse.ok) throw new Error('인증 정보를 가져올 수 없습니다.');
 
-    const isOwnerText = document.getElementById('isOwner').textContent.trim().toLowerCase();
-    const isOwner = isOwnerText === 'true';
+        currentUser = await authResponse.json();
 
-    const memberNo = document.getElementById('memberNo').textContent;
+        // memberNo 결정: URL에 있으면 사용, 없으면 현재 사용자
+        memberNo = urlMemberNo || currentUser.memberNo;
+        // 로그인 한 사람의 마이페이지인지 확인
+        isOwner = currentUser.memberNo === memberNo;
+
+    } catch (error) {
+        console.error('인증 확인 오류:', error);
+    }
+
 
 
 
@@ -468,15 +485,51 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    const btnParticipate = document.getElementById('btnParticipate');
-    const btnOpen = document.getElementById('btnOpen');
-    if (btnParticipate) btnParticipate.addEventListener('change', () => { if (btnParticipate.checked) { currentGroupTab = 'participate'; fetchGroupData(); } });
-    if (btnOpen) btnOpen.addEventListener('change', () => { if (btnOpen.checked) { currentGroupTab = 'host'; fetchGroupData(); } });
+    //공동구매 참여/개설탭 & 상태필터링 (isOwner일 때만)
+    const renderGroupFilters = () => {
+        const container = document.getElementById('group-filters-container');
 
-    const statusFilterEl = document.getElementById('groupStatusFilter');
-    if (statusFilterEl) statusFilterEl.addEventListener('change', (e) => { currentFilterStatus = e.target.value; fetchGroupData(); });
+        if (!container) return;
+
+        if(isOwner) {
+            // isOwner일 때만 필터 표시
+            container.style.display = 'flex';
+
+            const btnParticipate = document.getElementById('btnParticipate');
+            const btnOpen = document.getElementById('btnOpen');
+            const statusFilterEl = document.getElementById('groupStatusFilter');
+
+            if(btnParticipate) {
+                btnParticipate.addEventListener('change', () => {
+                    if(btnParticipate.checked) {
+                        currentGroupTab = 'participate';
+                        fetchGroupData(); // 데이터 다시 로드
+                    }
+                });
+            }
+            if(btnOpen) {
+                btnOpen.addEventListener('change', () => {
+                    if(btnOpen.checked) {
+                        currentGroupTab = 'host';
+                        fetchGroupData(); // 데이터 다시 로드
+                    }
+                });
+            }
+
+            if (statusFilterEl) {
+                statusFilterEl.addEventListener('change', function(e) {
+                    currentFilterStatus = e.target.value; // ALL, OPEN, PAID ...
+                    fetchGroupData(); // 데이터 다시 로드
+                });
+            }
+        }else {
+            // isOwner가 아니면 필터 숨김
+            container.style.display = 'none';
+        }
+    }
 
 
+    renderGroupFilters();
     renderCommonArea();
     fetchProfileData(memberNo);
 
