@@ -337,9 +337,11 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
         if (item.receiveDate) buttonHtml = `<button class="btn btn-secondary btn-sm" disabled>수령 완료</button>`;
 
-        let detailLink = `/periodGroupBuy/detail/${item.periodGroupBuyNo}`;
-
-        if (item.periodGroupBuyNo == null) {
+        let detailLink = null;
+        if (item.quantityGroupBuyNo == null && item.status === "open"){
+            detailLink = `/periodGroupBuy/detail/${item.periodGroupBuyNo}`;
+        }
+        if (item.periodGroupBuyNo == null && item.status === "open") {
             detailLink = `/quantityGroupBuy/detail/${item.quantityGroupBuyNo}`;
         }
 
@@ -347,7 +349,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         return `<div class="group-card mb-3 p-3 border rounded bg-white shadow-sm">
             <div class="d-flex justify-content-between align-items-start mb-2"><div class="flex-grow-1 me-3">${timelineHtml}</div>${buttonHtml}</div>
             <div class="d-flex align-items-center gap-3">
-                <div class="rounded overflow-hidden border" style="width: 80px; height: 80px;" onclick="location.href='${detailLink}'"><img src="${item.imageUrl || '/img/default_food.jpg'}" class="w-100 h-100 object-fit-cover"></div>
+                <div class="rounded overflow-hidden border" style="width: 80px; height: 80px;" ${detailLink ? `onclick="location.href='${detailLink}'"` : ""}><img src="${item.imageUrl || '/img/default_food.jpg'}" class="w-100 h-100 object-fit-cover"></div>
                 <div class="group-info flex-grow-1"><h5 class="fw-bold mb-1">${item.title}</h5></div>
             </div>
         </div>`;
