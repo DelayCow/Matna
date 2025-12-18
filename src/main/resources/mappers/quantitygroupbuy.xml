@@ -123,7 +123,7 @@
                     group_buy_no
             ) participant_sum ON participant_sum.group_buy_no = gb.group_buy_no
         WHERE
-            gb.group_buy_no = #{groupBuyNo}
+            qgb.quantity_group_buy_no = #{quantityGroupBuyNo}
     </select>
 
 </mapper>
