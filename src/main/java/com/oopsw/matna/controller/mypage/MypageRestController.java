@@ -118,7 +118,7 @@ public class MypageRestController {
         }
     }
 
-    @DeleteMapping("/getout/{memberNo}")
+    @DeleteMapping("/remove/{memberNo}")
     public LocalDateTime deleteMember(@PathVariable("memberNo") int memberNo) {
 
 

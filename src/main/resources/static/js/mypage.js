@@ -1,5 +1,5 @@
 
-import { showShareConfirmModal, showPaymentInfoModal, showArrivalInfoModal, showPaymentRegisterModal,showPasswordCheckModal, showReportModal } from "./modal.js";
+import { showShareConfirmModal, showPaymentInfoModal, showArrivalInfoModal, showPaymentRegisterModal,showPasswordCheckModal, showReportModal, showRemoveMemberModal } from "./modal.js";
 
 document.addEventListener('DOMContentLoaded', async function() {
     // URL에서 memberNo 추출
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             <ul class="custom-dropdown" id="headerDropdown">
                 <li><a href="#" id="btnEditInfo">정보 수정</a></li>
                 <li><a href="/logout">로그아웃</a></li>
-                <li><a href="#" class="text-danger">탈퇴</a></li>
+                <li><a href="#" id="removeMember" class="text-danger">탈퇴</a></li>
             </ul>
         </div>`;
 
@@ -145,6 +145,8 @@ document.addEventListener('DOMContentLoaded', async function() {
                 }
             });
 
+            headerArea.innerHTML = `<button class="btn p-0 border-0" id="headerMenuBtn"><i class="bi bi-three-dots-vertical fs-4 text-dark"></i></button>
+            <ul class="custom-dropdown" id="headerDropdown"><li><a href="#">정보 수정</a></li><li><a href="/logout">로그아웃</a></li><li><a id="removeMember" href="#" class="text-danger">탈퇴</a></li></ul>`;
         } else if (headerArea) { headerArea.innerHTML = ''; }
 
         let subInfo = isOwner
@@ -465,7 +467,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (reportBtn) {
             e.preventDefault();
             const targetMemberNo = reportBtn.getAttribute('data-member-no');
-            
+
             showReportModal('MEMBER', targetMemberNo);
         }
     });
@@ -554,4 +556,18 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     fetchGroupData();
 
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('#headerMenuBtn');
+        const menu = document.getElementById('headerDropdown');
+        const removebtn = e.target.closest('#removeMember');
+        if(btn && menu) {
+            e.stopPropagation();
+            menu.classList.toggle('show');
+        }else if(removebtn){
+            showRemoveMemberModal(memberNo);
+            menu.classList.remove('show');
+        }else if(menu) {
+            menu.classList.remove('show');
+        }
+    });
 });

@@ -6,7 +6,7 @@ import com.oopsw.matna.repository.*;
 import com.oopsw.matna.repository.entity.*;
 import com.oopsw.matna.vo.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,8 +42,8 @@ public class MypageService {
     private final PeriodGroupBuyRepository periodGroupBuyRepository;
 
     private final ImageStorageService imageStorageService;
-    private final PasswordEncoder passwordEncoder;
 
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public List<RecipeVO> getMypageRecipeList(Integer memberNo) {
 
@@ -202,17 +202,9 @@ public class MypageService {
         return now;
     }
 
-    public boolean checkPassword(Integer memberNo, String inputPassword) {
-
-        Member member = memberRepository.findById(memberNo)
-                .get();
-
-        String dbPassword = member.getPassword(); // db 비번
-
-        if (passwordEncoder.matches(inputPassword, dbPassword)) {
-            return true;
-        }
-        return false;
+    public boolean checkPassword(Integer memberNo, String inputPassword) {;
+        Member m = memberRepository.findById(memberNo).get();
+        return bCryptPasswordEncoder.matches(inputPassword, m.getPassword());
     }
 
     public MemberVO getMemberInfo(Integer memberNo) {
@@ -268,7 +260,7 @@ public class MypageService {
 
 
         if (editData.getPassword() != null && !editData.getPassword().isEmpty()) {
-            String encodedPwd = passwordEncoder.encode(editData.getPassword());
+            String encodedPwd = bCryptPasswordEncoder.encode(editData.getPassword());
             member.setPassword(encodedPwd);
         }
 
