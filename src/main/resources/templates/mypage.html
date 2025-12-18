@@ -92,10 +92,51 @@
             </div>
         </div>
 
+        <div th:fragment="reportModal" class="modal fade" id="reportModal" tabindex="-1" aria-labelledby="reportModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content p-3">
+
+                    <div class="modal-header border-0 pb-0">
+                        <h5 class="modal-title fw-bold w-100 text-center" id="reportModalLabel">신고하기</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <form id="reportForm">
+                            <input type="hidden" id="reportType">
+                            <input type="hidden" id="targetId">
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold">이미지 첨부</label>
+                                <div class="image-upload-box" id="uploadTrigger" style="width: 150px; height: 150px; background-color: #E0E0E0; border-radius: 10px; display: flex; justify-content: center; align-items: center; cursor: pointer; overflow: hidden; margin: 0 auto;">
+                                    <img id="previewImage" src="" style="display:none; width: 100%; height: 100%; object-fit: cover;">
+                                    <span id="plusIcon" style="font-size: 2rem; color: #333;">+</span>
+                                </div>
+                                <input type="file" id="reportFile" accept="image/*" style="display: none;">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="reportReason" class="form-label fw-bold">신고 사유</label>
+                                <textarea class="form-control" id="reportReason" rows="5" style="resize: none;" required placeholder="신고 사유를 입력해주세요."></textarea>
+                            </div>
+
+                            <div class="d-flex justify-content-center mt-4">
+                                <button type="submit" class="btn btn-danger w-100 py-2" style="background-color: #FFA7A7; border: none;">신고하기</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div th:replace="layout :: menuBar"></div>
 </div>
 </div>
 <div th:replace="modal :: modal"></div>
+<div th:replace="modal :: shareConfirmModal"></div>
+<div th:replace="modal :: paymentInfoModal"></div>
+<div th:replace="modal :: arrivalInfoModal"></div>
+<div th:replace="modal :: paymentRegisterModal"></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/js/layout.js"></script>
 <script type="module" src="/js/mypage.js"></script>

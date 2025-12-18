@@ -44,5 +44,212 @@
         </div>
     </div>
 </div>
+
+<!-- 나눔 확정 모달 -->
+<div th:fragment="shareConfirmModal" class="modal fade" id="shareConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold">나눔 수령 확정</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body pb-0">
+                <div class="mb-3">
+                    <label class="form-label text-muted small mb-1">공동구매명</label>
+                    <input type="text" class="form-control bg-light" id="shareModalTitle" readonly>
+                </div>
+
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label class="form-label text-muted small mb-1">나눔 받은 양</label>
+                        <input type="text" class="form-control bg-light" id="shareModalAmount" readonly>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label class="form-label text-muted small mb-1">결제 금액</label>
+                        <input type="text" class="form-control bg-light" id="shareModalPrice" readonly>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">나눔 날짜</label>
+                    <input type="date" class="form-control" id="shareModalDate">
+                    <div class="form-text text-danger d-none" id="shareDateError">
+                        <i class="bi bi-exclamation-circle"></i> 날짜를 선택해주세요.
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer border-top-0 d-flex justify-content-between align-items-center pt-2">
+                <button type="button" class="btn btn-link text-danger text-decoration-none p-0" id="btnReportShare">
+                    <i class="bi bi-exclamation-circle me-1"></i>신고하기
+                </button>
+
+                <div>
+                    <button type="button" class="btn btn-success px-4" id="shareConfirmBtn">확정</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="paymentInfoModal" class="modal fade" id="paymentInfoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body pt-0">
+                <h5 class="fw-bold text-center mb-4">결제 정보 확인</h5>
+
+                <div class="mb-4 text-center">
+                    <label class="form-label fw-bold d-block text-start">결제 영수증</label>
+                    <div class="border rounded p-2 d-flex justify-content-center align-items-center" style="min-height: 150px; background-color: #f8f9fa;">
+                        <img id="modalPaymentImg" src="" alt="영수증" class="img-fluid" style="max-height: 200px; display: none;">
+                        <span id="modalPaymentNoImg" class="text-muted small">영수증 이미지가 없습니다.</span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">구매날짜</label>
+                    <input type="text" class="form-control bg-light" id="modalPaymentDate" readonly>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">추가설명 <small class="text-muted fw-normal">(선택)</small></label>
+                    <input type="text" class="form-control bg-light" id="modalPaymentDesc" value="문제사항 없음" readonly>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <button type="button" class="btn btn-danger text-white" id="btnReportPayment">신고하기</button>
+                    <button type="button" class="btn btn-danger text-white px-4" data-bs-dismiss="modal" style="background-color: #e63946; border: none;">확인</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="arrivalInfoModal" class="modal fade" id="arrivalInfoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body pt-0">
+                <div class="d-flex justify-content-between align-items-center mb-4 px-3">
+                    <div class="text-start">
+                        <h5 class="fw-bold mb-1">상품 수령</h5>
+                        <small class="text-muted" style="font-size: 0.8rem; line-height: 1.2;">
+                            (배송완료 메시지,<br>실제 상품 사진 등)
+                        </small>
+                    </div>
+
+                    <div class="border rounded d-flex justify-content-center align-items-center bg-light" style="width: 120px; height: 120px; overflow: hidden;">
+                        <img id="modalArrivalImg" src="" alt="도착사진" class="w-100 h-100 object-fit-cover" style="display: none;">
+                        <span id="modalArrivalNoImg" class="text-muted small" style="font-size: 0.7rem;">이미지 없음</span>
+                    </div>
+                </div>
+
+                <div class="mb-5 px-3">
+                    <input type="text" class="form-control bg-light text-center fw-bold fs-5" id="modalArrivalDate" readonly style="height: 50px;">
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center px-1">
+                    <button type="button" class="btn btn-danger text-white btn-sm" id="btnReportArrival">신고하기</button>
+
+                    <button type="button" class="btn btn-danger text-white px-5 py-2 fw-bold" data-bs-dismiss="modal" style="background-color: #e63946; border: none; font-size: 1.1rem;">확인</button>
+
+                    <div style="width: 70px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:fragment="paymentRegisterModal" class="modal fade" id="paymentRegisterModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body pt-0">
+                <h5 class="fw-bold text-center mb-4">결제 정보 등록</h5>
+
+                <div class="mb-4 text-center">
+                    <label class="form-label fw-bold d-block text-start">결제 영수증</label>
+
+                    <div class="border rounded p-2 d-flex justify-content-center align-items-center bg-light"
+                         id="paymentImgArea" style="min-height: 150px; cursor: pointer; position: relative;">
+
+                        <img id="regPaymentPreview" src="" class="img-fluid" style="max-height: 200px; display: none;">
+
+                        <div id="regPaymentPlaceholder" class="text-muted small">
+                            <i class="bi bi-camera fs-3 d-block mb-1"></i>
+                            클릭하여 영수증 사진 업로드
+                        </div>
+
+                        <input type="file" id="regPaymentFile" accept="image/*" style="display: none;">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">구매날짜</label>
+                    <input type="date" class="form-control" id="regPaymentDate">
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">추가설명 <small class="text-muted fw-normal">(선택)</small></label>
+                    <input type="text" class="form-control" id="regPaymentDesc" placeholder="예: 배송비 포함 금액입니다.">
+                </div>
+
+                <div class="d-grid">
+                    <button type="button" class="btn btn-danger text-white fw-bold py-2" id="btnRegisterPayment" style="background-color: #e63946; border: none;">등록하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="arrivalRegisterModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <h5 class="fw-bold text-center mb-4">물품 도착 등록</h5>
+
+                <div class="mb-4 text-center">
+                    <input type="file" id="regArrivalFile" class="d-none" accept="image/*">
+                    <div id="arrivalImgArea" class="border rounded p-2 d-flex justify-content-center align-items-center cursor-pointer"
+                         style="height: 200px; background-color: #f8f9fa; cursor: pointer;">
+
+                        <img id="regArrivalPreview" src="" class="img-fluid" style="max-height: 100%; display: none;">
+
+                        <div id="regArrivalPlaceholder" class="text-center text-muted">
+                            <i class="bi bi-camera-fill fs-1"></i>
+                            <p class="mb-0 mt-2 small">배송완료 메시지,<br>실제 상품 사진 등</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">도착날짜</label>
+                    <input type="date" class="form-control" id="regArrivalDate">
+                </div>
+
+                <div class="d-grid">
+                    <button type="button" class="btn btn-danger text-white py-2" id="btnRegisterArrival" style="background-color: #e63946; border: none;">등록하기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

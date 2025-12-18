@@ -66,41 +66,52 @@ public class QuantityRestController {
     }
 
     @GetMapping("/detail/{quantityGroupBuyNo}")
-    public ResponseEntity<QuantityDetailResponse> getQuantityGroupBuyDetail(@PathVariable Integer quantityGroupBuyNo) {
-            Map<String, Object> serviceResultMap = quantityGroupBuyService.getQuantityGroupBuyDetail(quantityGroupBuyNo);
-            QuantityGroupBuyDetailVO detailVO = (QuantityGroupBuyDetailVO) serviceResultMap.get("groupBuyDetail");
+    public ResponseEntity<QuantityDetailResponse> getQuantityGroupBuyDetail(
+            @PathVariable Integer quantityGroupBuyNo,
+            @AuthenticationPrincipal PrincipalDetails principalDetails) { // [1] 로그인 정보 받기
 
-            List<Map<String, Object>> participantMapList = (List<Map<String, Object>>) serviceResultMap.get("participants");
-            List<QuantityDetailResponse.ParticipantInfo> participantList = participantMapList.stream()
-                    .map(map -> QuantityDetailResponse.ParticipantInfo.builder()
-                            .groupParticipantNo((Integer) map.get("groupParticipantNo"))
-                            .memberNo((Integer) map.get("memberNo"))
-                            .nickname((String) map.get("nickname"))
-                            .profileUrl((String) map.get("profileUrl"))
-                            .participatedDate((LocalDateTime) map.get("participatedDate"))
-                            .myQuantity((Integer) map.get("myQuantity"))
-                            .build())
-                    .collect(Collectors.toList());
 
-            List<Map<String, Object>> recipeMapList = (List<Map<String, Object>>) serviceResultMap.get("recipes");
-            List<QuantityDetailResponse.RecipeInfo> recipeList = recipeMapList.stream()
-                    .map(map -> QuantityDetailResponse.RecipeInfo.builder()
-                            .recipeNo((Integer) map.get("recipeNo"))
-                            .title((String) map.get("title"))
-                            .imageUrl((String) map.get("imageUrl"))
-                            .authorNickname((String) map.get("authorNickname"))
-                            .inDate((LocalDateTime) map.get("inDate"))
-                            .build())
-                    .collect(Collectors.toList());
+        Integer currentMemberNo = null;
+        if (principalDetails != null) {
+            currentMemberNo = principalDetails.getMemberNo();
+        }
 
-            QuantityDetailResponse response = QuantityDetailResponse.builder()
-                    .groupBuyDetail(detailVO)
-                    .participant(participantList)
-                    .recipes(recipeList)
-                    .build();
 
-            return ResponseEntity.ok(response);
+        Map<String, Object> serviceResultMap = quantityGroupBuyService.getQuantityGroupBuyDetail(quantityGroupBuyNo, currentMemberNo);
 
+
+        QuantityGroupBuyDetailVO detailVO = (QuantityGroupBuyDetailVO) serviceResultMap.get("groupBuyDetail");
+
+        List<Map<String, Object>> participantMapList = (List<Map<String, Object>>) serviceResultMap.get("participants");
+        List<QuantityDetailResponse.ParticipantInfo> participantList = participantMapList.stream()
+                .map(map -> QuantityDetailResponse.ParticipantInfo.builder()
+                        .groupParticipantNo((Integer) map.get("groupParticipantNo"))
+                        .memberNo((Integer) map.get("memberNo"))
+                        .nickname((String) map.get("nickname"))
+                        .profileUrl((String) map.get("profileUrl"))
+                        .participatedDate((LocalDateTime) map.get("participatedDate"))
+                        .myQuantity((Integer) map.get("myQuantity"))
+                        .build())
+                .collect(Collectors.toList());
+
+        List<Map<String, Object>> recipeMapList = (List<Map<String, Object>>) serviceResultMap.get("recipes");
+        List<QuantityDetailResponse.RecipeInfo> recipeList = recipeMapList.stream()
+                .map(map -> QuantityDetailResponse.RecipeInfo.builder()
+                        .recipeNo((Integer) map.get("recipeNo"))
+                        .title((String) map.get("title"))
+                        .imageUrl((String) map.get("imageUrl"))
+                        .authorNickname((String) map.get("authorNickname"))
+                        .inDate((LocalDateTime) map.get("inDate"))
+                        .build())
+                .collect(Collectors.toList());
+
+        QuantityDetailResponse response = QuantityDetailResponse.builder()
+                .groupBuyDetail(detailVO)
+                .participant(participantList)
+                .recipes(recipeList)
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/register")
@@ -213,7 +224,7 @@ public class QuantityRestController {
         quantityGroupBuyService.editForcedCreatorAndStatusToClosed(groupBuyNo, currentMemberNo);
 
         return ResponseEntity.ok(Map.of(
-                "succest", true,
+                "success", true,
                 "message", "개설자에 의해 공동구매가 진행되었습니다."
         ));
     }

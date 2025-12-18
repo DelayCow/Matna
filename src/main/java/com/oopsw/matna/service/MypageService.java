@@ -6,11 +6,17 @@ import com.oopsw.matna.repository.*;
 import com.oopsw.matna.repository.entity.*;
 import com.oopsw.matna.vo.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +40,9 @@ public class MypageService {
 
     private final GroupBuyListDAO groupBuyListDAO;
     private final PeriodGroupBuyRepository periodGroupBuyRepository;
+
+    private final ImageStorageService imageStorageService;
+    private final PasswordEncoder passwordEncoder;
 
 
     public List<RecipeVO> getMypageRecipeList(Integer memberNo) {
@@ -92,52 +101,93 @@ public class MypageService {
 
     public void editShareGroupBuy(GroupBuyParticipantVO sharedData) {
 
+        if (sharedData.getGroupParticipantNo() == null) {
+            throw new RuntimeException("참여 번호(PK)가 전달되지 않았습니다.");
+        }
 
         LocalDateTime receiveDate = sharedData.getReceiveDate();
 
-
+        // 2. .get() 대신 orElseThrow 사용 (데이터가 없어도 안전하게 예외 처리)
         GroupBuyParticipant participant = groupBuyParticipantRepository
-                .findByGroupBuy_GroupBuyNoAndParticipant_MemberNo(
-                        sharedData.getGroupBuyNo(),
-                        sharedData.getParticipantNo()
-                );
-
-        if (participant == null) {
-            throw new RuntimeException("참여 정보를 찾을 수 없습니다.");
-        }
+                .findById(sharedData.getGroupParticipantNo())
+                .orElseThrow(() -> new RuntimeException("참여 정보를 찾을 수 없습니다."));
 
         participant.setReceiveDate(receiveDate);
         groupBuyParticipantRepository.save(participant);
     }
 
-    public void editPayment(GroupBuyVO paymentData) {
+    @Transactional
+    public void addPayment(int groupBuyNo, MultipartFile file, String buyDateStr, String description) {
 
 
-        GroupBuy groupBuy = groupBuyRepository.findById(paymentData.getGroupBuyNo())
-                .get();
+        try {
+            String savedFileUrl = null;
+            if (file != null && !file.isEmpty()) {
 
-        groupBuy.setStatus("paid");
-        groupBuy.setReceiptImageUrl(paymentData.getReceiptImageUrl());
-        groupBuy.setBuyDate(paymentData.getBuyDate());
-        groupBuy.setPaymentNote(paymentData.getPaymentNote());
+                savedFileUrl = imageStorageService.save(file, "receipt");
+            }
 
-        groupBuyRepository.save(groupBuy);
+
+            String cleanDate = buyDateStr.replace("T", " ");
+            if (cleanDate.length() == 16) cleanDate += ":00";
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime buyDate = LocalDateTime.parse(cleanDate, formatter);
+
+
+            GroupBuy groupBuy = groupBuyRepository.findById(groupBuyNo)
+                    .orElseThrow(() -> new RuntimeException("공동구매 정보를 찾을 수 없습니다."));
+
+            groupBuy.setStatus("PAID");
+
+
+            groupBuy.setReceiptImageUrl(savedFileUrl);
+
+            groupBuy.setBuyDate(buyDate);
+
+            if (description != null) {
+                groupBuy.setPaymentNote(description);
+            }
+
+            groupBuyRepository.save(groupBuy);
+
+        } catch (Exception e) {
+            throw new RuntimeException("결제 등록 중 오류 발생: " + e.getMessage());
+        }
+
     }
 
 
-    public void addArrival(GroupBuyVO deliveryData) {
+    @Transactional
+    public void addArrival(int groupBuyNo, MultipartFile file, String arrivalDateString) {
+
+        try {
+
+            String savedFileUrl = null;
+            if (file != null && !file.isEmpty()) {
+                savedFileUrl = imageStorageService.save(file, "arrival");
+            }
 
 
-        GroupBuy groupBuy = groupBuyRepository.findById(deliveryData.getGroupBuyNo())
-                .get();
+            String cleanDate = arrivalDateString.replace("T", " ");
+            if (cleanDate.length() == 16) cleanDate += ":00";
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime arrivalDate = LocalDateTime.parse(cleanDate, formatter);
 
-        groupBuy.setStatus("delivered");
 
-        groupBuy.setArrivalImageUrl(deliveryData.getArrivalImageUrl());
-        groupBuy.setArrivalDate(deliveryData.getArrivalDate());
+            GroupBuy groupBuy = groupBuyRepository.findById(groupBuyNo)
+                    .orElseThrow(() -> new RuntimeException("공동구매 정보를 찾을 수 없습니다."));
 
-        groupBuyRepository.save(groupBuy);
+            groupBuy.setArrivalImageUrl(savedFileUrl);
+            groupBuy.setArrivalDate(arrivalDate);
+            groupBuy.setStatus("DELIVERED");
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("도착 정보 등록 중 오류 발생: " + e.getMessage());
+        }
     }
+
 
     public LocalDateTime removeMember(Integer memberNo) {
 
@@ -157,7 +207,12 @@ public class MypageService {
         Member member = memberRepository.findById(memberNo)
                 .get();
 
-        return member.getPassword().equals(inputPassword);
+        String dbPassword = member.getPassword(); // db 비번
+
+        if (passwordEncoder.matches(inputPassword, dbPassword)) {
+            return true;
+        }
+        return false;
     }
 
     public MemberVO getMemberInfo(Integer memberNo) {
@@ -184,29 +239,42 @@ public class MypageService {
     }
 
 
-    public void updateMemberProfile(MemberVO editData) {
+    @Transactional
+    public void updateMemberProfile(MemberVO editData, MultipartFile file) {
 
         Member member = memberRepository.findById(editData.getMemberNo())
-                        .get();
+                .get();
+
 
         member.setNickname(editData.getNickname());
-        member.setImageUrl(editData.getImageUrl());
         member.setAddress(editData.getAddress());
-
-
         member.setBank(editData.getBank());
         member.setAccountNumber(editData.getAccountNumber());
         member.setAccountName(editData.getAccountName());
 
 
-        if (editData.getPassword() != null && !editData.getPassword().isEmpty()) {
+        if (file != null && !file.isEmpty()) {
+            try {
 
-            member.setPassword(editData.getPassword());
+                String savedPath = imageStorageService.save(file, "profile");
+
+
+                member.setImageUrl(savedPath);
+
+            } catch (IOException e) {
+                throw new RuntimeException("프로필 이미지 저장 중 오류 발생", e);
+            }
+        }
+
+
+        if (editData.getPassword() != null && !editData.getPassword().isEmpty()) {
+            String encodedPwd = passwordEncoder.encode(editData.getPassword());
+            member.setPassword(encodedPwd);
         }
 
     }
 
-
+    @Transactional
     public int refundPoint(Integer memberNo, int refundAmount) {
 
 
@@ -224,11 +292,20 @@ public class MypageService {
         return newPoint;
     }
 
-    public void addReportMember(AllReportVO vo) {
+    @Transactional
+    public void addReportMember(AllReportVO vo) throws IOException { // IOException 추가 필수
 
 
-        Member reporter = memberRepository.findById(vo.getReporterNo())
-                .get();
+        MultipartFile file = vo.getImageFile();
+
+
+        if (file != null && !file.isEmpty()) {
+            String path = imageStorageService.save(file, "report");
+            vo.setImageUrl(path);
+        }
+
+
+        Member reporter = memberRepository.findById(vo.getReporterNo()).get();
 
         Report report = Report.builder()
                 .reporter(reporter)
@@ -241,7 +318,7 @@ public class MypageService {
         Report savedReport = reportRepository.save(report);
 
         Member target = memberRepository.findById(vo.getTargetMemberNo())
-                .orElseThrow(() -> new RuntimeException("신고 대상 회원이 없습니다."));
+                .orElseThrow(() -> new IllegalArgumentException("신고 대상 회원이 없습니다."));
 
         memberReportRepository.save(MemberReport.builder()
                 .report(savedReport)
@@ -249,8 +326,15 @@ public class MypageService {
                 .build());
     }
 
-    public void addReportGroupBuy(AllReportVO vo) {
 
+    public void addReportGroupBuy(AllReportVO vo) throws IOException {
+
+        MultipartFile file = vo.getImageFile();
+
+        if (file != null && !file.isEmpty()) {
+            String path = imageStorageService.save(file, "report");
+            vo.setImageUrl(path); // 저장된 경로를 VO에 셋팅!
+        }
 
         Member reporter = memberRepository.findById(vo.getReporterNo())
                 .orElseThrow(() -> new RuntimeException("신고자 정보가 없습니다."));
@@ -281,7 +365,7 @@ public class MypageService {
         Member member = memberRepository.findById(memberNo)
                 .orElseThrow(() -> new RuntimeException("회원 정보를 찾을 수 없습니다."));
 
-        if (amount <= 1000) {
+        if (amount < 1000) {
             throw new RuntimeException("최소 충전 금액은 1000원 입니다.");
         }
 

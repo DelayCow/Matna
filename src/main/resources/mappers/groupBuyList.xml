@@ -4,7 +4,10 @@
 <mapper namespace="com.oopsw.matna.dao.GroupBuyListDAO">
     <select id="getParticipantList" parameterType="java.lang.Integer" resultType="com.oopsw.matna.vo.GroupBuyListVO">
         SELECT
+        pgb.period_group_buy_no         AS periodGroupBuyNo,
+        qgb.quantity_group_buy_no         AS quantityGroupBuyNo,
         gb.group_buy_no          AS groupBuyNo,
+        gbp.group_participant_no AS groupParticipantNo,
         gb.title,
         gb.status,
         gb.image_url             AS imageUrl,
@@ -15,7 +18,14 @@
         gb.buy_date              AS buyDate,
         gb.arrival_date          AS arrivalDate,
         gbp.receive_date         AS receiveDate,
+        gb.payment_note          AS paymentNote,
 
+        /* VO에 추가된 이미지 필드 매핑 */
+        gb.arrival_image_url     AS arrivalImageUrl,
+        gb.receipt_image_url     AS receiptImageUrl,
+
+        /* 기간 공구 마감일 (기간 공구 테이블 조인 필요) */
+        pgb.due_date             AS DueDate,
 
         /* 남은 수량 계산 */
         CASE
@@ -37,7 +47,10 @@
         group_buy_participant gbp
         JOIN group_buys gb ON gbp.group_buy_no = gb.group_buy_no
 
-        /* 전체 통계용 서브쿼리 (여기는 순수하게 합계만 구해야 함) */
+        /* 기간 공구 정보 조인 (DueDate) */
+        LEFT JOIN period_group_buys pgb ON gb.group_buy_no = pgb.group_buy_no
+
+        /* 전체 통계용 서브쿼리 */
         LEFT JOIN
         (SELECT
         sub_gbp.group_buy_no,
@@ -63,9 +76,10 @@
         gbp.participated_date DESC
     </select>
 
-
     <select id="getHostList" parameterType="java.lang.Integer" resultType="com.oopsw.matna.vo.GroupBuyListVO">
         SELECT
+        pgb.period_group_buy_no         AS periodGroupBuyNo,
+        qgb.quantity_group_buy_no         AS quantityGroupBuyNo,
         gb.group_buy_no          AS groupBuyNo,
         gb.title,
         gb.status,
@@ -76,9 +90,14 @@
         gb.share_end_date        AS shareEndDate,
         gb.buy_date              AS buyDate,
         gb.arrival_date          AS arrivalDate,
+        gb.payment_note          AS paymentNote,
 
-        /* 참여 내역이 없으면 NULL 처리 */
-        gbp.receive_date         AS receiveDate,
+        /* VO에 추가된 이미지 필드 매핑 */
+        gb.arrival_image_url     AS arrivalImageUrl,
+        gb.receipt_image_url     AS receiptImageUrl,
+
+        /* 기간 공구 마감일 */
+        pgb.due_date             AS DueDate,
 
         /* 남은 수량 계산 */
         CASE
@@ -108,6 +127,9 @@
         group_buy_participant gbp
         ON gb.group_buy_no = gbp.group_buy_no
         AND gbp.participant_no = #{memberNo}
+
+        /* 기간 공구 정보 조인 (DueDate) */
+        LEFT JOIN period_group_buys pgb ON gb.group_buy_no = pgb.group_buy_no
 
         /* 전체 통계용 서브쿼리 */
         LEFT JOIN
