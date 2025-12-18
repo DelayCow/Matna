@@ -1,6 +1,7 @@
 
 const inputEl = document.getElementById('chargeAmountInput');
 let currentAmount = 0;
+let userCurrentPoint = 0;
 
 // 숫자 콤마 포맷팅
 function formatNumber(num) {
@@ -20,8 +21,40 @@ window.resetAmount = function() {
 }
 
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
 
+
+    try {
+        const response = await fetch('/api/mypage/pointPageFill');
+
+        if (!response.ok) {
+            if (response.status === 401) {
+                alert("로그인이 필요합니다.");
+                window.location.href = '/login';
+                return;
+            }
+            throw new Error("정보 조회 실패");
+        }
+
+        const member = await response.json();
+
+
+        userCurrentPoint = member.point;
+
+
+        const nicknameEl = document.getElementById('nicknameDisplay');
+        const pointEl = document.getElementById('currentPointDisplay');
+        const imgEl = document.getElementById('profileImage');
+        const memberNoInput = document.getElementById('memberNo');
+
+        if (nicknameEl) nicknameEl.innerText = member.nickname;
+        if (pointEl) pointEl.innerText = formatNumber(member.point);
+        if (imgEl && member.imageUrl) imgEl.src = member.imageUrl;
+        if (memberNoInput) memberNoInput.value = member.memberNo;
+
+    } catch (error) {
+        console.error("데이터 로드 중 오류:", error);
+    }
 
     // 직접 입력 처리
     if(inputEl) {
@@ -113,9 +146,16 @@ document.addEventListener('DOMContentLoaded', function() {
         btnAction.addEventListener('click', () => {
             const memberNo = document.getElementById('memberNo').value;
 
+            if(!memberNo) {
+                alert("회원 정보가 없습니다");
+                return;
+            }
             if (currentAmount < 1000) {
                 alert("최소 금액은 1,000원입니다.");
                 return;
+            }
+            if(currentMode === 'REFUND' && currentAmount > userCurrentPoint) {
+                alert(`최대 ${formatNumber(userCurrentPoint)}원 까지 환급가능`)
             }
 
             const isCharge = (currentMode === 'CHARGE');
