@@ -10,4 +10,9 @@ document.addEventListener("DOMContentLoaded", function () {
             link.classList.add("active");
         }
     });
+
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+        window.location.href = "/logout";
+    });
+
 });
