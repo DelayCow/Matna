@@ -1,14 +1,18 @@
 package com.oopsw.matna.controller.manager;
 
+import com.oopsw.matna.auth.PrincipalDetails;
 import com.oopsw.matna.dto.ManagerGroupBuyResponse;
 import com.oopsw.matna.dto.ManagerIngredientResponse;
 import com.oopsw.matna.dto.ManagerMemberResponse;
 import com.oopsw.matna.dto.ManagerReportResponse;
+import com.oopsw.matna.repository.entity.Member;
 import com.oopsw.matna.repository.entity.Report;
 import com.oopsw.matna.service.ManagerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -17,6 +21,12 @@ import java.util.List;
 @RequestMapping("/api/manager")
 public class ManagerRestController {
     private final ManagerService managerService;
+
+    //사이드바
+    @GetMapping("/sidebar")
+    public String sidebar(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+        return principalDetails.getMemberNickname();
+    }
 
     //재료 관리
     @GetMapping("/ingredientManagement")

@@ -32,6 +32,11 @@ public class ManagerService {
     private final GroupBuyRepository groupBuyRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
 
+    //사이드바
+    public Member getMember(Integer memberNo) {
+        return memberRepository.findByMemberNo(memberNo);
+    }
+
     //재료 관리
     private ManagerIngredientResponse toManagerIngredientResponse(Ingredient ingredient) {
         return ManagerIngredientResponse.builder()

@@ -15,4 +15,26 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.href = "/logout";
     });
 
+    loadNickname();
 });
+
+async function loadNickname() {
+    try {
+        const res = await fetch("/api/manager/sidebar");
+
+        if (!res.ok) {
+            console.error("닉네임 요청 실패");
+            return;
+        }
+
+        const nickname = await res.text();  // ← JSON 아니고 문자열이니까 text()
+
+        const nickEl = document.getElementById("nickname");
+        nickEl.textContent = nickname;
+
+        console.log("닉네임:", nickname);  // 확인용
+
+    } catch (err) {
+        console.error("에러:", err);
+    }
+}
