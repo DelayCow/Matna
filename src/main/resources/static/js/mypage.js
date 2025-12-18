@@ -237,7 +237,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     '레시피가 성공적으로 삭제되었습니다!',
                     'success',
                     () => {
-                        window.location.href = '/recipe';
+                        window.location.href = '/mypage';
                     }
                 );
             }else{
@@ -569,8 +569,14 @@ document.addEventListener('DOMContentLoaded', async function() {
             menu.classList.remove('show');
         }else if(recipeDeleteBtn) {
             e.preventDefault();
+            e.stopPropagation();
             const recipeNo = recipeDeleteBtn.getAttribute('data-id');
-            removeRecipe(recipeNo)
+            showAlertModal(
+                '레시피 삭제',
+                '레시피를 삭제하시겠습니까?',
+                'error',
+                () => removeRecipe(recipeNo)
+            )
         }else if(menu) {
             menu.classList.remove('show');
         }
