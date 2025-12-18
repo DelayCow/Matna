@@ -8,6 +8,36 @@ const normalBtn = document.querySelector('.normal-btn');
 const participantBtn = document.querySelector('.participant-btn');
 const creatorRunningBtn = document.querySelector('.creator-running-btn');
 
+// 상태에 따른 버튼 표시
+function showBtnByStatus(status) {
+
+    const allBtns = [normalBtn, participantBtn, creatorRunningBtn];
+
+    allBtns.forEach(btn => {
+        if (btn) {
+            btn.classList.add('d-none');
+        }
+    });
+
+    switch(status) {
+        case 'normal':
+            if (normalBtn) {
+                normalBtn.classList.remove('d-none');
+            }
+            break;
+        case 'participant':
+            if (participantBtn) {
+                participantBtn.classList.remove('d-none');
+            }
+            break;
+        case 'creator':
+            if (creatorRunningBtn) {
+                creatorRunningBtn.classList.remove('d-none');
+            }
+            break;
+    }
+}
+
 // === API 호출 ===
 const api = {
     // 현재 사용자 인증 정보 조회
@@ -69,41 +99,9 @@ const api = {
             .then(res => res.json())
 };
 
-// 상태에 따른 버튼 표시
-function showBtnByStatus(status) {
-    console.log('showBtnByStatus called with:', status);
-
-    const allBtns = [normalBtn, participantBtn, creatorRunningBtn];
-
-    allBtns.forEach(btn => {
-        if (btn) {
-            btn.classList.add('d-none');
-        }
-    });
-
-    switch(status) {
-        case 'normal':
-            if (normalBtn) {
-                normalBtn.classList.remove('d-none');
-            }
-            break;
-        case 'participant':
-            if (participantBtn) {
-                participantBtn.classList.remove('d-none');
-            }
-            break;
-        case 'creator':
-            if (creatorRunningBtn) {
-                creatorRunningBtn.classList.remove('d-none');
-            }
-            break;
-    }
-}
-
 // === 렌더링 함수 ===
 const render = {
     detail: (data) => {
-        console.log('Received data:', data);
 
         const { groupBuyDetail, participants, recipes } = data;
         currentData = data;
@@ -116,7 +114,6 @@ const render = {
     },
 
     groupBuyInfo: (detail, participants) => {
-        console.log('groupBuyInfo detail:', detail);
 
         const productImage = document.getElementById('data-product-image');
         if (productImage && detail.imageUrl) {
@@ -136,6 +133,10 @@ const render = {
         const productTitle = document.getElementById('data-product-title');
         if (productTitle) {
             productTitle.textContent = detail.title || '제목 없음';
+        }
+        const authorLink = document.getElementById('data-author-link');
+        if (authorLink && detail.creatorNo) {
+            authorLink.href = `/mypage/${detail.creatorNo}`;
         }
 
         const itemSaleUrl = document.getElementById('data-item-sale-url');
@@ -267,12 +268,15 @@ const render = {
 
                 const profileUrl = p.profileUrl || '/img/user.png';
                 const nickname = p.nickname || '익명';
+                const memberNo = p.memberNo || '';
 
                 const item = `
           <div class="d-flex align-items-center mb-3">
-            <img src="${profileUrl}" class="rounded-circle me-3" alt="참여자 프로필" 
-                 style="width:50px; height:50px;" 
-                 onerror="this.onerror=null; this.src='/img/user.png';">
+            <a href="/mypage/${memberNo}" style="text-decoration: none; color: inherit;">
+              <img src="${profileUrl}" class="rounded-circle me-3" alt="참여자 프로필" 
+                   style="width:50px; height:50px; cursor: pointer;" 
+                   onerror="this.onerror=null; this.src='/img/user.png';">
+            </a>
             <div class="d-flex flex-column">
               <span class="fw-bold fs-6">${nickname}</span>
               <span class="small text-muted">${date}</span>
@@ -333,46 +337,34 @@ function openKakaoMap(address) {
 
 // 사용자 상태 결정
 function determineUserStatus(detail, participants) {
-    console.log('=== determineUserStatus called ===');
-    console.log('Current member no:', PAGE_CONFIG.currentMemberNo);
-    console.log('Creator no:', detail.creatorNo);
-    console.log('GroupBuy no:', detail.groupBuyNo);
-    console.log('Participants:', participants);
 
     const currentMemberNo = PAGE_CONFIG.currentMemberNo;
     const creatorNo = detail.creatorNo;
     groupBuyNo = detail.groupBuyNo;
 
     if (!currentMemberNo || currentMemberNo === null) {
-        console.log('Not logged in');
         currentStatus = 'normal';
         showBtnByStatus(currentStatus);
         return;
     }
 
     if (currentMemberNo === creatorNo) {
-        console.log('✓ User is CREATOR');
         currentStatus = 'creator';
         showBtnByStatus(currentStatus);
         return;
     }
 
     const myParticipation = participants.find(p => {
-        console.log(`Checking participant - memberNo: ${p.memberNo}, vs current: ${currentMemberNo}`);
         return p.memberNo === currentMemberNo;
     });
 
     if (myParticipation) {
-        console.log('✓ User is PARTICIPANT');
-        console.log('  - groupParticipantNo:', myParticipation.groupParticipantNo);
-        console.log('  - memberNo:', myParticipation.memberNo);
         currentStatus = 'participant';
         myGroupBuyParticipantNo = myParticipation.groupParticipantNo;
         showBtnByStatus(currentStatus);
         return;
     }
 
-    console.log('✓ User is NORMAL (not participant, not creator)');
     currentStatus = 'normal';
     showBtnByStatus(currentStatus);
 }
@@ -608,7 +600,6 @@ document.addEventListener('DOMContentLoaded', async function () {
         const authData = await api.getCurrentUser();
 
         PAGE_CONFIG.currentMemberNo = authData.memberNo;
-        console.log('Updated PAGE_CONFIG:', PAGE_CONFIG);
 
         // 2. 공동구매 데이터 로드 및 렌더링
         const data = await api.getDetail();

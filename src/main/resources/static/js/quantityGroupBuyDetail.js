@@ -12,7 +12,6 @@ const creatorStoppedBtn = document.querySelector('.creator-stopped-btn');
 
 // 상태에 따른 버튼 표시
 function showBtnByStatus(status) {
-    console.log('showBtnByStatus called with:', status);
 
     const allBtns = [normalBtn, participantBtn, creatorRunningBtn, creatorStoppedBtn];
 
@@ -132,7 +131,6 @@ const api = {
 const render = {
     // 전체 상세 페이지 렌더링
     detail: (data) => {
-        console.log('Received data:', data);
 
         const { groupBuyDetail, participant, recipes } = data;
         currentData = data;
@@ -147,7 +145,6 @@ const render = {
 
     // 공동구매 기본 정보 렌더링
     groupBuyInfo: (detail, participants) => {
-        console.log('groupBuyInfo detail:', detail);
 
         // 상품 이미지
         const productImage = document.getElementById('data-product-image');
@@ -363,11 +360,6 @@ function openKakaoMap(address) {
 
 // 사용자 상태 결정 (normal, participant, creator)
 function determineUserStatus(detail, participants) {
-    console.log('=== determineUserStatus called ===');
-    console.log('Current member no:', PAGE_CONFIG.currentMemberNo);
-    console.log('Creator no:', detail.creatorNo);
-    console.log('GroupBuy no:', detail.groupBuyNo);
-    console.log('Participants:', participants);
 
     const currentMemberNo = PAGE_CONFIG.currentMemberNo;
     const creatorNo = detail.creatorNo;
@@ -376,7 +368,6 @@ function determineUserStatus(detail, participants) {
 
     // 1순위: 개설자인 경우
     if (currentMemberNo === creatorNo) {
-        console.log('✓ User is CREATOR');
         currentStatus = 'creator';
         showBtnByStatus(currentStatus);
         return;
@@ -384,15 +375,10 @@ function determineUserStatus(detail, participants) {
 
     // 2순위: 참여자인 경우 (memberNo로 확인)
     const myParticipation = participants.find(p => {
-        console.log(`Checking participant - memberNo: ${p.memberNo}, vs current: ${currentMemberNo}`);
         return p.memberNo === currentMemberNo;
     });
 
     if (myParticipation) {
-        console.log('✓ User is PARTICIPANT');
-        console.log('  - groupParticipantNo:', myParticipation.groupParticipantNo);
-        console.log('  - memberNo:', myParticipation.memberNo);
-        console.log('  - myQuantity:', myParticipation.myQuantity);
         currentStatus = 'participant';
         myGroupBuyParticipantNo = myParticipation.groupParticipantNo;
         myCurrentQuantity = myParticipation.myQuantity || 0;
@@ -401,7 +387,6 @@ function determineUserStatus(detail, participants) {
     }
 
     // 3순위: 일반 사용자
-    console.log('✓ User is NORMAL (not participant, not creator)');
     currentStatus = 'normal';
     showBtnByStatus(currentStatus);
 }
@@ -711,7 +696,7 @@ document.addEventListener('DOMContentLoaded', async function () {
         const authData = await api.getCurrentUser();
 
         PAGE_CONFIG.currentMemberNo = authData.memberNo;
-        console.log('Updated PAGE_CONFIG:', PAGE_CONFIG);
+
         // 데이터 로드 및 렌더링
         const data = await api.getDetail();
         render.detail(data);
