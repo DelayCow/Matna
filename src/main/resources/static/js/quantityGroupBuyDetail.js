@@ -28,24 +28,20 @@ function showBtnByStatus(status) {
         case 'normal':
             if (normalBtn) {
                 normalBtn.classList.remove('d-none');
-                console.log('Normal button shown');
             }
             break;
         case 'participant':
             if (participantBtn) {
                 participantBtn.classList.remove('d-none');
-                console.log('Participant button shown');
             }
             break;
         case 'creator':
             // 개설자는 2개 버튼 모두 표시
             if (creatorRunningBtn) {
                 creatorRunningBtn.classList.remove('d-none');
-                console.log('Creator running button shown');
             }
             if (creatorStoppedBtn) {
                 creatorStoppedBtn.classList.remove('d-none');
-                console.log('Creator stopped button shown');
             }
             break;
     }
@@ -53,6 +49,17 @@ function showBtnByStatus(status) {
 
 // === API 호출 ===
 const api = {
+    // 현재 사용자 인증 정보 조회
+    getCurrentUser: () =>
+        fetch('/api/auth/currentUser', {
+            method: 'GET',
+            credentials: 'include'  // 쿠키 포함
+        })
+            .then(res => {
+                if (!res.ok) throw new Error('인증 정보 조회 실패');
+                return res.json();
+            }),
+
     getDetail: () =>
         fetch(`/api/quantityGroupBuy/detail/${PAGE_CONFIG.quantityGroupBuyNo}`, {
             method: 'GET'
@@ -366,13 +373,6 @@ function determineUserStatus(detail, participants) {
     const creatorNo = detail.creatorNo;
     groupBuyNo = detail.groupBuyNo;
 
-    // 로그인하지 않은 사용자
-    if (!currentMemberNo || currentMemberNo === null) {
-        console.log('Not logged in');
-        currentStatus = 'normal';
-        showBtnByStatus(currentStatus);
-        return;
-    }
 
     // 1순위: 개설자인 경우
     if (currentMemberNo === creatorNo) {
@@ -707,6 +707,11 @@ document.addEventListener('DOMContentLoaded', function() {
 // === 초기화 ===
 document.addEventListener('DOMContentLoaded', async function () {
     try {
+        // 1. 인증 정보 먼저 로드
+        const authData = await api.getCurrentUser();
+
+        PAGE_CONFIG.currentMemberNo = authData.memberNo;
+        console.log('Updated PAGE_CONFIG:', PAGE_CONFIG);
         // 데이터 로드 및 렌더링
         const data = await api.getDetail();
         render.detail(data);

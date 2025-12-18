@@ -8,12 +8,14 @@
   <link rel="stylesheet" href="/css/layout.css">
   <link rel="stylesheet" href="/css/quantityGroupBuyDetail.css">
 
-  <script th:inline="javascript">
+  <script>
+    const pathParts = window.location.pathname.split('/');
+    const quantityGroupBuyNo = parseInt(pathParts[pathParts.length - 1]);
+
     const PAGE_CONFIG = {
-      quantityGroupBuyNo: /*[[${quantityGroupBuyNo}]]*/ 0,
-      currentMemberNo: /*[[${currentMemberNo}]]*/ null
+      quantityGroupBuyNo: quantityGroupBuyNo || 0,
+      currentMemberNo: null  // API로 가져올 예정
     };
-    console.log('PAGE_CONFIG:', PAGE_CONFIG);
   </script>
 </head>
 <body>
