@@ -1,5 +1,5 @@
 
-import { showShareConfirmModal, showPaymentInfoModal, showArrivalInfoModal, showPaymentRegisterModal,showPasswordCheckModal, showReportModal, showRemoveMemberModal } from "./modal.js";
+import { showAlertModal, showShareConfirmModal, showPaymentInfoModal, showArrivalInfoModal, showPaymentRegisterModal,showPasswordCheckModal, showReportModal, showRemoveMemberModal } from "./modal.js";
 
 document.addEventListener('DOMContentLoaded', async function() {
     // URL에서 memberNo 추출
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 
 
-    let currentGroupTab = 'participate';
+    let currentGroupTab = 'host';
     let currentFilterStatus = 'ALL';
 
     const getStatusStep = (status) => {
@@ -560,12 +560,17 @@ document.addEventListener('DOMContentLoaded', async function() {
         const btn = e.target.closest('#headerMenuBtn');
         const menu = document.getElementById('headerDropdown');
         const removebtn = e.target.closest('#removeMember');
+        const recipeDeleteBtn = e.target.closest('.btn-delete');
         if(btn && menu) {
             e.stopPropagation();
             menu.classList.toggle('show');
         }else if(removebtn){
             showRemoveMemberModal(memberNo);
             menu.classList.remove('show');
+        }else if(recipeDeleteBtn) {
+            e.preventDefault();
+            const recipeNo = recipeDeleteBtn.getAttribute('data-id');
+            removeRecipe(recipeNo)
         }else if(menu) {
             menu.classList.remove('show');
         }
