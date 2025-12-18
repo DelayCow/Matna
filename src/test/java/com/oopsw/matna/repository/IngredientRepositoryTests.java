@@ -30,7 +30,9 @@ public class IngredientRepositoryTests {
     private GroupBuyRepository groupBuyRepository;
 
     @Autowired
-    MemberRepository memberRepository;
+    private MemberRepository memberRepository;
+
+    @Autowired
     private RecipeIngredientRepository recipeIngredientRepository;
 
     @Transactional //lazy loading 해결하기 위해 넣음.
@@ -99,7 +101,7 @@ public class IngredientRepositoryTests {
     @Transactional
     @Test
     public void findAllByApproveDateIsNull() {
-        System.out.println(ingredientRepository.findAllByApproveDateIsNull());
+        System.out.println(ingredientRepository.findAllByApproveDateIsNullAndDelDateIsNull());
     }
 
     @Transactional
@@ -112,7 +114,7 @@ public class IngredientRepositoryTests {
         ingredient.setApproveDate(LocalDateTime.now());
     }
 
-    //@Test
+    @Test
     @Transactional
     @Commit
     public void changeIngredientTest(){

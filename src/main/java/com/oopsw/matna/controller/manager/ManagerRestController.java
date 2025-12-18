@@ -2,7 +2,9 @@ package com.oopsw.matna.controller.manager;
 
 import com.oopsw.matna.dto.ManagerGroupBuyResponse;
 import com.oopsw.matna.dto.ManagerIngredientResponse;
+import com.oopsw.matna.dto.ManagerMemberResponse;
 import com.oopsw.matna.dto.ManagerReportResponse;
+import com.oopsw.matna.repository.entity.Report;
 import com.oopsw.matna.service.ManagerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -47,10 +49,20 @@ public class ManagerRestController {
         managerService.approveIngredient(ingredientId);
     }
 
+    @PutMapping("/ingredientManagement/change")
+    public void changeApprovedIngredient(@RequestParam Integer ingredientNo ,@RequestParam Integer newIngredientNo) {
+        managerService.changeIngredient(ingredientNo, newIngredientNo);
+    }
+
     //공구 관리
     @GetMapping("/groupBuyManagement")
     public List<ManagerGroupBuyResponse> getGroupBuyList(String startDate, String endDate, String status, String title){
         return managerService.getGroupBuyList(startDate, endDate, status, title);
+    }
+
+    @PutMapping("/groupBuyManagement")
+    public void cancelGroupBuy(@RequestParam Integer groupBuyNo) {
+        managerService.cancelGroupBuy(groupBuyNo);
     }
 
     //신고 관리
@@ -63,8 +75,26 @@ public class ManagerRestController {
         return managerService.getReportList(startDate, endDate, status, reportCase, keyword);
     }
 
-    @PutMapping("/reportManagement/edit")
-    public void editReport(@RequestParam Integer reportId) {
-        managerService.editReportStatus(reportId);
+    @PutMapping("/reportManagement/complete")
+    public void editReportComplete(@RequestParam Integer reportNo) {
+        managerService.editReportStatus(reportNo, "complete");
+    }
+
+    @PutMapping("/reportManagement/rejection")
+    public void editReportRejection(@RequestParam Integer reportNo) {
+        managerService.editReportStatus(reportNo, "rejection");
+    }
+
+    //유저관리
+    @GetMapping("/memberManagement")
+    public List<ManagerMemberResponse> getMember(@RequestParam(required = false) String startDate,
+                                                 @RequestParam(required = false) String endDate,
+                                                 @RequestParam(required = false) String keyword) {
+        return managerService.getMemberList(startDate, endDate, keyword);
+    }
+
+    @PutMapping("/memberManagement/ban")
+    public void banMember(@RequestParam Integer memberNo, @RequestParam String days) {
+        managerService.updateBanDate(memberNo, days);
     }
 }

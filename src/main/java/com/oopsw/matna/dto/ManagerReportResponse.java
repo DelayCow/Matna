@@ -14,8 +14,14 @@ public class ManagerReportResponse {
     private String status;
     private LocalDateTime reportedDate;
     private String reporterName;
+    private String reporterImageUrl;
+    private String imageUrl;
     private String reason;
     private Integer targetMemberNo;
+    private String targetName;
+    private String targetImageUrl;
     private Integer groupBuyNo;
+    private String groupBuyTitle;
+    private String groupBuyImageUrl;
     private String type;
 }
