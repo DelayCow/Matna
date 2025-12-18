@@ -435,7 +435,7 @@ export function showPasswordCheckModal(memberNo) {
                     location.href = `/mypage/${memberNo}/myinfoEdit`;
                 } else {
                     alert("비밀번호가 일치하지 않습니다.");
-                    inputEl.value = ''; // 비번 지우기
+                    inputEl.value = '';
                     inputEl.focus();
                 }
             })

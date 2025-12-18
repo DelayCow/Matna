@@ -25,10 +25,12 @@
 
     <section class="profile-section px-4 pt-4 pb-2">
       <div class="d-flex align-items-center mb-4">
-        <img th:src="${member.imageUrl != null ? member.imageUrl : '/img/default_profile.png'}"
+<!--        <img th:src="${member.imageUrl != null ? member.imageUrl : '/img/default_profile.png'}"-->
+        <img id="profileImage" src="/img/default_profile.png"
              class="rounded-circle border" width="60" height="60" style="object-fit: cover;">
         <div class="ms-3">
-          <div class="fw-bold fs-5" th:text="${member.nickname}">닉네임</div>
+<!--          <div class="fw-bold fs-5" th:text="${member.nickname}">닉네임</div>-->
+          <div id = "nicknameDisplay" class="fw-bold fs-5">닉네임</div>
           <div class="text-secondary small">현재 보유 머니</div>
         </div>
       </div>
@@ -36,7 +38,8 @@
       <div class="d-flex align-items-center justify-content-between bg-light p-3 rounded-3 mb-4">
         <span class="fw-bold text-secondary">내 맛나머니</span>
         <span class="fs-4 fw-bold text-dark">
-                    <span th:text="${#numbers.formatInteger(member.point, 0, 'COMMA')}">0</span> 원
+<!--                    <span th:text="${#numbers.formatInteger(member.point, 0, 'COMMA')}">0</span> 원-->
+          <span id="currentPointDisplay">0</span> 원
                 </span>
       </div>
     </section>
@@ -73,7 +76,7 @@
       </button>
     </div>
 
-    <input type="hidden" id="memberNo" th:value="${member.memberNo}">
+    <input type="hidden" id="memberNo" value="">
   </div>
 
   <nav class="navbar fixed-bottom bg-white bottom-nav p-0 border-top">

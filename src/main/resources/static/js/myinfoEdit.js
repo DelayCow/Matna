@@ -10,6 +10,17 @@ document.addEventListener('DOMContentLoaded', function() {
         bankSelect.appendChild(option);
     })
 
+    const pathParts = window.location.pathname.split('/');
+    const urlMemberNo = pathParts[pathParts.length - 2] === 'mypage' ? null : parseInt(pathParts[pathParts.length - 2]);
+    // let memberNo = null;
+
+    fetchMemberInfo(urlMemberNo);
+
+    const addressBtn = document.getElementById('addressSearchBtn');
+    if (addressBtn) {
+        addressBtn.addEventListener('click', findOtherAdress);
+    }
+
     document.getElementById('register-btn').addEventListener('click', function (e) {
         e.preventDefault();
 
@@ -113,3 +124,46 @@ document.addEventListener('DOMContentLoaded', function() {
         profileFileUpload.value = '';
     });
 });
+
+// controller 기능 빼면서 생김
+function fetchMemberInfo(memberNo) {
+
+    fetch(`/api/mypage/${memberNo}/infoEditFill`)
+        .then(response => {
+            if (!response.ok) throw new Error('정보 불러오기 실패');
+            return response.json();
+        }).then(member => {
+            if (member){
+                document.getElementById('memberNo').value = member.memberNo || '';
+                document.getElementById('memberId').value = member.memberId || '';
+                document.getElementById('nickname').value = member.nickname || '';
+                document.getElementById('accountNumber').value = member.accountNumber || '';
+                document.getElementById('accountName').value = member.accountName || '';
+                document.getElementById('address').value = member.address || '';
+
+
+                if(member.bank) {
+                    document.getElementById('bank').value = member.bank;
+                }
+
+                const imgTag = document.getElementById('profileImage');
+                if(member.imageUrl) {
+                    imgTag.src = member.imageUrl;
+                }
+            }
+    }).catch(error => console.error('내정보 로딩 실패', error));
+}
+
+function findOtherAdress() {
+    new daum.Postcode({
+        oncomplete: function (data){
+        var addr = '';
+        if (data.userSelectedType === 'R') {
+            addr = data.roadAddress;
+    } else {
+            addr = data.jibunAddress;
+    }
+        document.getElementById('address').value = addr;
+        }
+    }).open();
+}

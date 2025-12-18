@@ -22,6 +22,7 @@ window.resetAmount = function() {
 
 document.addEventListener('DOMContentLoaded', function() {
 
+
     // 직접 입력 처리
     if(inputEl) {
         inputEl.addEventListener('input', function(e) {

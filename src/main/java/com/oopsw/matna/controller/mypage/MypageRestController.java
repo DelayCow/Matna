@@ -7,6 +7,7 @@ import com.oopsw.matna.dto.MemberProfileListResponse;
 import com.oopsw.matna.dto.RecipeListResponse;
 import com.oopsw.matna.service.MypageService;
 import com.oopsw.matna.vo.*;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -140,17 +141,49 @@ public class MypageRestController {
         return mypageService.getMemberInfo(memberNo);
     }
 
+//    @PutMapping("/{memberNo}/infoEdit")
+//    public ResponseEntity<String> updateProfile(
+//            @PathVariable("memberNo") int memberNo,
+//            @ModelAttribute MemberVO editData,
+//            @RequestParam(value = "profileImage", required = false) MultipartFile file) {
+//
+//        editData.setMemberNo(memberNo);
+//
+//        mypageService.updateMemberProfile(editData, file);
+//
+//        return ResponseEntity.ok("Success");
+//    }
+
+    @GetMapping("/{memberNo}/infoEditFill")
+    public ResponseEntity<MemberVO> getProfileData(@PathVariable int memberNo)
+    {
+        MemberVO member = mypageService.getMemberInfo(memberNo);
+
+        return ResponseEntity.ok(member);
+    }
+
+
     @PutMapping("/{memberNo}/infoEdit")
-    public ResponseEntity<String> updateProfile(
-            @PathVariable("memberNo") int memberNo,
-            @ModelAttribute MemberVO editData,
-            @RequestParam(value = "profileImage", required = false) MultipartFile file) {
+    public ResponseEntity<String> updateProfile(@PathVariable("memberNo") int memberNo
+                                                , @ModelAttribute MemberVO editData
+                                                , @RequestParam(value = "profileImage", required = false) MultipartFile file,
+                                                @AuthenticationPrincipal PrincipalDetails principal)
+    {
+
+
+        if (principal==null) {
+            return ResponseEntity.status(401).body("로그인 하세여");
+        }
+
+        if (principal.getMemberNo() != memberNo) {
+            return ResponseEntity.status(403).body("본인의 정보만 수정할 수 있습니다.");
+        }
 
         editData.setMemberNo(memberNo);
-
         mypageService.updateMemberProfile(editData, file);
 
-        return ResponseEntity.ok("Success");
+        return ResponseEntity.ok("성공");
+
     }
 
 
@@ -248,5 +281,12 @@ public class MypageRestController {
     }
 
 
+    @GetMapping("/pointPageFill")
+    public ResponseEntity<MemberVO> fillPointPageFill(@AuthenticationPrincipal PrincipalDetails principal){
+
+        MemberVO member = mypageService.getMemberInfo(principal.getMemberNo());
+
+        return ResponseEntity.ok(member);
+    }
 
 }
