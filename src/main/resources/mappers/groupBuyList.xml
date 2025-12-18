@@ -66,7 +66,8 @@
         quantity_group_buys qgb ON gb.group_buy_no = qgb.group_buy_no
 
         WHERE
-        gbp.participant_no = #{participantNo}
+        gbp.participant_no = #{participantNo} AND
+        gbp.cancel_date IS NULL
 
         <if test="filter != null and filter != 'ALL'">
             AND gb.status = #{filter}
