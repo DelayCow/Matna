@@ -1,12 +1,8 @@
 package com.oopsw.matna.service;
 
-import com.oopsw.matna.controller.recipe.RecipeRequest;
 import com.oopsw.matna.dto.RecipeResponse;
 import com.oopsw.matna.repository.entity.Recipe;
-import com.oopsw.matna.vo.IngredientVO;
-import com.oopsw.matna.vo.MemberVO;
-import com.oopsw.matna.vo.RecipeStepVO;
-import com.oopsw.matna.vo.RecipeVO;
+import com.oopsw.matna.vo.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -56,7 +52,7 @@ public class RecipeServiceTests {
     void addRecipeTest() throws IOException {
         Integer memberNo = 5;
         // Given
-        RecipeRequest recipeDto = RecipeRequest.builder()
+        RecipeRegisterVO recipeDto = RecipeRegisterVO.builder()
                 .title("테스트").summary("테스트").category("korean").difficulty("easy")
                 .prepTime(10).spicyLevel(0).servings(1)
                 .build();
@@ -102,13 +98,13 @@ public class RecipeServiceTests {
 
     @Test
     public void getRecipeDetail(){
-        System.out.println(recipeService.getRecipeDetail(1));
+        System.out.println(recipeService.getRecipeDetail(7));
     }
 
     @Test
     public void editRecipeTest() throws IOException {
         Integer memberNo = 5;
-        RecipeRequest recipeDto = RecipeRequest.builder()
+        RecipeRegisterVO recipeDto = RecipeRegisterVO.builder()
                 .recipeNo(14)
                 .title("수정테스트").summary("수정테스트").category("korean").difficulty("easy")
                 .prepTime(10).spicyLevel(0).servings(1)

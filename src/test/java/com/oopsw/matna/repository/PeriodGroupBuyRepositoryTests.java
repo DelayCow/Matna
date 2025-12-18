@@ -27,7 +27,7 @@ public class PeriodGroupBuyRepositoryTests {
     GroupBuyParticipantRepository groupBuyParticipantRepository;
 
     @Test
-    void searchIngredientKeywordTest(){
+    void getSearchIngredientKeywordTest(){
         String keyword = "쌀";
         List<Ingredient> results = ingredientRepository.findByIngredientNameContaining(keyword);
         for (Ingredient ingredient : results) {
@@ -40,7 +40,7 @@ public class PeriodGroupBuyRepositoryTests {
         Member creatorMember = memberRepository.findById(5).get();
         Ingredient newIngredient = ingredientRepository.save(
                 Ingredient.builder()
-                .ingredientName("모닝빵")
+                .ingredientName("빵")
                 .creator(creatorMember)
                 .inDate(LocalDateTime.now())
                 .build());
@@ -48,7 +48,7 @@ public class PeriodGroupBuyRepositoryTests {
     }
 
     @Test
-    void createPeriodGroupBuyTest(){
+    void addPeriodGroupBuyTest(){
         Ingredient ingredientNo = ingredientRepository.findById(23).get();
         Member creatorMember = memberRepository.findById(16).get();
         GroupBuy newGroupBuy = groupBuyRepository.save(
@@ -85,9 +85,9 @@ public class PeriodGroupBuyRepositoryTests {
     }
 
     @Test
-    void testJoinPeriodGroupBuy(){
+    void editJoinPeriodGroupBuyTest(){
         Member participantMember = memberRepository.findById(12).get();
-        GroupBuy groupBuyNo = groupBuyRepository.findById(29).get();
+        GroupBuy groupBuyNo = groupBuyRepository.findById(25).get();
 
         Integer price = groupBuyNo.getPrice();
         Integer feeRate = groupBuyNo.getFeeRate();
@@ -105,9 +105,9 @@ public class PeriodGroupBuyRepositoryTests {
     }
 
     @Test
-    void testInitialPayPeroidPoint(){
+    void editInitialPayPeriodPointTest(){
         Member participantMember = memberRepository.findById(12).get();
-        GroupBuyParticipant groupBuyParticipant = groupBuyParticipantRepository.findById(67).get();
+        GroupBuyParticipant groupBuyParticipant = groupBuyParticipantRepository.findById(66).get();
 
         int initialPaymentPoint = groupBuyParticipant.getInitialPaymentPoint(); // 차감할 포인트
         int currentPoint = participantMember.getPoint();
@@ -125,9 +125,9 @@ public class PeriodGroupBuyRepositoryTests {
 
 
     @Test//  [마지막 참여/기간만료] GroupBuy 진행상황 (status) CLOSED 업데이트")
-    void testUpdateStatusToClosed() {
+    void editStatusToClosedTest() {
         // Given: 상태를 변경할 GroupBuy (ID는 Long 타입으로 일관성 있게 변경)
-        Integer GroupBuyId = 29;
+        Integer GroupBuyId = 25;
         GroupBuy groupBuy = groupBuyRepository.findById(GroupBuyId).get();
         PeriodGroupBuy periodGroupBuy = periodGroupBuyRepository.findByGroupBuy(groupBuy);
         int currentParticipantCount = 5; // 현재 5명 참가했다고 가정
@@ -143,8 +143,8 @@ public class PeriodGroupBuyRepositoryTests {
 
     @Test
     // [마지막 참여/기간만료] 참여자 최종 수량 및 최종 결제금액 확정 업데이트"
-    void testUpdateFinalAmountsAndQuantity() {
-        Integer targetParticipantId = 67; // testJoinPeriodGroupBuy에서 사용된 ID를 가정
+    void editUpdateFinalAmountsAndQuantityTest() {
+        Integer targetParticipantId = 66; // testJoinPeriodGroupBuy에서 사용된 ID를 가정
         GroupBuyParticipant participant = groupBuyParticipantRepository.findById(targetParticipantId)
                 .orElseThrow(() -> new AssertionError("테스트를 위한 Participant 엔티티(ID: " + targetParticipantId + ")를 찾을 수 없습니다."));
 
@@ -163,8 +163,8 @@ public class PeriodGroupBuyRepositoryTests {
 
     @Test
     // [마지막 참여/기간만료] 최종 금액 차액 환불 (Member Point 업데이트)")
-    void testRefundDifferencePoints() {
-        Integer targetParticipantId = 67;
+    void editRefundDifferencePointsTest() {
+        Integer targetParticipantId = 66;
         GroupBuyParticipant participant = groupBuyParticipantRepository.findById(targetParticipantId)
                 .orElseThrow(() -> new AssertionError("테스트를 위한 Participant 엔티티(ID: " + targetParticipantId + ")를 찾을 수 없습니다."));
 
@@ -190,9 +190,9 @@ public class PeriodGroupBuyRepositoryTests {
     }
 
     @Test
-    void testCancelJoinGroupBuy(){
+    void editCancelJoinGroupBuyTest(){
         Member participantMember = memberRepository.findById(12).get();
-        GroupBuyParticipant groupBuyParticipant = groupBuyParticipantRepository.findById(67).get();
+        GroupBuyParticipant groupBuyParticipant = groupBuyParticipantRepository.findById(66).get();
 
         groupBuyParticipant.setCancelDate(LocalDateTime.now());
         groupBuyParticipantRepository.save(groupBuyParticipant);
@@ -208,8 +208,8 @@ public class PeriodGroupBuyRepositoryTests {
 
     @Test
     // [개설자 중단] GroupBuy 상태 CANCELED로 변경 및 참여자 전액 환불")
-    void testPeriodCreatorCancelAndRefund() {
-        Integer targetGroupBuyId = 29;
+    void editPeriodCreatorCancelAndRefundTest() {
+        Integer targetGroupBuyId = 25;
         String cancelStatus = "canceled";
         String cancelReason = "고구마철이 끝났다고 합니다.";
 

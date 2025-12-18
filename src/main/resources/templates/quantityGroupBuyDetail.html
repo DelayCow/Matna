@@ -1,12 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>QuantityGroupBuyDetail</title>
+  <title>수량 공동구매 상세</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="../static/css/layout.css">
-  <link rel="stylesheet" href="../static/css/quantityGroupBuyDetail.css">
+  <link rel="stylesheet" href="/css/layout.css">
+  <link rel="stylesheet" href="/css/quantityGroupBuyDetail.css">
+
+  <script>
+    const pathParts = window.location.pathname.split('/');
+    const quantityGroupBuyNo = parseInt(pathParts[pathParts.length - 1]);
+
+    const PAGE_CONFIG = {
+      quantityGroupBuyNo: quantityGroupBuyNo || 0,
+      currentMemberNo: null  // API로 가져올 예정
+    };
+  </script>
 </head>
 <body>
 <div class="mobile-container position-relative">
@@ -15,20 +25,28 @@
   <div class="container-fluid content-area p-0">
 
     <div class="top-product-image-full">
-      <img src="../../../../../Matna/src/main/resources/static/img/orange.jpg" alt="고당도 제주 감귤 이미지" class="img-fluid">
+      <img id="data-product-image" src="/img/placeholder.jpg" alt="공동구매 이미지" class="img-fluid">
     </div>
 
     <div class="group-buy-product p-3">
-      <div class="d-flex align-items-center mb-3">
-        <img src="../../../../../Matna/src/main/resources/static/img/user.png" class="rounded-circle me-2" alt="작성자 프로필" style="width:36px; height:36px;">
-        <div class="d-flex flex-column lh-sm">
-          <span class="fw-bold">해피</span>
+      <a id="data-author-link" href="#" style="text-decoration: none; color: inherit;">
+        <div class="d-flex align-items-center">
+          <img id="data-author-profile" src="/img/user.png" class="rounded-circle me-2"
+               alt="작성자 프로필" style="width:36px; height:36px; cursor: pointer;">
+          <div class="d-flex flex-column lh-sm">
+            <span id="data-author-nickname" class="fw-bold">작성자</span>
+          </div>
         </div>
-      </div>
+      </a>
 
-      <h2 class="fw-bold mb-1 product-title">고당도 제주 감귤 1kg</h2>
-      <a href="#" class="text-primary small d-inline-block text-decoration-none mb-3">상품판매페이지</a>
-      <p class="product-price fs-4 fw-bold mb-1">1,200원 <span class="text-muted fee-text">(100g 당)</span> <span class="text-muted fee-text">(수수료 5% 포함)</span></p>
+      <h2 id="data-product-title" class="fw-bold mb-1 product-title">제품명</h2>
+      <a id="data-item-sale-url" href="#" class="text-primary small d-inline-block text-decoration-none mb-3">상품판매페이지</a>
+
+      <p class="product-price fs-4 fw-bold mb-1">
+        <span id="data-price">0</span>원
+        <span class="text-muted fee-text">(<span id="data-share-amount"></span><span id="data-unit">g</span> 당)</span>
+        <span class="text-muted fee-text">(수수료 <span id="data-fee-rate">0</span>% 포함)</span>
+      </p>
 
       <hr class="my-3">
 
@@ -36,39 +54,62 @@
         <div class="d-flex flex-column">
           <div class="d-flex align-items-center mb-1">
             <span class="text-dark me-2 fw-bold">남은 수량</span>
-            <span class="fs-5 fw-bold text-danger me-1">300g</span>
+            <span id="data-remaining-qty" class="fs-5 fw-bold text-danger me-1">0</span>
           </div>
           <div class="text-start mb-2">
             <span class="text-dark me-2 fw-bold">공구 오픈일</span>
-            <span class="fw-bold text-danger">2025년 11월 20일 (4일 지남)</span>
+            <span id="data-open-date" class="fw-bold text-danger">정보 로딩 중...</span>
           </div>
         </div>
 
-        <div class="d-flex flex-shrink-0">
-          <button class="btn btn-danger py-2 px-3 fw-bold btn-group-buy-status normal-btn"
-                  data-bs-toggle="modal" data-bs-target="#participantQuantityModal" data-bs-status="normal">공동구매 참여하기</button>
-          <button class="btn btn-danger py-2 px-3 fw-bold btn-group-buy-status participant-btn"
-                  data-bs-toggle="modal" data-bs-target="#participantQuantityModal" data-bs-status="participant">수량 수정하기</button>
-          <button class="btn btn-danger py-2 px-3 fw-bold btn-group-buy-status creator-stopped-btn"
-                  data-bs-toggle="modal" data-bs-target="#creatorActionModal" data-bs-action="run">공동구매 진행하기</button>
-          <button class="btn btn-danger py-2 px-3 fw-bold btn-group-buy-status creator-running-btn"
-                  data-bs-toggle="modal" data-bs-target="#creatorActionModal" data-bs-action="stop">공동구매 중단하기</button>
+        <div class="d-flex flex-shrink-0 gap-2">
+          <!-- 일반 사용자 버튼 -->
+          <button class="btn btn-danger py-2 px-3 fw-bold btn-group-buy-status normal-btn d-none"
+                  data-bs-toggle="modal" data-bs-target="#participantQuantityModal" data-bs-status="normal">
+            공동구매 참여하기
+          </button>
+
+          <!-- 참여자 버튼 -->
+          <button class="btn btn-danger py-2 px-3 fw-bold btn-group-buy-status participant-btn d-none"
+                  data-bs-toggle="modal" data-bs-target="#participantQuantityModal" data-bs-status="participant">
+            수량 수정하기
+          </button>
+
+          <!-- 개설자 버튼 2개 -->
+          <button class="btn btn-success py-2 px-3 fw-bold btn-group-buy-status creator-running-btn d-none"
+                  data-bs-toggle="modal" data-bs-target="#creatorActionModal" data-bs-action="run">
+            공동구매 진행하기
+          </button>
+          <button class="btn btn-danger py-2 px-3 fw-bold btn-group-buy-status creator-stopped-btn d-none"
+                  data-bs-toggle="modal" data-bs-target="#creatorActionModal" data-bs-action="stop">
+            공동구매 중단하기
+          </button>
         </div>
       </div>
 
-      <p class="text-center bg-light p-2 rounded small text-muted">
-        혼자 먹기에는 양이 너무 많아서요~<br>같이 나눠 드실 분 구해요~~
+      <p id="data-product-content" class="text-center bg-light p-2 rounded small text-muted">
+        상세 내용 로딩 중...
       </p>
 
       <hr class="my-3">
 
       <div class="group-buy-location mb-3">
         <h5 class="fw-bold mb-2">나눔 장소</h5>
-        <p class="mb-1"><i class="bi bi-geo-alt-fill me-2 text-danger"></i>서울시 금천구 가산동 319. 호서대벤처타워 1층 <i class="bi bi-info-circle small text-muted ms-1"></i></p>
+        <p class="mb-1">
+          <span id="data-share-location">장소 정보 로딩 중...</span>
+          <span id="data-share-address"></span>
+          <i class="bi bi-geo-alt-fill me-2 text-danger" id="address-map"></i>
+        </p>
       </div>
       <div class="group-buy-dates mb-3 small">
-        <p class="mb-1"><span class="fw-bold me-2">상품 나눔 일시:</span> 모집 마감 후 1일 이내</p>
-        <p class="mb-0"><span class="fw-bold me-2">상품 구매 일시:</span> 상품 수령 후 3일 후 18:30</p>
+        <p class="mb-1">
+          <span class="fw-bold me-2">상품 구매 일시:</span>
+          <span id="data-buy-date">정보 로딩 중...</span>
+        </p>
+        <p class="mb-0">
+          <span class="fw-bold me-2">상품 나눔 일시:</span>
+          <span id="data-share-date">정보 로딩 중...</span>
+        </p>
       </div>
     </div>
 
@@ -76,77 +117,25 @@
 
     <div class="recipe-suggestion p-3">
       <h5 class="fw-bold mb-3">이 상품으로 만들 레시피 추천</h5>
-
-      <div class="recipe-cards-scroll d-flex">
-        <div class="card card-custom card-wide me-3 flex-shrink-0">
-          <img src="../../../../../Matna/src/main/resources/static/img/orangemarmalade.jpg" class="card-img-top" alt="레시피 이미지">
-          <div class="card-body px-2 py-2">
-            <p class="card-text fw-bold text-truncate mb-1">
-              달지않은 귤 마말레이드
-            </p>
-            <small class="text-muted d-block">작성자 | 춘냥이</small>
-          </div>
-        </div>
-
-        <div class="card card-custom card-wide me-3 flex-shrink-0">
-          <img src="../../../../../Matna/src/main/resources/static/img/orangemilk.jpg" class="card-img-top" alt="레시피 이미지">
-          <div class="card-body px-2 py-2">
-            <p class="card-text fw-bold text-truncate mb-1">
-              우유에 퐁당! 귤우유 만들어보기
-            </p>
-            <small class="text-muted d-block">작성자 | 우유맛집</small>
-          </div>
-        </div>
-
-        <div class="card card-custom card-wide me-3 flex-shrink-0">
-          <img src="../../../../../Matna/src/main/resources/static/img/orangepie.jpg" class="card-img-top" alt="레시피 이미지">
-          <div class="card-body px-2 py-2">
-            <p class="card-text fw-bold text-truncate mb-1">
-              바삭한 감귤 파이. 오후의 달콤한 시간을 즐겨보세요
-            </p>
-            <small class="text-muted d-block">작성자 | 삼점일사</small>
-          </div>
-        </div>
+      <div id="data-recipe-list" class="recipe-cards-scroll d-flex">
+        <!-- 레시피 카드 동적 생성 -->
       </div>
     </div>
 
     <hr class="m-0" style="height: 8px; background-color: #f8f9fa;">
 
     <div class="participants-list p-3">
-      <h5 class="fw-bold mb-3">참여자 2명</h5>
-
-      <div class="d-flex align-items-center mb-3">
-        <div class="d-flex align-items-center">
-          <img src="../../../../../Matna/src/main/resources/static/img/user1.png" class="rounded-circle me-3" alt="참여자 프로필" style="width:50px; height:50px;">
-          <div class="d-flex flex-column">
-            <span class="fw-bold fs-6">베베는오리</span>
-            <span class="small text-muted">8시간 전</span>
-          </div>
-        </div>
-        <div class="ms-auto me-5 flex-shrink-0 fw-bold fs-6">
-          200g
-        </div>
+      <h5 class="fw-bold mb-3" id="data-participants-count-header">참여자 0명</h5>
+      <div id="data-participants-list">
+        <!-- 참여자 목록 동적 생성 -->
       </div>
-
-      <div class="d-flex align-items-center mb-3">
-        <div class="d-flex align-items-center">
-          <img src="../../../../../Matna/src/main/resources/static/img/user.png" class="rounded-circle me-3" alt="참여자 프로필" style="width:50px; height:50px;">
-          <div class="d-flex flex-column">
-            <span class="fw-bold fs-6">춘냥이</span>
-            <span class="small text-muted">17시간 전</span>
-          </div>
-        </div>
-        <div class="ms-auto me-5 flex-shrink-0 fw-bold fs-6">
-          100g
-        </div>
-      </div>
-
     </div>
   </div>
+
   <div th:replace="layout :: menuBar"></div>
 </div>
 
-
+<!-- 참여/수정 모달 -->
 <div class="modal fade" id="participantQuantityModal" tabindex="-1" aria-labelledby="dynamicQuantityModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" style="max-width: 350px;">
     <div class="modal-content">
@@ -156,12 +145,12 @@
 
         <div class="d-flex justify-content-between align-items-center mb-3 mt-2">
           <span class="fs-5 fw-bold">남은 수량</span>
-          <span class="fs-5 fw-bold text-danger">300g</span>
+          <span class="fs-5 fw-bold text-danger" id="modal-remaining-qty">0g</span>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center mb-2 participant-only d-none">
+        <div class="d-flex justify-content-between align-items-center mb-2 d-none" id="modal-current-qty-row">
           <span class="fs-5 fw-bold">기존 수량</span>
-          <span class="fs-5 fw-bold">200g</span>
+          <span class="fs-5 fw-bold" id="modal-current-qty">0g</span>
         </div>
 
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -174,16 +163,16 @@
 
         <div class="text-center mb-4">
           <span class="fs-5 fw-bold me-2" id="amountLabel">결제 금액</span>
-          <span class="fs-4 fw-bold text-danger">1,100원</span>
+          <span id="modal-amount-value" class="fs-4 fw-bold text-danger">0원</span>
         </div>
 
         <div class="d-grid" id="normalButtonContainer">
-          <button type="button" class="btn btn-danger py-2 fw-bold" style="background-color: #dc3545; border-color: #dc3545;">참여하기</button>
+          <button type="button" class="btn btn-danger py-2 fw-bold" id="normalJoinBtn">참여하기</button>
         </div>
 
         <div class="d-flex justify-content-between gap-2 d-none" id="participantButtonContainer">
-          <button type="button" class="btn btn-danger py-2 fw-bold w-50" style="background-color: #dc3545; border-color: #dc3545;">참여 취소하기</button>
-          <button type="button" class="btn btn-success py-2 fw-bold w-50" style="background-color: #28a745; border-color: #28a745;">수정하기</button>
+          <button type="button" class="btn btn-danger py-2 fw-bold w-50" id="participantCancelBtn">참여 취소하기</button>
+          <button type="button" class="btn btn-success py-2 fw-bold w-50" id="participantModifyBtn">수정하기</button>
         </div>
 
       </div>
@@ -191,7 +180,7 @@
   </div>
 </div>
 
-
+<!-- 개설자 액션 모달 -->
 <div class="modal fade" id="creatorActionModal" tabindex="-1" aria-labelledby="creatorActionModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;">
     <div class="modal-content">
@@ -205,12 +194,11 @@
 
         <div class="mb-4 text-start d-none" id="reasonInputContainer">
           <span class="d-block small fw-bold mb-1">사유</span>
-          <textarea class="form-control" rows="4" placeholder="중단 사유를 입력해주세요."></textarea>
+          <textarea class="form-control" rows="4" id="cancelReasonTextarea" placeholder="중단 사유를 입력해주세요."></textarea>
         </div>
 
         <div class="d-grid">
-          <button type="button" class="btn btn-danger py-2 fw-bold" id="creatorActionButton"
-                  style="background-color: #e54747; border-color: #e54747;"></button>
+          <button type="button" class="btn btn-danger py-2 fw-bold" id="creatorActionButton"></button>
         </div>
 
       </div>
@@ -218,8 +206,7 @@
   </div>
 </div>
 
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="../static/js/quantityGroupDetail.js"></script>
+<script src="/js/quantityGroupBuyDetail.js"></script>
 </body>
 </html>

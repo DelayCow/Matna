@@ -27,7 +27,7 @@ public class QuantityGroupBuyRepositoryTests {
     GroupBuyParticipantRepository groupBuyParticipantRepository;
 
     @Test
-    void testSearchIngredientKeyword() {
+    void getSearchIngredientKeywordTest() {
         String keyword = "쌀";
         List<Ingredient> results = ingredientRepository.findByIngredientNameContaining(keyword);
         for (Ingredient ingredient : results) {
@@ -36,11 +36,11 @@ public class QuantityGroupBuyRepositoryTests {
     }
 
     @Test
-    void testAddIngredient() {
+    void addIngredientTest() {
         Member creatorMember = memberRepository.findById(5).get();
         Ingredient newIngredient = ingredientRepository.save(
                 Ingredient.builder()
-                        .ingredientName("모닝빵")
+                        .ingredientName("빵")
                         .creator(creatorMember)
                         .inDate(LocalDateTime.now())
                         .build());
@@ -48,7 +48,7 @@ public class QuantityGroupBuyRepositoryTests {
     }
 
     @Test
-    void testAddQuantityGroupBuy() { // testAddPeriodGroupBuy -> testAddQuantityGroupBuy 변경
+    void addQuantityGroupBuyTest() { // testAddPeriodGroupBuy -> testAddQuantityGroupBuy 변경
         Ingredient ingredientNo = ingredientRepository.findById(45).get();
         Member creatorMember = memberRepository.findById(16).get();
 
@@ -91,16 +91,16 @@ public class QuantityGroupBuyRepositoryTests {
     }
 
     @Test
-    void testJoinQuantityGroupBuy() {
+    void addParticipantToQuantityGroupBuyTest() {
         Member participantMember = memberRepository.findById(12).get();
-        GroupBuy groupBuyNo = groupBuyRepository.findById(32).get();
+        GroupBuy groupBuyNo = groupBuyRepository.findById(20).get();
         QuantityGroupBuy quantityGroupBuy = quantityGroupBuyRepository.findByGroupBuy(groupBuyNo);
 
         // 초기 결제 금액 계산: (참여 수량 * 단위 가격) * (1 + 수수료율)
-        int participantQuantity = 1;
+        int participantQuantity = 500;
         Integer pricePerUnit = quantityGroupBuy.getPricePerUnit();
         Integer feeRate = groupBuyNo.getFeeRate();
-        int initialPaymentPoint = (int) Math.round((participantQuantity * pricePerUnit * (1.0 + (feeRate / 100.0))));
+        int initialPaymentPoint = (int) Math.round((participantQuantity/ quantityGroupBuy.getShareAmount()) * pricePerUnit);
 
         GroupBuyParticipant joinQuantityGroupBuy = groupBuyParticipantRepository.save(
                 GroupBuyParticipant.builder()
@@ -117,28 +117,72 @@ public class QuantityGroupBuyRepositoryTests {
     }
 
     @Test
-    void testPayQuantityPoint() {
-        Member participantMember = memberRepository.findById(12).get();
-        GroupBuyParticipant groupBuyParticipant = groupBuyParticipantRepository.findById(70).get();
+    void editModifyMyQuantityTest() {
+        // 테스트 데이터
+        Integer participantNo = 19;
+        Integer groupBuyParticipantNo = 59;
+        int newQuantity = 1000; // 수정할 새로운 수량
 
-        int initialPaymentPoint = groupBuyParticipant.getInitialPaymentPoint();
-        int currentPoint = participantMember.getPoint();
-        int newPoint = currentPoint - initialPaymentPoint;
+        // 참여자 및 참여 정보 조회
+        Member participantMember = memberRepository.findById(participantNo).get();
+        GroupBuyParticipant groupBuyParticipant = groupBuyParticipantRepository.findById(groupBuyParticipantNo).get();
 
+        // 수정 전 데이터
+        int initialMyQuantity = groupBuyParticipant.getMyQuantity();
+        int beforePoint = participantMember.getPoint();
+        int beforeInitialPayment = groupBuyParticipant.getInitialPaymentPoint();
+
+        // 개당 가격
+        GroupBuy groupBuy = groupBuyParticipant.getGroupBuy();
+        QuantityGroupBuy quantityGroupBuy = quantityGroupBuyRepository.findByGroupBuy(groupBuy);
+        int pricePerUnit = quantityGroupBuy.getPricePerUnit();
+        int feeRate = groupBuy.getFeeRate();
+
+        // 새로운 지불 금액 계산
+        int newPayment = (int) Math.round((newQuantity/ quantityGroupBuy.getShareAmount()) * pricePerUnit);
+        int modifyPoint = newPayment - beforeInitialPayment; // 양수: 추가 지불, 음수: 환불
+
+        // 포인트 계산
+        int newPoint = beforePoint - modifyPoint; // 추가 지불 시 차감, 환불 시 증가
+
+        // 잔액 확인
         if (newPoint < 0) {
-            System.out.println("잔액 부족");
+            System.out.println("잔액 부족: 현재 포인트 " + beforePoint + " 필요 금액 " + modifyPoint);
             return;
         }
 
-        participantMember.setPoint(newPoint);
-        Member payQuantityMember = memberRepository.save(participantMember);
+        // 수량 및 포인트 업데이트
+        groupBuyParticipant.setMyQuantity(newQuantity);
+        groupBuyParticipant.setInitialPaymentPoint(newPayment);
+        groupBuyParticipantRepository.save(groupBuyParticipant);
 
-        System.out.println("초기 결제 금액: " + initialPaymentPoint + "P, 이전 포인트: " + currentPoint + "원, 새 포인트: " + newPoint + "원");
+        participantMember.setPoint(newPoint);
+        memberRepository.save(participantMember);
+
+        // 검증
+        GroupBuyParticipant updatedParticipant = groupBuyParticipantRepository.findById(groupBuyParticipantNo).get();
+        Member updatedMember = memberRepository.findById(participantNo).get();
+
+        assertEquals(newQuantity, updatedParticipant.getMyQuantity(), "수량이 올바르게 수정되어야 합니다.");
+        assertEquals(newPayment, updatedParticipant.getInitialPaymentPoint(), "결제 금액이 올바르게 수정되어야 합니다.");
+        assertEquals(newPoint, updatedMember.getPoint(), "포인트가 올바르게 계산되어야 합니다.");
+
+        // 결과 출력
+        System.out.println("기존 구매 수량: " + initialMyQuantity);
+        System.out.println("수정 구매 수량: " + newQuantity);
+        System.out.println("수량 차이: " + (newQuantity - initialMyQuantity));
+        System.out.println("개당 가격: " + pricePerUnit);
+        System.out.println("기존 결제 금액: " + beforeInitialPayment);
+        System.out.println("새로운 결제 금액: " + newPayment);
+        System.out.println("차액 (추가지불/환불): " + modifyPoint + "원" + (modifyPoint > 0 ? " (추가 지불)" : modifyPoint < 0 ? " (환불)" : " (변동 없음)"));
+        System.out.println("수정 전 포인트: " + beforePoint );
+        System.out.println("수정 후 포인트: " + updatedMember.getPoint());
+        System.out.println("포인트 변동: " + (updatedMember.getPoint() - beforePoint));
     }
 
     @Test
-    void testUpdateStatusToClosed_QuantityMet() {
-        Integer GroupBuyId = 32;
+    void editStatusToClosedQuantityMetTest() {
+        Integer GroupBuyId = 23;
         GroupBuy groupBuy = groupBuyRepository.findById(GroupBuyId).get();
 
         QuantityGroupBuy quantityGroupBuy = quantityGroupBuyRepository.findByGroupBuy(groupBuy);
@@ -159,8 +203,8 @@ public class QuantityGroupBuyRepositoryTests {
     }
 
     @Test
-    void testUpdateStatusToClosed_CreatorForcedClose() {
-        Integer GroupBuyId = 32;
+    void editForcedCreatorAndStatusToClosedTest() {
+        Integer GroupBuyId = 23;
         GroupBuy groupBuy = groupBuyRepository.findById(GroupBuyId).get();
 
         QuantityGroupBuy quantityGroupBuy = quantityGroupBuyRepository.findByGroupBuy(groupBuy);
@@ -183,9 +227,9 @@ public class QuantityGroupBuyRepositoryTests {
     }
 
     @Test
-    void testCancelJoinGroupBuy() {
+    void editCancelJoinGroupBuyTest() {
         Member participantMember = memberRepository.findById(12).get();
-        GroupBuyParticipant groupBuyParticipant = groupBuyParticipantRepository.findById(70).get();
+        GroupBuyParticipant groupBuyParticipant = groupBuyParticipantRepository.findById(64).get();
 
         groupBuyParticipant.setCancelDate(LocalDateTime.now());
         groupBuyParticipantRepository.save(groupBuyParticipant);
@@ -200,10 +244,12 @@ public class QuantityGroupBuyRepositoryTests {
         System.out.println("참여자 취소로 전액 환불: " + initialPaymentPoint + "P, 새 포인트: " + newPoint + "P");
     }
 
+
+
     @Test
         // [개설자 중단] GroupBuy 상태 CANCELED로 변경 및 참여자 전액 환불")
-    void testQuantityCreatorCancelAndRefund() {
-        Integer targetGroupBuyId = 32;
+    void editQuantityCreatorCancelAndRefundTest() {
+        Integer targetGroupBuyId = 23;
         String cancelStatus = "canceled";
         String cancelReason = "양배추 가격이 올랐습니다"; // 취소 사유
 

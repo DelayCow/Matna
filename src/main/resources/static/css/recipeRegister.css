@@ -1,9 +1,3 @@
-/* recipeRegister.css */
-
-/* ------------------------------------------- */
-/* 1. 썸네일 및 레시피 단계 이미지 업로드 영역 스타일 */
-/* ------------------------------------------- */
-
 .recipe-step {
     align-items: center;
 }
@@ -40,10 +34,6 @@
     object-fit: cover;
 }
 
-
-/* ------------------------------------------- */
-/* 2. 재료 목록 아이템 스타일 */
-/* ------------------------------------------- */
 .ingredient-item {
     border: 1px solid #dee2e6;
     padding: 8px 12px;
@@ -53,42 +43,6 @@
 .ingredient-name {
     font-weight: bold;
 }
-
-/* ------------------------------------------- */
-/* 3. 품목 검색 (Select) 드롭다운 스타일 */
-/* ------------------------------------------- */
-.select-input-group {
-    position: relative;
-}
-
-.select-input-group .form-control {
-    padding-right: 40px;
-}
-
-.select-icon {
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 5;
-    color: #495057;
-    cursor: pointer;
-}
-
-#itemDropdownMenu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* ------------------------------------------- */
-/* 4. 기타/고정 영역 스타일 */
-/* ------------------------------------------- */
 
 .register-fixed-bottom {
     z-index: 1000;

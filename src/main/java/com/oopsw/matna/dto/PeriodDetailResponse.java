@@ -19,6 +19,8 @@ public class PeriodDetailResponse {
     @Data
     @Builder
     public static class ParticipantInfo {
+        private Integer groupParticipantNo;
+        private Integer memberNo;
         private String nickname;
         private String profileUrl;
         private LocalDateTime participatedDate;
@@ -27,6 +29,7 @@ public class PeriodDetailResponse {
     @Data
     @Builder
     public static class RecipeInfo {
+        private Integer recipeNo;
         private String title;
         private String imageUrl;
         private String authorNickname;
