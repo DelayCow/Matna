@@ -32,8 +32,6 @@ async function loadNickname() {
         const nickEl = document.getElementById("nickname");
         nickEl.textContent = nickname;
 
-        console.log("닉네임:", nickname);  // 확인용
-
     } catch (err) {
         console.error("에러:", err);
     }
