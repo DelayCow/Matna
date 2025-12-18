@@ -293,7 +293,7 @@ export function showPaymentRegisterModal(item, onSuccess) {
     modal.show();
 }
 
-// [추가] 물품 도착 등록 모달 띄우기
+// 물품 도착 등록 모달
 export function showArrivalRegisterModal(item, onSuccess) {
     const modalEl = document.getElementById('arrivalRegisterModal');
     if (!modalEl) return;
@@ -347,7 +347,7 @@ export function showArrivalRegisterModal(item, onSuccess) {
         formData.append("groupBuyNo", item.groupBuyNo);
         formData.append("arrivalImage", fileInput.files[0]); // 이름: arrivalImage
 
-        // 날짜에 시간(00:00:00) 붙여주기 (Payment 때랑 똑같음!)
+
         const fullDate = dateInput.value + " 00:00:00";
         formData.append("arrivalDate", fullDate);
 
@@ -375,7 +375,7 @@ export function showPasswordCheckModal(memberNo) {
 
     const existingModal = document.getElementById('passwordCheckModal');
     if (existingModal) {
-        existingModal.remove(); // 있으면 지우고 새로 만듦 (깔끔하게)
+        existingModal.remove();
     }
 
 
@@ -426,13 +426,12 @@ export function showPasswordCheckModal(memberNo) {
             })
         })
             .then(res => {
-                if (res.ok) return res.json(); // boolean (true/false) 반환
+                if (res.ok) return res.json();
                 else throw new Error("서버 오류");
             })
             .then(isCorrect => {
                 if (isCorrect) {
-                    bsModal.hide(); // 모달 닫기
-                    // 맞으면 페이지 이동!
+                    bsModal.hide();
                     location.href = `/mypage/${memberNo}/myinfoEdit`;
                 } else {
                     alert("비밀번호가 일치하지 않습니다.");
@@ -463,11 +462,11 @@ export function showPasswordCheckModal(memberNo) {
     });
 }
 
-// [통합] 신고 모달 (HTML은 modal.html에 있음)
+// 신고 모달
 export function showReportModal(type, targetId, onSuccess) {
     const modalEl = document.getElementById('reportModal');
 
-    // HTML이 없으면 에러 (이제 modal.html에 넣었으니 에러 안 남)
+
     if (!modalEl) {
         console.error("오류: 'reportModal'이 HTML에 없습니다.");
         return;
