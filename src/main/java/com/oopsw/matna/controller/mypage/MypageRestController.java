@@ -289,4 +289,6 @@ public class MypageRestController {
         return ResponseEntity.ok(member);
     }
 
+
+
 }

@@ -94,6 +94,7 @@ public class MypageService {
                         .imageUrl(r.getImageUrl())
                         .rating(r.getRating())
                         .inDate(r.getInDate())
+                        .spicyLevel(r.getSpicyLevel())
                         .build())
                 .collect(Collectors.toList());
     }
