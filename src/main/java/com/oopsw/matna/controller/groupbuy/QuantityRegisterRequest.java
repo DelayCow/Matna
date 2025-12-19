@@ -11,6 +11,7 @@ import java.time.LocalTime;
 @ToString
 public class QuantityRegisterRequest {
     private Integer ingredientNo;
+    private String ingredientName;
     private Integer creatorNo;
     private String title;
     private Integer buyEndDate;
@@ -27,4 +28,5 @@ public class QuantityRegisterRequest {
     private String itemSaleUrl;
     private Integer myQuantity;
     private Integer shareAmount;
+    private Integer pricePerUnit;
 }
