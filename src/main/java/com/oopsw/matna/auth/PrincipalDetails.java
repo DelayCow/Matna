@@ -39,4 +39,6 @@ public class PrincipalDetails implements UserDetails {
     }
 
     public Integer getMemberNo(){ return member.getMemberNo(); }
+
+    public String getMemberNickname(){ return member.getNickname(); }
 }
