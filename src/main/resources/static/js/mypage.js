@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 return null;
             }
         }
+
         if (s === 'CLOSED') {
             if (isHost){
             return {
