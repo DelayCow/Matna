@@ -567,6 +567,41 @@ export function showReportModal(type, targetId, onSuccess) {
     modal.show();
 }
 
+export function showRemoveMemberModal(memberNo) {
+    const modal = new bootstrap.Modal(document.getElementById('removeMemberModal'));
+    const msg = document.getElementById('remove-message');
+    document.getElementById('removeMemberBtn').addEventListener('click',function (){
+        const password = document.getElementById('password').value;
+        fetch('/api/mypage/checkModal/checkPassword',{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json' // 필수: 서버가 JSON임을 알게 함
+            },
+            body: JSON.stringify({
+                memberNo : parseInt(memberNo),
+                password : password
+            })
+        }).then(response => {
+            return response.json()
+        }).then(result => {
+            if(!result){
+                msg.innerText = '비밀번호가 틀렸습니다. 확인 후 올바른 비밀번호를 입력해주세요.'
+                return
+            }
+            fetch(`/api/mypage/remove/${memberNo}`, {
+                method: 'DELETE'
+            }).then(response => {
+                msg.innerText = '탈퇴 되었습니다.'
+                setTimeout(()=> {
+                    location.href='/logout'
+                }, 2000)
+            })
+
+        })
+    })
+    modal.show();
+}
+
 
 
 
