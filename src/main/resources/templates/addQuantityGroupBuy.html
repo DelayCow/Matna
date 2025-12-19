@@ -29,6 +29,7 @@
       <label for="itemSelect" class="form-label fw-bold">품목 선택</label>
       <div class="select-input-group">
         <input type="text" class="form-control" id="itemSelect" placeholder="품목선택" value="">
+        <input type="hidden" id="ingredientNo">
         <i class="bi bi-search select-icon"></i>
 
         <div class="dropdown-menu dropdown-menu" id="itemDropdownMenu"></div>
@@ -39,7 +40,7 @@
       <label for="otherItem" class="form-label fw-bold">기타 품목 선택</label>
       <div class="d-flex align-items-center">
         <input type="text" class="form-control me-2" id="otherItem" placeholder="선택지에 없는 품목을 추가하세요!">
-        <button class="btn btn-outline-secondary" type="button" style="height: 44px; width: 44px; border-radius: 8px;">
+        <button class="btn btn-outline-secondary" type="button" id="addOtherItemBtn" style="height: 44px; width: 44px; border-radius: 8px;">
           <i class="bi bi-plus fs-5"></i>
         </button>
       </div>
