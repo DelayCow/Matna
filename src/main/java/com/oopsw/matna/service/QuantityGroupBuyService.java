@@ -65,11 +65,13 @@ public class QuantityGroupBuyService {
         Member creator = memberRepository.findById(request.getCreatorNo())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다. 회원번호: " + request.getCreatorNo()));
 
-        // 단위당 가격 계산: (총 가격 * (1 + 수수료율/100)) / 수량
-        Integer totalPrice = request.getPrice();
+        // 단위당 가격 계산: (총 가격 * (1 + 수수료율/100)) / (총 수량 / 나눔 단위)
+        Integer price = request.getPrice();
         Integer feeRate = request.getFeeRate() != null ? request.getFeeRate() : 0;
+        double totalWithFee = price * (1.0 + feeRate / 100.0);
         Integer quantity = request.getQuantity();
-        int pricePerUnit = (int) Math.round((totalPrice * (1.0 + (feeRate / 100.0))) / quantity);
+        int shareUnits = quantity / request.getShareAmount();
+        int pricePerUnit = (int) Math.round(totalWithFee / shareUnits);
 
         // GroupBuy 생성 및 저장
         GroupBuy groupBuy = groupBuyRepository.save(
@@ -82,7 +84,7 @@ public class QuantityGroupBuyService {
                         .shareTime(request.getShareTime())
                         .shareLocation(request.getShareLocation())
                         .shareDetailAddress(request.getShareDetailAddress())
-                        .price(totalPrice)
+                        .price(price)
                         .quantity(quantity)
                         .unit(request.getUnit())
                         .feeRate(feeRate)

@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     // ========== 전역 변수 ==========
     const countRadio = document.getElementById('count');
     const weightRadio = document.getElementById('weight');
@@ -21,7 +21,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let isItemClicked = false;
     let selectedIngredientNo = null;
-    const creatorNo = document.getElementById('creatorNo').textContent;
+    let currentMemberNo = null; // 로그인한 사용자의 memberNo
+
+    // ========== 현재 사용자 정보 가져오기 ==========
+    try {
+        const authData = await getCurrentUser();
+        currentMemberNo = authData.memberNo;
+        console.log('현재 로그인 사용자 memberNo:', currentMemberNo);
+    } catch (error) {
+        console.error('인증 정보 조회 실패:', error);
+        alert('로그인 정보를 가져올 수 없습니다. 다시 로그인해주세요.');
+        window.location.href = '/login';
+        return;
+    }
 
     // ========== 초기화 ==========
     init();
@@ -31,6 +43,19 @@ document.addEventListener('DOMContentLoaded', function() {
         createTimeOptions(hourSelects);
         updateUnits();
         setupEventListeners();
+    }
+    // ========== API 호출 함수 ==========
+    async function getCurrentUser() {
+        const response = await fetch('/api/auth/currentUser', {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            throw new Error('인증 정보 조회 실패');
+        }
+
+        return await response.json();
     }
 
     // ========== 단위 설정 ==========
@@ -239,7 +264,7 @@ document.addEventListener('DOMContentLoaded', function() {
         quantityData.ingredientNo = parseInt(ingredientNo);
 
         // 작성자
-        quantityData.creatorNo = parseInt(creatorNo);
+        quantityData.creatorNo = parseInt(currentMemberNo);
 
         // 구매 기간
         const buyEndDate = parseInt(document.getElementById('deadline').value);
@@ -275,10 +300,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         quantityData.price = price;
 
-        // 상품 이량
+        // 상품 총량
         const quantity = parseInt(document.getElementById('quantity').value);
         if (!quantity || quantity <= 0) {
-            errors.push('상품 이량을 입력해주세요');
+            errors.push('상품 총량을 입력해주세요');
         }
         quantityData.quantity = quantity;
 
@@ -296,6 +321,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         quantityData.shareAmount = shareAmount;
 
+
         // 단위
         const unit = weightRadio.checked ? 'g' : '개';
         quantityData.unit = unit;
@@ -303,6 +329,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // 수수료
         const feeRate = parseInt(document.getElementById('fee_rate').value) || 0;
         quantityData.feeRate = feeRate;
+
+        const totalWithFee = price * (1 + feeRate / 100);
+        const shareUnits = quantity / shareAmount;
+        const pricePerUnit = Math.round(totalWithFee / shareUnits);
+        quantityData.pricePerUnit = pricePerUnit;
 
         // 내용
         const content = document.getElementById('content').value.trim();
@@ -323,7 +354,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 나눔 단위 검증
         if (quantity % shareAmount !== 0) {
-            alert(`상품 이량은 나눔 단위(${shareAmount}${unit})의 배수여야 합니다.`);
+            alert(`상품 총량은 나눔 단위(${shareAmount}${unit})의 배수여야 합니다.`);
             return;
         }
 
@@ -354,7 +385,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (response.ok && result.success) {
                 alert(result.message || '수량 공동구매가 성공적으로 등록되었습니다!');
                 console.log('등록 결과:', result);
-                window.location.href = '/groupBuy';
+
+                // 등록 성공 시 상세 페이지로 이동
+                if (result.data && result.data.quantityGroupBuyNo) {
+                    window.location.href = `/quantityGroupBuy/detail/${result.data.quantityGroupBuyNo}`;
+                } else {
+                    window.location.href = '/groupBuy';
+                }
             } else {
                 const errorMessage = result.message || '등록에 실패했습니다.';
                 alert(`등록 실패\n\n${errorMessage}`);
@@ -402,7 +439,7 @@ document.addEventListener('DOMContentLoaded', function() {
             addOtherItemBtn.addEventListener('click', function() {
                 const otherItem = document.getElementById('otherItem').value.trim();
                 if (otherItem) {
-                    fetch(`/api/ingredients/add?creatorNo=${creatorNo}&ingredientName=${encodeURIComponent(otherItem)}`, {
+                    fetch(`/api/ingredients/add?creatorNo=${currentMemberNo}&ingredientName=${encodeURIComponent(otherItem)}`, {
                         method: 'POST'
                     })
                         .then(response => {
