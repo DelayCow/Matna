@@ -44,17 +44,24 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     };
 
-    const getButtonConfig = (status) => {
+    const getButtonConfig = (status, isHost) => {
+
+
 
         const s = String(status).trim().toUpperCase();
         if (s === 'OPEN' || s === 'RECRUITING') {
+            if (isHost){
             return {
                 text: "참여 취소",
                 cls: "btn-outline-danger",
                 type: "modal",
                 target: "#cancelModal" };
+        } else{
+                return null;
+            }
         }
         if (s === 'CLOSED') {
+            if (isHost){
             return {
                 text: "결제정보 등록",
                 cls: "btn-danger",
@@ -62,6 +69,9 @@ document.addEventListener('DOMContentLoaded', async function() {
                 action: "registerPayment",
                 target: "#paymentRegisterModal"
             };
+            } else{
+                return null;
+            }
         }
 
         // 3. 입금 대기
@@ -94,7 +104,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 action: "share",
                 target: "#shareConfirmModal" };
         }
-        return
+        return null;
 
     };
 
