@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     try {
         const authData = await getCurrentUser();
         currentMemberNo = authData.memberNo;
-        console.log('현재 로그인 사용자 memberNo:', currentMemberNo);
     } catch (error) {
         console.error('인증 정보 조회 실패:', error);
         alert('로그인 정보를 가져올 수 없습니다. 다시 로그인해주세요.');
@@ -438,8 +437,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         const periodJsonString = JSON.stringify(periodData);
         formData.append('periodRegisterRequest', periodJsonString);
 
-        console.log('제출 데이터:', periodData);
-        console.log('첨부 파일:', fileInput.files[0]?.name);
 
         // 로딩 표시
         submitBtn.disabled = true;
@@ -455,7 +452,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 
             if (response.ok && result.success) {
                 alert(result.message || '기간 공동구매가 성공적으로 등록되었습니다!');
-                console.log('등록 결과:', result);
 
                 // 등록 성공 시 상세 페이지로 이동
                 if (result.data && result.data.periodGroupBuyNo) {
@@ -578,7 +574,6 @@ window.addEventListener('load', function() {
 
 // 카카오맵 초기화 및 이벤트 설정
 function initKakaoMap() {
-    console.log('Kakao Map initialized');
 
     const mapContainer = document.getElementById('map');
     const mapOption = {
@@ -607,8 +602,6 @@ function initKakaoMap() {
                         document.getElementById('latitude').value = result.y;
                         document.getElementById('longitude').value = result.x;
 
-                        console.log('Selected address:', addr);
-                        console.log('Coordinates:', result.y, result.x);
 
                         mapContainer.style.display = "block";
                         map.relayout();
