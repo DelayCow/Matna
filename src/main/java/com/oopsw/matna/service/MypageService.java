@@ -108,7 +108,7 @@ public class MypageService {
 
         LocalDateTime receiveDate = sharedData.getReceiveDate();
 
-        // 2. .get() 대신 orElseThrow 사용 (데이터가 없어도 안전하게 예외 처리)
+
         GroupBuyParticipant participant = groupBuyParticipantRepository
                 .findById(sharedData.getGroupParticipantNo())
                 .orElseThrow(() -> new RuntimeException("참여 정보를 찾을 수 없습니다."));

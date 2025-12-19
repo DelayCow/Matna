@@ -274,36 +274,40 @@ document.addEventListener('DOMContentLoaded', async function() {
             default: spicyText = '';
         }
 
-        const reviewId = item.reviewNo || item.id;
-        const editUrl = `/review/edit/${reviewId}`;
+        const reviewNo = item.reviewNo || item.id;
 
-        const kebabMenuHtml = (typeof isOwner !== 'undefined' && isOwner) ? `
-        <div class="dropdown ms-auto">
-            <button class="btn btn-link text-secondary p-0 border-0" type="button" data-bs-toggle="dropdown">
-                <i class="bi bi-three-dots-vertical"></i>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                <li><a class="dropdown-item small" href="${editUrl}">수정</a></li>
-                <li><hr class="dropdown-divider my-1"></li>
-                <li><button class="dropdown-item small text-danger btn-delete-review" data-id="${reviewId}">삭제</button></li>
-            </ul>
-        </div>` : '';
+        const detailUrl = `/review/detail/${reviewNo}`;
+
+        // const editUrl = `/review/edit/${reviewId}`;
+        //
+        //
+        //
+        // const kebabMenuHtml = (typeof isOwner !== 'undefined' && isOwner) ? `
+        // <div class="dropdown ms-auto">
+        //     <button class="btn btn-link text-secondary p-0 border-0" type="button" data-bs-toggle="dropdown">
+        //         <i class="bi bi-three-dots-vertical"></i>
+        //     </button>
+        //     <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+        //         <li><a class="dropdown-item small" href="${editUrl}">수정</a></li>
+        //         <li><hr class="dropdown-divider my-1"></li>
+        //         <li><button class="dropdown-item small text-danger btn-delete-review" data-id="${reviewId}">삭제</button></li>
+        //     </ul>
+        // </div>` : '';
 
 
         return `
         <div class="review-card mb-4 col-12">
-            <div class="card-img-wrap">
+            <div class="card-img-wrap" onclick="location.href='${detailUrl}'" style="cursor: pointer;">
                 <img src="${imgUrl}" class="w-100 h-100 object-fit-cover" alt="후기 이미지">
             </div>
             <div class="card-info mt-2 p-2">
-                <h5 class="card-title fw-bold">${item.title}</h5>
+                <h5 class="card-title fw-bold" onclick="location.href='${detailUrl}'" style="cursor: pointer;">${item.title}</h5>
                 
                 <div class="d-flex align-items-center mb-2">
                     <span class="text-warning me-1"><i class="bi bi-star-fill"></i></span>
                     <span class="fw-bold me-2">${item.rating}</span>
                     
-                    ${kebabMenuHtml}
-                </div>
+                    </div>
 
                 <div class="d-flex flex-wrap gap-2 text-secondary" style="font-size: 0.8rem;">
                     ${ spicyText ? `
