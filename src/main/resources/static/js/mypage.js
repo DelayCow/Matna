@@ -176,6 +176,31 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     };
 
+    // [추가] 전체(참여 + 개설) 카운트 구하기
+    const updateTotalGroupCount = async () => {
+        const countEl = document.getElementById('statGroupCount');
+        if (!countEl) return;
+
+        try {
+            // 1. 참여 내역 가져오기 (필터 ALL)
+            const participateRes = await fetch(`/api/mypage/${memberNo}/groupBuy/participation?filter=ALL`);
+            const participateData = await participateRes.json();
+            const participateCount = participateData ? participateData.length : 0;
+
+            // 2. 개설 내역 가져오기 (필터 ALL)
+            const hostRes = await fetch(`/api/mypage/${memberNo}/groupBuy/host?filter=ALL`);
+            const hostData = await hostRes.json();
+            const hostCount = hostData ? hostData.length : 0;
+
+            // 3. 합산하여 표시
+            countEl.innerText = participateCount + hostCount;
+
+        } catch (error) {
+            console.error("카운트 집계 실패:", error);
+            countEl.innerText = '-';
+        }
+    };
+
     const createRecipeCard = (item) => {
 
         const imgUrl = item.image ? item.image : '/img/default_food.jpg';
@@ -433,7 +458,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     const fetchGroupData = async () => {
         const listEl = document.getElementById('group-list');
-        const countEl = document.getElementById('statGroupCount');
+        // const countEl = document.getElementById('statGroupCount');
 
 
 
@@ -457,10 +482,10 @@ document.addEventListener('DOMContentLoaded', async function() {
 
             if (!dataList || dataList.length === 0) {
                 listEl.innerHTML = '<div class="text-center py-5 text-muted">내역이 없습니다.</div>';
-                if(countEl) countEl.innerText = '0';
+                // if(countEl) countEl.innerText = '0';
             } else {
                 listEl.innerHTML = dataList.map(createGroupCard).join('');
-                if(countEl) countEl.innerText = dataList.length;
+                // if(countEl) countEl.innerText = dataList.length;
             }
         } catch (error) {
             console.error(error);
@@ -646,6 +671,8 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 
     fetchGroupData();
+
+    updateTotalGroupCount();
 
     document.addEventListener('click', (e) => {
         const btn = e.target.closest('#headerMenuBtn');
