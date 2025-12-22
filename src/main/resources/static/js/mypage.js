@@ -284,7 +284,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             <h5 class="card-title">${item.title}</h5>
             <div class="d-flex align-items-center mb-2">
                 <span class="text-warning me-1"><i class="bi bi-star-fill"></i></span>
-                <span class="fw-bold me-1">${item.rating}</span>
+                <span class="fw-bold me-1">${Number(item.rating).toFixed(1)}</span>
                 <span class="text-muted small">(${item.reviewCount || 0})</span>
                 ${kebabMenuHtml}
             </div>
@@ -361,7 +361,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 
                 <div class="d-flex align-items-center mb-2">
                     <span class="text-warning me-1"><i class="bi bi-star-fill"></i></span>
-                    <span class="fw-bold me-2">${item.rating}</span>
+                    <span class="fw-bold me-2">${Number(item.rating).toFixed(1)}</span>
                     
                     </div>
 
