@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function(){
             address : address
         }
         try{
-            const response = await fetch('/api/auth/member', {
+            const response = await api.fetch('/api/auth/member', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function(){
             return;
         }
         try{
-            const response = await fetch(`/api/auth/check/id?memberId=${memberIdValue}`)
+            const response = await api.fetch(`/api/auth/check/id?memberId=${memberIdValue}`)
 
             if(!response.ok){
                 const errorData = await response.json();
@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function(){
             return;
         }
         try{
-            const response = await fetch(`/api/auth/check/nickname?nickname=${nicknameValue}`)
+            const response = await api.fetch(`/api/auth/check/nickname?nickname=${nicknameValue}`)
 
             if(!response.ok){
                 const errorData = await response.json();

@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ================================
     async function loadReportData() {
         try {
-            const res = await fetch(`/api/manager/reportManagement`);
+            const res = await api.fetch(`/api/manager/reportManagement`);
             const data = await res.json();
 
             originalData = data;
@@ -232,7 +232,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!currentReportId) return;
 
         try {
-            await fetch(`/api/manager/reportManagement/complete?reportNo=${currentReportId}`, {
+            await api.fetch(`/api/manager/reportManagement/complete?reportNo=${currentReportId}`, {
                 method: "PUT"
             });
 
@@ -249,7 +249,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!currentReportId) return;
 
         try {
-            await fetch(`/api/manager/reportManagement/rejection?reportNo=${currentReportId}`, {
+            await api.fetch(`/api/manager/reportManagement/rejection?reportNo=${currentReportId}`, {
                 method: "PUT"
             });
 

@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 async function loadNickname() {
     try {
-        const res = await fetch("/api/manager/sidebar");
+        const res = await api.fetch("/api/manager/sidebar");
 
         if (!res.ok) {
             console.error("닉네임 요청 실패");

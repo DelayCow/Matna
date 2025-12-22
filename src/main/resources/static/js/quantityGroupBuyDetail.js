@@ -47,10 +47,10 @@ function showBtnByStatus(status) {
 }
 
 // === API 호출 ===
-const api = {
+const fetchAPI = {
     // 현재 사용자 인증 정보 조회
     getCurrentUser: () =>
-        fetch('/api/auth/currentUser', {
+        api.fetch('/api/auth/currentUser', {
             method: 'GET',
             credentials: 'include'  // 쿠키 포함
         })
@@ -60,7 +60,7 @@ const api = {
             }),
 
     getDetail: () =>
-        fetch(`/api/quantityGroupBuy/detail/${PAGE_CONFIG.quantityGroupBuyNo}`, {
+        api.fetch(`/api/quantityGroupBuy/detail/${PAGE_CONFIG.quantityGroupBuyNo}`, {
             method: 'GET'
         })
             .then(res => {
@@ -75,7 +75,7 @@ const api = {
 
     // 참여하기 API
     joinGroupBuy: (groupBuyNo, myQuantity) =>
-        fetch(`/api/quantityGroupBuy/join`, {
+        api.fetch(`/api/quantityGroupBuy/join`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -86,7 +86,7 @@ const api = {
 
     // 수량 수정 API
     modifyQuantity: (groupBuyParticipantNo, newQuantity) =>
-        fetch(`/api/quantityGroupBuy/quantityModify/${groupBuyParticipantNo}`, {
+        api.fetch(`/api/quantityGroupBuy/quantityModify/${groupBuyParticipantNo}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -97,7 +97,7 @@ const api = {
 
     // 참여 취소 API
     cancelParticipation: (groupBuyParticipantNo) =>
-        fetch(`/api/quantityGroupBuy/cancelParticipant/${groupBuyParticipantNo}`, {
+        api.fetch(`/api/quantityGroupBuy/cancelParticipant/${groupBuyParticipantNo}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -107,7 +107,7 @@ const api = {
 
     // 개설자 진행 API (강제 마감)
     forceClose: (groupBuyNo) =>
-        fetch(`/api/quantityGroupBuy/forcedCreator/${groupBuyNo}`, {
+        api.fetch(`/api/quantityGroupBuy/forcedCreator/${groupBuyNo}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -117,7 +117,7 @@ const api = {
 
     // 개설자 중단 API
     stopGroupBuy: (groupBuyNo, reason) =>
-        fetch(`/api/quantityGroupBuy/cancelCreator/${groupBuyNo}`, {
+        api.fetch(`/api/quantityGroupBuy/cancelCreator/${groupBuyNo}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -567,7 +567,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (confirm(`${selectedQuantity}${currentData.groupBuyDetail.unit}으로 참여하시겠습니까?`)) {
                 try {
-                    const response = await api.joinGroupBuy(groupBuyNo, selectedQuantity);
+                    const response = await fetchAPI.joinGroupBuy(groupBuyNo, selectedQuantity);
 
                     if (response.success) {
                         alert(response.message);
@@ -592,7 +592,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (confirm('정말 참여를 취소하시겠습니까?')) {
                 try {
-                    const response = await api.cancelParticipation(myGroupBuyParticipantNo);
+                    const response = await fetchAPI.cancelParticipation(myGroupBuyParticipantNo);
 
                     if (response.success) {
                         alert(response.message);
@@ -620,7 +620,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (confirm(`수량을 ${newQuantity}${currentData.groupBuyDetail.unit}으로 수정하시겠습니까?`)) {
                 try {
-                    const response = await api.modifyQuantity(myGroupBuyParticipantNo, newQuantity);
+                    const response = await fetchAPI.modifyQuantity(myGroupBuyParticipantNo, newQuantity);
 
                     if (response.success) {
                         alert(response.message);
@@ -646,7 +646,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // 진행하기
                 if (confirm('공동구매를 진행하시겠습니까?')) {
                     try {
-                        const response = await api.forceClose(groupBuyNo);
+                        const response = await fetchAPI.forceClose(groupBuyNo);
 
                         if (response.success) {
                             alert(response.message);
@@ -671,7 +671,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (confirm('공동구매를 중단하시겠습니까?')) {
                     try {
-                        const response = await api.stopGroupBuy(groupBuyNo, reason);
+                        const response = await fetchAPI.stopGroupBuy(groupBuyNo, reason);
 
                         if (response.success) {
                             alert(response.message);
@@ -693,12 +693,12 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('DOMContentLoaded', async function () {
     try {
         // 1. 인증 정보 먼저 로드
-        const authData = await api.getCurrentUser();
+        const authData = await fetchAPI.getCurrentUser();
 
         PAGE_CONFIG.currentMemberNo = authData.memberNo;
 
         // 데이터 로드 및 렌더링
-        const data = await api.getDetail();
+        const data = await fetchAPI.getDetail();
         render.detail(data);
     } catch (error) {
         console.error('데이터 로드 중 오류 발생:', error);

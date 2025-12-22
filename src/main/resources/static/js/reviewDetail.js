@@ -41,7 +41,7 @@ const createReviewCard = function (r){
 const fetchReviewData = async function(reviewNo){
     const reviewArea = document.getElementById('review-area');
     try{
-        const response = await fetch(`/api/reviews/${reviewNo}`)
+        const response = await api.fetch(`/api/reviews/${reviewNo}`)
         const reviewData = await response.json();
         const translatedFormatReview = translateReviewData(reviewData);
         const cardHtml = createReviewCard(translatedFormatReview);

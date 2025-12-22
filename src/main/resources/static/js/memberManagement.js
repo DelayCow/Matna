@@ -78,7 +78,7 @@ async function loadMemberList() {
         });
 
         // 쿼리 스트링 붙여서 요청
-        const res = await fetch(`/api/manager/memberManagement?${params}`);
+        const res = await api.fetch(`/api/manager/memberManagement?${params}`);
         if (!res.ok) {
             // 서버가 4xx/5xx를 내려주면 메시지 출력
             const text = await res.text().catch(() => null);
@@ -125,7 +125,7 @@ async function applyBan(memberNo) {
 
         const url = `/api/manager/memberManagement/ban?memberNo=${memberNo}&days=${days}`;
 
-        const res = await fetch(url, {
+        const res = await api.fetch(url, {
             method: "PUT"
         });
 

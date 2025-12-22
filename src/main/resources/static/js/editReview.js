@@ -6,7 +6,7 @@ let recipeNo = 0;
 const reviewNo = window.location.pathname.split("/").at(-2);
 const fetchReviewData = async function(reviewNo){
     try{
-        const response = await fetch(`/api/reviews/${reviewNo}`)
+        const response = await api.fetch(`/api/reviews/${reviewNo}`)
         const reviewData = await response.json();
         console.log(reviewData)
         await fetchRecipeData(reviewData.recipeNo);
@@ -236,7 +236,7 @@ document.addEventListener('DOMContentLoaded',function (){
             }
         }
 
-        fetch(`/api/reviews/${recipeNo}`, {
+        api.fetch(`/api/reviews/${recipeNo}`, {
             method: 'PUT',
             body: formData
         })

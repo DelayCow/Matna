@@ -1,4 +1,4 @@
-window.api = {
+const api = {
     async fetch(url, options = {}) {
         const token = sessionStorage.getItem('au');
         const isFormData = options.body instanceof FormData;

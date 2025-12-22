@@ -3,7 +3,7 @@ let currentKeyword = '';
 let currentOrderBy = 'recent';
 
 // === API 호출 ===
-const api = {
+const fetchAPI = {
     // 기간공구 목록 조회
     getPeriodGroupBuyList: (keyword, orderBy) => {
         let url = '/api/periodGroupBuy/home';
@@ -20,7 +20,7 @@ const api = {
             url += '?' + params.toString();
         }
 
-        return fetch(url, {
+        return api.fetch(url, {
             method: 'GET'
         }).then(res => {
             if (!res.ok) {
@@ -45,7 +45,7 @@ const api = {
             url += '?' + params.toString();
         }
 
-        return fetch(url, {
+        return api.fetch(url, {
             method: 'GET'
         }).then(res => {
             if (!res.ok) {
@@ -299,7 +299,7 @@ const render = {
 // 기간공구 로드 함수
 async function loadPeriodGroupBuyList() {
     try {
-        const data = await api.getPeriodGroupBuyList(currentKeyword, currentOrderBy);
+        const data = await fetchAPI.getPeriodGroupBuyList(currentKeyword, currentOrderBy);
         render.periodGroupBuyList(data);
     } catch (error) {
         console.error('기간공구 데이터 로드 중 오류 발생:', error);
@@ -318,7 +318,7 @@ async function loadPeriodGroupBuyList() {
 // 수량공구 로드
 async function loadQuantityGroupBuyList() {
     try {
-        const data = await api.getQuantityGroupBuyList(currentKeyword, currentOrderBy);
+        const data = await fetchAPI.getQuantityGroupBuyList(currentKeyword, currentOrderBy);
         render.quantityGroupBuyList(data);
     } catch (error) {
         console.error('수량공구 데이터 로드 중 오류 발생:', error);

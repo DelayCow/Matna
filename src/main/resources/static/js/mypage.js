@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const removeRecipe = async function(recipeNo){
         try{
-            const response = await fetch(`/api/recipes/${recipeNo}`,{
+            const response = await api.fetch(`/api/recipes/${recipeNo}`,{
                 method: 'DELETE'
             });
 
@@ -288,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
     function fetchProfileData(memberNo) {
-        fetch(`/api/mypage/${memberNo}/profile`)
+        api.fetch(`/api/mypage/${memberNo}/profile`)
             .then(res => res.json())
             .then(data => {
                 renderCommonArea(data);
@@ -298,12 +298,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const fetchRecipeData = function(memberNo){
-        return fetch(`/api/mypage/${memberNo}/recipe`,{ method: 'GET' })
+        return api.fetch(`/api/mypage/${memberNo}/recipe`,{ method: 'GET' })
             .then(response => response.json());
     };
 
     const fetchReviewData = function(memberNo) {
-        return fetch(`/api/mypage/${memberNo}/reviewList`, { method: 'GET' })
+        return api.fetch(`/api/mypage/${memberNo}/reviewList`, { method: 'GET' })
             .then(response => response.json());
     };
 
@@ -323,7 +323,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const url = `${baseUrl}?filter=${currentFilterStatus}`;
 
-            const response = await fetch(url);
+            const response = await api.fetch(url);
             if (!response.ok) throw new Error("Network Error");
             // {
             //     const errorMessage = await response.text();

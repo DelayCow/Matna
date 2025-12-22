@@ -59,7 +59,7 @@ const fetchRecipeData = function(resetPage = true) {
         url += `&keyword=${encodeURIComponent(currentKeyword.trim())}`;
     }
 
-    fetch(url)
+    api.fetch(url)
         .then(response => {
             return response.json();
         })

@@ -324,7 +324,7 @@ async function submitRecipeData() {
     formData.append('recipeRequest', recipeJsonString);
 
     try {
-        const response = await fetch('/api/recipes', {
+        const response = await api.fetch('/api/recipes', {
             method: 'POST',
             body: formData
         });

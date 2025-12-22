@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -21,14 +21,14 @@ import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(securedEnabled = true)
+@EnableMethodSecurity(securedEnabled = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
     @Autowired
     private CorsFilter corsFilter;
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration ac) throws Exception {//수동으로 작업해서 추가됨
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration ac) throws Exception {
         return ac.getAuthenticationManager();
     }
 
@@ -53,8 +53,9 @@ public class SecurityConfig {
         http.addFilter(jwtAuthenticationFilter);
         http.addFilter(new JwtBasicAuthenticationFilter(am, memberRepository, jwtSecretKey));
         http.authorizeHttpRequests(auth ->
-                auth.requestMatchers("/login", "/register", "/member", "/api/auth/**").permitAll()
-                    .requestMatchers("/manager/**").hasRole("ADMIN")
+                auth.requestMatchers("/login", "/register", "/api/auth/**").permitAll()
+//                    .requestMatchers("/manager/**").hasRole("ADMIN")
+                    .requestMatchers("/","/recipe/**", "/groupBuy/**", "/periodGroupBuy/**", "/quantityGroupBuy/**", "/mypage/**", "/manager/**", "/review/**").permitAll() //리액트로 바꾸기 전 임시로 열어둠
                     .anyRequest().authenticated());
         http.exceptionHandling(handling -> handling
                 .authenticationEntryPoint((request, response, authException) -> {

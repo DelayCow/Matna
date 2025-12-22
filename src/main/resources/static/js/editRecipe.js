@@ -259,7 +259,7 @@ async function submitRecipeData(form, recipeNo) {
     formData.append('recipeRequest', recipeJsonString);
 
     try {
-        const response = await fetch('/api/recipes', {
+        const response = await api.fetch('/api/recipes', {
             method: 'PUT',
             body: formData
         });
@@ -353,7 +353,7 @@ const renderRecipeDetail = function(data) {
 };
 
 const fetchRecipeDetail = function(recipeNo){
-    fetch(`/api/recipes/detail/${recipeNo}`)
+    api.fetch(`/api/recipes/detail/${recipeNo}`)
         .then(response => {
             return response.json()
         }).then(data => {
