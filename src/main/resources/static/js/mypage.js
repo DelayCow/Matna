@@ -51,13 +51,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         const s = String(status).trim().toUpperCase();
         if (s === 'OPEN' || s === 'RECRUITING') {
             if (isHost){
+                return null;}
+            else{
             return {
                 text: "참여 취소",
                 cls: "btn-outline-danger",
-                type: "modal",
-                target: "#cancelModal" };
-        } else{
-                return null;
+                type: "custom",
+                action: "cancelParticipation",
+                target: "#cancelParticipation" };
+
             }
         }
 
@@ -198,6 +200,40 @@ document.addEventListener('DOMContentLoaded', async function() {
         } catch (error) {
             console.error("카운트 집계 실패:", error);
             countEl.innerText = '-';
+        }
+    };
+
+    //  참여 취소 API 호출 함수 (기간/수량 구분)
+    const cancelParticipation = async (participantNo, type) => {
+
+        let apiUrl = '';
+
+        if (type === 'PERIOD') {
+            apiUrl = `/api/periodGroupBuy/cancelParticipant/${participantNo}`;
+        } else {
+            // 기본값은 수량형 (QUANTITY)
+            apiUrl = `/api/quantityGroupBuy/cancelParticipant/${participantNo}`;
+        }
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'PUT', // 상세페이지 로직에 맞춰 PUT 사용
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert("참여가 정상적으로 취소되었습니다.");
+                window.location.reload(); // 새로고침해서 목록 갱신
+            } else {
+                alert("취소 실패: " + (result.message || "오류가 발생했습니다."));
+            }
+        } catch (error) {
+            console.error("취소 요청 중 에러:", error);
+            alert("서버 통신 중 오류가 발생했습니다.");
         }
     };
 
@@ -362,9 +398,16 @@ document.addEventListener('DOMContentLoaded', async function() {
         const unit = item.unit || '';
         const currentStep = getStatusStep(item.status);
 
+        const isHostTab = (currentGroupTab === 'host');
 
-        const btnConfig = getButtonConfig(item.status);
+        const btnConfig = getButtonConfig(item.status, isHostTab);
 
+        // const btnConfig = getButtonConfig(item.status);
+
+        let groupBuyType = 'QUANTITY';
+        if (item.periodGroupBuyNo !== null && item.periodGroupBuyNo !== undefined) {
+            groupBuyType = 'PERIOD';
+        }
 
         const steps = ["모집", "상품결제", "상품도착", "나눔진행"];
 
@@ -396,7 +439,15 @@ document.addEventListener('DOMContentLoaded', async function() {
                         paymentNote: item.paymentNote};
                     const itemData = encodeURIComponent(JSON.stringify(dataToSend));
                     buttonHtml = `<button class="btn ${btnConfig.cls} btn-sm btn-payment-info" data-item="${itemData}">${btnConfig.text}</button>`;
-                }else if (btnConfig.action === 'checkArrival') {
+                } else if (btnConfig.action === 'cancelParticipation'){
+                    const dataToSend = {
+                        groupParticipantNo: item.groupParticipantNo,
+                        type: groupBuyType
+                    };
+                    const itemData = encodeURIComponent(JSON.stringify(dataToSend));
+
+                    buttonHtml = `<button class="btn ${btnConfig.cls} btn-sm btn-cancel-participation" data-item="${itemData}">${btnConfig.text}</button>`;
+                } else if (btnConfig.action === 'checkArrival') {
                     const dataToSend = {
                         groupBuyNo: item.groupBuyNo,
                         arrivalImageUrl: item.arrivalImageUrl || item.deliveryImageUrl,
@@ -679,6 +730,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         const menu = document.getElementById('headerDropdown');
         const removebtn = e.target.closest('#removeMember');
         const recipeDeleteBtn = e.target.closest('.btn-delete');
+
+        const cancelPartBtn = e.target.closest('.btn-cancel-participation');
+
         if(btn && menu) {
             e.stopPropagation();
             menu.classList.toggle('show');
@@ -695,7 +749,24 @@ document.addEventListener('DOMContentLoaded', async function() {
                 'error',
                 () => removeRecipe(recipeNo)
             )
-        }else if(menu) {
+        } else if (cancelPartBtn){
+            e.preventDefault();
+            e.stopPropagation();
+            try {
+                // 버튼에 심어둔 데이터 꺼내기
+                const item = JSON.parse(decodeURIComponent(cancelPartBtn.getAttribute('data-item')));
+
+                // 경고창(모달) 띄우기 -> 확인 누르면 cancelParticipation 실행
+                showAlertModal(
+                    '참여 취소',
+                    '정말 공동구매 참여를 취소하시겠습니까?',
+                    'warning',
+                    () => cancelParticipation(item.groupParticipantNo, item.type)
+                );
+            } catch (err) {
+                console.error("데이터 파싱 오류:", err);
+            }
+        } else if(menu) {
             menu.classList.remove('show');
         }
     });
