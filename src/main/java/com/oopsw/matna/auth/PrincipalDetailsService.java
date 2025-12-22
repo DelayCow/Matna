@@ -15,12 +15,13 @@ public class PrincipalDetailsService implements UserDetailsService {
     private final MemberRepository memberRepository;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Member member = memberRepository.findByMemberId(username);
+        Member member = memberRepository.findByMemberIdAndDelDateIsNullAndBanDateIsNull(username);
 
-        if (member != null) {
-            return new PrincipalDetails(member);
+        if (member == null) {
+            throw new UsernameNotFoundException("존재하지 않는 회원이거나 이용이 제한된 계정입니다 : " + username);
         }
-        return null;
+
+        return new PrincipalDetails(member);
     }
 
 }

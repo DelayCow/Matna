@@ -13,4 +13,5 @@ public class ReviewsListVO {
     private String imageUrl;
     private Float rating;
     private LocalDateTime inDate;
+    private Integer spicyLevel;
 }

@@ -1,4 +1,6 @@
-/* 2. 드롭다운 메뉴 (헤더 점 3개 클릭 시) */
+/* =========================================
+   1. 사용자 제공 드롭다운 스타일 (그대로 유지)
+   ========================================= */
 .custom-dropdown {
     display: none;
     position: absolute;
@@ -30,4 +32,73 @@
 
 .custom-dropdown li:last-child a {
     border-bottom: none;
+}
+
+
+/* =========================================
+   2. 포인트 충전 페이지 추가 스타일
+   ========================================= */
+
+/* 금액 입력창 스타일 */
+.charge-input {
+    font-size: 2rem;
+    text-align: center;
+    font-weight: bold;
+    color: #333;
+    border: none;
+    border-bottom: 2px solid #ced4da; /* 밑줄만 표시 */
+    border-radius: 0;
+    padding: 10px;
+    background-color: transparent;
+}
+
+.charge-input:focus {
+    box-shadow: none;
+    border-color: #e63946; /* 포커스 시 빨간색 */
+    outline: none;
+}
+
+.charge-input::placeholder {
+    color: #dee2e6;
+}
+
+/* 간편 금액 추가 버튼 (+1천, +5천 등) */
+.btn-quick {
+    border: 1px solid #ced4da;
+    background-color: #fff;
+    color: #495057;
+    font-size: 0.9rem;
+    padding: 8px 0;
+    transition: all 0.2s;
+}
+
+.btn-quick:hover {
+    background-color: #f8f9fa;
+    border-color: #adb5bd;
+}
+
+.btn-quick:active {
+    background-color: #e9ecef;
+    transform: scale(0.98);
+}
+
+/* 하단 충전하기 메인 버튼 */
+.btn-main-action {
+    background-color: #e63946; /* 맛나 시그니처 레드 */
+    color: white;
+    font-weight: bold;
+    border: none;
+    transition: background-color 0.2s;
+}
+
+.btn-main-action:hover {
+    background-color: #d62839;
+}
+
+/* 탭 스타일 보정 */
+.tab-container {
+    border: 1px solid #dee2e6;
+}
+.tab-item {
+    cursor: pointer;
 }
