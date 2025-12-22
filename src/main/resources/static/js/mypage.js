@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             });
 
             headerArea.innerHTML = `<button class="btn p-0 border-0" id="headerMenuBtn"><i class="bi bi-three-dots-vertical fs-4 text-dark"></i></button>
-            <ul class="custom-dropdown" id="headerDropdown"><li><a href="#">정보 수정</a></li><li><a href="/logout">로그아웃</a></li><li><a id="removeMember" href="#" class="text-danger">탈퇴</a></li></ul>`;
+            <ul class="custom-dropdown" id="headerDropdown"><li><a href="/mypage/${memberNo}/myinfoEdit">정보 수정</a></li><li><a href="/logout">로그아웃</a></li><li><a id="removeMember" href="#" class="text-danger">탈퇴</a></li></ul>`;
         } else if (headerArea) { headerArea.innerHTML = ''; }
 
         let subInfo = isOwner
