@@ -13,10 +13,9 @@ document.getElementById('login-btn').addEventListener('click', function(){
         },
         body: JSON.stringify(loginData)
     }).then(response => {
-        sessionStorage.au = response.headers.authorization;
+        sessionStorage.au = response.headers.get('Authorization');
         return response.json();
     }).then(data => {
-        console.log(data)
         location.href = data.redirectUrl;
         msg = data.message;
     }).catch(e => {

@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const recipeContainer = document.getElementById('recipeScroll');
     const fetchRecipeData = async function(){
         try{
-            const response = await fetch(`api/recipes?size=10&sort=reviewCount,desc`)
+            const response = await api.fetch(`/api/recipes?size=10&sort=reviewCount,desc`)
             const recipeData = await response.json();
             recipeData.content.forEach(recipe => {
                 const translatedFormatRecipe = translateRecipeData(recipe);
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const quantityGroupBuyContainer = document.getElementById('quantityBuyScroll');
     const fetchQuantityGroupBuyData = async function(){
         try{
-            const response = await fetch(`api/quantityGroupBuy/home?orderBy=dueSoon`)
+            const response = await api.fetch(`/api/quantityGroupBuy/home?orderBy=dueSoon`)
             const quantityGroupBuyData = await response.json();
             quantityGroupBuyData.forEach(groupBuy => {
                 const translatedFormatGroupBuy = translateGroupBuyData(groupBuy);
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const periodGroupBuyContainer = document.getElementById('periodBuyScroll');
     const fetchPeriodGroupBuyData = async function(){
         try{
-            const response = await fetch(`api/periodGroupBuy/home?orderBy=dueSoon`)
+            const response = await api.fetch(`/api/periodGroupBuy/home?orderBy=dueSoon`)
             const periodGroupBuyData = await response.json();
             periodGroupBuyData.forEach(groupBuy => {
                 const translatedFormatGroupBuy = translateGroupBuyData(groupBuy);
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const reviewContainer = document.getElementById('reviewScroll');
     const fetchReviewData = async function(){
         try{
-            const response = await fetch(`api/reviews/recent`)
+            const response = await api.fetch(`/api/reviews/recent`)
             const reviewData = await response.json();
             reviewData.forEach(review => {
                 const translatedFormatReview = translateReviewData(review);
