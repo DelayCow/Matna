@@ -94,6 +94,7 @@
             gb.share_detail_address AS shareDetailAddress,
             gb.buy_end_date AS buyEndDate,
             gb.share_end_date AS shareEndDate,
+            gb.share_time AS shareTime,
             gb.status AS status,
 
             qgb.price_per_unit AS pricePerUnit,

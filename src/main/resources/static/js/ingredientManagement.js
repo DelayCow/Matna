@@ -56,7 +56,7 @@ ingredientTable.addEventListener("click", (e) => {
     const id = tr?.dataset?.id;
     if (btn.classList.contains("btn-delete")) {
         if (confirm("정말 삭제하시겠습니까?")) {
-            fetch(`/api/manager/ingredientManagement?ingredientId=${id}`, { method: "DELETE" })
+            api.fetch(`/api/manager/ingredientManagement?ingredientId=${id}`, { method: "DELETE" })
                 .then(res => {
                     if (!res.ok) throw new Error("삭제 실패");
                     tr.remove();
@@ -73,7 +73,7 @@ newIngredientTable.addEventListener("click", (e) => {
     const id = tr?.dataset?.id;
     if (btn.classList.contains("btn-approve")) {
         if (confirm("승인하시겠습니까?")) {
-            fetch(`/api/manager/ingredientManagement?ingredientId=${id}`, { method: "PUT" })
+            api.fetch(`/api/manager/ingredientManagement?ingredientId=${id}`, { method: "PUT" })
                 .then(res => {
                     if (!res.ok) throw new Error("승인 실패");
                     // 승인되면 행을 승인 테이블로 이동 (간단 처리: 페이지에서 제거 후 재로딩하거나 행 이동)
@@ -84,7 +84,7 @@ newIngredientTable.addEventListener("click", (e) => {
         }
     } else if (btn.classList.contains("btn-delete")) {
         if (confirm("정말 삭제하시겠습니까?")) {
-            fetch(`/api/manager/ingredientManagement?ingredientId=${id}`, { method: "DELETE" })
+            api.fetch(`/api/manager/ingredientManagement?ingredientId=${id}`, { method: "DELETE" })
                 .then(res => {
                     if (!res.ok) throw new Error("삭제 실패");
                     tr.remove();
@@ -107,7 +107,7 @@ addBtn.addEventListener("click", () => {
     if (!value) { alert("재료명을 입력하세요."); return; }
     // 예: creatorId는 현재 로그인된 유저 id로 대체해야 함. 여기선 예시 1 사용.
     const creatorId = 1;
-    fetch(`/api/manager/ingredientManagement?creatorId=${creatorId}&ingredientName=${encodeURIComponent(value)}`, {
+    api.fetch(`/api/manager/ingredientManagement?creatorId=${creatorId}&ingredientName=${encodeURIComponent(value)}`, {
         method: "POST"
     })
         .then(res => {
@@ -130,7 +130,7 @@ addBtn.addEventListener("click", () => {
 // --- 데이터 로드 함수들 (통합된 DOMContentLoaded 내부에서 실행) ---
 async function loadApprovedIngredients() {
     try {
-        const res = await fetch('/api/manager/ingredientManagement');
+        const res = await api.fetch('/api/manager/ingredientManagement');
         if (!res.ok) throw new Error("서버 응답 에러");
         const data = await res.json();
         ingredientTable.innerHTML = "";
@@ -141,7 +141,7 @@ async function loadApprovedIngredients() {
 }
 async function loadNotApprovedIngredients() {
     try {
-        const res = await fetch('/api/manager/ingredientManagement/notApproved');
+        const res = await api.fetch('/api/manager/ingredientManagement/notApproved');
         if (!res.ok) throw new Error("서버 응답 에러");
         const data = await res.json();
         newIngredientTable.innerHTML = "";
@@ -225,7 +225,7 @@ document.getElementById("confirmChangeBtn").addEventListener("click", async () =
     if (!confirm("정말 재료를 변경하시겠습니까?")) return;
 
     try {
-        const res = await fetch(
+        const res = await api.fetch(
             `/api/manager/ingredientManagement/change?ingredientNo=${selectedIngredientId}&newIngredientNo=${changeIngredientId}`,
             { method: "PUT" }
         );

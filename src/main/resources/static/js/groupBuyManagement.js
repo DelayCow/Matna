@@ -53,7 +53,7 @@ async function loadGroupBuyList() {
             title: titleInput.value || ""
         });
 
-        const res = await fetch(`/api/manager/groupBuyManagement`);
+        const res = await api.fetch(`/api/manager/groupBuyManagement`);
         if (!res.ok) throw new Error("데이터 조회 실패");
 
         const data = await res.json();
@@ -135,7 +135,7 @@ tableBody.addEventListener("click", (e) => {
 
         if (!confirm("정말 중단하시겠습니까?")) return;
 
-        fetch(`/api/manager/groupBuyManagement?groupBuyNo=${groupBuyNo}`, {
+        api.fetch(`/api/manager/groupBuyManagement?groupBuyNo=${groupBuyNo}`, {
             method: "PUT"
         })
             .then(res => {

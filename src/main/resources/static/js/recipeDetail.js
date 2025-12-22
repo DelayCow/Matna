@@ -185,7 +185,7 @@ const renderEditBox = function(recipeNo){
     }
 }
 const fetchRecipeDetail = function(recipeNo){
-    fetch(`/api/recipes/detail/${recipeNo}`)
+    api.fetch(`/api/recipes/detail/${recipeNo}`)
         .then(response => {
             return response.json()
         }).then(data => {
@@ -200,7 +200,7 @@ const fetchRecipeDetail = function(recipeNo){
 }
 const removeRecipe = async function(recipeNo){
     try{
-        const response = await fetch(`/api/recipes/${recipeNo}`,{
+        const response = await api.fetch(`/api/recipes/${recipeNo}`,{
             method: 'DELETE'
         });
 

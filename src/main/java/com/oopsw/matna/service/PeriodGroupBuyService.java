@@ -54,7 +54,7 @@ public class PeriodGroupBuyService {
 
     @Transactional
     public PeriodGroupBuy addPeriodGroupBuy(PeriodRegisterRequest request, MultipartFile thumbnailFile) throws IOException {
-        String thumbnailUrl = null;
+        String thumbnailUrl;
         if (thumbnailFile == null || thumbnailFile.isEmpty()) {
             throw new IllegalArgumentException("상품 이미지는 필수입니다.");
         }

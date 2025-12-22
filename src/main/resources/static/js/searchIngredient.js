@@ -9,7 +9,7 @@ export function debounce(func, delay) {
     }
 
 export function fetchSearchResults(query, updateDropdownMenu) {
-    fetch(`/api/ingredients?keyword=${encodeURIComponent(query)}`)
+    api.fetch(`/api/ingredients?keyword=${encodeURIComponent(query)}`)
         .then(response => {
             return response.json();
         })

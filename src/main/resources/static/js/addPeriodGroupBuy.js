@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     // ========== 전역 변수 ==========
     const countRadio = document.getElementById('count');
     const weightRadio = document.getElementById('weight');
@@ -18,7 +18,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let isItemClicked = false;
     let selectedIngredientNo = null;
-    const creatorNo = document.getElementById('creatorNo').textContent;
+    let currentMemberNo = null; // 로그인한 사용자의 memberNo
+
+    // ========== 현재 사용자 정보 가져오기 ==========
+    try {
+        const authData = await getCurrentUser();
+        currentMemberNo = authData.memberNo;
+    } catch (error) {
+        console.error('인증 정보 조회 실패:', error);
+        alert('로그인 정보를 가져올 수 없습니다. 다시 로그인해주세요.');
+        window.location.href = '/login';
+        return;
+    }
+
     // ========== 초기화 ==========
     init();
 
@@ -28,6 +40,20 @@ document.addEventListener('DOMContentLoaded', function() {
         createDateOptions();
         updateUnits();
         setupEventListeners();
+    }
+
+    // ========== API 호출 함수 ==========
+    async function getCurrentUser() {
+        const response = await api.fetch('/api/auth/currentUser', {
+            method: 'GET',
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            throw new Error('인증 정보 조회 실패');
+        }
+
+        return await response.json();
     }
 
     // ========== 단위 설정 ==========
@@ -193,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function fetchSearchResults(query) {
-        fetch(`/api/ingredients/search?keyword=${encodeURIComponent(query)}`)
+        api.fetch(`/api/ingredients/search?keyword=${encodeURIComponent(query)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('재료 검색에 실패했습니다.');
@@ -295,6 +321,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const periodData = {};
         const errors = [];
 
+        // 사용자 인증 확인
+        if (!currentMemberNo) {
+            alert('로그인 정보를 확인할 수 없습니다. 다시 로그인해주세요.');
+            window.location.href = '/login';
+            return;
+        }
+
         // 썸네일 이미지 검증 (필수)
         if (fileInput.files.length === 0) {
             errors.push('상품 이미지를 등록해주세요');
@@ -315,10 +348,9 @@ document.addEventListener('DOMContentLoaded', function() {
             errors.push('품목을 선택해주세요');
         }
         periodData.ingredientNo = parseInt(ingredientNo);
-        periodData.ingredientName = searchInput.value;
 
-        // 작성자
-        periodData.creatorNo = creatorNo;
+        // 작성자 (현재 로그인한 사용자의 memberNo)
+        periodData.creatorNo = parseInt(currentMemberNo);
 
         // 모집기간 (마감일)
         const joinYear = document.getElementById('joinYear').value;
@@ -353,7 +385,7 @@ document.addEventListener('DOMContentLoaded', function() {
         periodData.shareLocation = shareLocation;
 
         const shareDetailAddress = document.getElementById('detailAddress').value.trim();
-        periodData.shareDetailAddress = shareDetailAddress;
+        periodData.shareDetailAddress = shareDetailAddress || '';
 
         // 상품 가격
         const price = parseInt(document.getElementById('price').value);
@@ -374,13 +406,13 @@ document.addEventListener('DOMContentLoaded', function() {
         periodData.unit = unit;
 
         // 수수료
-        const feeRate = parseInt(document.getElementById('fee_rate').value) || 0;
+        const feeRate = parseFloat(document.getElementById('fee_rate').value) || 0;
         periodData.feeRate = feeRate;
 
         // 최대 인원수
         const maxParticipants = parseInt(document.getElementById('maxParticipants').value);
-        if (!maxParticipants || maxParticipants <= 0) {
-            errors.push('최대 인원수를 입력해주세요');
+        if (!maxParticipants || maxParticipants <= 1) {
+            errors.push('최대 인원수는 2명 이상이어야 합니다');
         }
         periodData.maxParticipants = maxParticipants;
 
@@ -393,7 +425,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // 상품 판매 URL
         const itemSaleUrl = document.getElementById('itemSaleUrl').value.trim();
-        periodData.itemSaleUrl = itemSaleUrl || null;
+        periodData.itemSaleUrl = itemSaleUrl || '';
 
         // 에러가 있으면 중단
         if (errors.length > 0) {
@@ -405,15 +437,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const periodJsonString = JSON.stringify(periodData);
         formData.append('periodRegisterRequest', periodJsonString);
 
-        console.log('제출 데이터:', periodData);
-        console.log('첨부 파일:', fileInput.files[0]?.name);
 
         // 로딩 표시
         submitBtn.disabled = true;
         submitBtn.textContent = '등록 중...';
 
         try {
-            const response = await fetch('/api/periodGroupBuy/register', {
+            const response = await api.fetch('/api/periodGroupBuy/register', {
                 method: 'POST',
                 body: formData
             });
@@ -422,11 +452,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (response.ok && result.success) {
                 alert(result.message || '기간 공동구매가 성공적으로 등록되었습니다!');
-                console.log('등록 결과:', result);
-                window.location.href = '/groupBuy';
+
+                // 등록 성공 시 상세 페이지로 이동
+                if (result.data && result.data.periodGroupBuyNo) {
+                    window.location.href = `/periodGroupBuy/detail/${result.data.periodGroupBuyNo}`;
+                } else {
+                    window.location.href = '/groupBuy';
+                }
             } else {
                 const errorMessage = result.message || '등록에 실패했습니다.';
                 alert(`등록 실패\n\n${errorMessage}`);
+                console.error('등록 실패:', result);
             }
         } catch (error) {
             console.error('네트워크 오류:', error);
@@ -466,37 +502,45 @@ document.addEventListener('DOMContentLoaded', function() {
         });
 
         // 기타 품목 추가 버튼
-        document.getElementById('addOtherItemBtn').addEventListener('click', function() {
-            const otherItem = document.getElementById('otherItem').value.trim();
-            if (otherItem) {
-                fetch(`/api/ingredients/add?creatorNo=${creatorNo}&ingredientName=${encodeURIComponent(otherItem)}`, {
-                    method: 'POST'
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.json().then(data => {
-                                throw new Error(data.message || '재료 추가에 실패했습니다.');
-                            });
-                        }
-                        return response.json();
+        const addOtherItemBtn = document.getElementById('addOtherItemBtn');
+        if (addOtherItemBtn) {
+            addOtherItemBtn.addEventListener('click', function() {
+                const otherItem = document.getElementById('otherItem').value.trim();
+                if (otherItem) {
+                    if (!currentMemberNo) {
+                        alert('로그인이 필요합니다.');
+                        return;
+                    }
+
+                    api.fetch(`/api/ingredients/add?creatorNo=${currentMemberNo}&ingredientName=${encodeURIComponent(otherItem)}`, {
+                        method: 'POST'
                     })
-                    .then(data => {
-                        if (data.success) {
-                            searchInput.value = data.data.ingredientName;
-                            ingredientNoInput.value = data.data.ingredientNo;
-                            selectedIngredientNo = data.data.ingredientNo;
-                            alert(data.message);
-                            document.getElementById('otherItem').value = '';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert(error.message);
-                    });
-            } else {
-                alert('품목명을 입력해주세요.');
-            }
-        });
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(data => {
+                                    throw new Error(data.message || '재료 추가에 실패했습니다.');
+                                });
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                searchInput.value = data.data.ingredientName;
+                                ingredientNoInput.value = data.data.ingredientNo;
+                                selectedIngredientNo = data.data.ingredientNo;
+                                alert(data.message);
+                                document.getElementById('otherItem').value = '';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert(error.message);
+                        });
+                } else {
+                    alert('품목명을 입력해주세요.');
+                }
+            });
+        }
 
         // 파일 첨부
         attachPhotoButton.addEventListener('click', function() {
@@ -530,62 +574,40 @@ window.addEventListener('load', function() {
 
 // 카카오맵 초기화 및 이벤트 설정
 function initKakaoMap() {
-    console.log('Kakao Map initialized');
 
     const mapContainer = document.getElementById('map');
     const mapOption = {
-        center: new kakao.maps.LatLng(37.537187, 127.005476), // 지도의 중심좌표
-        level: 5 // 지도의 확대 레벨
+        center: new kakao.maps.LatLng(37.537187, 127.005476),
+        level: 5
     };
 
-    // 지도를 미리 생성
     const map = new kakao.maps.Map(mapContainer, mapOption);
-
-    // 주소-좌표 변환 객체를 생성
     const geocoder = new kakao.maps.services.Geocoder();
-
-    // 마커를 미리 생성
     const marker = new kakao.maps.Marker({
         position: new kakao.maps.LatLng(37.537187, 127.005476),
         map: map
     });
 
-    // 다음 우편번호 API 실행 함수
     function execDaumPostcode() {
         new daum.Postcode({
             oncomplete: function(data) {
-                const addr = data.address; // 최종 주소 변수
-
-                // 주소 정보를 해당 필드에 넣는다.
+                const addr = data.address;
                 document.getElementById("addressSearch").value = addr;
 
-                // 주소로 상세 정보를 검색
                 geocoder.addressSearch(data.address, function(results, status) {
-                    // 정상적으로 검색이 완료됐으면
                     if (status === kakao.maps.services.Status.OK) {
-                        const result = results[0]; // 첫번째 결과의 값을 활용
-
-                        // 해당 주소에 대한 좌표를 받아서
+                        const result = results[0];
                         const coords = new kakao.maps.LatLng(result.y, result.x);
 
-                        // 좌표 정보 저장
                         document.getElementById('latitude').value = result.y;
                         document.getElementById('longitude').value = result.x;
 
-                        console.log('Selected address:', addr);
-                        console.log('Coordinates:', result.y, result.x);
 
-                        // 지도를 보여준다.
                         mapContainer.style.display = "block";
                         map.relayout();
-
-                        // 지도 중심을 변경한다.
                         map.setCenter(coords);
-
-                        // 마커를 결과값으로 받은 위치로 옮긴다.
                         marker.setPosition(coords);
 
-                        // 상세주소 입력란으로 포커스 이동
                         document.getElementById('detailAddress').focus();
                     }
                 });
@@ -593,13 +615,11 @@ function initKakaoMap() {
         }).open();
     }
 
-    // 주소 검색 버튼 클릭 이벤트
     const searchBtn = document.getElementById('addressSearchBtn');
     if (searchBtn) {
         searchBtn.addEventListener('click', execDaumPostcode);
     }
 
-    // 주소 입력창 클릭 시에도 검색 창 열기
     const addressInput = document.getElementById('addressSearch');
     if (addressInput) {
         addressInput.addEventListener('click', execDaumPostcode);

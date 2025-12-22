@@ -42,7 +42,7 @@ const createReviewCard = function (r, recipeNo){
 const fetchReviewData = async function(recipeNo){
     const reviewList = document.getElementById('review-list');
     try{
-        const response = await fetch(`/api/reviews/recipe/${recipeNo}`)
+        const response = await api.fetch(`/api/reviews/recipe/${recipeNo}`)
         const reviewData = await response.json();
         reviewData.forEach(review => {
             const translatedFormatReview = translateReviewData(review);
@@ -58,7 +58,7 @@ const fetchReviewData = async function(recipeNo){
 const fetchRecipeData = async function(recipeNo){
     const recipeInfo = document.querySelector('.rating-summary');
     try{
-        const response = await fetch(`/api/recipes/detail/${recipeNo}`)
+        const response = await api.fetch(`/api/recipes/detail/${recipeNo}`)
         const data = await response.json();
         const infoHtml = `<span class="text-warning"><i class="bi bi-star-fill"></i></span>
                                 <span class="fw-semibold">${data.recipeDetail.rating}</span>
