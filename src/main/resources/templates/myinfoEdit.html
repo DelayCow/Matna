@@ -10,15 +10,10 @@
   <link rel="stylesheet" href="/css/layout.css"> </head>
 <body>
 
-<div class="mobile-container d-flex flex-column vh-100 bg-white mx-auto position-relative shadow-sm">
+<div class="mobile-container position-relative">
 
-  <header class="d-flex justify-content-between align-items-center p-3 bg-white border-bottom" style="z-index: 1020;">
-    <button type="button" class="btn p-0 border-0 bg-transparent text-dark" onclick="history.back()" style="width: 24px;">
-      <i class="bi bi-arrow-left fs-4"></i>
-    </button>
-    <h5 class="m-0 fw-bold">내 정보 수정</h5>
-    <div style="width: 24px;" id="header-right-area"></div>
-  </header>
+
+  <header th:replace="layout :: pageHeader('내 정보 수정', 'javascript:history.back()')"></header>
 
   <div class="flex-grow-1 overflow-y-auto p-3 scrollbar-hide">
     <form id="editForm">
@@ -51,7 +46,7 @@
         <label for="confirmPassword" class="form-label fw-bold">비밀번호 확인</label>
         <input type="password" class="form-control" id="confirmPassword" placeholder="비밀번호 확인">
       </div>
-      <small id="pwcheckmsg" class="notshow text-danger d-block mb-2">비밀번호가 일치하지 않습니다</small>
+      <small id="pwcheckmsg" class="d-none fw-bold"></small>
 
       <div class="mb-2">
         <label for="nickname" class="form-label fw-bold">닉네임</label>
@@ -93,8 +88,7 @@
     </form>
   </div>
 
-  <div class="border-top bg-white w-100" style="z-index: 1030;">
-    <nav th:replace="~{layout :: menuBar}"></nav>
+  <div th:replace="layout :: menuBar"></div>
   </div>
 
 </div>
