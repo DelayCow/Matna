@@ -12,7 +12,8 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     document.getElementById("logoutBtn").addEventListener("click", () => {
-        window.location.href = "/logout";
+        sessionStorage.removeItem("au");
+        location.href="/login"
     });
 
     loadNickname();
