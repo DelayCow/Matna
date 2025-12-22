@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Builder
 @Data
@@ -25,6 +26,7 @@ public class QuantityDetailInfo {
     private String shareDetailAddress;
     private Integer buyEndDate;
     private Integer shareEndDate;
+    private LocalTime shareTime;
     private String status;
     private Long pricePerUnit;
     private Integer remainingQty;
