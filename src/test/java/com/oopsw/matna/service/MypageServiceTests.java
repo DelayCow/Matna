@@ -12,8 +12,11 @@ import com.oopsw.matna.vo.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -84,55 +87,39 @@ public class MypageServiceTests {
     }
 
     @Test
+    @Transactional
     public void editPaymentTest() {
 
-
         int targetGroupBuyNo = 11;
-
-
         String dateStr = "2025-11-11 15:30:00";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime buyDate = LocalDateTime.parse(dateStr, formatter);
-
-        GroupBuyVO paymentData = GroupBuyVO.builder()
-                .groupBuyNo(targetGroupBuyNo)
-                .receiptImageUrl("image.jpg") // 가짜 이미지 경로
-                .buyDate(buyDate)
-                .paymentNote("테스트 결제 메모입니다.")
-                .build();
-
-        mypageService.editPayment(paymentData);
-
-        GroupBuy result = groupBuyRepository.findById(targetGroupBuyNo).orElse(null);
-
-        System.out.println(result.getBuyDate());
-
-    }
-
-    @Test
-    public void addDeliveryDataTest() {
-
-        int targetGroupBuyNo = 11;
-
-        String dateString = "2025-11-12 14:00:00";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime arrivalDate = LocalDateTime.parse(dateString, formatter);
-
-        GroupBuyVO deliveryData = GroupBuyVO.builder()
-                .groupBuyNo(targetGroupBuyNo)
-                .arrivalImageUrl("arrival_test.jpg")
-                .arrivalDate(arrivalDate)
-                .build();
+        String description = "테스트.";
 
 
-        mypageService.addArrival(deliveryData);
+        MockMultipartFile mockFile = new MockMultipartFile(
+                "receiptImage",
+                "test_receipt.jpg",
+                "image/jpeg",
+                "fake image content".getBytes(StandardCharsets.UTF_8)
+        );
+
+
+        mypageService.addPayment(targetGroupBuyNo, mockFile, dateStr, description);
 
 
         GroupBuy result = groupBuyRepository.findById(targetGroupBuyNo).orElse(null);
 
 
-        System.out.println(result.getStatus());
-        System.out.println(result.getArrivalDate());
+        if (result != null) {
+            System.out.println("========================================");
+            System.out.println("결제 상태: " + result.getStatus());
+            System.out.println("구매 날짜: " + result.getBuyDate());
+            System.out.println("저장된 이미지 경로: " + result.getReceiptImageUrl());
+            System.out.println("결제 메모: " + result.getPaymentNote());
+            System.out.println("========================================");
+        } else {
+            System.out.println("테스트 실패: 해당 공구가 없습니다.");
+        }
+
     }
 
     @Test
@@ -176,30 +163,30 @@ public class MypageServiceTests {
         System.out.println("전체 객체: " + member);
     }
 
-    @Test
-    @Transactional
-    public void editMemberInfoTest() {
-
-        int targetMemberNo = 5;
-
-        MemberVO editMember = MemberVO.builder()
-                .memberNo(targetMemberNo)
-                .nickname("수정했단말이오")
-                .password("new_password_123")
-                .imageUrl("enwene.jpg")
-                .bank("카카오뱅크")
-                .accountNumber("3333-11-2222")
-                .accountName("김루이지")
-                .address("경기도 성남시 판교 옥탑방왕세자")
-                .build();
-
-        mypageService.updateMemberProfile(editMember);
-
-        Member result = memberRepository.findById(targetMemberNo).orElse(null);
-
-        System.out.println("변경된 닉네임: " + result.getNickname());
-        System.out.println("변경된 주소: " + result.getAddress());
-    }
+//    @Test
+//    @Transactional
+//    public void editMemberInfoTest() {
+//
+//        int targetMemberNo = 5;
+//
+//        MemberVO editMember = MemberVO.builder()
+//                .memberNo(targetMemberNo)
+//                .nickname("수정했단말이오")
+//                .password("new_password_123")
+//                .imageUrl("enwene.jpg")
+//                .bank("카카오뱅크")
+//                .accountNumber("3333-11-2222")
+//                .accountName("김루이지")
+//                .address("경기도 성남시 판교 옥탑방왕세자")
+//                .build();
+//
+//        mypageService.updateMemberProfile(editMember, 'dd.jpg');
+//
+//        Member result = memberRepository.findById(targetMemberNo).orElse(null);
+//
+//        System.out.println("변경된 닉네임: " + result.getNickname());
+//        System.out.println("변경된 주소: " + result.getAddress());
+//    }
 
     @Test
     @Transactional
@@ -286,6 +273,53 @@ public class MypageServiceTests {
         System.out.println("충전 후: " + afterPoint);
 
     }
+
+    @Test
+    @Transactional
+    public void getGroupBuyParticipateListTest(){
+
+        int memberNo = 9;
+        String filterStatus = "";
+        List<GroupBuyListVO> list = mypageService.getParticipatedGroupBuyList(memberNo, filterStatus);
+
+        System.out.println(list);
+
+
+    }
+
+    @Test
+    @Transactional
+    public void getGroupBuyPeroidListTest(){
+
+        int memberNo = 9;
+        String filterStatus = "";
+        List<GroupBuyListVO> list = mypageService.getHostedGroupBuyList(memberNo, filterStatus);
+
+        System.out.println(list);
+
+
+    }
+
+    @Test
+    @Transactional
+    public void addArrivalTest() {
+
+        int targetGroupBuyNo = 11;
+        String dateString = "2025-11-12 14:00:00";
+
+
+        MultipartFile testFile = null;
+
+
+        mypageService.addArrival(targetGroupBuyNo, testFile, dateString);
+
+        GroupBuy result = groupBuyRepository.findById(targetGroupBuyNo).orElse(null);
+
+
+        System.out.println(result.getStatus());
+    }
+
+
 
 
 }

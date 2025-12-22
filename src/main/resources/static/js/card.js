@@ -45,7 +45,7 @@ const createRecipeCard = function (r){
                     <p class="card-text text-truncate mb-0 ms-2">${r.title}</p>
                   </div>
                   <div class="small text-muted">
-                    <span class="text-warning"><i class="bi bi-star-fill"></i> ${r.averageRating}</span>
+                    <span class="text-warning"><i class="bi bi-star-fill"></i> ${r.averageRating.toFixed(1)}</span>
                     <span>| 후기 ${r.reviewCount}</span>
                   </div>
                 </div>

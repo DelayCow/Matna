@@ -1,14 +1,14 @@
 package com.oopsw.matna.vo;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Builder
 @Data
 @ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class QuantityGroupBuyDetailVO {
     // 기본 정보
     private Integer groupBuyNo;
@@ -40,4 +40,7 @@ public class QuantityGroupBuyDetailVO {
     // 생성자 정보
     private String creatorProfileUrl;
     private String creatorNickname;
+
+    private Integer myQuantity;
+    private Integer groupParticipantNo;
 }
