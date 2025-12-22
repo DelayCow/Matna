@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             </button>
             <ul class="custom-dropdown" id="headerDropdown">
                 <li><a href="#" id="btnEditInfo">정보 수정</a></li>
-                <li><a href="/logout">로그아웃</a></li>
+                <li><a href="#" id="btnLogout">로그아웃</a></li>
                 <li><a href="#" id="removeMember" class="text-danger">탈퇴</a></li>
             </ul>
         </div>`;
@@ -158,8 +158,6 @@ document.addEventListener('DOMContentLoaded', async function() {
                 }
             });
 
-            headerArea.innerHTML = `<button class="btn p-0 border-0" id="headerMenuBtn"><i class="bi bi-three-dots-vertical fs-4 text-dark"></i></button>
-            <ul class="custom-dropdown" id="headerDropdown"><li><a href="/mypage/${memberNo}/myinfoEdit">정보 수정</a></li><li><a href="/logout">로그아웃</a></li><li><a id="removeMember" href="#" class="text-danger">탈퇴</a></li></ul>`;
         } else if (headerArea) { headerArea.innerHTML = ''; }
 
         let subInfo = isOwner
@@ -728,6 +726,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.addEventListener('click', (e) => {
         const btn = e.target.closest('#headerMenuBtn');
         const menu = document.getElementById('headerDropdown');
+        const logoutBtn = e.target.closest('#btnLogout')
         const removebtn = e.target.closest('#removeMember');
         const recipeDeleteBtn = e.target.closest('.btn-delete');
 
@@ -736,7 +735,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         if(btn && menu) {
             e.stopPropagation();
             menu.classList.toggle('show');
-        }else if(removebtn){
+        }else if(logoutBtn){
+            sessionStorage.removeItem("au");
+            location.href="/login";
+        }
+
+        else if(removebtn){
             showRemoveMemberModal(memberNo);
             menu.classList.remove('show');
         }else if(recipeDeleteBtn) {
@@ -766,7 +770,11 @@ document.addEventListener('DOMContentLoaded', async function() {
             } catch (err) {
                 console.error("데이터 파싱 오류:", err);
             }
-        } else if(menu) {
+        } else if(logoutBtn){
+            e.preventDefault();
+            location.href = "/logout";
+        }
+        else if(menu) {
             menu.classList.remove('show');
         }
     });
