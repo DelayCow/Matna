@@ -240,7 +240,7 @@ function collectSteps(formData) {
 }
 
 
-async function submitRecipeData(form) {
+async function submitRecipeData() {
     const formData = new FormData();
     const recipeData = {};
     const errors = [];
@@ -254,37 +254,37 @@ async function submitRecipeData(form) {
         errors.push('썸네일 이미지를 등록해주세요');
     }
 
-    const title = form.querySelector('#recipeTitle').value.trim();
+    const title = document.querySelector('#recipeTitle').value.trim();
     if (!title) {
         errors.push('제목을 입력해주세요');
     }
     recipeData.title = title;
 
-    const summary = form.querySelector('#recipeSummary').value.trim();
+    const summary = document.querySelector('#recipeSummary').value.trim();
     if (!summary) {
         errors.push('레시피 요약을 입력해주세요');
     }
     recipeData.summary = summary;
 
-    const category = form.querySelector('#category').value;
+    const category = document.querySelector('#category').value;
     if (!category) {
         errors.push('카테고리를 선택해주세요');
     }
     recipeData.category = category;
 
-    const prepTime = parseInt(form.querySelector('input[name="prepTime"]').value);
+    const prepTime = parseInt(document.querySelector('input[name="prepTime"]').value);
     if (!prepTime || prepTime <= 0) {
         errors.push('조리 시간을 입력해주세요');
     }
     recipeData.prepTime = prepTime || 0;
 
-    const servings = parseInt(form.querySelector('input[name="servings"]').value);
+    const servings = parseInt(document.querySelector('input[name="servings"]').value);
     if (!servings || servings <= 0) {
         errors.push('인분을 입력해주세요');
     }
     recipeData.servings = servings || 0;
 
-    recipeData.difficulty = form.querySelector('input[name="difficulty"]:checked').value;
+    recipeData.difficulty = document.querySelector('input[name="difficulty"]:checked').value;
 
     const activeSpicyIcon = document.querySelector('.spicy-level-icon.active');
     recipeData.spicyLevel = activeSpicyIcon ? parseInt(activeSpicyIcon.dataset.level) : 0;
@@ -373,12 +373,12 @@ document.addEventListener('DOMContentLoaded',function (){
 
     initializeSpicyIcons();
 
-    const recipeForm = document.querySelector('form.container-fluid.content-area');
+    const recipeBtn = document.querySelector('#registerRecipe');
 
-    recipeForm.addEventListener('submit', async function(e) {
+    recipeBtn.addEventListener('click', async function(e) {
         e.preventDefault();
         try {
-            await submitRecipeData(this);
+            await submitRecipeData();
         } catch (error) {
             console.error("레시피 등록 처리 중 최종 오류:", error);
             showAlertModal(
