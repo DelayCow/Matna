@@ -122,15 +122,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         const money = data.points || 0;
 
         if (isOwner && headerArea) {
-        //     headerArea.innerHTML = `<div class="position-relative"> <button class="btn p-0 border-0" id="headerMenuBtn">
-        //         <i class="bi bi-three-dots-vertical fs-4 text-dark"></i>
-        //     </button>
-        //     <ul class="custom-dropdown" id="headerDropdown">
-        //         <li><a href="#" id="btnEditInfo">정보 수정</a></li>
-        //         <li><a href="#" id="logout">로그아웃</a></li>
-        //         <li><a href="#" id="removeMember" class="text-danger">탈퇴</a></li>
-        //     </ul>
-        // </div>`;
 
             const btn = document.getElementById('headerMenuBtn');
             const dropdown = document.getElementById('headerDropdown');
@@ -353,23 +344,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         const reviewNo = item.reviewNo || item.id;
 
         const detailUrl = `/review/detail/${reviewNo}`;
-
-        // const editUrl = `/review/edit/${reviewId}`;
-        //
-        //
-        //
-        // const kebabMenuHtml = (typeof isOwner !== 'undefined' && isOwner) ? `
-        // <div class="dropdown ms-auto">
-        //     <button class="btn btn-link text-secondary p-0 border-0" type="button" data-bs-toggle="dropdown">
-        //         <i class="bi bi-three-dots-vertical"></i>
-        //     </button>
-        //     <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-        //         <li><a class="dropdown-item small" href="${editUrl}">수정</a></li>
-        //         <li><hr class="dropdown-divider my-1"></li>
-        //         <li><button class="dropdown-item small text-danger btn-delete-review" data-id="${reviewId}">삭제</button></li>
-        //     </ul>
-        // </div>` : '';
-
 
         return `
         <div class="review-card mb-4 col-12">
