@@ -16,14 +16,14 @@
 
   <!-- 프로필 -->
   <div class="text-center mb-4 profile-area">
-    <img src="../static/img/default-profile.png" class="rounded-circle mb-2 profile-img" alt="프로필">
-    <h5 class="fw-semibold">홍길동</h5>
+    <img src="/img/matna_logo2.png" class="rounded-circle mb-2 profile-img" alt="프로필">
+    <h5 id="nickname" class="fw-semibold"></h5>
   </div>
 
   <!-- 메뉴 -->
   <ul class="nav flex-column mb-auto">
     <li class="nav-item mb-2">
-      <a class="nav-link sidebar-link" href="/manager/userManagement">유저 관리</a>
+      <a class="nav-link sidebar-link" href="/manager/memberManagement">유저 관리</a>
     </li>
     <li class="nav-item mb-2">
       <a class="nav-link sidebar-link" href="/manager/groupBuyManagement">공구 관리</a>
@@ -39,7 +39,7 @@
   <!-- 로그아웃 -->
   <div class="logout-area">
     <div class="mt-auto text-center">
-      <button class="btn btn-outline-danger w-75">로그아웃</button>
+      <button id="logoutBtn" class="btn btn-outline-danger w-75">로그아웃</button>
     </div>
   </div>
 
@@ -94,6 +94,43 @@
       <tbody id="newIngredientTable">
       </tbody>
     </table>
+  </div>
+</div>
+<!-- 재료 변경 모달 -->
+<div class="modal fade" id="ingredientChangeModal" tabindex="-1">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content p-4">
+
+      <!-- 헤더 -->
+      <div class="modal-header border-0">
+        <h5 class="modal-title">재료 변경</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- 바디 -->
+      <div class="modal-body">
+        <p id="selectedIngredientText" class="fw-bold mb-3">
+          선택된 재료: -
+        </p>
+
+        <label class="form-label fw-semibold">바꿀 재료명을 선택해주세요</label>
+        <input type="text" id="modalSearchInput" class="form-control mb-2" placeholder="재료명 검색">
+
+        <ul class="list-group mb-3" id="modalIngredientList"></ul>
+
+        <p class="fw-bold">
+          바꿀 재료:
+          <span id="changeIngredientText">-</span>
+          <span id="approvedMark" class="text-success ms-2 d-none">승인된 재료입니다.</span>
+        </p>
+      </div>
+
+      <!-- 푸터 -->
+      <div class="modal-footer border-0">
+        <button class="btn btn-primary w-100" id="confirmChangeBtn">수정</button>
+      </div>
+
+    </div>
   </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

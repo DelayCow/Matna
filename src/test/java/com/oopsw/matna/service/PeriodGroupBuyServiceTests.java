@@ -1,5 +1,6 @@
 package com.oopsw.matna.service;
 
+import com.oopsw.matna.controller.groupbuy.GroupBuyParticipantRequest;
 import com.oopsw.matna.controller.groupbuy.PeriodRegisterRequest;
 import com.oopsw.matna.repository.*;
 import com.oopsw.matna.repository.entity.*;
@@ -169,14 +170,14 @@ public class PeriodGroupBuyServiceTests {
         Integer feeRate = groupBuy.getFeeRate();
         int expectedInitialPaymentPoint = (int) Math.round((price * (1.0 + (feeRate / 100.0))) / 2.0);
 
-        GroupBuyParticipantVO vo = GroupBuyParticipantVO.builder()
+        GroupBuyParticipantRequest request = GroupBuyParticipantRequest.builder()
                 .participantNo(participantNo)
                 .groupBuyNo(groupBuyNo)
                 .build();
 
         if (beforePoint >= expectedInitialPaymentPoint) {
             // 정상 케이스
-            GroupBuyParticipant result = periodGroupBuyService.addParticipantToPeriodGroupBuy(vo);
+            GroupBuyParticipant result = periodGroupBuyService.addParticipantToPeriodGroupBuy(request);
 
             assertNotNull(result);
             assertNotNull(result.getGroupParticipantNo());
@@ -195,7 +196,7 @@ public class PeriodGroupBuyServiceTests {
             // 예외 케이스: 포인트 부족
             IllegalArgumentException exception = assertThrows(
                     IllegalArgumentException.class,
-                    () -> periodGroupBuyService.addParticipantToPeriodGroupBuy(vo)
+                    () -> periodGroupBuyService.addParticipantToPeriodGroupBuy(request)
             );
 
             assertTrue(exception.getMessage().contains("포인트가 부족합니다"));
@@ -311,30 +312,55 @@ public class PeriodGroupBuyServiceTests {
 
     @Test
     void editCancelParticipantGroupBuyTest() {
-        Integer participantNo = 12;
-        Integer groupBuyParticipantNo = 67;
+        Integer participantNo = 11;
+        Integer groupBuyParticipantNo = 66;
         // 참여자 존재 여부 확인
         Member member = memberRepository.findById(participantNo)
                 .orElseThrow(() -> new AssertionError("테스트용 회원(memberNo: " + participantNo + ")이 존재하지 않습니다."));
         // 참여 정보 존재 여부 확인
         GroupBuyParticipant groupBuyParticipant = groupBuyParticipantRepository.findById(groupBuyParticipantNo)
                 .orElseThrow(() -> new AssertionError("테스트용 참여 정보(participantNo: " + groupBuyParticipantNo + ")가 존재하지 않습니다."));
+        // 참여자 본인 확인
+        if (!groupBuyParticipant.getParticipant().getMemberNo().equals(participantNo)) {
+            System.out.println("참여자 불일치: 참여 정보의 회원번호(" +
+                    groupBuyParticipant.getParticipant().getMemberNo() +
+                    ")와 테스트 회원번호(" + participantNo + ")가 다릅니다.");
+
+            IllegalStateException exception = assertThrows(
+                    IllegalStateException.class,
+                    () -> periodGroupBuyService.editCancelParticipantGroupBuy(groupBuyParticipantNo, participantNo)
+            );
+            assertTrue(exception.getMessage().contains("본인의 참여 내역만 취소할 수 있습니다"),
+                    "본인 확인 예외 메시지가 포함되어야 합니다.");
+            System.out.println("예외 발생 확인: " + exception.getMessage());
+            return;
+        }
+
         // 이미 취소된 참여인지 확인
         if (groupBuyParticipant.getCancelDate() != null) {
             System.out.println("이미 취소된 참여입니다. 취소일: " + groupBuyParticipant.getCancelDate());
+
+            IllegalStateException exception = assertThrows(
+                    IllegalStateException.class,
+                    () -> periodGroupBuyService.editCancelParticipantGroupBuy(groupBuyParticipantNo, participantNo)
+            );
+            assertTrue(exception.getMessage().contains("이미 취소된 참여입니다"),
+                    "중복 취소 예외 메시지가 포함되어야 합니다.");
+            System.out.println("예외 발생 확인: " + exception.getMessage());
             return;
         }
+
         // 공동구매 상태 확인
         GroupBuy groupBuy = groupBuyParticipant.getGroupBuy();
         boolean isClosed = "closed".equals(groupBuy.getStatus());
 
         if (isClosed) {
-            //예외 케이스: 마감된 공동구매
+            // 예외 케이스: 마감된 공동구매
             System.out.println("공동구매 상태: " + groupBuy.getStatus());
 
             IllegalStateException exception = assertThrows(
                     IllegalStateException.class,
-                    () -> periodGroupBuyService.editCancelParticipantGroupBuy(groupBuyParticipantNo)
+                    () -> periodGroupBuyService.editCancelParticipantGroupBuy(groupBuyParticipantNo, participantNo)
             );
             assertTrue(exception.getMessage().contains("마감된 공동구매는 취소할 수 없습니다"),
                     "마감된 공동구매 예외 메시지가 포함되어야 합니다.");
@@ -343,15 +369,18 @@ public class PeriodGroupBuyServiceTests {
         } else {
             // 정상 케이스: 참여 취소 및 환불
             System.out.println("공동구매 상태: " + groupBuy.getStatus());
+
             // 취소 전 데이터
             int beforePoint = member.getPoint();
             int initialPaymentPoint = groupBuyParticipant.getInitialPaymentPoint();
             int expectedAfterPoint = beforePoint + initialPaymentPoint;
 
-            periodGroupBuyService.editCancelParticipantGroupBuy(groupBuyParticipantNo);
+            periodGroupBuyService.editCancelParticipantGroupBuy(groupBuyParticipantNo, participantNo);
+
             // 취소 일시 확인
             GroupBuyParticipant updatedParticipant = groupBuyParticipantRepository.findById(groupBuyParticipantNo).get();
             assertNotNull(updatedParticipant.getCancelDate(), "취소 일시가 설정되어야 합니다.");
+
             // 포인트 환불 확인
             Member updatedMember = memberRepository.findById(participantNo).get();
             assertEquals(expectedAfterPoint, updatedMember.getPoint(),
@@ -368,8 +397,9 @@ public class PeriodGroupBuyServiceTests {
 
     @Test
     void editPeriodCreatorCancelAndRefundTest() {
-        Integer groupBuyNo = 29;
-        String cancelReason = "고구마철이 끝났다고 합니다.";
+        Integer creatorMemberNo = 9;
+        Integer groupBuyNo = 28;
+        String cancelReason = "철이 끝났다고 합니다.";
         // 공동구매 존재 여부 확인
         GroupBuy groupBuy = groupBuyRepository.findById(groupBuyNo)
                 .orElseThrow(() -> new AssertionError("groupBuyNo: " + groupBuyNo + "가 존재하지 않습니다."));
@@ -388,7 +418,7 @@ public class PeriodGroupBuyServiceTests {
 
             IllegalStateException exception = assertThrows(
                     IllegalStateException.class,
-                    () -> periodGroupBuyService.editPeriodCreatorCancelAndRefund(groupBuyNo, cancelReason)
+                    () -> periodGroupBuyService.editPeriodCreatorCancelAndRefund(groupBuyNo, creatorMemberNo, cancelReason)
             );
             assertTrue(exception.getMessage().contains("이미 마감된 공동구매는 취소할 수 없습니다"),
                     "마감된 공동구매 예외 메시지가 포함되어야 합니다.");
@@ -421,7 +451,7 @@ public class PeriodGroupBuyServiceTests {
             System.out.println("환불 대상 참여자 수: " + beforePoints.size());
 
 
-            periodGroupBuyService.editPeriodCreatorCancelAndRefund(groupBuyNo, cancelReason);
+            periodGroupBuyService.editPeriodCreatorCancelAndRefund(groupBuyNo, creatorMemberNo, cancelReason);
             // 1. GroupBuy 상태 및 취소 사유 확인
             GroupBuy updatedGroupBuy = groupBuyRepository.findById(groupBuyNo).get();
             assertEquals("canceled", updatedGroupBuy.getStatus(), "GroupBuy 상태가 'canceled'여야 합니다.");

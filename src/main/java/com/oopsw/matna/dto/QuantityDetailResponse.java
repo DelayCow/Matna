@@ -19,6 +19,8 @@ public class QuantityDetailResponse {
     @Data
     @Builder
     public static class ParticipantInfo {
+        private Integer groupParticipantNo;
+        private Integer memberNo;
         private String nickname;
         private String profileUrl;
         private LocalDateTime participatedDate;

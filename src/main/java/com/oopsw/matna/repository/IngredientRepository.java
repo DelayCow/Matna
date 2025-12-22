@@ -6,6 +6,7 @@ import com.oopsw.matna.repository.entity.Ingredient;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,8 +16,6 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Integer>
     @EntityGraph(attributePaths = {"creator"})
     List<Ingredient> findByIngredientNameContaining(String keyword);
     List<Ingredient> findByIngredientNo(Integer ingredientNo);
-    @EntityGraph(attributePaths = {"creator"})
-    List<Ingredient> findAllByApproveDateIsNull();
     @EntityGraph(attributePaths = {"creator"})
     List<Ingredient> findAllByApproveDateIsNotNullAndDelDateIsNullOrderByIngredientNoDesc();
 
@@ -29,4 +28,6 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Integer>
     @EntityGraph(attributePaths = {"creator"})
     Optional<Ingredient> findById(Integer ingredientId);
 
+    @EntityGraph(attributePaths = {"creator"})
+    List<Ingredient> findAllByApproveDateIsNullAndDelDateIsNull();
 }
