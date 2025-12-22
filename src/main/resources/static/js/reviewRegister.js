@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function (){
             formData.append('reviewImage', photoFile);
         }
         // 8. 서버로 전송
-        fetch(`/api/reviews/${recipeNo}`, {
+        api.fetch(`/api/reviews/${recipeNo}`, {
             method: 'POST',
             body: formData
         })

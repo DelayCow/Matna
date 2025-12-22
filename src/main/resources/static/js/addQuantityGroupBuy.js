@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
     // ========== API 호출 함수 ==========
     async function getCurrentUser() {
-        const response = await fetch('/api/auth/currentUser', {
+        const response = await api.fetch('/api/auth/currentUser', {
             method: 'GET',
             credentials: 'include'
         });
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     function fetchSearchResults(query) {
-        fetch(`/api/ingredients/search?keyword=${encodeURIComponent(query)}`)
+        api.fetch(`/api/ingredients/search?keyword=${encodeURIComponent(query)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('재료 검색에 실패했습니다.');
@@ -371,7 +371,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         submitBtn.textContent = '등록 중...';
 
         try {
-            const response = await fetch('/api/quantityGroupBuy/register', {
+            const response = await api.fetch('/api/quantityGroupBuy/register', {
                 method: 'POST',
                 body: formData
             });
@@ -434,7 +434,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             addOtherItemBtn.addEventListener('click', function() {
                 const otherItem = document.getElementById('otherItem').value.trim();
                 if (otherItem) {
-                    fetch(`/api/ingredients/add?creatorNo=${currentMemberNo}&ingredientName=${encodeURIComponent(otherItem)}`, {
+                    api.fetch(`/api/ingredients/add?creatorNo=${currentMemberNo}&ingredientName=${encodeURIComponent(otherItem)}`, {
                         method: 'POST'
                     })
                         .then(response => {

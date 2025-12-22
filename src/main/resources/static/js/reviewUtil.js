@@ -2,7 +2,7 @@ import {debounce, fetchSearchResults} from "./searchIngredient.js";
 import {showAlertModal} from "./modal.js";
 export const removeReview = async function(reviewNo, recipeNo){
     try{
-        const response = await fetch(`/api/reviews/${reviewNo}`,{
+        const response = await api.fetch(`/api/reviews/${reviewNo}`,{
             method: 'DELETE'
         });
 
@@ -166,7 +166,7 @@ export const fetchRecipeData = function(recipeNo){
     const ingredientPart = document.getElementById('original-ingredients-list')
     const recipeInfo = document.querySelector('.recipe-info');
     let ingredientData = '';
-    return fetch(`/api/recipes/detail/${recipeNo}`)
+    return api.fetch(`/api/recipes/detail/${recipeNo}`)
         .then(response => {
             return response.json();
         }).then(data => {

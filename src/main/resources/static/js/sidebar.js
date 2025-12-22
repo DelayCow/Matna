@@ -4,15 +4,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     links.forEach(link => {
         const linkPage = link.getAttribute("href").split("/").pop();
-        console.log(currentPage)
-        console.log(linkPage)
         if (linkPage === currentPage) {
             link.classList.add("active");
         }
     });
 
     document.getElementById("logoutBtn").addEventListener("click", () => {
-        window.location.href = "/logout";
+        sessionStorage.removeItem("au");
+        location.href="/login"
     });
 
     loadNickname();
@@ -20,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 async function loadNickname() {
     try {
-        const res = await fetch("/api/manager/sidebar");
+        const res = await api.fetch("/api/manager/sidebar");
 
         if (!res.ok) {
             console.error("닉네임 요청 실패");
