@@ -17,9 +17,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         currentUser = await authResponse.json();
 
-        // memberNo 결정: URL에 있으면 사용, 없으면 현재 사용자
+
         memberNo = urlMemberNo || currentUser.memberNo;
-        // 로그인 한 사람의 마이페이지인지 확인
+        
         isOwner = currentUser.memberNo === memberNo;
 
     } catch (error) {
@@ -122,6 +122,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         const money = data.points || 0;
 
         if (isOwner && headerArea) {
+            headerArea.innerHTML = `<div class="position-relative"> <button class="btn p-0 border-0" id="headerMenuBtn">
+                <i class="bi bi-three-dots-vertical fs-4 text-dark"></i>
+            </button>
+            <ul class="custom-dropdown" id="headerDropdown">
+                <li><a href="#" id="btnEditInfo">정보 수정</a></li>
+                <li><a href="#" id="btnLogout">로그아웃</a></li>
+                <li><a href="#" id="removeMember" class="text-danger">탈퇴</a></li>
+            </ul>
+        </div>`;
 
             const btn = document.getElementById('headerMenuBtn');
             const dropdown = document.getElementById('headerDropdown');
@@ -149,12 +158,6 @@ document.addEventListener('DOMContentLoaded', async function() {
                 }
             });
 
-            headerArea.innerHTML = `<button class="btn p-0 border-0" id="headerMenuBtn"><i class="bi bi-three-dots-vertical fs-4 text-dark"></i></button>
-            <ul class="custom-dropdown" id="headerDropdown">
-                <li><a href="/mypage/${memberNo}/myinfoEdit">정보 수정</a></li>
-                <li><a href="#" id="logout">로그아웃</a></li>
-                <li><a id="removeMember" href="#" class="text-danger">탈퇴</a></li>
-            </ul>`;
         } else if (headerArea) { headerArea.innerHTML = ''; }
 
         let subInfo = isOwner
@@ -279,7 +282,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             <h5 class="card-title">${item.title}</h5>
             <div class="d-flex align-items-center mb-2">
                 <span class="text-warning me-1"><i class="bi bi-star-fill"></i></span>
-                <span class="fw-bold me-1">${item.rating}</span>
+                <span class="fw-bold me-1">${Number(item.rating).toFixed(1)}</span>
                 <span class="text-muted small">(${item.reviewCount || 0})</span>
                 ${kebabMenuHtml}
             </div>
@@ -345,6 +348,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         const detailUrl = `/review/detail/${reviewNo}`;
 
+
         return `
         <div class="review-card mb-4 col-12">
             <div class="card-img-wrap" onclick="location.href='${detailUrl}'" style="cursor: pointer;">
@@ -355,7 +359,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 
                 <div class="d-flex align-items-center mb-2">
                     <span class="text-warning me-1"><i class="bi bi-star-fill"></i></span>
-                    <span class="fw-bold me-2">${item.rating}</span>
+                    <span class="fw-bold me-2">${Number(item.rating).toFixed(1)}</span>
                     
                     </div>
 
@@ -373,6 +377,12 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     const createGroupCard = (item) => {
 
+        const cleanStatus = String(item.status).trim().toUpperCase();
+
+        if (cleanStatus === 'CANCELED') {
+            return '';
+        }
+
         const unit = item.unit || '';
         const currentStep = getStatusStep(item.status);
 
@@ -380,7 +390,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         const btnConfig = getButtonConfig(item.status, isHostTab);
 
-        // const btnConfig = getButtonConfig(item.status);
 
         let groupBuyType = 'QUANTITY';
         if (item.periodGroupBuyNo !== null && item.periodGroupBuyNo !== undefined) {
@@ -461,12 +470,22 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (item.receiveDate) buttonHtml = `<button class="btn btn-secondary btn-sm" disabled>수령 완료</button>`;
 
         let detailLink = null;
-        if (item.quantityGroupBuyNo == null && item.status === "open"){
-            detailLink = `/periodGroupBuy/detail/${item.periodGroupBuyNo}`;
+        let baseDetailUrl = '';
+
+        if (groupBuyType === 'PERIOD'){
+            baseDetailUrl = `/periodGroupBuy/detail/${item.periodGroupBuyNo}`;
+        } else {
+            baseDetailUrl = `/quantityGroupBuy/detail/${item.quantityGroupBuyNo}`;
         }
-        if (item.periodGroupBuyNo == null && item.status === "open") {
-            detailLink = `/quantityGroupBuy/detail/${item.quantityGroupBuyNo}`;
+
+
+        const isRecruiting = (cleanStatus === 'OPEN' || cleanStatus === 'RECRUITING');
+
+        if (isRecruiting || isHostTab) {
+            detailLink = baseDetailUrl;
         }
+
+        const clickAttr = detailLink ? `onclick="location.href='${detailLink}'" style="cursor: pointer;"` : '';
 
 
         return `<div class="group-card mb-3 p-3 border rounded bg-white shadow-sm">
@@ -706,7 +725,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.addEventListener('click', (e) => {
         const btn = e.target.closest('#headerMenuBtn');
         const menu = document.getElementById('headerDropdown');
-        const logout = e.target.closest('#logout')
+        const logoutBtn = e.target.closest('#btnLogout')
         const removebtn = e.target.closest('#removeMember');
         const recipeDeleteBtn = e.target.closest('.btn-delete');
 
@@ -715,10 +734,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         if(btn && menu) {
             e.stopPropagation();
             menu.classList.toggle('show');
-        }else if(logout){
+        }else if(logoutBtn){
             sessionStorage.removeItem("au");
             location.href="/login";
-        }else if(removebtn){
+        }
+
+        else if(removebtn){
             showRemoveMemberModal(memberNo);
             menu.classList.remove('show');
         }else if(recipeDeleteBtn) {
@@ -748,7 +769,11 @@ document.addEventListener('DOMContentLoaded', async function() {
             } catch (err) {
                 console.error("데이터 파싱 오류:", err);
             }
-        } else if(menu) {
+        } else if(logoutBtn){
+            e.preventDefault();
+            location.href = "/logout";
+        }
+        else if(menu) {
             menu.classList.remove('show');
         }
     });

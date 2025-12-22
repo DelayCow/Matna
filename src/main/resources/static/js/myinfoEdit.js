@@ -12,9 +12,43 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const pathParts = window.location.pathname.split('/');
     const urlMemberNo = pathParts[pathParts.length - 2] === 'mypage' ? null : parseInt(pathParts[pathParts.length - 2]);
-    // let memberNo = null;
+
 
     fetchMemberInfo(urlMemberNo);
+
+    const passwordInput = document.getElementById('password');
+    const confirmInput = document.getElementById('confirmPassword');
+    const pwMsg = document.getElementById('pwcheckmsg');
+
+    function checkPasswordMatch() {
+        const pw = passwordInput.value;
+        const confirmPw = confirmInput.value;
+
+
+        if (confirmPw === "") {
+            pwMsg.classList.add('d-none');
+            return;
+        }
+
+
+        pwMsg.classList.remove('d-none');
+
+        if (pw === confirmPw) {
+
+            pwMsg.innerText = "비밀번호가 일치합니다!";
+            pwMsg.classList.remove('text-danger');
+            pwMsg.classList.add('text-success');
+        } else {
+
+            pwMsg.innerText = "비밀번호가 일치하지 않습니다.";
+            pwMsg.classList.remove('text-success');
+            pwMsg.classList.add('text-danger');
+        }
+    }
+
+
+    passwordInput.addEventListener('input', checkPasswordMatch);
+    confirmInput.addEventListener('input', checkPasswordMatch);
 
     const addressBtn = document.getElementById('addressSearchBtn');
     if (addressBtn) {
@@ -26,16 +60,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const password = document.getElementById('password').value
         const confirmPassword = document.getElementById('confirmPassword').value
-        const msg = document.getElementById('pwcheckmsg').classList;
 
-        if (password != confirmPassword) {
-            msg.add('unavailable')
 
-            msg.remove('notshow');
-
-            document.getElementById('password').focus();
-
-            return;
+        if (password && password !== confirmPassword) {
+            alert("비밀번호가 일치하지 않습니다. 다시 확인해주세요.");
+            document.getElementById('confirmPassword').focus();
+            return; // 전송 중단
         }
         const formData = new FormData();
 

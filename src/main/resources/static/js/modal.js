@@ -392,8 +392,8 @@ export function showPasswordCheckModal(memberNo) {
                     <input type="password" class="form-control" id="modalPasswordInput" placeholder="비밀번호 입력">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
-                    <button type="button" class="btn btn-main-action" id="btnCheckPassword">확인</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-outline-primary btn-main-action" id="btnCheckPassword">확인</button>
                 </div>
             </div>
         </div>
