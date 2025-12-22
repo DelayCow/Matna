@@ -11,12 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.UUID;
+
 import java.util.stream.Collectors;
 
 @Service
@@ -286,7 +286,7 @@ public class MypageService {
     }
 
     @Transactional
-    public void addReportMember(AllReportVO vo) throws IOException { // IOException 추가 필수
+    public void addReportMember(AllReportVO vo) throws IOException {
 
 
         MultipartFile file = vo.getImageFile();
@@ -326,7 +326,7 @@ public class MypageService {
 
         if (file != null && !file.isEmpty()) {
             String path = imageStorageService.save(file, "report");
-            vo.setImageUrl(path); // 저장된 경로를 VO에 셋팅!
+            vo.setImageUrl(path);
         }
 
         Member reporter = memberRepository.findById(vo.getReporterNo())

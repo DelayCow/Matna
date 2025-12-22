@@ -25,14 +25,6 @@ public class MypageRestController {
 
     private final MypageService mypageService;
 
-//    // 개발용 가짜 로그인
-//    @GetMapping("/dev/login")
-//    public String devLogin(@RequestParam int memberNo, HttpSession session) {
-//
-//        session.setAttribute("loginMemberNo", memberNo);
-//
-//        return "개발용 로그인 완료! 현재 사용자 번호: " + memberNo;
-//    }
 
     @GetMapping("/{memberNo}/recipe")
     public List<RecipeListResponse> getMypageRecipeList(@PathVariable("memberNo") int memberNo) {
@@ -72,11 +64,6 @@ public class MypageRestController {
         return mypageService.getMypageReviewsList(memberNo);
     }
 
-//    @PostMapping("/{reviewNo}/review")
-//    public List<ReviewsListVO> removeReview(@PathVariable("reviewNo") int reviewNo) {
-//
-//        return mypageService.removeReviews(reviewNo);
-//    }
 
     @PostMapping("/groupbuy/shared")
     public void confirmShareReceive(@RequestBody GroupBuyParticipantVO sharedData) {
@@ -141,18 +128,6 @@ public class MypageRestController {
         return mypageService.getMemberInfo(memberNo);
     }
 
-//    @PutMapping("/{memberNo}/infoEdit")
-//    public ResponseEntity<String> updateProfile(
-//            @PathVariable("memberNo") int memberNo,
-//            @ModelAttribute MemberVO editData,
-//            @RequestParam(value = "profileImage", required = false) MultipartFile file) {
-//
-//        editData.setMemberNo(memberNo);
-//
-//        mypageService.updateMemberProfile(editData, file);
-//
-//        return ResponseEntity.ok("Success");
-//    }
 
     @GetMapping("/{memberNo}/infoEditFill")
     public ResponseEntity<MemberVO> getProfileData(@PathVariable int memberNo)
@@ -172,7 +147,7 @@ public class MypageRestController {
 
 
         if (principal==null) {
-            return ResponseEntity.status(401).body("로그인 하세여");
+            return ResponseEntity.status(401).body("로그인이 필요합니다.");
         }
 
         if (principal.getMemberNo() != memberNo) {

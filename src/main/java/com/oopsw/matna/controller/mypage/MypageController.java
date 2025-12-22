@@ -26,35 +26,12 @@ public class MypageController {
     }
 
 
-//    @GetMapping("/mypage/point/charge")
-//    public String pointChargePage(@AuthenticationPrincipal PrincipalDetails principalDetails,
-//                                  Model model) {
-//
-//        int memberNo = principalDetails.getMemberNo();
-//        MemberVO member = mypageService.getMemberInfo(memberNo);
-//
-//        model.addAttribute("member", member);
-//
-//        return "mypagePoint";
-//    }
-
     @GetMapping("/mypage/point/charge")
     public String mypagePointCharge() {
 
         return "mypagePoint";
     }
 
-
-
-//    @GetMapping("/mypage/{memberNo}/myinfoEdit")
-//    public String infoEdit (@PathVariable Integer memberNo, Model model) {
-//
-//        MemberVO member = mypageService.getMemberInfo(memberNo);
-//
-//        model.addAttribute("member", member);
-//
-//        return "myinfoEdit";
-//    }
 
     @GetMapping("/mypage/{memberNo}/myinfoEdit")
     public String myInfoEditPage(@PathVariable Integer memberNo) {
