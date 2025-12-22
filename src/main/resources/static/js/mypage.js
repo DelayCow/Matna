@@ -390,7 +390,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         const btnConfig = getButtonConfig(item.status, isHostTab);
 
-        // const btnConfig = getButtonConfig(item.status);
 
         let groupBuyType = 'QUANTITY';
         if (item.periodGroupBuyNo !== null && item.periodGroupBuyNo !== undefined) {
