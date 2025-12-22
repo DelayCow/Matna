@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 
     try {
-        const response = await fetch('/api/mypage/pointPageFill');
+        const response = await api.fetch('/api/mypage/pointPageFill');
 
         if (!response.ok) {
             if (response.status === 401) {
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             // URL 결정
             const url = isCharge ? '/api/mypage/point/charge' : '/api/mypage/point/refund';
 
-            fetch(url, {
+            api.fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(requestData)

@@ -274,7 +274,7 @@ export function showPaymentRegisterModal(item, onSuccess) {
         formData.append("description", descInput.value);
 
 
-        fetch('/api/mypage/payment/register', {
+        api.fetch('/api/mypage/payment/register', {
             method: 'POST',
             body: formData
         })
@@ -352,7 +352,7 @@ export function showArrivalRegisterModal(item, onSuccess) {
         formData.append("arrivalDate", fullDate);
 
         // 전송
-        fetch('/api/mypage/arrival/register', {
+        api.fetch('/api/mypage/arrival/register', {
             method: 'POST',
             body: formData
         })
@@ -417,7 +417,7 @@ export function showPasswordCheckModal(memberNo) {
         }
 
 
-        fetch('/api/mypage/checkModal/checkPassword', {
+        api.fetch('/api/mypage/checkModal/checkPassword', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -544,7 +544,7 @@ export function showReportModal(type, targetId, onSuccess) {
             formData.append("imageFile", fileInput.files[0]);
         }
 
-        fetch(apiUrl, {
+        api.fetch(apiUrl, {
             method: 'POST',
             body: formData
         })
@@ -572,7 +572,7 @@ export function showRemoveMemberModal(memberNo) {
     const msg = document.getElementById('remove-message');
     document.getElementById('removeMemberBtn').addEventListener('click',function (){
         const password = document.getElementById('password').value;
-        fetch('/api/mypage/checkModal/checkPassword',{
+        api.fetch('/api/mypage/checkModal/checkPassword',{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json' // 필수: 서버가 JSON임을 알게 함
@@ -588,7 +588,7 @@ export function showRemoveMemberModal(memberNo) {
                 msg.innerText = '비밀번호가 틀렸습니다. 확인 후 올바른 비밀번호를 입력해주세요.'
                 return
             }
-            fetch(`/api/mypage/remove/${memberNo}`, {
+            api.fetch(`/api/mypage/remove/${memberNo}`, {
                 method: 'DELETE'
             }).then(response => {
                 msg.innerText = '탈퇴 되었습니다.'

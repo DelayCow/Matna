@@ -38,9 +38,8 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
             Authentication auth = authenticationManager.authenticate(authRequest);
             return auth;
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("로그인 요청 데이터 파싱 실패: " + e.getMessage());
         }
-        return null;
     }
 
     @Override

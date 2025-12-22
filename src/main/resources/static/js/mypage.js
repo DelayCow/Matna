@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     let isOwner = false;
 
     try {
-        const authResponse = await fetch('/api/auth/currentUser');
+        const authResponse = await api.fetch('/api/auth/currentUser');
         if (!authResponse.ok) throw new Error('인증 정보를 가져올 수 없습니다.');
 
         currentUser = await authResponse.json();
@@ -185,12 +185,12 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         try {
             // 1. 참여 내역 가져오기 (필터 ALL)
-            const participateRes = await fetch(`/api/mypage/${memberNo}/groupBuy/participation?filter=ALL`);
+            const participateRes = await api.fetch(`/api/mypage/${memberNo}/groupBuy/participation?filter=ALL`);
             const participateData = await participateRes.json();
             const participateCount = participateData ? participateData.length : 0;
 
             // 2. 개설 내역 가져오기 (필터 ALL)
-            const hostRes = await fetch(`/api/mypage/${memberNo}/groupBuy/host?filter=ALL`);
+            const hostRes = await api.fetch(`/api/mypage/${memberNo}/groupBuy/host?filter=ALL`);
             const hostData = await hostRes.json();
             const hostCount = hostData ? hostData.length : 0;
 
@@ -216,7 +216,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
 
         try {
-            const response = await fetch(apiUrl, {
+            const response = await api.fetch(apiUrl, {
                 method: 'PUT', // 상세페이지 로직에 맞춰 PUT 사용
                 headers: {
                     'Content-Type': 'application/json'
@@ -299,7 +299,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     const removeRecipe = async function(recipeNo){
         try{
-            const response = await fetch(`/api/recipes/${recipeNo}`,{
+            const response = await api.fetch(`/api/recipes/${recipeNo}`,{
                 method: 'DELETE'
             });
 
@@ -502,10 +502,10 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 
     function fetchProfileData(memberNo) {
-        fetch(`/api/mypage/${memberNo}/profile`).then(res => res.json()).then(renderCommonArea).catch(console.error);
+        api.fetch(`/api/mypage/${memberNo}/profile`).then(res => res.json()).then(renderCommonArea).catch(console.error);
     }
-    const fetchRecipeData = (memberNo) => fetch(`/api/mypage/${memberNo}/recipe`).then(res => res.json());
-    const fetchReviewData = (memberNo) => fetch(`/api/mypage/${memberNo}/reviewList`).then(res => res.json());
+    const fetchRecipeData = (memberNo) => api.fetch(`/api/mypage/${memberNo}/recipe`).then(res => res.json());
+    const fetchReviewData = (memberNo) => api.fetch(`/api/mypage/${memberNo}/reviewList`).then(res => res.json());
 
     const fetchGroupData = async () => {
         const listEl = document.getElementById('group-list');
@@ -525,7 +525,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             const url = `${baseUrl}?filter=${currentFilterStatus}`;
 
 
-            const response = await fetch(url);
+            const response = await api.fetch(url);
             if (!response.ok) throw new Error("Network Error");
             const dataList = await response.json();
 
@@ -555,7 +555,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 e.preventDefault(); e.stopPropagation();
                 const item = JSON.parse(decodeURIComponent(shareBtn.getAttribute('data-item')));
                 showShareConfirmModal(item, (selectedDate) => {
-                    fetch(`/api/mypage/groupbuy/shared`, {
+                    api.fetch(`/api/mypage/groupbuy/shared`, {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({ groupParticipantNo: item.groupParticipantNo, receiveDate: selectedDate + "T00:00:00" })

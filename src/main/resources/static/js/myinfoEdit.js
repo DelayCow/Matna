@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const memberNo = document.getElementById('memberNo').value;
 
-        fetch(`/api/mypage/${memberNo}/infoEdit`, {
+        api.fetch(`/api/mypage/${memberNo}/infoEdit`, {
             method: 'PUT',
             body: formData
         })
@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // controller 기능 빼면서 생김
 function fetchMemberInfo(memberNo) {
 
-    fetch(`/api/mypage/${memberNo}/infoEditFill`)
+    api.fetch(`/api/mypage/${memberNo}/infoEditFill`)
         .then(response => {
             if (!response.ok) throw new Error('정보 불러오기 실패');
             return response.json();
