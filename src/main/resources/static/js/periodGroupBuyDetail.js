@@ -1,3 +1,4 @@
+import {showAlertModal} from "./modal.js";
 // 전역 변수
 let currentStatus = 'normal';
 let currentData = null;
@@ -324,7 +325,11 @@ const render = {
 // 카카오맵에서 주소 검색 (새 창 열기)
 function openKakaoMap(address) {
     if (!address) {
-        alert('주소 정보가 없습니다.');
+        showAlertModal(
+            '알림',
+            '주소 정보가 없습니다.',
+            'info'
+        );
         return;
     }
 
@@ -522,73 +527,90 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// 모달 액션 버튼 이벤트
+// === 모달 액션 버튼 이벤트 ===
 document.addEventListener('DOMContentLoaded', function() {
     const mainActionButton = document.getElementById('mainActionButton');
     if (!mainActionButton) return;
 
-    mainActionButton.addEventListener('click', async function() {
+    mainActionButton.addEventListener('click', function() {
         if (currentStatus === 'normal') {
-            if (confirm('공동구매에 참여하시겠습니까?')) {
-                try {
-                    const response = await fetchAPI.joinGroupBuy(groupBuyNo);
+            // 1. 일반 사용자: 참여 확인 모달
+            showAlertModal(
+                '참여 확인',
+                '공동구매에 참여하시겠습니까?',
+                'question',
+                async () => { // 확인 클릭 시 실행될 비동기 화살표 함수
+                    try {
+                        const response = await fetchAPI.joinGroupBuy(groupBuyNo);
 
-                    if (response.success) {
-                        alert(response.message);
-                        location.reload();
-                    } else {
-                        alert(response.message || '참여에 실패했습니다.');
+                        if (response.success) {
+                            showAlertModal('참여 완료', response.message, 'success', () => location.reload());
+                        } else {
+                            showAlertModal('참여 실패', response.message || '참여에 실패했습니다.', 'error');
+                        }
+                    } catch (error) {
+                        console.error('참여 오류:', error);
+                        showAlertModal('오류 발생', '참여 중 오류가 발생했습니다.', 'error');
                     }
-                } catch (error) {
-                    console.error('참여 오류:', error);
-                    alert('참여 중 오류가 발생했습니다.');
                 }
-            }
+            );
         } else if (currentStatus === 'participant') {
+            // 2. 참여자: 취소 로직
             if (!myGroupBuyParticipantNo) {
-                alert('참여 정보를 찾을 수 없습니다.');
+                showAlertModal('알림', '참여 정보를 찾을 수 없습니다.', 'info');
                 return;
             }
 
-            if (confirm('정말 참여를 취소하시겠습니까?')) {
-                try {
-                    const response = await fetchAPI.cancelParticipation(myGroupBuyParticipantNo);
+            // 취소 확인 모달
+            showAlertModal(
+                '취소 확인',
+                '정말 참여를 취소하시겠습니까?',
+                'warning',
+                async () => {
+                    try {
+                        const response = await fetchAPI.cancelParticipation(myGroupBuyParticipantNo);
 
-                    if (response.success) {
-                        alert(response.message);
-                        location.reload();
-                    } else {
-                        alert(response.message || '취소에 실패했습니다.');
+                        if (response.success) {
+                            showAlertModal('취소 완료', response.message, 'success', () => location.reload());
+                        } else {
+                            showAlertModal('취소 실패', response.message || '취소에 실패했습니다.', 'error');
+                        }
+                    } catch (error) {
+                        console.error('취소 오류:', error);
+                        showAlertModal('오류 발생', '취소 중 오류가 발생했습니다.', 'error');
                     }
-                } catch (error) {
-                    console.error('취소 오류:', error);
-                    alert('취소 중 오류가 발생했습니다.');
                 }
-            }
+            );
         } else if (currentStatus === 'creator') {
+            // 3. 개설자: 중단 로직
             const reasonTextarea = document.getElementById('cancelReasonTextarea');
             const reason = reasonTextarea?.value.trim();
 
             if (!reason) {
-                alert('중단 사유를 입력해주세요.');
+                showAlertModal('알림', '중단 사유를 입력해주세요.', 'info');
                 return;
             }
 
-            if (confirm('공동구매를 중단하시겠습니까?')) {
-                try {
-                    const response = await fetchAPI.stopGroupBuy(groupBuyNo, reason);
+            // 중단 확인 모달
+            showAlertModal(
+                '중단 확인',
+                '공동구매를 중단하시겠습니까?',
+                'warning',
+                async () => {
+                    try {
+                        const response = await fetchAPI.stopGroupBuy(groupBuyNo, reason);
 
-                    if (response.success) {
-                        alert(response.message);
-                        location.reload();
-                    } else {
-                        alert(response.message || '중단에 실패했습니다.');
+                        if (response.success) {
+                            showAlertModal('중단 완료', response.message, 'success', () => location.reload());
+                        } else {
+                            showAlertModal('중단 실패', response.message || '중단에 실패했습니다.', 'error');
+                        }
+                    } catch (error) {
+                        console.error('중단 오류:', error);
+                        showAlertModal('오류 발생', '중단 중 오류가 발생했습니다.', 'error');
                     }
-                } catch (error) {
-                    console.error('중단 오류:', error);
-                    alert('중단 중 오류가 발생했습니다.');
                 }
-            }
+            );
         }
     });
 });
