@@ -5,96 +5,92 @@
   <title>내 정보 수정</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
   <link rel="stylesheet" href="/css/login.css">
-</head>
+  <link rel="stylesheet" href="/css/layout.css"> </head>
 <body>
-<div class="mobile-container position-relative d-flex flex-column align-items-center justify-content-center">
-  <div class="text-center mb-5">
-    <h2>내 정보 수정</h2>
+
+<div class="mobile-container position-relative">
+
+
+  <header th:replace="layout :: pageHeader('내 정보 수정', 'javascript:history.back()')"></header>
+
+  <div class="flex-grow-1 overflow-y-auto p-3 scrollbar-hide">
+    <form id="editForm">
+      <input type="hidden" id="memberNo">
+
+      <div class="mb-4 text-center">
+        <div class="profile-section">
+          <div class="profile-image-circle">
+            <img id="profileImage" class="rounded-circle mb-3 border" alt="프로필 사진" style="width:120px; height:120px; object-fit: cover;" src="/img/user.png">
+          </div>
+          <div class="profile-buttons d-flex gap-2 justify-content-center">
+            <button type="button" class="btn btn-outline-secondary btn-sm flex-grow-1" id="editProfileBtn">수정</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm flex-grow-1" id="deleteProfileBtn">기본 이미지</button>
+            <input type="file" id="profileFileUpload" accept="image/*" style="display:none;">
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-2">
+        <label for="memberId" class="form-label fw-bold">아이디</label>
+        <input type="text" class="form-control" id="memberId" name="memberId" readonly>
+      </div>
+
+      <div class="mb-2">
+        <label for="password" class="form-label fw-bold">비밀번호 변경</label>
+        <input type="password" class="form-control" id="password" name="password" placeholder="새로운 비밀번호">
+      </div>
+
+      <div>
+        <label for="confirmPassword" class="form-label fw-bold">비밀번호 확인</label>
+        <input type="password" class="form-control" id="confirmPassword" placeholder="비밀번호 확인">
+      </div>
+      <small id="pwcheckmsg" class="d-none fw-bold"></small>
+
+      <div class="mb-2">
+        <label for="nickname" class="form-label fw-bold">닉네임</label>
+        <div class="d-flex">
+          <input type="text" class="form-control min me-2" id="nickname" name="nickname" required>
+          <button class="btn btn-outline-secondary text-nowrap" id="nicknameCheck" type="button">중복확인</button>
+        </div>
+        <small id="nicknamecheckmsg" class="notshow d-block"></small>
+      </div>
+
+      <div class="mb-2">
+        <label for="bank" class="form-label fw-bold">은행</label>
+        <select class="form-select" id="bank" name="bank" required>
+          <option value="" disabled selected>은행 선택</option>
+        </select>
+      </div>
+
+      <div class="mb-2">
+        <label for="accountNumber" class="form-label fw-bold">계좌번호</label>
+        <input type="text" class="form-control" id="accountNumber" name="accountNumber" required>
+      </div>
+
+      <div class="mb-2">
+        <label for="accountName" class="form-label fw-bold">예금주명</label>
+        <input type="text" class="form-control" id="accountName" name="accountName" required>
+      </div>
+
+      <div class="mb-4">
+        <label for="address" class="form-label fw-bold">주소</label>
+        <div class="input-group">
+          <input type="text" class="form-control me-2 bg-white" id="address" name="address" required readonly>
+          <button class="btn btn-outline-secondary" type="button" id="addressSearchBtn" style="border-radius: 8px;">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </div>
+
+      <button id="register-btn" class="btn btn-primary btn-register-link w-100 mb-3">수정 완료</button>
+    </form>
   </div>
 
-  <form id="editForm">
+  <div th:replace="layout :: menuBar"></div>
+  </div>
 
-    <input type="hidden" id="memberNo" >
-
-    <div class="mb-4">
-      <label class="form-label fw-bold">프로필 사진</label>
-      <div class="profile-section">
-        <div class="profile-image-circle" >
-
-          <img id="profileImage" class="rounded-circle m-3" alt="프로필 사진" style="width:120px; height:120px; object-fit: cover;">
-        </div>
-        <div class="profile-buttons">
-          <button type="button" class="btn btn-outline-secondary btn-sm" id="editProfileBtn">수정</button>
-          <button type="button" class="btn btn-outline-secondary btn-sm" id="deleteProfileBtn">기본 이미지로 변경</button>
-          <input type="file" id="profileFileUpload" accept="image/*" style="display:none;">
-        </div>
-      </div>
-    </div>
-
-    <div>
-      <label for="memberId" class="form-label fw-bold">아이디</label>
-      <input type="text" class="form-control" id="memberId" name="memberId" readonly>
-
-    </div>
-
-    <div class="mt-2 mb-2">
-      <label for="password" class="form-label fw-bold">비밀번호 변경</label>
-      <input type="password" class="form-control" id="password" name="password" placeholder="새로운 비밀번호를 입력하세요">
-    </div>
-    <div>
-      <label for="confirmPassword" class="form-label fw-bold">비밀번호 확인</label>
-      <input type="password" class="form-control" id="confirmPassword" placeholder="비밀번호를 한번더 입력하세요">
-    </div>
-    <small id="pwcheckmsg" class="notshow text-danger">비밀번호가 일치하지 않습니다</small>
-
-    <div class="mt-2">
-      <label for="nickname" class="form-label fw-bold">닉네임</label>
-      <div class="d-flex">
-        <input type="text" class="form-control min me-2" id="nickname" name="nickname" required>
-
-        <button class="btn btn-outline-secondary" id="nicknameCheck" type="button">중복확인</button>
-      </div>
-    </div>
-    <small id="nicknamecheckmsg" class="notshow"></small>
-
-    <div class="mt-2 mb-2">
-      <label for="bank" class="form-label fw-bold">은행</label>
-
-      <select class="form-select" id="bank" name="bank" required>
-        <option value="" disabled selected>은행 선택</option>
-      </select>
-    </div>
-
-    <div class="mb-2">
-      <label for="accountNumber" class="form-label fw-bold">계좌번호</label>
-      <input type="text" class="form-control" id="accountNumber" name="accountNumber" required>
-
-    </div>
-
-    <div class="mb-2">
-      <label for="accountName" class="form-label fw-bold">예금주명</label>
-      <input type="text" class="form-control" id="accountName" name="accountName" required>
-
-    </div>
-
-    <div class="mb-5">
-      <label for="address" class="form-label fw-bold">주소</label>
-      <div class="input-group">
-        <input type="text" class="form-control me-2 bg-white" id="address" name="address" required readonly>
-
-        <button class="btn btn-outline-secondary" type="button" id = "addressSearchBtn" style="border-radius: 8px;" >
-          <i class="bi bi-search"></i>
-        </button>
-      </div>
-    </div>
-
-  </form>
-  <div class="d-flex justify-content-center mt-4">
-
-  <button id="register-btn" class="btn btn-primary btn-register-link w-100">수정 완료</button>
-
-</div>
 </div>
 
 <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>

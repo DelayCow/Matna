@@ -234,11 +234,11 @@ const render = {
 
         const shareDateEl = document.getElementById('data-buy-date');
         if (shareDateEl) {
-            shareDateEl.textContent = `상품 수령 후 수령일포함 ${detail.shareEndDate || '?'}일 뒤 ${detail.shareTime || ''}`;
+            shareDateEl.textContent = `모집 마감 후 ${detail.buyEndDate || '?'}일 이내`;
         }
         const buyDateEl = document.getElementById('data-share-date');
         if (buyDateEl) {
-            buyDateEl.textContent = `모집 마감 후 ${detail.buyEndDate || '?'}일 이내`;
+            buyDateEl.textContent = `상품 수령 후 수령일포함 ${detail.shareEndDate || '?'}일 뒤 ${detail.shareTime || ''}`
         }
     },
 

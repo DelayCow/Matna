@@ -3,6 +3,7 @@ package com.oopsw.matna.vo;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Builder
 @Data
@@ -31,6 +32,7 @@ public class QuantityGroupBuyDetailVO {
     private String shareDetailAddress;
     private Integer buyEndDate;
     private Integer shareEndDate;
+    private LocalTime shareTime;
     private String status;
 
     // 가격/수량 정보
