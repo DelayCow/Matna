@@ -6,12 +6,12 @@ let groupBuyNo = null;
 
 const normalBtn = document.querySelector('.normal-btn');
 const participantBtn = document.querySelector('.participant-btn');
-const creatorRunningBtn = document.querySelector('.creator-running-btn');
+const creatorStoppedBtn = document.querySelector('.creator-stopped-btn');
 
 // 상태에 따른 버튼 표시
 function showBtnByStatus(status) {
 
-    const allBtns = [normalBtn, participantBtn, creatorRunningBtn];
+    const allBtns = [normalBtn, participantBtn, creatorStoppedBtn];
 
     allBtns.forEach(btn => {
         if (btn) {
@@ -31,8 +31,8 @@ function showBtnByStatus(status) {
             }
             break;
         case 'creator':
-            if (creatorRunningBtn) {
-                creatorRunningBtn.classList.remove('d-none');
+            if (creatorStoppedBtn) {
+                creatorStoppedBtn.classList.remove('d-none');
             }
             break;
     }
@@ -484,7 +484,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const totalPrice = detail.price || 0;
                 const feeRate = detail.feeRate || 0;
                 const totalWithFee = totalPrice * (1 + feeRate / 100);
-                const estimatedAmount = Math.round(totalWithFee / (currentCount + 1));
+                const estimatedAmount = Math.round(totalWithFee / 2);
 
                 document.getElementById('personCount').textContent = currentCount;
                 document.getElementById('amountValue').textContent = estimatedAmount.toLocaleString();
