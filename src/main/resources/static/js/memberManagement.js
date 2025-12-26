@@ -1,4 +1,4 @@
-// memberManagement.js - 회원 관리 전용 통합 코드
+import {showAlertModal} from './modal.js';
 
 const tableBody = document.getElementById("memberManagement");
 const titleInput = document.querySelector('.search-box input[type="text"]');
@@ -13,12 +13,13 @@ let originalData = [];  // 서버에서 받은 원본 데이터 저장 (캐시 �
 function renderRow(member) {
     // banDate 표시용 포맷 (있을 때만)
     const banInfo = member.banDate ? new Date(member.banDate).toLocaleString() : "-";
-
+    const statusText = member.accountStatus === "ban" ? "정지" : "활성";
+    const statusClass = member.accountStatus === "ban" ? "text-danger fw-bold" : "text-success";
     return `
         <tr data-id="${member.memberNo}">
             <td>${escapeHtml(member.nickname ?? "")}</td>
             <td>${escapeHtml(member.memberId ?? "")}</td>
-            <td>${escapeHtml(member.accountStatus ?? "")}</td>
+            <td class="${statusClass}">${escapeHtml(statusText)}</td>
             <td>
                 <div class="d-flex gap-2 align-items-center">
                     <select class="form-select ban-select" id="select-${member.memberNo}">
@@ -29,9 +30,9 @@ function renderRow(member) {
                         <option value="30">30일 정지</option>
                         <option value="9999">영구정지</option>
                     </select>
-                    <button class="btn btn-danger btn-sm" onclick="applyBan(${member.memberNo})">확인</button>
+                    <button class="btn btn-danger btn-sm ban-btn" data-member-no="${member.memberNo}">확인</button>
                 </div>
-                <div class="small text-muted mt-1">정지일: ${escapeHtml(banInfo)}</div>
+                <div class="small text-muted mt-1">최근 정지일: ${escapeHtml(banInfo)}</div>
             </td>
         </tr>
     `;
@@ -80,7 +81,6 @@ async function loadMemberList() {
         // 쿼리 스트링 붙여서 요청
         const res = await api.fetch(`/api/manager/memberManagement?${params}`);
         if (!res.ok) {
-            // 서버가 4xx/5xx를 내려주면 메시지 출력
             const text = await res.text().catch(() => null);
             throw new Error(text || "데이터 조회 실패");
         }
@@ -91,8 +91,6 @@ async function loadMemberList() {
 
     } catch (err) {
         console.error("loadMemberList 오류:", err);
-        // 사용자에게 알림 (선택)
-        alert("회원 목록 조회 중 오류가 발생했습니다. 콘솔을 확인하세요.");
     }
 }
 
@@ -103,13 +101,17 @@ async function applyBan(memberNo) {
     try {
         const select = document.querySelector(`#select-${memberNo}`);
         if (!select) {
-            alert("정지 기간 선택 요소를 찾을 수 없습니다.");
+            console.log("정지 기간 선택 요소를 찾을 수 없습니다.");
             return;
         }
 
         const days = Number(select.value);
         if (!days) {
-            alert("정지 기간을 선택하세요.");
+            showAlertModal(
+                '회원 정지',
+                '정지 기간을 선택하세요.',
+                'error',
+            );
             return;
         }
 
@@ -151,14 +153,29 @@ async function applyBan(memberNo) {
             target.banDate = banDate;
         }
 
-        alert("정지가 적용되었습니다.");
+        showAlertModal(
+            '회원 정지',
+            '정지 처리되었습니다.',
+            'success',
+        );
 
     } catch (err) {
         console.error("applyBan 오류:", err);
-        alert("정지 적용 중 오류가 발생했습니다.");
+        showAlertModal(
+            '회원 정지',
+            '정지 적용 중 오류가 발생했습니다.',
+            'error',
+        );
     }
 }
 
+
+tableBody.addEventListener("click", (e) => {
+    if (e.target.classList.contains("ban-btn")) {
+        const memberNo = Number(e.target.dataset.memberNo);
+        applyBan(memberNo);
+    }
+});
 // --------------------------
 // 7) 검색/날짜 변경 이벤트 (서버 필터링 사용)
 // --------------------------
