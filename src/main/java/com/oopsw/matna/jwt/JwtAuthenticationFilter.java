@@ -56,7 +56,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String redirectUrl;
 
         if (role.equals("ROLE_ADMIN")) {
-            redirectUrl = "/manager/ingredientManagement";
+            redirectUrl = "/manager/memberManagement";
         } else {
             redirectUrl = "/";
         }

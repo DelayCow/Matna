@@ -20,3 +20,6 @@ table {
 .table thead th {
     background: #f8f9fa;
 }
+.btn{
+    width: 70px;
+}

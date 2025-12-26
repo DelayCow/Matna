@@ -8,26 +8,23 @@
 </head>
 <body>
 
-<div class="sidebar d-flex flex-column bg-white border-end p-4">
-
-    <!-- 프로필 -->
-    <div class="text-center mb-4 profile-area">
+<div th:fragment="sideBar" class="sidebar d-flex flex-column bg-white border-end p-4">
+    <div class="text-center profile-area">
         <img src="/img/matna_logo2.png" class="rounded-circle mb-2 profile-img" alt="프로필">
-        <h5 id="nickname" class="fw-semibold"></h5>
+        <div id="nickname" class="fw-semibold"></div>
     </div>
 
-    <!-- 메뉴 -->
     <ul class="nav flex-column mb-auto">
-        <li class="nav-item mb-2">
+        <li class="nav-item">
             <a class="nav-link sidebar-link" href="/manager/memberManagement">유저 관리</a>
         </li>
-        <li class="nav-item mb-2">
+        <li class="nav-item">
             <a class="nav-link sidebar-link" href="/manager/groupBuyManagement">공구 관리</a>
         </li>
-        <li class="nav-item mb-2">
+        <li class="nav-item">
             <a class="nav-link sidebar-link" href="/manager/reportManagement">신고 관리</a>
         </li>
-        <li class="nav-item mb-2">
+        <li class="nav-item">
             <a class="nav-link sidebar-link" href="/manager/ingredientManagement">재료 관리</a>
         </li>
     </ul>

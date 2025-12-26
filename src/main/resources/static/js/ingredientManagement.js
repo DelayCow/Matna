@@ -1,4 +1,5 @@
-// ingredient-management.js (덮어쓰기)
+import {showAlertModal} from './modal.js';
+
 const searchInput = document.getElementById("search");
 const newIngredientInput = document.getElementById("newIngredient");
 const addBtn = document.querySelector(".add-btn");
@@ -55,42 +56,67 @@ ingredientTable.addEventListener("click", (e) => {
     const tr = btn.closest("tr");
     const id = tr?.dataset?.id;
     if (btn.classList.contains("btn-delete")) {
-        if (confirm("정말 삭제하시겠습니까?")) {
-            api.fetch(`/api/manager/ingredientManagement?ingredientId=${id}`, { method: "DELETE" })
-                .then(res => {
-                    if (!res.ok) throw new Error("삭제 실패");
-                    tr.remove();
-                })
-                .catch(err => alert("삭제 실패: " + err.message));
-        }
+        showAlertModal(
+            '재료 삭제',
+            '정말 삭제하시겠습니까?',
+            'error',
+            ()=>removeIngredient(tr, id)
+        );
+
     }
 });
+const removeIngredient = function (tr, id){
+    api.fetch(`/api/manager/ingredientManagement?ingredientId=${id}`, { method: "DELETE" })
+        .then(res => {
+            if (!res.ok) throw new Error("삭제 실패");
+            tr.remove();
+        })
+        .catch(err =>
+            showAlertModal(
+                '삭제 실패',
+                "삭제 실패: " + err.message,
+                'error',
+            )
+        );
+}
+const confirmIngredient = function (tr, id){
+    api.fetch(`/api/manager/ingredientManagement?ingredientId=${id}`, { method: "PUT" })
+        .then(res => {
+            if (!res.ok) throw new Error("승인 실패");
+            // 승인되면 행을 승인 테이블로 이동 (간단 처리: 페이지에서 제거 후 재로딩하거나 행 이동)
+            tr.remove();
+            loadApprovedIngredients();
+        })
+        .catch(err => {
+            showAlertModal(
+                '재료 승인',
+                '승인 실패:' + err.message,
+                'info',
+                ()=>confirmIngredient(tr, id)
+            );
+        }
 
+        );
+}
 newIngredientTable.addEventListener("click", (e) => {
     const btn = e.target.closest("button");
     if (!btn) return;
     const tr = btn.closest("tr");
     const id = tr?.dataset?.id;
     if (btn.classList.contains("btn-approve")) {
-        if (confirm("승인하시겠습니까?")) {
-            api.fetch(`/api/manager/ingredientManagement?ingredientId=${id}`, { method: "PUT" })
-                .then(res => {
-                    if (!res.ok) throw new Error("승인 실패");
-                    // 승인되면 행을 승인 테이블로 이동 (간단 처리: 페이지에서 제거 후 재로딩하거나 행 이동)
-                    tr.remove();
-                    // 선택적으로 재로딩: loadApprovedIngredients();
-                })
-                .catch(err => alert("승인 실패: " + err.message));
-        }
+        showAlertModal(
+            '재료 승인',
+            '승인하시겠습니까?',
+            'info',
+            ()=>confirmIngredient(tr, id)
+        );
     } else if (btn.classList.contains("btn-delete")) {
-        if (confirm("정말 삭제하시겠습니까?")) {
-            api.fetch(`/api/manager/ingredientManagement?ingredientId=${id}`, { method: "DELETE" })
-                .then(res => {
-                    if (!res.ok) throw new Error("삭제 실패");
-                    tr.remove();
-                })
-                .catch(err => alert("삭제 실패: " + err.message));
-        }
+        showAlertModal(
+            '재료 삭제',
+            '정말 삭제하시겠습니까?',
+            'error',
+            ()=>removeIngredient(tr, id)
+        );
     }
 });
 
@@ -104,7 +130,11 @@ searchInput.addEventListener("input", () => {
 // --- 추가 버튼: 서버에 POST 요청 보내기 예시 ---
 addBtn.addEventListener("click", () => {
     const value = newIngredientInput.value.trim();
-    if (!value) { alert("재료명을 입력하세요."); return; }
+    if (!value) { showAlertModal(
+        '재료 등록',
+        '재료명을 입력하세요',
+        'info'
+    ); return;}
     // 예: creatorId는 현재 로그인된 유저 id로 대체해야 함. 여기선 예시 1 사용.
     const creatorId = 1;
     api.fetch(`/api/manager/ingredientManagement?creatorId=${creatorId}&ingredientName=${encodeURIComponent(value)}`, {
@@ -118,13 +148,19 @@ addBtn.addEventListener("click", () => {
             // 서버가 바로 approveDate를 채우지 않는다면 새 행은 승인 대기 테이블로 올라가야 함.
             // 만약 서버에서 approveDate가 null이면 notApprovedTable에 넣기
             if (item.approveDate) {
-                ingredientTable.insertAdjacentHTML('beforeend', renderApprovedRow(item));
+                ingredientTable.insertAdjacentHTML('afterbegin', renderApprovedRow(item));
             } else {
-                newIngredientTable.insertAdjacentHTML('beforeend', renderNotApprovedRow(item));
+                newIngredientTable.insertAdjacentHTML('afterbegin', renderNotApprovedRow(item));
             }
             newIngredientInput.value = "";
         })
-        .catch(err => alert("추가 실패: " + err.message));
+        .catch(err => {
+            showAlertModal(
+                '재료 등록',
+                "등록 실패: " + err.message,
+                'info'
+            )
+        });
 });
 
 // --- 데이터 로드 함수들 (통합된 DOMContentLoaded 내부에서 실행) ---
@@ -211,19 +247,11 @@ modalSearchInput.addEventListener("input", () => {
                 document.getElementById("approvedMark").classList.remove("d-none");
             });
 
-            modalIngredientList.appendChild(li);
+            modalIngredientList.prepend(li);
         }
     });
 });
-
-document.getElementById("confirmChangeBtn").addEventListener("click", async () => {
-    if (!selectedIngredientId || !changeIngredientId) {
-        alert("변경할 재료를 선택해주세요.");
-        return;
-    }
-
-    if (!confirm("정말 재료를 변경하시겠습니까?")) return;
-
+const editIngredient = async function (){
     try {
         const res = await api.fetch(
             `/api/manager/ingredientManagement/change?ingredientNo=${selectedIngredientId}&newIngredientNo=${changeIngredientId}`,
@@ -231,9 +259,11 @@ document.getElementById("confirmChangeBtn").addEventListener("click", async () =
         );
 
         if (!res.ok) throw new Error("변경 실패");
-
-        alert("재료가 변경되었습니다.");
-        modal.hide();
+        showAlertModal(
+            '재료 변경',
+            '재료가 변경되었습니다.',
+            'success',
+        );
 
         await Promise.all([
             loadApprovedIngredients(),
@@ -241,6 +271,29 @@ document.getElementById("confirmChangeBtn").addEventListener("click", async () =
         ]);
 
     } catch (err) {
-        alert(err.message);
+        showAlertModal(
+            '재료 변경',
+            '재료 변경 중 오류:' + err.message,
+            'error',
+        );
     }
+}
+document.getElementById("confirmChangeBtn").addEventListener("click", async () => {
+    if (!selectedIngredientId || !changeIngredientId) {
+        modal.hide();
+        showAlertModal(
+            '재료 변경',
+            '변경할 재료를 선택해주세요.',
+            'error',
+        );
+        return;
+    }
+    modal.hide();
+    showAlertModal(
+        '재료 변경',
+        '정말 재료를 변경하시겠습니까?',
+        'error',
+        () => editIngredient()
+    );
+
 });

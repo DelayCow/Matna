@@ -29,7 +29,7 @@ async function loadNickname() {
         const nickname = await res.text();  // ← JSON 아니고 문자열이니까 text()
 
         const nickEl = document.getElementById("nickname");
-        nickEl.textContent = nickname;
+        nickEl.textContent = nickname + '님, 환영합니다.';
 
     } catch (err) {
         console.error("에러:", err);
