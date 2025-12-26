@@ -1,6 +1,7 @@
+import {showAlertModal} from "./modal.js";
 document.addEventListener("DOMContentLoaded", () => {
 
-    const tableBody = document.querySelector(".table-content tbody");
+    const tableBody = document.querySelector("#reportManagement");
 
     const startDateInput = document.getElementById("startDate");
     const endDateInput = document.getElementById("endDate");
@@ -43,10 +44,15 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         list.forEach((item) => {
+            const statusMap = {
+                WIP: "진행중",
+                rejection: "반려",
+                complete: "완료"
+            }
             const row = `
                 <tr data-id="${item.managerReportId}">
                     <td>${item.managerReportId}</td>
-                    <td><span class="btn btn-sm ${statusColor(item.status)}">${item.status}</span></td>
+                    <td><span class="badge ${statusColor(item.status)}">${statusMap[item.status]}</span></td>
                     <td>${formatDate(item.reportedDate)}</td>
                     <td>${item.reporterName ?? "-"}</td>
                     <td>${shorten(item.reason)}</td>
@@ -62,10 +68,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // 상태 색상
     function statusColor(status) {
         switch (status) {
-            case "진행중": return "btn-danger";
-            case "반려": return "btn-warning";
-            case "완료": return "btn-success";
-            default: return "btn-secondary";
+            case "WIP": return "bg-danger text-white";
+            case "rejection": return "bg-warning text-dark";
+            case "complete": return "bg-success text-white";
+            default: return "bg-secondary";
         }
     }
 
@@ -236,12 +242,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 method: "PUT"
             });
 
-            alert("처리 완료되었습니다.");
+            showAlertModal(
+                '신고 처리',
+                '처리 완료되었습니다.',
+                'success',
+            )
             reportDetailModal.hide();
             loadReportData(); // 테이블 최신화
         } catch (e) {
             console.error(e);
-            alert("처리 실패");
+            showAlertModal(
+                '신고 처리',
+                '네트워크 오류가 발생하였습니다.',
+                'error',
+            )
         }
     });
 
@@ -253,12 +267,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 method: "PUT"
             });
 
-            alert("반려되었습니다.");
+            showAlertModal(
+                '신고 처리',
+                '반려되었습니다.',
+                'success',
+            )
             reportDetailModal.hide();
             loadReportData();
         } catch (e) {
             console.error(e);
-            alert("처리 실패");
+            showAlertModal(
+                '신고 처리',
+                '네트워크 오류가 발생하였습니다.',
+                'error',
+            )
         }
     });
 

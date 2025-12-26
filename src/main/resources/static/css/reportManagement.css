@@ -1,16 +1,11 @@
 body {
     background-color: #f2f2f2;
-    padding: 20px;
 }
 .content {
     margin-left: 240px;
 }
-.table-content {
-    background-color: #fff;
-}
 .search-section {
-    margin-bottom: 20px;
+    background: #fff;
     padding: 20px;
-    background-color: #fff;
     border-radius: 8px;
 }

@@ -131,7 +131,7 @@ tableBody.addEventListener("click", (e) => {
             location.href = `/quantityGroupBuy/detail/${qtyNo}`;
         }
         else {
-            alert("상세 정보를 찾을 수 없습니다.");
+            console.log("상세 정보를 찾을 수 없습니다.");
         }
 
         return;
