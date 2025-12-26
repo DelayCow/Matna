@@ -1,6 +1,7 @@
+import {showAlertModal} from "./modal.js";
 
 const tableBody = document.getElementById("groupBuyManagement");
-const statusButtons = document.querySelectorAll(".search-box .btn-outline-secondary, .search-box .btn-outline-danger");
+const statusButtons = document.querySelectorAll(".search-box button[value]");
 const titleInput = document.querySelector('.search-box input[type="text"]');
 const dateInputs = document.querySelectorAll('.search-box input[type="date"]');
 const caseInput = document.querySelector(".form-select")
@@ -12,16 +13,24 @@ let originalData = [];  // 원본 데이터 저장
 // 1) Row 렌더링 (HTML 문자열)
 // ==========================
 function renderRow(item) {
-    const badgeClass = item.status === "canceled" ? "bg-danger" : "bg-secondary";
-
+    const statusMap = {
+        open: { class: "bg-info text-white", text: "모집중" },
+        closed: { class: "bg-warning text-dark", text: "모집완료" },
+        paid: { class: "bg-warning text-dark", text: "결제완료" },
+        delivered: { class: "bg-warning text-dark", text: "도착완료" },
+        shared: { class: "bg-success text-white", text: "나눔완료" },
+        canceled: { class: "bg-danger text-white", text: "중단" }
+    };
+    const statusInfo = statusMap[item.status] || { class: "bg-secondary text-white", text: item.status };
+    const groupBuyCase = item.groupBuyCase === "period" ? "기간공구" : "수량공구";
     return `
         <tr data-id="${item.groupBuyNo}" data-qty="${item.quantityGroupBuyNo}" data-period="${item.periodGroupBuyNo}">
             <td>${item.groupBuyNo}</td>
-            <td><span class="badge ${badgeClass}">${item.status}</span></td>
+            <td><span class="badge ${statusInfo.class}">${statusInfo.text}</span></td>
             <td>${item.inDate ?? ""}</td>
             <td>${item.creatorName ?? ""}</td>
             <td>${item.title ?? ""}</td>
-            <td>${item.groupBuyCase ?? ""}</td>
+            <td>${groupBuyCase}</td>
             <td>
                 <button class="btn btn-primary btn-detail btn-sm">상세보기</button>
                 <button class="btn btn-danger btn-stop btn-sm">중단</button>
@@ -133,33 +142,45 @@ tableBody.addEventListener("click", (e) => {
 
         const groupBuyNo = tr.dataset.id;
 
-        if (!confirm("정말 중단하시겠습니까?")) return;
-
-        api.fetch(`/api/manager/groupBuyManagement?groupBuyNo=${groupBuyNo}`, {
-            method: "PUT"
-        })
-            .then(res => {
-                if (!res.ok) throw new Error("중단 실패");
-
-                // 화면 상태 업데이트
-                const badge = tr.querySelector(".badge");
-                badge.textContent = "canceled";
-                badge.classList.remove("bg-secondary");
-                badge.classList.add("bg-danger");
-
-                // 원본 데이터 업데이트
-                const target = originalData.find(it =>
-                    it.periodGroupBuyNo == periodNo || it.quantityGroupBuyNo == qtyNo
-                );
-
-                if (target) {
-                    target.status = "canceled";
-                }
-            })
-            .catch(err => alert("중단 실패: " + err.message));
+        showAlertModal(
+            '공동구매 중단',
+            '정말 중단하시겠습니까?',
+            'error',
+            () => stopGroupBuy(tr, groupBuyNo, qtyNo, periodNo)
+        )
     }
-
 });
+
+const stopGroupBuy = function (tr, groupBuyNo, qtyNo, periodNo){
+    api.fetch(`/api/manager/groupBuyManagement?groupBuyNo=${groupBuyNo}`, {
+        method: "PUT"
+    })
+        .then(res => {
+            if (!res.ok) throw new Error("중단 실패");
+
+            // 화면 상태 업데이트
+            const badge = tr.querySelector(".badge");
+            badge.textContent = "중단";
+            badge.classList.remove("bg-secondary");
+            badge.classList.add("bg-danger");
+
+            // 원본 데이터 업데이트
+            const target = originalData.find(it =>
+                it.periodGroupBuyNo == periodNo || it.quantityGroupBuyNo == qtyNo
+            );
+
+            if (target) {
+                target.status = "중단";
+            }
+        })
+        .catch(err =>
+            showAlertModal(
+                '공동구매 중단 실패',
+                "중단 실패: " + err.message,
+                'error',
+            )
+        );
+}
 
 
 
@@ -177,7 +198,8 @@ caseInput.addEventListener("change", () => {
 // 상태 버튼
 statusButtons.forEach(btn => {
     btn.addEventListener("click", () => {
-        filterByStatus(btn.textContent.trim());
+        console.log(btn.value)
+        filterByStatus(btn.value.trim());
     });
 });
 

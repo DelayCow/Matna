@@ -14,12 +14,16 @@ function renderRow(member) {
     // banDate 표시용 포맷 (있을 때만)
     const banInfo = member.banDate ? new Date(member.banDate).toLocaleString() : "-";
     const statusText = member.accountStatus === "ban" ? "정지" : "활성";
-    const statusClass = member.accountStatus === "ban" ? "text-danger fw-bold" : "text-success";
+
     return `
         <tr data-id="${member.memberNo}">
             <td>${escapeHtml(member.nickname ?? "")}</td>
             <td>${escapeHtml(member.memberId ?? "")}</td>
-            <td class="${statusClass}">${escapeHtml(statusText)}</td>
+            <td class="text-center align-middle">
+                <span class="badge ${member.accountStatus === 'ban' ? 'bg-danger' : 'bg-success'}">
+                    ${escapeHtml(statusText)}
+                </span>
+            </td>
             <td>
                 <div class="d-flex gap-2 align-items-center">
                     <select class="form-select ban-select" id="select-${member.memberNo}">
