@@ -10,6 +10,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -71,6 +73,27 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         );
 
         response.addHeader(JwtProperties.HEADER_STRING, JwtProperties.TOKEN_PREFIX + jwt);
+        response.getWriter().println(new ObjectMapper().writeValueAsString(responseBody));
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
+        response.setContentType("application/json;charset=UTF-8");
+
+        String errorMessage = "아이디/비밀번호를 다시 입력해주세요.";
+
+        if (failed instanceof InternalAuthenticationServiceException && failed.getCause() instanceof DisabledException) {
+            errorMessage = failed.getCause().getMessage();
+        } else if (failed instanceof DisabledException) {
+            errorMessage = failed.getMessage();
+        }
+
+        Map<String, String> responseBody = Map.of(
+                "message", "loginFail",
+                "error", errorMessage
+        );
+
         response.getWriter().println(new ObjectMapper().writeValueAsString(responseBody));
     }
 }
