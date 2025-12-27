@@ -9,6 +9,7 @@ import com.oopsw.matna.repository.entity.Member;
 import com.oopsw.matna.repository.entity.Report;
 import com.oopsw.matna.service.ManagerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,9 +46,16 @@ public class ManagerRestController {
     }
 
     @PostMapping("/ingredientManagement")
-    public ManagerIngredientResponse addIngredient(@RequestParam Integer creatorId, @RequestParam String ingredientName) {
-        return managerService.addIngredient(creatorId, ingredientName);
+    public ManagerIngredientResponse createIngredient(@RequestParam String ingredientName, Authentication authentication) {
+        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
+        Integer adminId = principal.getMemberNo();
+        return managerService.addIngredient(adminId, ingredientName);
     }
+
+//    @PostMapping("/ingredientManagement")
+//    public ManagerIngredientResponse addIngredient(@RequestParam Integer creatorId, @RequestParam String ingredientName) {
+//        return managerService.addIngredient(creatorId, ingredientName);
+//    }
 
     @DeleteMapping("/ingredientManagement")
     public void deleteIngredient(@RequestParam Integer ingredientId) {
