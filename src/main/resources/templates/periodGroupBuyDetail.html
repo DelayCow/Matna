@@ -88,7 +88,7 @@
           </button>
 
           <!-- creator: 개설자 (중단하기만) -->
-          <button class="btn btn-secondary py-2 px-3 fw-bold btn-group-buy-status creator-stopped-btn d-none"
+          <button class="btn btn-danger py-2 px-3 fw-bold btn-group-buy-status creator-stopped-btn d-none"
                   data-bs-toggle="modal" data-bs-target="#dynamicMainModal" data-bs-status="creator">
             공동구매 중단하기
           </button>
@@ -101,25 +101,25 @@
 
       <hr class="my-3">
 
-      <div class="group-buy-location mb-3">
-        <h5 class="fw-bold mb-2">나눔 장소</h5>
-        <p class="mb-1">
-          <span id="data-share-location">장소 정보 로딩 중...</span>
-          <span id="data-share-address"></span>
-          <i class="bi bi-geo-alt-fill me-2 text-danger" id="address-map"></i>
-        </p>
-      </div>
-      <div class="group-buy-dates mb-3 small">
-        <p class="mb-1">
-          <span class="fw-bold me-2">상품 구매 일시:</span>
-          <span id="data-buy-date">정보 로딩 중...</span>
-        </p>
-        <p class="mb-0">
-          <span class="fw-bold me-2">상품 나눔 일시:</span>
-          <span id="data-share-date">정보 로딩 중...</span>
-        </p>
-      </div>
+    <div class="group-buy-location mb-3">
+      <h5 class="fw-bold mb-2">나눔 장소</h5>
+      <p class="mb-1">
+        <span id="data-share-location">장소 정보 로딩 중...</span>
+        <span id="data-share-address"></span>
+        <i class="bi bi-geo-alt-fill me-2 text-danger" id="address-map"></i>
+      </p>
     </div>
+    <div class="group-buy-dates mb-3 small">
+      <p class="mb-1">
+        <span class="fw-bold me-2">상품 구매 일시:</span>
+        <span id="data-buy-date">정보 로딩 중...</span>
+      </p>
+      <p class="mb-0">
+        <span class="fw-bold me-2">상품 나눔 일시:</span>
+        <span id="data-share-date">정보 로딩 중...</span>
+      </p>
+    </div>
+  </div>
 
     <hr class="m-0" style="height: 8px; background-color: #f8f9fa;">
 
@@ -205,8 +205,9 @@
   </div>
 </div>
 
+<div th:replace="modal :: modal"></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/js/api.js"></script>
-<script src="/js/periodGroupBuyDetail.js"></script>
+<script type="module" src="/js/periodGroupBuyDetail.js"></script>
 </body>
 </html>

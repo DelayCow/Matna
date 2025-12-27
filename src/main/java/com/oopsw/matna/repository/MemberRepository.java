@@ -7,6 +7,6 @@ public interface MemberRepository extends JpaRepository<Member, Integer> {
     boolean existsByNickname(String nickname);
     Member findByMemberId(String memberId);
     Member findByMemberNo(Integer memberNo);
-    Member findByMemberIdAndDelDateIsNullAndBanDateIsNull(String memberId);
+    Member findByMemberIdAndDelDateIsNull(String memberId);
 
 }

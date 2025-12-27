@@ -1,3 +1,4 @@
+import {showAlertModal, showValidationModal} from "./modal.js";
 document.addEventListener('DOMContentLoaded', async function() {
     // ========== 전역 변수 ==========
     const countRadio = document.getElementById('count');
@@ -29,8 +30,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         currentMemberNo = authData.memberNo;
     } catch (error) {
         console.error('인증 정보 조회 실패:', error);
-        alert('로그인 정보를 가져올 수 없습니다. 다시 로그인해주세요.');
-        window.location.href = '/login';
+        showAlertModal(
+            '로그인 필요',
+            '로그인 정보를 가져올 수 없습니다.<br>다시 로그인해주세요.',
+            'error',
+            () => window.location.href = '/login'
+        );
         return;
     }
 
@@ -169,7 +174,11 @@ document.addEventListener('DOMContentLoaded', async function() {
         const shareAmount = parseFloat(document.getElementById('share_amount').value) || 0;
 
         if (price <= 0 || quantity <= 0 || shareAmount <= 0) {
-            alert('상품 가격, 상품 이량, 나눔 단위를 모두 입력해주세요.');
+            showAlertModal(
+                '입력 필요',
+                '상품 가격, 상품 이량, 나눔 단위를 모두 입력해주세요.',
+                'info'
+            );
             return;
         }
 
@@ -234,6 +243,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             removeFileAndReset();
         }
     }
+    // ======= 폼 오류 모음 ======
+
+
 
     // ========== 폼 제출 ==========
     async function submitForm() {
@@ -347,18 +359,26 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         // 에러가 있으면 중단
         if (errors.length > 0) {
-            alert('다음 항목을 확인해주세요:\n\n' + errors.map((err, idx) => `${idx + 1}. ${err}`).join('\n'));
+            showValidationModal(errors);
             return;
         }
 
         // 나눔 단위 검증
         if (quantity % shareAmount !== 0) {
-            alert(`상품 총량은 나눔 단위(${shareAmount}${unit})의 배수여야 합니다.`);
+            showAlertModal(
+                '입력 오류',
+                `상품 총량은 나눔 단위(${shareAmount}${unit})의 배수여야 합니다.`,
+                'error'
+            );
             return;
         }
 
         if (myQuantity % shareAmount !== 0) {
-            alert(`내가 쓸 양은 나눔 단위(${shareAmount}${unit})의 배수여야 합니다.`);
+            showAlertModal(
+                '입력 오류',
+                `내가 쓸 양은 나눔 단위(${shareAmount}${unit})의 배수여야 합니다.`,
+                'error'
+            );
             return;
         }
 
@@ -379,27 +399,39 @@ document.addEventListener('DOMContentLoaded', async function() {
             const result = await response.json();
 
             if (response.ok && result.success) {
-                alert(result.message || '수량 공동구매가 성공적으로 등록되었습니다!');
-
-                // 등록 성공 시 상세 페이지로 이동
-                if (result.data && result.data.quantityGroupBuyNo) {
-                    window.location.href = `/quantityGroupBuy/detail/${result.data.quantityGroupBuyNo}`;
-                } else {
-                    window.location.href = '/groupBuy';
-                }
+                showAlertModal(
+                    '등록 완료',
+                    result.message || '수량 공동구매가 성공적으로 등록되었습니다!',
+                    'success',
+                    () => {
+                        if (result.data && result.data.quantityGroupBuyNo) {
+                            window.location.href = `/quantityGroupBuy/detail/${result.data.quantityGroupBuyNo}`;
+                        } else {
+                            window.location.href = '/groupBuy';
+                        }
+                    }
+                );
             } else {
                 const errorMessage = result.message || '등록에 실패했습니다.';
-                alert(`등록 실패\n\n${errorMessage}`);
+                showAlertModal(
+                    '등록 실패',
+                    errorMessage,
+                    'error'
+                );
             }
         } catch (error) {
             console.error('네트워크 오류:', error);
-            alert('서버와 통신할 수 없습니다.\n잠시 후 다시 시도해주세요.');
+            showAlertModal(
+                '네트워크 오류',
+                '서버와 통신할 수 없습니다.<br>잠시 후 다시 시도해주세요.',
+                'error'
+            );
         } finally {
-            // 로딩 해제
             submitBtn.disabled = false;
             submitBtn.textContent = '게시';
         }
     }
+
 
     // ========== 이벤트 리스너 설정 ==========
     function setupEventListeners() {
@@ -450,16 +482,28 @@ document.addEventListener('DOMContentLoaded', async function() {
                                 searchInput.value = data.data.ingredientName;
                                 ingredientNoInput.value = data.data.ingredientNo;
                                 selectedIngredientNo = data.data.ingredientNo;
-                                alert(data.message);
+                                showAlertModal(
+                                    '추가 완료',
+                                    data.message,
+                                    'success'
+                                );
                                 document.getElementById('otherItem').value = '';
                             }
                         })
                         .catch(error => {
                             console.error('Error:', error);
-                            alert(error.message);
+                            showAlertModal(
+                                '추가 실패',
+                                error.message,
+                                'error'
+                            );
                         });
                 } else {
-                    alert('품목명을 입력해주세요.');
+                    showAlertModal(
+                        '입력 필요',
+                        '품목명을 입력해주세요.',
+                        'info'
+                    );
                 }
             });
         }

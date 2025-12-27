@@ -1,5 +1,6 @@
 // 성공/에러 모달 표시
 export function showAlertModal(title, message, type = 'success', onConfirm = null) {
+    closeExistingModal();
     const modal = new bootstrap.Modal(document.getElementById('alertModal'));
     const modalTitle = document.getElementById('modalTitle');
     const modalBody = document.getElementById('modalBody');
@@ -33,6 +34,8 @@ export function showAlertModal(title, message, type = 'success', onConfirm = nul
 }
 
 export function showValidationModal(errors) {
+    closeExistingModal();
+
     const modal = new bootstrap.Modal(document.getElementById('validationModal'));
     const validationList = document.getElementById('validationList');
 
@@ -45,6 +48,24 @@ export function showValidationModal(errors) {
     `).join('');
 
     modal.show();
+}
+
+
+function closeExistingModal() {
+    const openModals = document.querySelectorAll('.modal.show');
+
+    openModals.forEach(modalEl => {
+        const modalInstance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        if (modalInstance) {
+            modalInstance.hide();
+        }
+    });
+
+    const backdrops = document.querySelectorAll('.modal-backdrop');
+    backdrops.forEach(backdrop => backdrop.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
 }
 
 // 나눔 확정 모달
