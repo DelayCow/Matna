@@ -100,13 +100,14 @@ public class MypageService {
     }
 
 
+    @Transactional
     public void editShareGroupBuy(GroupBuyParticipantVO sharedData) {
 
         if (sharedData.getGroupParticipantNo() == null) {
             throw new RuntimeException("참여 번호(PK)가 전달되지 않았습니다.");
         }
 
-        LocalDateTime receiveDate = sharedData.getReceiveDate();
+        LocalDateTime receiveDate = LocalDateTime.now();
 
 
         GroupBuyParticipant participant = groupBuyParticipantRepository
@@ -115,6 +116,25 @@ public class MypageService {
 
         participant.setReceiveDate(receiveDate);
         groupBuyParticipantRepository.save(participant);
+
+
+        GroupBuy groupBuy = participant.getGroupBuy();
+
+
+        Integer hostMemberNo = groupBuy.getCreator().getMemberNo();
+
+
+        int unreceivedCount = groupBuyParticipantRepository
+                .countByGroupBuy_GroupBuyNoAndReceiveDateIsNullAndParticipant_MemberNoNot(
+                        groupBuy.getGroupBuyNo(),
+                        hostMemberNo
+                );
+
+
+        if (unreceivedCount == 0) {
+            groupBuy.setStatus("shared");
+            groupBuyRepository.save(groupBuy);
+        }
     }
 
     @Transactional
@@ -138,7 +158,7 @@ public class MypageService {
             GroupBuy groupBuy = groupBuyRepository.findById(groupBuyNo)
                     .orElseThrow(() -> new RuntimeException("공동구매 정보를 찾을 수 없습니다."));
 
-            groupBuy.setStatus("PAID");
+            groupBuy.setStatus("paid");
 
 
             groupBuy.setReceiptImageUrl(savedFileUrl);
@@ -180,7 +200,7 @@ public class MypageService {
 
             groupBuy.setArrivalImageUrl(savedFileUrl);
             groupBuy.setArrivalDate(arrivalDate);
-            groupBuy.setStatus("DELIVERED");
+            groupBuy.setStatus("delivered");
 
 
         } catch (Exception e) {
