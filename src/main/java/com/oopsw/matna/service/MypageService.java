@@ -100,6 +100,7 @@ public class MypageService {
     }
 
 
+    @Transactional
     public void editShareGroupBuy(GroupBuyParticipantVO sharedData) {
 
         if (sharedData.getGroupParticipantNo() == null) {
@@ -107,7 +108,9 @@ public class MypageService {
         }
 
         LocalDateTime receiveDate = sharedData.getReceiveDate();
-
+        if (receiveDate == null) {
+            receiveDate = LocalDateTime.now();
+        }
 
         GroupBuyParticipant participant = groupBuyParticipantRepository
                 .findById(sharedData.getGroupParticipantNo())
@@ -115,6 +118,25 @@ public class MypageService {
 
         participant.setReceiveDate(receiveDate);
         groupBuyParticipantRepository.save(participant);
+
+
+        GroupBuy groupBuy = participant.getGroupBuy();
+
+
+        Integer hostMemberNo = groupBuy.getCreator().getMemberNo();
+
+
+        int unreceivedCount = groupBuyParticipantRepository
+                .countByGroupBuy_GroupBuyNoAndReceiveDateIsNullAndParticipant_MemberNoNot(
+                        groupBuy.getGroupBuyNo(),
+                        hostMemberNo
+                );
+
+
+        if (unreceivedCount == 0) {
+            groupBuy.setStatus("COMPLETED");
+            groupBuyRepository.save(groupBuy);
+        }
     }
 
     @Transactional
