@@ -34,14 +34,14 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 
     const getStatusStep = (status) => {
-        const s = String(status).trim().toUpperCase();
+        const s = status;
         switch (s) {
-            case 'OPEN': case 'RECRUITING': return 1;
-            case 'CLOSED': return 2;
-            case 'PAID': return 3;
-            case 'DELIVERED': return 4;
-            case 'SHARED': return 5;
-            case 'CANCELED': return 0;
+            case 'open': case 'RECRUITING': return 1;
+            case 'closed': return 2;
+            case 'paid': return 3;
+            case 'delivered': return 4;
+            case 'shared': return 5;
+            case 'canceled': return 0;
             default: return 1;
         }
     };
@@ -341,7 +341,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             arrivalImageUrl: item.arrivalImageUrl || item.deliveryImageUrl,
             arrivalDate: item.arrivalDate || item.deliveryDate
         }));
-        const shareData = encodeURIComponent(JSON.stringify({
+        const sharedata = encodeURIComponent(JSON.stringify({
             title: item.title, groupBuyNo: item.groupBuyNo, groupParticipantNo: item.groupParticipantNo
         }));
         const cancelData = encodeURIComponent(JSON.stringify({
@@ -360,23 +360,23 @@ document.addEventListener('DOMContentLoaded', async function() {
                         ${cleanStatus !== 'PAID' ? 'disabled' : ''}>도착정보 등록</button>`;
         } else {
             // --- [참여자 전용 버튼 세트] ---
-            if (cleanStatus === 'OPEN' || cleanStatus === 'RECRUITING') {
+            if (cleanStatus === 'open' || cleanStatus === 'RECRUITING') {
                 // 모집 중일 때는 '참여 취소' 버튼만 노출
                 buttonsHtml += `<button class="btn btn-outline-danger btn-sm btn-cancel-participation" data-item="${cancelData}">참여 취소</button>`;
             } else {
                 // 모집 완료 후에는 나머지 버튼들만 노출
                 // 결제정보 확인 (PAID 이상일 때 활성화)
                 buttonsHtml += `<button class="btn btn-outline-primary btn-sm btn-payment-info" data-item="${paymentData}" 
-                            ${!['PAID', 'DELIVERED', 'SHARED'].includes(cleanStatus) ? 'disabled' : ''}>결제정보 확인</button>`;
+                            ${!['paid', 'delivered', 'shared'].includes(cleanStatus) ? 'disabled' : ''}>결제정보 확인</button>`;
 
                 // 도착정보 확인 (DELIVERED 이상일 때 활성화)
                 buttonsHtml += `<button class="btn btn-outline-success btn-sm btn-arrival-info" data-item="${arrivalData}" 
-                            ${!['DELIVERED', 'SHARED'].includes(cleanStatus) ? 'disabled' : ''}>도착정보 확인</button>`;
+                            ${!['delivered', 'shared'].includes(cleanStatus) ? 'disabled' : ''}>도착정보 확인</button>`;
 
                 // 나눔 받았어요! (DELIVERED 일 때만 활성화, 수령 전일 때만 노출)
                 if (!item.receiveDate) {
-                    buttonsHtml += `<button class="btn btn-success btn-sm btn-share-confirm" data-item="${shareData}" 
-                                ${cleanStatus !== 'DELIVERED' ? 'disabled' : ''}>나눔 받았어요!</button>`;
+                    buttonsHtml += `<button class="btn btn-success btn-sm btn-share-confirm" data-item="${sharedata}" 
+                                ${cleanStatus !== 'delivered' ? 'disabled' : ''}>나눔 받았어요!</button>`;
                 }
             }
         }
@@ -385,7 +385,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         // 4. 타이틀 밑 상태 메시지 처리
         let statusMessageHtml = '';
         if (isHostTab) {
-            if (cleanStatus === 'SHARED') {
+            if (cleanStatus === 'shared') {
                 statusMessageHtml = '<div class="text-success small fw-bold mt-1"><i class="bi bi-people-fill me-1"></i>모든 참여자 수령 완료</div>';
             }
         } else {
@@ -603,7 +603,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
             if (statusFilterEl) {
                 statusFilterEl.addEventListener('change', function(e) {
-                    currentFilterStatus = e.target.value; // ALL, OPEN, PAID ...
+                    currentFilterStatus = e.target.value; // ALL, Open, PAID ...
                     fetchGroupData(); // 데이터 다시 로드
                 });
             }

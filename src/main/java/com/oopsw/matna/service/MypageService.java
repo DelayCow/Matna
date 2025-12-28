@@ -107,10 +107,8 @@ public class MypageService {
             throw new RuntimeException("참여 번호(PK)가 전달되지 않았습니다.");
         }
 
-        LocalDateTime receiveDate = sharedData.getReceiveDate();
-        if (receiveDate == null) {
-            receiveDate = LocalDateTime.now();
-        }
+        LocalDateTime receiveDate = LocalDateTime.now();
+     
 
         GroupBuyParticipant participant = groupBuyParticipantRepository
                 .findById(sharedData.getGroupParticipantNo())
