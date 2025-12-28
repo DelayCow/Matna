@@ -108,7 +108,7 @@ public class MypageService {
         }
 
         LocalDateTime receiveDate = LocalDateTime.now();
-     
+
 
         GroupBuyParticipant participant = groupBuyParticipantRepository
                 .findById(sharedData.getGroupParticipantNo())
@@ -158,7 +158,7 @@ public class MypageService {
             GroupBuy groupBuy = groupBuyRepository.findById(groupBuyNo)
                     .orElseThrow(() -> new RuntimeException("공동구매 정보를 찾을 수 없습니다."));
 
-            groupBuy.setStatus("PAID");
+            groupBuy.setStatus("paid");
 
 
             groupBuy.setReceiptImageUrl(savedFileUrl);
@@ -200,7 +200,7 @@ public class MypageService {
 
             groupBuy.setArrivalImageUrl(savedFileUrl);
             groupBuy.setArrivalDate(arrivalDate);
-            groupBuy.setStatus("DELIVERED");
+            groupBuy.setStatus("delivered");
 
 
         } catch (Exception e) {
