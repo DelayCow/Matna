@@ -314,8 +314,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 
     const createGroupCard = (item) => {
-        const cleanStatus = item.status;
-        if (cleanStatus === 'canceled') return '';
+        if (item.status === 'canceled') return '';
 
         const isHostTab = (currentGroupTab === 'host');
         const groupBuyType = (item.periodGroupBuyNo !== null && item.periodGroupBuyNo !== undefined) ? 'PERIOD' : 'QUANTITY';
@@ -354,29 +353,29 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (isHostTab) {
             // --- [개설자 전용 버튼 세트] ---
             buttonsHtml += `<button class="btn btn-danger btn-sm btn-payment-register" data-item="${paymentData}" 
-                        ${cleanStatus !== 'closed' ? 'disabled' : ''}>결제정보 등록</button>`;
+                        ${item.status !== 'closed' ? 'disabled' : ''}>결제정보 등록</button>`;
 
             buttonsHtml += `<button class="btn btn-success btn-sm btn-arrival-register" data-item="${arrivalData}" 
-                        ${cleanStatus !== 'paid' ? 'disabled' : ''}>도착정보 등록</button>`;
+                        ${item.status !== 'paid' ? 'disabled' : ''}>도착정보 등록</button>`;
         } else {
             // --- [참여자 전용 버튼 세트] ---
-            if (cleanStatus === 'open' || cleanStatus === 'recruiting') {
+            if (item.status === 'open' || item.status === 'recruiting') {
                 // 모집 중일 때는 '참여 취소' 버튼만 노출
                 buttonsHtml += `<button class="btn btn-outline-danger btn-sm btn-cancel-participation" data-item="${cancelData}">참여 취소</button>`;
             } else {
                 // 모집 완료 후에는 나머지 버튼들만 노출
                 // 결제정보 확인 (PAID 이상일 때 활성화)
                 buttonsHtml += `<button class="btn btn-outline-primary btn-sm btn-payment-info" data-item="${paymentData}" 
-                            ${!['paid', 'delivered', 'shared'].includes(cleanStatus) ? 'disabled' : ''}>결제정보 확인</button>`;
+                            ${!['paid', 'delivered', 'shared'].includes(item.status) ? 'disabled' : ''}>결제정보 확인</button>`;
 
                 // 도착정보 확인 (DELIVERED 이상일 때 활성화)
                 buttonsHtml += `<button class="btn btn-outline-success btn-sm btn-arrival-info" data-item="${arrivalData}" 
-                            ${!['delivered', 'shared'].includes(cleanStatus) ? 'disabled' : ''}>도착정보 확인</button>`;
+                            ${!['delivered', 'shared'].includes(item.status) ? 'disabled' : ''}>도착정보 확인</button>`;
 
                 // 나눔 받았어요! (DELIVERED 일 때만 활성화, 수령 전일 때만 노출)
                 if (!item.receiveDate) {
                     buttonsHtml += `<button class="btn btn-success btn-sm btn-share-confirm" data-item="${sharedata}" 
-                                ${cleanStatus !== 'delivered' ? 'disabled' : ''}>나눔 받았어요!</button>`;
+                                ${item.status !== 'delivered' ? 'disabled' : ''}>나눔 받았어요!</button>`;
                 }
             }
         }
@@ -385,7 +384,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         // 4. 타이틀 밑 상태 메시지 처리
         let statusMessageHtml = '';
         if (isHostTab) {
-            if (cleanStatus === 'shared') {
+            if (item.status === 'shared') {
                 statusMessageHtml = '<div class="text-success small fw-bold mt-1"><i class="bi bi-people-fill me-1"></i>모든 참여자 수령 완료</div>';
             }
         } else {
