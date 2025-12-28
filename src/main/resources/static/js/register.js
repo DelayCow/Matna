@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', function(){
         }
     })
     document.getElementById('login-btn').addEventListener('click', function(){
-        location.href="login.html";
+        location.href="/login";
     })
     document.getElementById('idCheck').addEventListener('click', async function(e){
         e.preventDefault();
