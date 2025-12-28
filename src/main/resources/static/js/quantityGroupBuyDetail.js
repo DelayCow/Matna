@@ -1,3 +1,5 @@
+import {showAlertModal} from "./modal.js";
+
 // 전역 변수
 let currentStatus = 'normal'; // normal, participant, creator
 let currentData = null;
@@ -346,7 +348,11 @@ const render = {
 // 카카오맵에서 주소 검색 (새 창 열기)
 function openKakaoMap(address) {
     if (!address) {
-        alert('주소 정보가 없습니다.');
+        showAlertModal(
+            '알림',
+            '주소 정보가 없습니다.',
+            'info'
+        );
         return;
     }
 
@@ -365,14 +371,14 @@ function determineUserStatus(detail, participants) {
     groupBuyNo = detail.groupBuyNo;
 
 
-    // 1순위: 개설자인 경우
+    //개설자인 경우
     if (currentMemberNo === creatorNo) {
         currentStatus = 'creator';
         showBtnByStatus(currentStatus);
         return;
     }
 
-    // 2순위: 참여자인 경우 (memberNo로 확인)
+    //참여자인 경우 (memberNo로 확인)
     const myParticipation = participants.find(p => {
         return p.memberNo === currentMemberNo;
     });
@@ -385,7 +391,7 @@ function determineUserStatus(detail, participants) {
         return;
     }
 
-    // 3순위: 일반 사용자
+    //일반 사용자
     currentStatus = 'normal';
     showBtnByStatus(currentStatus);
 }
@@ -547,142 +553,158 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+
 // === 모달 액션 버튼 이벤트 ===
 document.addEventListener('DOMContentLoaded', function() {
-    // 참여/수정 모달 버튼
     const joinBtn = document.getElementById('normalJoinBtn');
     const cancelBtn = document.getElementById('participantCancelBtn');
     const modifyBtn = document.getElementById('participantModifyBtn');
 
+    // 참여하기 버튼
     if (joinBtn) {
-        joinBtn.addEventListener('click', async function() {
+        joinBtn.addEventListener('click', function() {
             const quantitySelect = document.getElementById('quantitySelect');
             const selectedQuantity = parseInt(quantitySelect.value);
 
             if (!selectedQuantity) {
-                alert('수량을 선택해주세요.');
+                showAlertModal('알림', '수량을 선택해주세요.', 'info');
                 return;
             }
 
-            if (confirm(`${selectedQuantity}${currentData.groupBuyDetail.unit}으로 참여하시겠습니까?`)) {
-                try {
-                    const response = await fetchAPI.joinGroupBuy(groupBuyNo, selectedQuantity);
-
-                    if (response.success) {
-                        alert(response.message);
-                        location.reload();
-                    } else {
-                        alert(response.message || '참여에 실패했습니다.');
+            showAlertModal(
+                '참여 확인',
+                `${selectedQuantity}${currentData.groupBuyDetail.unit}으로 참여하시겠습니까?`,
+                'question',
+                async () => {
+                    try {
+                        const response = await fetchAPI.joinGroupBuy(groupBuyNo, selectedQuantity);
+                        if (response.success) {
+                            showAlertModal('참여 완료', response.message, 'success', () => location.reload());
+                        } else {
+                            showAlertModal('참여 실패', response.message || '참여에 실패했습니다.', 'error');
+                        }
+                    } catch (error) {
+                        console.error('참여 오류:', error);
+                        showAlertModal('오류 발생', '참여 중 오류가 발생했습니다.', 'error');
                     }
-                } catch (error) {
-                    console.error('참여 오류:', error);
-                    alert('참여 중 오류가 발생했습니다.');
                 }
-            }
+            );
         });
     }
 
+    // 참여 취소 버튼
     if (cancelBtn) {
-        cancelBtn.addEventListener('click', async function() {
+        cancelBtn.addEventListener('click', function() {
             if (!myGroupBuyParticipantNo) {
-                alert('참여 정보를 찾을 수 없습니다.');
+                showAlertModal('알림', '참여 정보를 찾을 수 없습니다.', 'info');
                 return;
             }
 
-            if (confirm('정말 참여를 취소하시겠습니까?')) {
-                try {
-                    const response = await fetchAPI.cancelParticipation(myGroupBuyParticipantNo);
-
-                    if (response.success) {
-                        alert(response.message);
-                        location.reload();
-                    } else {
-                        alert(response.message || '취소에 실패했습니다.');
+            showAlertModal(
+                '취소 확인',
+                '정말 참여를 취소하시겠습니까?',
+                'warning',
+                async () => {
+                    try {
+                        const response = await fetchAPI.cancelParticipation(myGroupBuyParticipantNo);
+                        if (response.success) {
+                            showAlertModal('취소 완료', response.message, 'success', () => location.reload());
+                        } else {
+                            showAlertModal('취소 실패', response.message || '취소에 실패했습니다.', 'error');
+                        }
+                    } catch (error) {
+                        console.error('취소 오류:', error);
+                        showAlertModal('오류 발생', '취소 중 오류가 발생했습니다.', 'error');
                     }
-                } catch (error) {
-                    console.error('취소 오류:', error);
-                    alert('취소 중 오류가 발생했습니다.');
                 }
-            }
+            );
         });
     }
 
+    // 수량 수정 버튼
     if (modifyBtn) {
-        modifyBtn.addEventListener('click', async function() {
+        modifyBtn.addEventListener('click', function() {
             const quantitySelect = document.getElementById('quantitySelect');
             const newQuantity = parseInt(quantitySelect.value);
 
             if (!newQuantity) {
-                alert('수량을 선택해주세요.');
+                showAlertModal('알림', '수량을 선택해주세요.', 'info');
                 return;
             }
 
-            if (confirm(`수량을 ${newQuantity}${currentData.groupBuyDetail.unit}으로 수정하시겠습니까?`)) {
-                try {
-                    const response = await fetchAPI.modifyQuantity(myGroupBuyParticipantNo, newQuantity);
-
-                    if (response.success) {
-                        alert(response.message);
-                        location.reload();
-                    } else {
-                        alert(response.message || '수정에 실패했습니다.');
+            showAlertModal(
+                '수정 확인',
+                `수량을 ${newQuantity}${currentData.groupBuyDetail.unit}으로 수정하시겠습니까?`,
+                'question',
+                async () => {
+                    try {
+                        const response = await fetchAPI.modifyQuantity(myGroupBuyParticipantNo, newQuantity);
+                        if (response.success) {
+                            showAlertModal('수정 완료', response.message, 'success', () => location.reload());
+                        } else {
+                            showAlertModal('수정 실패', response.message || '수정에 실패했습니다.', 'error');
+                        }
+                    } catch (error) {
+                        console.error('수정 오류:', error);
+                        showAlertModal('오류 발생', '수정 중 오류가 발생했습니다.', 'error');
                     }
-                } catch (error) {
-                    console.error('수정 오류:', error);
-                    alert('수정 중 오류가 발생했습니다.');
                 }
-            }
+            );
         });
     }
 
-    // 개설자 액션 버튼
+    // 개설자 액션 버튼 (진행/중단)
     const creatorActionBtn = document.getElementById('creatorActionButton');
     if (creatorActionBtn) {
-        creatorActionBtn.addEventListener('click', async function() {
+        creatorActionBtn.addEventListener('click', function() {
             const actionType = this.getAttribute('data-action-type');
 
             if (actionType === 'run') {
-                // 진행하기
-                if (confirm('공동구매를 진행하시겠습니까?')) {
-                    try {
-                        const response = await fetchAPI.forceClose(groupBuyNo);
-
-                        if (response.success) {
-                            alert(response.message);
-                            location.reload();
-                        } else {
-                            alert(response.message || '진행에 실패했습니다.');
+                showAlertModal(
+                    '진행 확인',
+                    '공동구매를 진행하시겠습니까?',
+                    'question',
+                    async () => {
+                        try {
+                            const response = await fetchAPI.forceClose(groupBuyNo);
+                            if (response.success) {
+                                showAlertModal('진행 완료', response.message, 'success', () => location.reload());
+                            } else {
+                                showAlertModal('진행 실패', response.message || '진행에 실패했습니다.', 'error');
+                            }
+                        } catch (error) {
+                            console.error('진행 오류:', error);
+                            showAlertModal('오류 발생', '진행 중 오류가 발생했습니다.', 'error');
                         }
-                    } catch (error) {
-                        console.error('진행 오류:', error);
-                        alert('진행 중 오류가 발생했습니다.');
                     }
-                }
+                );
             } else if (actionType === 'stop') {
-                // 중단하기
                 const reasonTextarea = document.getElementById('cancelReasonTextarea');
                 const reason = reasonTextarea?.value.trim();
 
                 if (!reason) {
-                    alert('중단 사유를 입력해주세요.');
+                    showAlertModal('알림', '중단 사유를 입력해주세요.', 'info');
                     return;
                 }
 
-                if (confirm('공동구매를 중단하시겠습니까?')) {
-                    try {
-                        const response = await fetchAPI.stopGroupBuy(groupBuyNo, reason);
-
-                        if (response.success) {
-                            alert(response.message);
-                            location.reload();
-                        } else {
-                            alert(response.message || '중단에 실패했습니다.');
+                showAlertModal(
+                    '중단 확인',
+                    '공동구매를 중단하시겠습니까?',
+                    'warning',
+                    async () => {
+                        try {
+                            const response = await fetchAPI.stopGroupBuy(groupBuyNo, reason);
+                            if (response.success) {
+                                showAlertModal('중단 완료', response.message, 'success', () => location.reload());
+                            } else {
+                                showAlertModal('중단 실패', response.message || '중단에 실패했습니다.', 'error');
+                            }
+                        } catch (error) {
+                            console.error('중단 오류:', error);
+                            showAlertModal('오류 발생', '중단 중 오류가 발생했습니다.', 'error');
                         }
-                    } catch (error) {
-                        console.error('중단 오류:', error);
-                        alert('중단 중 오류가 발생했습니다.');
                     }
-                }
+                );
             }
         });
     }
