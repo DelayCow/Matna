@@ -314,8 +314,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 
     const createGroupCard = (item) => {
-        const cleanStatus = String(item.status).trim().toUpperCase();
-        if (cleanStatus === 'CANCELED') return '';
+        if (item.status === 'canceled') return '';
 
         const isHostTab = (currentGroupTab === 'host');
         const groupBuyType = (item.periodGroupBuyNo !== null && item.periodGroupBuyNo !== undefined) ? 'PERIOD' : 'QUANTITY';
@@ -354,10 +353,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (isHostTab) {
             // --- [개설자 전용 버튼 세트] ---
             buttonsHtml += `<button class="btn btn-danger btn-sm btn-payment-register" data-item="${paymentData}" 
-                        ${cleanStatus !== 'CLOSED' ? 'disabled' : ''}>결제정보 등록</button>`;
+                        ${cleanStatus !== 'closed' ? 'disabled' : ''}>결제정보 등록</button>`;
 
             buttonsHtml += `<button class="btn btn-success btn-sm btn-arrival-register" data-item="${arrivalData}" 
-                        ${cleanStatus !== 'PAID' ? 'disabled' : ''}>도착정보 등록</button>`;
+                        ${cleanStatus !== 'paid' ? 'disabled' : ''}>도착정보 등록</button>`;
         } else {
             // --- [참여자 전용 버튼 세트] ---
             if (cleanStatus === 'open' || cleanStatus === 'RECRUITING') {
