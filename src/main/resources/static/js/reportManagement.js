@@ -148,12 +148,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function bindReportDetail(data) {
 
-        reporterImageUrl.src = data.reporterImageUrl ?? "/img/default-profile.png";
+        reporterImageUrl.src = data.reporterImageUrl ?? "/img/user.png";
         reporterName.textContent = data.reporterName ?? "-";
         reporterId.textContent = data.reporterId ?? "";
 
         if (data.type === "회원 신고") {
-            targetImageUrl.src = data.targetImageUrl ?? "/img/default-profile.png";
+            targetImageUrl.src = data.targetImageUrl ?? "/img/user.png";
             targetName.textContent = data.targetName ?? "-";
             targetId.textContent = data.targetId ?? "";
         } else {
