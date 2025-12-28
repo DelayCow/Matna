@@ -122,24 +122,40 @@ document.addEventListener('DOMContentLoaded', async function() {
             const participateRes = await api.fetch(`/api/mypage/${memberNo}/groupBuy/participation?filter=ALL`);
             const participateData = await participateRes.json();
 
-            const activeParticipate = (participateData || []).filter(item.status !== 'canceled');
+            const partList = (participateData || []).filter(item => item.status !== 'canceled');
 
-            const participateCount = participateData ? participateData.length : 0;
+
 
             // 2. 개설 내역 가져오기 (필터 ALL)
             const hostRes = await api.fetch(`/api/mypage/${memberNo}/groupBuy/host?filter=ALL`);
             const hostData = await hostRes.json();
-            const hostCount = hostData ? hostData.length : 0;
+
+            const hostList = (hostData || []).filter(item => item.status !== 'canceled');
+
+
+            const combinedList = [...partList, ...hostList];
+            const uniqueList = [];
+            const seenIds = new Set();
+
+            combinedList.forEach(item => {
+
+                if (!seenIds.has(item.groupBuyNo)) {
+                    seenIds.add(item.groupBuyNo);
+                    uniqueList.push(item);
+                }
+            });
+
+
 
             // 3. 합산하여 표시
 
-            countEl.innerText = participateCount + hostCount;
+            countEl.innerText = uniqueList.length;
 
 
 
         } catch (error) {
             console.error("카운트 집계 실패:", error);
-            countEl.innerText = 0;
+            countEl.innerText = "0";
         }
     };
 
