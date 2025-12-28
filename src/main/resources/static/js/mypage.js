@@ -100,12 +100,16 @@ document.addEventListener('DOMContentLoaded', async function() {
             };
         }
         if (s === 'SHARED' || s === 'COMPLETED') {
-            return {
-                text: "나눔 받았어요!",
-                cls: "btn-success",
-                type: "custom",
-                action: "share",
-                target: "#shareConfirmModal" };
+
+            if (!isHost) {
+                return {
+                    text: "나눔 받았어요!",
+                    cls: "btn-success",
+                    type: "custom",
+                    action: "share",
+                    target: "#shareConfirmModal"
+                };
+            }
         }
         return null;
 

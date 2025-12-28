@@ -21,4 +21,6 @@ public interface GroupBuyParticipantRepository extends JpaRepository<GroupBuyPar
     boolean existsByGroupBuyAndParticipantAndCancelDateIsNull(GroupBuy groupBuy, Member participant);
 
     List<GroupBuyParticipant> findByGroupBuyAndCancelDateIsNull(GroupBuy groupBuy);
+
+    int countByGroupBuy_GroupBuyNoAndReceiveDateIsNullAndParticipant_MemberNoNot(Integer groupBuyNo, Integer hostMemberNo);
 }
