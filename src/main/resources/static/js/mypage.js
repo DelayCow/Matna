@@ -6,7 +6,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     const pathParts = window.location.pathname.split('/');
     const urlMemberNo = pathParts[pathParts.length - 1] === 'mypage' ? null : parseInt(pathParts[pathParts.length - 1]);
 
+
     // 현재 로그인한 사용자 정보 가져오기
+
+
     let currentUser = null;
     let memberNo = null;
     let isOwner = false;
@@ -17,7 +20,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         currentUser = await authResponse.json();
 
-
         memberNo = urlMemberNo || currentUser.memberNo;
         
         isOwner = currentUser.memberNo === memberNo;
@@ -25,8 +27,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     } catch (error) {
         console.error('인증 확인 오류:', error);
     }
-
-
 
 
     let currentGroupTab = 'host';
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         } catch (error) {
             console.error("카운트 집계 실패:", error);
-            countEl.innerText = '-';
+            countEl.innerText = 0;
         }
     };
 
