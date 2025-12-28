@@ -32,88 +32,20 @@ document.addEventListener('DOMContentLoaded', async function() {
     let currentGroupTab = 'host';
     let currentFilterStatus = 'ALL';
 
+
     const getStatusStep = (status) => {
-        const cleanStatus = String(status).trim().toUpperCase();
-        switch (cleanStatus) {
+        const s = String(status).trim().toUpperCase();
+        switch (s) {
             case 'OPEN': case 'RECRUITING': return 1;
-            case 'CLOSED': case 'PAYMENT_WAIT': return 2;
-            case 'PAID': case 'DELIVERED': return 3;
-            case 'SHARED': case 'COMPLETED': return 4;
+            case 'CLOSED': return 2;
+            case 'PAID': return 3;
+            case 'DELIVERED': return 4;
+            case 'SHARED': return 5;
             case 'CANCELED': return 0;
             default: return 1;
         }
     };
 
-    const getButtonConfig = (status, isHost) => {
-
-
-
-        const s = String(status).trim().toUpperCase();
-        if (s === 'OPEN' || s === 'RECRUITING') {
-            if (isHost){
-                return null;}
-            else{
-            return {
-                text: "참여 취소",
-                cls: "btn-outline-danger",
-                type: "custom",
-                action: "cancelParticipation",
-                target: "#cancelParticipation" };
-
-            }
-        }
-
-        if (s === 'CLOSED') {
-            if (isHost){
-            return {
-                text: "결제정보 등록",
-                cls: "btn-danger",
-                type: "custom",
-                action: "registerPayment",
-                target: "#paymentRegisterModal"
-            };
-            } else{
-                return null;
-            }
-        }
-
-        // 3. 입금 대기
-        if (s === 'PAYMENT_WAIT') {
-            return null;
-        }
-
-        if (s === 'PAID') {
-            return {
-                text: "결제정보 확인",
-                cls: "btn-outline-primary",
-                type: "custom",
-                action: "checkPayment",
-                target: "#paymentInfoModal" };
-        }
-        if (s === 'DELIVERED') {
-            return {
-                text: "도착정보 확인",
-                cls: "btn-success",
-                type: "custom",
-                action: "checkArrival",
-                target: "#arrivalInfoModal"
-            };
-        }
-        if (s === 'SHARED' || s === 'COMPLETED') {
-
-            if (!isHost) {
-                return {
-                    text: "나눔 받았어요!",
-                    cls: "btn-success",
-                    type: "custom",
-                    action: "share",
-                    target: "#shareConfirmModal"
-                };
-            }
-        }
-        return null;
-
-    };
 
     const renderCommonArea = (data) => {
 
@@ -379,126 +311,107 @@ document.addEventListener('DOMContentLoaded', async function() {
         </div>`;
     };
 
+
+
     const createGroupCard = (item) => {
-
         const cleanStatus = String(item.status).trim().toUpperCase();
-
-        if (cleanStatus === 'CANCELED') {
-            return '';
-        }
-
-        const unit = item.unit || '';
-        const currentStep = getStatusStep(item.status);
+        if (cleanStatus === 'CANCELED') return '';
 
         const isHostTab = (currentGroupTab === 'host');
+        const groupBuyType = (item.periodGroupBuyNo !== null && item.periodGroupBuyNo !== undefined) ? 'PERIOD' : 'QUANTITY';
+        const currentStep = getStatusStep(item.status);
 
-        const btnConfig = getButtonConfig(item.status, isHostTab);
-
-
-        let groupBuyType = 'QUANTITY';
-        if (item.periodGroupBuyNo !== null && item.periodGroupBuyNo !== undefined) {
-            groupBuyType = 'PERIOD';
-        }
-
+        // 1. 타임라인 생성
         const steps = ["모집", "상품결제", "상품도착", "나눔진행"];
-
-        let timelineHtml = '<div class="timeline-steps">';
+        let timelineHtml = '<div class="timeline-steps mb-3">';
         steps.forEach((stepName, index) => {
             const stepNum = index + 1;
             let activeClass = (stepNum < currentStep) ? "active" : (stepNum === currentStep ? "current" : "");
             timelineHtml += `<div class="step-item ${activeClass}"><div class="step-circle"></div><span class="step-text">${stepName}</span></div>`;
         });
         timelineHtml += '</div>';
-        if (!isOwner) timelineHtml = '';
 
-        let buttonHtml = '';
-        if (isOwner && btnConfig) {
-            if (btnConfig.type === 'link') {
-                buttonHtml = `<button class="btn ${btnConfig.cls} btn-sm" onclick="event.stopPropagation(); location.href='${btnConfig.target}'">${btnConfig.text}</button>`;
-            } else if (btnConfig.type === 'modal') {
-                buttonHtml = `<button class="btn ${btnConfig.cls} btn-sm" data-bs-toggle="modal" data-bs-target="${btnConfig.target}" onclick="event.stopPropagation()">${btnConfig.text}</button>`;
-            } else if (btnConfig.type === 'custom') {
-                if (btnConfig.action === 'share') {
-                    const dataToSend = { title: item.title, price: item.finalPaymentPoint || 0, amount: item.myQuantity, unit: item.unit || '', groupBuyNo: item.groupBuyNo, groupParticipantNo: item.groupParticipantNo };
-                    const itemData = encodeURIComponent(JSON.stringify(dataToSend));
-                    buttonHtml = `<button class="btn ${btnConfig.cls} btn-sm btn-share-confirm" data-item="${itemData}">${btnConfig.text}</button>`;
-                } else if (btnConfig.action === 'checkPayment') {
-                    const dataToSend = {
-                        groupBuyNo: item.groupBuyNo,
-                        receiptImageUrl: item.receiptImageUrl,
-                        buyDate: item.buyDate,
-                        paymentNote: item.paymentNote};
-                    const itemData = encodeURIComponent(JSON.stringify(dataToSend));
-                    buttonHtml = `<button class="btn ${btnConfig.cls} btn-sm btn-payment-info" data-item="${itemData}">${btnConfig.text}</button>`;
-                } else if (btnConfig.action === 'cancelParticipation'){
-                    const dataToSend = {
-                        groupParticipantNo: item.groupParticipantNo,
-                        type: groupBuyType
-                    };
-                    const itemData = encodeURIComponent(JSON.stringify(dataToSend));
+        // 2. 버튼 데이터 세팅
+        const paymentData = encodeURIComponent(JSON.stringify({
+            groupBuyNo: item.groupBuyNo, receiptImageUrl: item.receiptImageUrl,
+            buyDate: item.buyDate, paymentNote: item.paymentNote
+        }));
+        const arrivalData = encodeURIComponent(JSON.stringify({
+            groupBuyNo: item.groupBuyNo,
+            arrivalImageUrl: item.arrivalImageUrl || item.deliveryImageUrl,
+            arrivalDate: item.arrivalDate || item.deliveryDate
+        }));
+        const shareData = encodeURIComponent(JSON.stringify({
+            title: item.title, groupBuyNo: item.groupBuyNo, groupParticipantNo: item.groupParticipantNo
+        }));
+        const cancelData = encodeURIComponent(JSON.stringify({
+            groupParticipantNo: item.groupParticipantNo, type: groupBuyType
+        }));
 
-                    buttonHtml = `<button class="btn ${btnConfig.cls} btn-sm btn-cancel-participation" data-item="${itemData}">${btnConfig.text}</button>`;
-                } else if (btnConfig.action === 'checkArrival') {
-                    const dataToSend = {
-                        groupBuyNo: item.groupBuyNo,
-                        arrivalImageUrl: item.arrivalImageUrl || item.deliveryImageUrl,
-                        arrivalDate: item.arrivalDate || item.deliveryDate
-                    };
+        // 3. 버튼 세트 (수직 배치) 로직 수정
+        let buttonsHtml = `<div class="d-flex flex-column gap-1 ms-3" style="min-width: 120px;">`;
 
-                    const itemData = encodeURIComponent(JSON.stringify(dataToSend));
+        if (isHostTab) {
+            // --- [개설자 전용 버튼 세트] ---
+            buttonsHtml += `<button class="btn btn-danger btn-sm btn-payment-register" data-item="${paymentData}" 
+                        ${cleanStatus !== 'CLOSED' ? 'disabled' : ''}>결제정보 등록</button>`;
 
-                    buttonHtml = `
-                <button class="btn ${btnConfig.cls} btn-sm text-nowrap z-index-front btn-arrival-info" 
-                        style="font-size: 0.75rem;"
-                        data-item="${itemData}">
-                    ${btnConfig.text}
-                </button>`;
+            buttonsHtml += `<button class="btn btn-success btn-sm btn-arrival-register" data-item="${arrivalData}" 
+                        ${cleanStatus !== 'PAID' ? 'disabled' : ''}>도착정보 등록</button>`;
+        } else {
+            // --- [참여자 전용 버튼 세트] ---
+            if (cleanStatus === 'OPEN' || cleanStatus === 'RECRUITING') {
+                // 모집 중일 때는 '참여 취소' 버튼만 노출
+                buttonsHtml += `<button class="btn btn-outline-danger btn-sm btn-cancel-participation" data-item="${cancelData}">참여 취소</button>`;
+            } else {
+                // 모집 완료 후에는 나머지 버튼들만 노출
+                // 결제정보 확인 (PAID 이상일 때 활성화)
+                buttonsHtml += `<button class="btn btn-outline-primary btn-sm btn-payment-info" data-item="${paymentData}" 
+                            ${!['PAID', 'DELIVERED', 'SHARED'].includes(cleanStatus) ? 'disabled' : ''}>결제정보 확인</button>`;
+
+                // 도착정보 확인 (DELIVERED 이상일 때 활성화)
+                buttonsHtml += `<button class="btn btn-outline-success btn-sm btn-arrival-info" data-item="${arrivalData}" 
+                            ${!['DELIVERED', 'SHARED'].includes(cleanStatus) ? 'disabled' : ''}>도착정보 확인</button>`;
+
+                // 나눔 받았어요! (DELIVERED 일 때만 활성화, 수령 전일 때만 노출)
+                if (!item.receiveDate) {
+                    buttonsHtml += `<button class="btn btn-success btn-sm btn-share-confirm" data-item="${shareData}" 
+                                ${cleanStatus !== 'DELIVERED' ? 'disabled' : ''}>나눔 받았어요!</button>`;
                 }
-
-
-                else if (btnConfig.action === 'registerPayment') {
-                    // 등록할 때는 글 번호(PK)만 있으면 됨
-                    const dataToSend = { groupBuyNo: item.groupBuyNo };
-                    const itemData = encodeURIComponent(JSON.stringify(dataToSend));
-
-                    buttonHtml = `
-            <button class="btn ${btnConfig.cls} btn-sm text-nowrap z-index-front btn-payment-register" 
-                    style="font-size: 0.75rem;"
-                    data-item="${itemData}">
-                ${btnConfig.text}
-            </button>`;
-                }
-
             }
         }
-        if (item.receiveDate) buttonHtml = `<button class="btn btn-secondary btn-sm" disabled>수령 완료</button>`;
+        buttonsHtml += `</div>`;
 
-        let detailLink = null;
-        let baseDetailUrl = '';
-
-        if (groupBuyType === 'PERIOD'){
-            baseDetailUrl = `/periodGroupBuy/detail/${item.periodGroupBuyNo}`;
+        // 4. 타이틀 밑 상태 메시지 처리
+        let statusMessageHtml = '';
+        if (isHostTab) {
+            if (cleanStatus === 'SHARED') {
+                statusMessageHtml = '<div class="text-success small fw-bold mt-1"><i class="bi bi-people-fill me-1"></i>모든 참여자 수령 완료</div>';
+            }
         } else {
-            baseDetailUrl = `/quantityGroupBuy/detail/${item.quantityGroupBuyNo}`;
+            if (item.receiveDate) {
+                statusMessageHtml = '<div class="text-success small fw-bold mt-1"><i class="bi bi-check-circle-fill me-1"></i>수령 완료</div>';
+            }
         }
 
+        const baseDetailUrl = (groupBuyType === 'PERIOD') ? `/periodGroupBuy/detail/${item.periodGroupBuyNo}` : `/quantityGroupBuy/detail/${item.quantityGroupBuyNo}`;
 
-        const isRecruiting = (cleanStatus === 'OPEN' || cleanStatus === 'RECRUITING');
-
-        if (isRecruiting || isHostTab) {
-            detailLink = baseDetailUrl;
-        }
-
-        const clickAttr = detailLink ? `onclick="location.href='${detailLink}'" style="cursor: pointer;"` : '';
-
-
-        return `<div class="group-card mb-3 p-3 border rounded bg-white shadow-sm">
-            <div class="d-flex justify-content-between align-items-start mb-2"><div class="flex-grow-1 me-3">${timelineHtml}</div>${buttonHtml}</div>
-            <div class="d-flex align-items-center gap-3">
-                <div class="rounded overflow-hidden border" style="width: 80px; height: 80px;" ${detailLink ? `onclick="location.href='${detailLink}'"` : ""}><img src="${item.imageUrl || '/img/default_food.jpg'}" class="w-100 h-100 object-fit-cover"></div>
-                <div class="group-info flex-grow-1"><h5 class="fw-bold mb-1">${item.title}</h5></div>
+        return `
+    <div class="group-card mb-3 p-3 border rounded bg-white shadow-sm">
+        ${isOwner ? timelineHtml : ''}
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3 flex-grow-1" onclick="location.href='${baseDetailUrl}'" style="cursor: pointer;">
+                <div class="rounded overflow-hidden border" style="width: 70px; height: 70px; flex-shrink: 0;">
+                    <img src="${item.imageUrl || '/img/default_food.jpg'}" class="w-100 h-100 object-fit-cover">
+                </div>
+                <div class="group-info">
+                    <h6 class="fw-bold mb-0 text-truncate" style="max-width: 220px;">${item.title}</h6>
+                    ${statusMessageHtml}
+                </div>
             </div>
-        </div>`;
+            ${isOwner ? buttonsHtml : ''}
+        </div>
+    </div>`;
     };
 
 

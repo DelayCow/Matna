@@ -134,7 +134,7 @@ public class MypageService {
 
 
         if (unreceivedCount == 0) {
-            groupBuy.setStatus("COMPLETED");
+            groupBuy.setStatus("shared");
             groupBuyRepository.save(groupBuy);
         }
     }
