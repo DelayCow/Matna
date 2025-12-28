@@ -50,11 +50,6 @@ public class ManagerRestController {
         return managerService.addIngredient(principalDetails.getMemberNo(), ingredientName);
     }
 
-//    @PostMapping("/ingredientManagement")
-//    public ManagerIngredientResponse addIngredient(@RequestParam Integer creatorId, @RequestParam String ingredientName) {
-//        return managerService.addIngredient(creatorId, ingredientName);
-//    }
-
     @DeleteMapping("/ingredientManagement")
     public void deleteIngredient(@RequestParam Integer ingredientId) {
         managerService.deleteIngredient(ingredientId);
