@@ -135,9 +135,7 @@ addBtn.addEventListener("click", () => {
         '재료명을 입력하세요',
         'info'
     ); return;}
-    // 예: creatorId는 현재 로그인된 유저 id로 대체해야 함. 여기선 예시 1 사용.
-    const creatorId = 1;
-    api.fetch(`/api/manager/ingredientManagement?creatorId=${creatorId}&ingredientName=${encodeURIComponent(value)}`, {
+    api.fetch(`/api/manager/ingredientManagement?ingredientName=${encodeURIComponent(value)}`, {
         method: "POST"
     })
         .then(res => {
