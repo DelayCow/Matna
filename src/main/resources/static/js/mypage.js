@@ -121,6 +121,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             // 1. 참여 내역 가져오기 (필터 ALL)
             const participateRes = await api.fetch(`/api/mypage/${memberNo}/groupBuy/participation?filter=ALL`);
             const participateData = await participateRes.json();
+
+            const activeParticipate = (participateData || []).filter(item.status !== 'canceled');
+
             const participateCount = participateData ? participateData.length : 0;
 
             // 2. 개설 내역 가져오기 (필터 ALL)
@@ -129,7 +132,10 @@ document.addEventListener('DOMContentLoaded', async function() {
             const hostCount = hostData ? hostData.length : 0;
 
             // 3. 합산하여 표시
+
             countEl.innerText = participateCount + hostCount;
+
+
 
         } catch (error) {
             console.error("카운트 집계 실패:", error);
