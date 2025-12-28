@@ -46,10 +46,8 @@ public class ManagerRestController {
     }
 
     @PostMapping("/ingredientManagement")
-    public ManagerIngredientResponse createIngredient(@RequestParam String ingredientName, Authentication authentication) {
-        PrincipalDetails principal = (PrincipalDetails) authentication.getPrincipal();
-        Integer adminId = principal.getMemberNo();
-        return managerService.addIngredient(adminId, ingredientName);
+    public ManagerIngredientResponse createIngredient(@RequestParam String ingredientName, @AuthenticationPrincipal PrincipalDetails principalDetails) {
+        return managerService.addIngredient(principalDetails.getMemberNo(), ingredientName);
     }
 
 //    @PostMapping("/ingredientManagement")
