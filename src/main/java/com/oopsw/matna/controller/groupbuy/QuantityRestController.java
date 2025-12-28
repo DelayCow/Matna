@@ -140,26 +140,44 @@ public class QuantityRestController {
     }
 
     @PostMapping("/join")
-    public ResponseEntity<Map<String, Object>> addParticipantToPeriodGroupBuy(
+    public ResponseEntity<Map<String, Object>> addParticipantToQuantityGroupBuy(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestBody GroupBuyParticipantRequest request){
 
-        Integer currentMemberNo = principalDetails.getMemberNo();
-        request.setParticipantNo(currentMemberNo);
-
-        GroupBuyParticipant participant = quantityGroupBuyService.addParticipantToQuantityGroupBuy(request);
-
         Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("message", "수량공구 참여가 완료되었습니다.");
-        response.put("data", Map.of("groupParticipantNo", participant.getGroupParticipantNo(),
-                "groupBuyNo", participant.getGroupBuy().getGroupBuyNo(),
-                "participantNo", participant.getParticipant().getMemberNo(),
-                "myQuantity", participant.getMyQuantity(),
-                "initialPaymentPoint", participant.getInitialPaymentPoint(),
-                "participatedDate", participant.getParticipatedDate()
-        ));
-        return ResponseEntity.ok(response);
+
+        try {
+            Integer currentMemberNo = principalDetails.getMemberNo();
+            request.setParticipantNo(currentMemberNo);
+
+            GroupBuyParticipant participant = quantityGroupBuyService.addParticipantToQuantityGroupBuy(request);
+
+            response.put("success", true);
+            response.put("message", "수량공구 참여가 완료되었습니다.");
+            response.put("data", Map.of(
+                    "groupParticipantNo", participant.getGroupParticipantNo(),
+                    "groupBuyNo", participant.getGroupBuy().getGroupBuyNo(),
+                    "participantNo", participant.getParticipant().getMemberNo(),
+                    "myQuantity", participant.getMyQuantity(),
+                    "initialPaymentPoint", participant.getInitialPaymentPoint(),
+                    "participatedDate", participant.getParticipatedDate()
+            ));
+            return ResponseEntity.ok(response);
+
+        } catch (IllegalArgumentException e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(response);
+
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "공동구매 참여 중 오류가 발생했습니다.");
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(response);
+        }
     }
 
     @PutMapping("/quantityModify/{groupBuyParticipantNo}")
