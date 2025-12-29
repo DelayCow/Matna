@@ -1,3 +1,4 @@
+import { showAlertModal } from "./modal.js";
 
 const inputEl = document.getElementById('chargeAmountInput');
 let currentAmount = 0;
@@ -29,8 +30,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         if (!response.ok) {
             if (response.status === 401) {
-                alert("로그인이 필요합니다.");
-                window.location.href = '/login';
+                showAlertModal("인증 오류", "로그인이 필요합니다.", "error", () => {
+                    window.location.href = '/login';
+                });
                 return;
             }
             throw new Error("정보 조회 실패");
@@ -57,10 +59,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     // 직접 입력 처리
-    if(inputEl) {
-        inputEl.addEventListener('input', function(e) {
+    if (inputEl) {
+        inputEl.addEventListener('input', function (e) {
             let value = e.target.value.replace(/[^0-9]/g, '');
-            if(value === '') {
+            if (value === '') {
                 currentAmount = 0;
                 e.target.value = '';
                 return;
@@ -69,7 +71,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             e.target.value = formatNumber(currentAmount);
         });
     }
-
 
 
     let currentMode = 'CHARGE'; // 기본값: 충전
@@ -103,11 +104,11 @@ document.addEventListener('DOMContentLoaded', async function() {
             tabRefund.style.color = "#6c757d";
 
             // 텍스트 변경
-            if(pageTitle) pageTitle.innerText = "충전 예정 맛나머니";
-            if(minAmountText) minAmountText.innerText = "* 최소 충전금액은 1,000원입니다.";
+            if (pageTitle) pageTitle.innerText = "충전 예정 맛나머니";
+            if (minAmountText) minAmountText.innerText = "* 최소 충전금액은 1,000원입니다.";
 
             // 버튼 변경
-            if(btnAction) {
+            if (btnAction) {
                 btnAction.innerText = "충전하기";
                 btnAction.classList.remove('btn-secondary');
                 btnAction.classList.add('btn-main-action'); // 파란색
@@ -125,11 +126,11 @@ document.addEventListener('DOMContentLoaded', async function() {
             tabCharge.style.color = "#6c757d";
 
             // 텍스트 변경
-            if(pageTitle) pageTitle.innerText = "환급 신청 맛나머니";
-            if(minAmountText) minAmountText.innerText = "* 최대 환급금액은 보유금액을 넘길 수 없습니다.";
+            if (pageTitle) pageTitle.innerText = "환급 신청 맛나머니";
+            if (minAmountText) minAmountText.innerText = "* 최대 환급금액은 보유금액을 넘길 수 없습니다.";
 
             // 버튼 변경
-            if(btnAction) {
+            if (btnAction) {
                 btnAction.innerText = "환급받기";
                 btnAction.classList.remove('btn-main-action');
                 btnAction.classList.add('btn-secondary'); // 회색
@@ -138,59 +139,66 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     // 2. 탭 클릭 이벤트 연결
-    if(tabCharge) tabCharge.addEventListener('click', () => setMode('CHARGE'));
-    if(tabRefund) tabRefund.addEventListener('click', () => setMode('REFUND'));
+    if (tabCharge) tabCharge.addEventListener('click', () => setMode('CHARGE'));
+    if (tabRefund) tabRefund.addEventListener('click', () => setMode('REFUND'));
 
     // 3. 버튼 클릭 이벤트
-    if(btnAction) {
+    if (btnAction) {
         btnAction.addEventListener('click', () => {
             const memberNo = document.getElementById('memberNo').value;
 
-            if(!memberNo) {
-                alert("회원 정보가 없습니다");
+
+            if (!memberNo) {
+                showAlertModal("오류", "회원 정보가 없습니다.", "error");
                 return;
             }
             if (currentAmount < 1000) {
-                alert("최소 금액은 1,000원입니다.");
+                showAlertModal("최저금액 미달", "최소 금액은 1,000원입니다.", "info");
                 return;
             }
-            if(currentMode === 'REFUND' && currentAmount > userCurrentPoint) {
-                alert(`최대 ${formatNumber(userCurrentPoint)}원 까지 환급가능`)
+            if (currentMode === 'REFUND' && currentAmount > userCurrentPoint) {
+                showAlertModal("최대 금액 초과", `환급 가능 금액은 최대 ${formatNumber(userCurrentPoint)}원입니다.`, "info");
+                return;
             }
 
             const isCharge = (currentMode === 'CHARGE');
             const actionName = isCharge ? "충전" : "환급";
 
-            // confirm 창
-            if (!confirm(`${formatNumber(currentAmount)}원을 ${actionName}하시겠습니까?`)) {
-                return;
-            }
 
-            // 전송 데이터
-            const requestData = {
-                memberNo: parseInt(memberNo),
-                amount: currentAmount
-            };
+            showAlertModal(
+                `${actionName} 확인`,
+                `${formatNumber(currentAmount)}원을 ${actionName}하시겠습니까?`,
+                'info',
+                () => {
+                    const requestData = {
+                        memberNo: parseInt(memberNo),
+                        amount: currentAmount
+                    };
+                    const url = isCharge ? '/api/mypage/point/charge' : '/api/mypage/point/refund';
 
-            // URL 결정
-            const url = isCharge ? '/api/mypage/point/charge' : '/api/mypage/point/refund';
+                    api.fetch(url, {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(requestData)
+                    })
+                        .then(response => {
+                            if (response.ok) return response.json();
+                            else return response.text().then(text => {
+                                throw new Error(text)
+                            });
+                        })
+                        .then(result => {
 
-            api.fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(requestData)
-            })
-                .then(response => {
-                    if (response.ok) return response.json();
-                    else return response.text().then(text => { throw new Error(text) });
-                })
-                .then(result => {
-                    alert(`${actionName}이(가) 완료되었습니다!`);
-                    window.location.reload();
-                })
-                .catch(error => {
-                    alert(`${actionName} 실패: ` + error.message);
-                });
+                            showAlertModal(`${actionName} 완료`, `${actionName}이 정상적으로 처리되었습니다.`, 'success', () => {
+                                window.location.reload();
+                            });
+                        })
+                        .catch(error => {
+
+                            showAlertModal(`${actionName} 실패`, error.message, 'error');
+                        });
+                }
+            );
         });
     }
 });

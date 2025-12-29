@@ -6,7 +6,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     const pathParts = window.location.pathname.split('/');
     const urlMemberNo = pathParts[pathParts.length - 1] === 'mypage' ? null : parseInt(pathParts[pathParts.length - 1]);
 
+
     // 현재 로그인한 사용자 정보 가져오기
+
+
     let currentUser = null;
     let memberNo = null;
     let isOwner = false;
@@ -17,7 +20,6 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         currentUser = await authResponse.json();
 
-
         memberNo = urlMemberNo || currentUser.memberNo;
         
         isOwner = currentUser.memberNo === memberNo;
@@ -25,8 +27,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     } catch (error) {
         console.error('인증 확인 오류:', error);
     }
-
-
 
 
     let currentGroupTab = 'host';
@@ -121,19 +121,41 @@ document.addEventListener('DOMContentLoaded', async function() {
             // 1. 참여 내역 가져오기 (필터 ALL)
             const participateRes = await api.fetch(`/api/mypage/${memberNo}/groupBuy/participation?filter=ALL`);
             const participateData = await participateRes.json();
-            const participateCount = participateData ? participateData.length : 0;
+
+            const partList = (participateData || []).filter(item => item.status !== 'canceled');
+
+
 
             // 2. 개설 내역 가져오기 (필터 ALL)
             const hostRes = await api.fetch(`/api/mypage/${memberNo}/groupBuy/host?filter=ALL`);
             const hostData = await hostRes.json();
-            const hostCount = hostData ? hostData.length : 0;
+
+            const hostList = (hostData || []).filter(item => item.status !== 'canceled');
+
+
+            const combinedList = [...partList, ...hostList];
+            const uniqueList = [];
+            const seenIds = new Set();
+
+            combinedList.forEach(item => {
+
+                if (!seenIds.has(item.groupBuyNo)) {
+                    seenIds.add(item.groupBuyNo);
+                    uniqueList.push(item);
+                }
+            });
+
+
 
             // 3. 합산하여 표시
-            countEl.innerText = participateCount + hostCount;
+
+            countEl.innerText = uniqueList.length;
+
+
 
         } catch (error) {
             console.error("카운트 집계 실패:", error);
-            countEl.innerText = '-';
+            countEl.innerText = "0";
         }
     };
 
@@ -159,15 +181,29 @@ document.addEventListener('DOMContentLoaded', async function() {
 
             const result = await response.json();
 
-            if (response.ok) {
-                alert("참여가 정상적으로 취소되었습니다.");
-                window.location.reload(); // 새로고침해서 목록 갱신
+            if(response.ok) {
+                showAlertModal(
+                    '참여 취소 완료',
+                    '취소 되었습니다!',
+                    'success',
+                    () => {
+                        window.location.href = '/mypage';
+                    }
+                );
             } else {
-                alert("취소 실패: " + (result.message || "오류가 발생했습니다."));
+                showAlertModal(
+                    '취소 실패',
+                    `취소에 실패 했습니다.`,
+                    'error'
+                );
             }
         } catch (error) {
             console.error("취소 요청 중 에러:", error);
-            alert("서버 통신 중 오류가 발생했습니다.");
+            showAlertModal(
+                '네트워크 오류',
+                '서버와 통신할 수 없습니다.<br>잠시 후 다시 시도해주세요.',
+                'error'
+            );
         }
     };
 
@@ -471,10 +507,22 @@ document.addEventListener('DOMContentLoaded', async function() {
                     api.fetch(`/api/mypage/groupbuy/shared`, {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ groupParticipantNo: item.groupParticipantNo, receiveDate: selectedDate + "T00:00:00" })
-                    }).then(() => { alert("확정 완료!"); window.location.reload(); });
+                        body: JSON.stringify({
+                            groupParticipantNo: item.groupParticipantNo,
+                            receiveDate: selectedDate + "T00:00:00"
+                        })
+                    }).then(() => {
+                        showAlertModal(
+                            '나눔 확정',
+                            '나눔 확정이 완료되었습니다.',
+                            'success',
+                            () => {
+                                window.location.reload();
+                            }
+                        );
+                    });
                 });
-            }
+                }
 
             const paymentBtn = e.target.closest('.btn-payment-info');
             if (paymentBtn) {
