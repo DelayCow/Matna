@@ -34,9 +34,8 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 
     const getStatusStep = (status) => {
-        const s = status;
-        switch (s) {
-            case 'open': case 'recruiting': return 1;
+        switch (status) {
+            case 'open':  return 1;
             case 'closed': return 2;
             case 'paid': return 3;
             case 'delivered': return 4;
@@ -395,7 +394,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                         ${item.status !== 'paid' ? 'disabled' : ''}>도착정보 등록</button>`;
         } else {
             // --- [참여자 전용 버튼 세트] ---
-            if (item.status === 'open' || item.status === 'recruiting') {
+            if (item.status === 'open' ) {
                 // 모집 중일 때는 '참여 취소' 버튼만 노출
                 buttonsHtml += `<button class="btn btn-outline-danger btn-sm btn-cancel-participation" data-item="${cancelData}">참여 취소</button>`;
             } else {
