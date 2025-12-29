@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (price <= 0 || quantity <= 0 || shareAmount <= 0) {
             showAlertModal(
                 '입력 필요',
-                '상품 가격, 상품 이량, 나눔 단위를 모두 입력해주세요.',
+                '상품 가격, 상품 총량, 나눔 단위를 모두 입력해주세요.',
                 'info'
             );
             return;
