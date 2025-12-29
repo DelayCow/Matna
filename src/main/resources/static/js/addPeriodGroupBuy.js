@@ -404,10 +404,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
         periodData.price = price;
 
-        // 상품 이량
+        // 상품 총량
         const quantity = parseInt(document.getElementById('quantity').value);
         if (!quantity || quantity <= 0) {
-            errors.push('상품 이량을 입력해주세요');
+            errors.push('상품 총량을 입력해주세요');
         }
         periodData.quantity = quantity;
 
