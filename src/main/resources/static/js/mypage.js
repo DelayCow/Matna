@@ -181,15 +181,29 @@ document.addEventListener('DOMContentLoaded', async function() {
 
             const result = await response.json();
 
-            if (response.ok) {
-                alert("참여가 정상적으로 취소되었습니다.");
-                window.location.reload(); // 새로고침해서 목록 갱신
+            if(response.ok) {
+                showAlertModal(
+                    '참여 취소 완료',
+                    '취소 되었습니다!',
+                    'success',
+                    () => {
+                        window.location.href = '/mypage';
+                    }
+                );
             } else {
-                alert("취소 실패: " + (result.message || "오류가 발생했습니다."));
+                showAlertModal(
+                    '취소 실패',
+                    `취소에 실패 했습니다.`,
+                    'error'
+                );
             }
         } catch (error) {
             console.error("취소 요청 중 에러:", error);
-            alert("서버 통신 중 오류가 발생했습니다.");
+            showAlertModal(
+                '네트워크 오류',
+                '서버와 통신할 수 없습니다.<br>잠시 후 다시 시도해주세요.',
+                'error'
+            );
         }
     };
 
@@ -493,10 +507,22 @@ document.addEventListener('DOMContentLoaded', async function() {
                     api.fetch(`/api/mypage/groupbuy/shared`, {
                         method: 'POST',
                         headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ groupParticipantNo: item.groupParticipantNo, receiveDate: selectedDate + "T00:00:00" })
-                    }).then(() => { alert("확정 완료!"); window.location.reload(); });
+                        body: JSON.stringify({
+                            groupParticipantNo: item.groupParticipantNo,
+                            receiveDate: selectedDate + "T00:00:00"
+                        })
+                    }).then(() => {
+                        showAlertModal(
+                            '나눔 확정',
+                            '나눔 확정이 완료되었습니다.',
+                            'success',
+                            () => {
+                                window.location.reload();
+                            }
+                        );
+                    });
                 });
-            }
+                }
 
             const paymentBtn = e.target.closest('.btn-payment-info');
             if (paymentBtn) {
