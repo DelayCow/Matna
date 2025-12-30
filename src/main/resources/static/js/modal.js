@@ -234,7 +234,6 @@ export function showArrivalInfoModal(item) {
 // 결제 정보 등록 모달 띄우기
 export function showPaymentRegisterModal(item, onSuccess) {
 
-    // console.log("✅ 모달로 넘어온 데이터 확인:", item);
 
     const modalEl = document.getElementById('paymentRegisterModal');
     if (!modalEl) return;
