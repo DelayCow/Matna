@@ -561,6 +561,27 @@ document.addEventListener('DOMContentLoaded', async function() {
                 }
             }
 
+            const regArrivalBtn = e.target.closest('.btn-arrival-register');
+            if (regArrivalBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                const itemDataString = regArrivalBtn.getAttribute('data-item');
+                if (itemDataString) {
+                    try {
+                        const item = JSON.parse(decodeURIComponent(itemDataString));
+
+                        // 모달 함수 호출 (modal.js에서 import 된 함수)
+                        // 성공 시 콜백으로 페이지 새로고침
+                        showArrivalRegisterModal(item, () => {
+                            window.location.reload();
+                        });
+                    } catch (err) {
+                        console.error("데이터 파싱 오류:", err);
+                    }
+                }
+            }
+
         });
     }
 

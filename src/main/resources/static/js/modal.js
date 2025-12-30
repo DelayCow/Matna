@@ -70,6 +70,8 @@ function closeExistingModal() {
 
 // 나눔 확정 모달
 export function showShareConfirmModal(item, onConfirm) {
+
+
     const modalElement = document.getElementById('shareConfirmModal');
     const modal = new bootstrap.Modal(modalElement);
 
@@ -232,7 +234,7 @@ export function showArrivalInfoModal(item) {
 // 결제 정보 등록 모달 띄우기
 export function showPaymentRegisterModal(item, onSuccess) {
 
-    console.log("✅ 모달로 넘어온 데이터 확인:", item);
+    // console.log("✅ 모달로 넘어온 데이터 확인:", item);
 
     const modalEl = document.getElementById('paymentRegisterModal');
     if (!modalEl) return;
@@ -275,11 +277,23 @@ export function showPaymentRegisterModal(item, onSuccess) {
     registerBtn.onclick = () => {
 
         if (!fileInput.files[0]) {
-            alert("영수증 사진을 등록해주세요!");
+
+            showAlertModal(
+                '영수증 사진 필수',
+                '영수증 사진을 등록 해 주세요',
+                'error'
+            );
             return;
         }
+
+
         if (!dateInput.value) {
-            alert("구매 날짜를 입력해주세요!");
+
+            showAlertModal(
+                        '구매 날짜 입력 요구',
+                        '구매 날짜를 입력해주세요!',
+                        'error'
+                    );
             return;
         }
 
@@ -301,11 +315,21 @@ export function showPaymentRegisterModal(item, onSuccess) {
         })
             .then(response => {
                 if (response.ok) {
-                    alert("결제 정보가 등록되었습니다.");
-                    modal.hide();
+
+                    showAlertModal(
+                        '결제 정보 등록 완료',
+                        '결제 정보가 등록되었습니다.',
+                        'info'
+                    );
+
+
                     if(onSuccess) onSuccess();
                 } else {
-                    alert("등록 실패! 다시 시도해주세요.");
+                    showAlertModal(
+                        '결제 정보 등록 실패',
+                        '다시 등록되었습니다.',
+                        'error'
+                    );
                 }
             })
             .catch(err => console.error("전송 오류:", err));
@@ -379,8 +403,13 @@ export function showArrivalRegisterModal(item, onSuccess) {
         })
             .then(response => {
                 if (response.ok) {
-                    alert("도착 정보가 등록되었습니다.");
-                    modal.hide();
+
+
+                    showAlertModal(
+                        '도착 정보 등록 완료',
+                        '도착 정보가 등록되었습니다.',
+                        'info'
+                    );
                     if(onSuccess) onSuccess();
                 } else {
                     response.text().then(msg => alert("등록 실패: " + msg));
@@ -433,7 +462,12 @@ export function showPasswordCheckModal(memberNo) {
     const handleCheck = () => {
         const password = inputEl.value;
         if (!password) {
-            alert("비밀번호를 입력해주세요.");
+            // alert("비밀번호를 입력해주세요.");
+            showAlertModal(
+                '비밀번호 입력',
+                '비밀번호를 입력해주세요.',
+                'error'
+            );
             return;
         }
 
@@ -461,7 +495,7 @@ export function showPasswordCheckModal(memberNo) {
                 }
             })
             .catch(err => {
-                alert("오류 발생: " + err.message);
+                // alert("오류 발생: " + err.message);
             });
     };
 
@@ -571,8 +605,13 @@ export function showReportModal(type, targetId, onSuccess) {
         })
             .then(response => {
                 if (response.ok) {
-                    alert("신고가 접수되었습니다.");
-                    modal.hide();
+
+                    showAlertModal(
+                        '신고가 접수 되었습니다.',
+                        '신고가 접수되었습니다.',
+                        'info'
+                    );
+
                     if (onSuccess) onSuccess();
                 } else {
                     response.text().then(msg => alert("신고 실패: " + msg));
