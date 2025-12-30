@@ -1,5 +1,6 @@
 
-import { showAlertModal, showShareConfirmModal, showPaymentInfoModal, showArrivalInfoModal, showPaymentRegisterModal,showPasswordCheckModal, showReportModal, showRemoveMemberModal } from "./modal.js";
+
+import { showAlertModal, showShareConfirmModal, showPaymentInfoModal, showArrivalInfoModal, showPaymentRegisterModal,showPasswordCheckModal, showReportModal, showRemoveMemberModal,  showArrivalRegisterModal} from "./modal.js";
 
 document.addEventListener('DOMContentLoaded', async function() {
     // URL에서 memberNo 추출
@@ -21,7 +22,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         currentUser = await authResponse.json();
 
         memberNo = urlMemberNo || currentUser.memberNo;
-        
+
         isOwner = currentUser.memberNo === memberNo;
 
     } catch (error) {
@@ -349,11 +350,14 @@ document.addEventListener('DOMContentLoaded', async function() {
 
 
     const createGroupCard = (item) => {
+
         if (item.status === 'canceled') return '';
 
         const isHostTab = (currentGroupTab === 'host');
         const groupBuyType = (item.periodGroupBuyNo !== null && item.periodGroupBuyNo !== undefined) ? 'PERIOD' : 'QUANTITY';
         const currentStep = getStatusStep(item.status);
+
+
 
         // 1. 타임라인 생성
         const steps = ["모집", "상품결제", "상품도착", "나눔진행"];
@@ -376,7 +380,13 @@ document.addEventListener('DOMContentLoaded', async function() {
             arrivalDate: item.arrivalDate || item.deliveryDate
         }));
         const sharedata = encodeURIComponent(JSON.stringify({
-            title: item.title, groupBuyNo: item.groupBuyNo, groupParticipantNo: item.groupParticipantNo
+            title: item.title,
+            groupBuyNo: item.groupBuyNo,
+            groupParticipantNo: item.groupParticipantNo,
+            price: item.initialPaymentPoint,
+
+            myQuantity: item.myQuantity,
+            unit: item.unit
         }));
         const cancelData = encodeURIComponent(JSON.stringify({
             groupParticipantNo: item.groupParticipantNo, type: groupBuyType
@@ -508,6 +518,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                         headers: {'Content-Type': 'application/json'},
                         body: JSON.stringify({
                             groupParticipantNo: item.groupParticipantNo,
+                            groupBuyNo: item.groupBuyNo,
                             receiveDate: selectedDate + "T00:00:00"
                         })
                     }).then(() => {
@@ -521,7 +532,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                         );
                     });
                 });
-                }
+            }
 
             const paymentBtn = e.target.closest('.btn-payment-info');
             if (paymentBtn) {
@@ -571,8 +582,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     try {
                         const item = JSON.parse(decodeURIComponent(itemDataString));
 
-                        // 모달 함수 호출 (modal.js에서 import 된 함수)
-                        // 성공 시 콜백으로 페이지 새로고침
+
                         showArrivalRegisterModal(item, () => {
                             window.location.reload();
                         });
