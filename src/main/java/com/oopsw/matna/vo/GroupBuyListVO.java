@@ -31,6 +31,7 @@ public class GroupBuyListVO {
     private Integer myQuantity;
     private LocalDateTime participatedDate;
     private Integer finalPaymentPoint;
+    private Integer initialPaymentPoint;
     private Integer participantExMe;
     private Integer totalSettlementPoint;
     private LocalDateTime DueDate; // 기간공구용 플래그

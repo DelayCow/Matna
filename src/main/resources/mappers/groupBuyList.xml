@@ -37,6 +37,7 @@
         gbp.my_quantity          AS myQuantity,
         gbp.participated_date    AS participatedDate,
         gbp.final_payment_point  AS finalPaymentPoint,
+        gbp.initial_payment_point AS initialPaymentPoint,
 
         /* 나를 제외한 참여자 수: 전체 - 1 */
         (COALESCE(total_participant.total_count, 0) - 1) AS participantExMe,
